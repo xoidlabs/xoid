@@ -1,8 +1,8 @@
 {
-  "name": "zustand",
+  "name": "xoid",
   "private": true,
-  "version": "3.1.3",
-  "description": "🐻 Bear necessities for state management in React",
+  "version": "0.1.0",
+  "description": "Innovative state management",
   "main": "index.cjs.js",
   "module": "index.js",
   "types": "index.d.ts",
@@ -44,7 +44,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/react-spring/zustand.git"
+    "url": "git+https://github.com/onurkerimov/xoid.git"
   },
   "keywords": [
     "react",
@@ -52,18 +52,16 @@
     "manager",
     "management",
     "redux",
+    "recoil",
+    "atom",
     "store"
   ],
-  "author": "Paul Henschel",
-  "contributors": [
-    "Jeremy Holcomb (https://github.com/JeremyRH)",
-    "Daishi Kato (https://github.com/dai-shi)"
-  ],
+  "author": "Onur Kerimov",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/react-spring/zustand/issues"
+    "url": "https://github.com/onurkerimov/xoid/issues"
   },
-  "homepage": "https://github.com/react-spring/zustand",
+  "homepage": "https://github.com/onurkerimov/xoid",
   "jest": {
     "testRegex": "test.(js|ts|tsx)$",
     "coverageDirectory": "./coverage/",

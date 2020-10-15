@@ -528,7 +528,7 @@ it('ensures parent components subscribe before children', async () => {
   await findByText('child 3')
 })
 
-// https://github.com/react-spring/zustand/issues/84
+// https://github.com/onurkerimov/xoid/issues/84
 it('ensures the correct subscriber is removed on unmount', async () => {
   const useStore = create(() => ({ count: 0 }))
   const api = useStore
@@ -571,7 +571,7 @@ it('ensures the correct subscriber is removed on unmount', async () => {
   expect((await findAllByText('count: 2')).length).toBe(2)
 })
 
-// https://github.com/react-spring/zustand/issues/86
+// https://github.com/onurkerimov/xoid/issues/86
 it('ensures a subscriber is not mistakenly overwritten', async () => {
   const useStore = create(() => ({ count: 0 }))
   const { setState } = useStore

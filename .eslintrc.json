@@ -57,13 +57,13 @@
       },
       "alias": {
         "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"],
-        "map": [["zustand", "./src/index.ts"]]
+        "map": [["xoid", "./src/index.ts"]]
       }
     }
   },
   "overrides": [
     {
-      "files": ["src"],
+      "files": ["src", "development/src"],
       "parserOptions": {
         "project": "./tsconfig.json"
       }

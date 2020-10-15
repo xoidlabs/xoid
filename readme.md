@@ -2,20 +2,19 @@
   <img width="500" src="bear.png" />
 </p>
 
-[![Build Status](https://img.shields.io/github/workflow/status/react-spring/zustand/Lint?style=flat&colorA=000000&colorB=000000)](https://github.com/react-spring/zustand/actions?query=workflow%3ALint)
-[![Build Size](https://img.shields.io/bundlephobia/min/zustand?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=zustand)
-[![Version](https://img.shields.io/npm/v/zustand?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/zustand)
-[![Downloads](https://img.shields.io/npm/dt/zustand.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/zustand)
-[![Discord Shield](https://img.shields.io/discord/740090768164651008?style=flat&colorA=000000&colorB=000000&label=discord&logo=discord&logoColor=ffffff)](https://discord.gg/ZZjjNvJ)
+[![Build Status](https://img.shields.io/github/workflow/status/onurkerimov/xoid/Lint?style=flat&colorA=000000&colorB=000000)](https://github.com/onurkerimov/xoid/actions?query=workflow%3ALint)
+[![Build Size](https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=xoid)
+[![Version](https://img.shields.io/npm/v/xoid?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/xoid)
+[![Downloads](https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/xoid)
 
-Zustand is pronounced "tsoostand" and means "state" in German. A small, fast and scaleable bearbones state-management solution. Has a comfy api based on hooks, isn't boilerplatey or opinionated, but still just enough to be explicit and flux-like.
+xoid is pronounced "tsoostand" and means "state" in German. A small, fast and scaleable bearbones state-management solution. Has a comfy api based on hooks, isn't boilerplatey or opinionated, but still just enough to be explicit and flux-like.
 
 Don't disregard it because it's cute. It has quite the claws, lots of time was spent to deal with common pitfalls, like the dreaded [zombie child problem](https://react-redux.js.org/api/hooks#stale-props-and-zombie-children), [react concurrency](https://github.com/bvaughn/rfcs/blob/useMutableSource/text/0000-use-mutable-source.md), and [context loss](https://github.com/facebook/react/issues/13332) between mixed renderers. It may be the one state-manager in the React space that gets all of these right.
 
 You can try a live demo [here](https://codesandbox.io/s/dazzling-moon-itop4).
 
 ```bash
-npm install zustand
+npm install xoid
 ```
 
 ### First create a store
@@ -23,7 +22,7 @@ npm install zustand
 Your store is a hook! You can put anything in it: primitives, objects, functions. The `set` function *merges* state.
 
 ```jsx
-import create from 'zustand'
+import create from 'xoid'
 
 const useStore = create(set => ({
   bears: 0,
@@ -48,7 +47,7 @@ function Controls() {
 }
 ```
 
-#### Why zustand over react-redux?
+#### Why xoid over react-redux?
 
 * Simple and un-opinionated
 * Makes hooks the primary means of consuming state
@@ -76,10 +75,10 @@ const nuts = useStore(state => state.nuts)
 const honey = useStore(state => state.honey)
 ```
 
-If you want to construct a single object with multiple state-picks inside, similar to redux's mapStateToProps, you can tell zustand that you want the object to be diffed shallowly by passing an alternative equality function.
+If you want to construct a single object with multiple state-picks inside, similar to redux's mapStateToProps, you can tell xoid that you want the object to be diffed shallowly by passing an alternative equality function.
 
 ```jsx
-import shallow from 'zustand/shallow'
+import shallow from 'xoid/shallow'
 
 // Object pick, re-renders the component when either state.nuts or state.honey change
 const { nuts, honey } = useStore(state => ({ nuts: state.nuts, honey: state.honey }), shallow)
@@ -134,7 +133,7 @@ const useStore = create(set => ({
 
 ## Async actions
 
-Just call `set` when you're ready, zustand doesn't care if your actions are async or not.
+Just call `set` when you're ready, xoid doesn't care if your actions are async or not.
 
 ```jsx
 const useStore = create(set => ({
@@ -189,12 +188,12 @@ function Component() {
   const paw = useStore(state => state.paw)
 ```
 
-## Using zustand without React
+## Using xoid without React
 
-Zustands core can be imported and used without the React dependency. The only difference is that the create function does not return a hook, but the api utilities.
+xoids core can be imported and used without the React dependency. The only difference is that the create function does not return a hook, but the api utilities.
 
 ```jsx
-import create from 'zustand/vanilla'
+import create from 'xoid/vanilla'
 
 const store = create(() => ({ ... }))
 const { getState, setState, subscribe, destroy } = store
@@ -203,7 +202,7 @@ const { getState, setState, subscribe, destroy } = store
 You can even consume an existing vanilla store with React:
 
 ```jsx
-import create from 'zustand'
+import create from 'xoid'
 import vanillaStore from './vanillaStore'
 
 const useStore = create(vanillaStore)
@@ -274,7 +273,7 @@ const useStore = create(
 <details>
 
 ```ts
-import { State } from 'zustand'
+import { State } from 'xoid'
 
 const immer = <T extends State>(
   config: StateCreator<T, (fn: (draft: T) => void) => void>
@@ -309,7 +308,7 @@ dispatch({ type: types.increase, by: 2 })
 Or, just use our redux-middleware. It wires up your main-reducer, sets initial state, and adds a dispatch function to the state itself and the vanilla api. Try [this](https://codesandbox.io/s/amazing-kepler-swxol) example.
 
 ```jsx
-import { redux } from 'zustand/middleware'
+import { redux } from 'xoid/middleware'
 
 const useStore = create(redux(reducer, initialState))
 ```
@@ -317,7 +316,7 @@ const useStore = create(redux(reducer, initialState))
 ## Redux devtools
 
 ```jsx
-import { devtools } from 'zustand/middleware'
+import { devtools } from 'xoid/middleware'
 
 // Usage with a plain action store, it will log actions as "setState"
 const useStore = create(devtools(store))
@@ -344,7 +343,7 @@ const useStore = create<State>(set => ({
 Or, use `combine` and let tsc infer types.
 
 ```tsx
-import { combine } from 'zustand/middleware'
+import { combine } from 'xoid/middleware'
 
 const useStore = create(
   combine(

@@ -1,6 +1,7 @@
 node_modules/
 coverage/
 dist/
+development/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
