@@ -22,20 +22,11 @@ export type Transform<T> = T extends number | string | boolean
   : never
 
 // Transform shape into state tree
-export type ReverseTransform<T> = T extends List<infer B>
-  ? B
-  : T extends Observable<infer K>
-  ? K extends number | string | boolean
-    ? K
-    : K extends List<any>
-    ? {
-        [P in keyof Omit<
-          T,
-          typeof observable | typeof action
-        >]: ReverseTransform<T[P]>
-      }
-    : never
-  : never
+export type ReverseTransform<T> = T extends Observable<infer K>
+  ? {
+      [P in keyof K]: ReverseTransform<K[P]>
+    }
+  : T
 
 // Transform actions into their executed versions
 export type TransformToActions<T, G> = G extends ActorCallback<T, infer A>

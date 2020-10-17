@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect } from 'react'
+import { configObject } from './config'
 import { StoreInternalAPI } from './createStore'
 import { List } from './types'
 
@@ -25,7 +26,7 @@ export const deepClone = (
     address: string[] = relativeAddress
   ): any => {
     if (Object(obj) !== obj) {
-      const primitive = { '🔥': obj }
+      const primitive = { [configObject.valueSymbol]: obj }
       // record the address  and store of the primitive. (for being able to subscribe and set)
       memberMap.set(primitive, { internal: store, address, value: obj })
       return primitive
@@ -34,7 +35,9 @@ export const deepClone = (
     const st = storeMap.get(obj)
     if (st) {
       childStores.add(st)
-      return st.internal.getMutableCopy()
+      const mc = st.internal.getMutableCopy()
+      parentMap.set(mc, st)
+      return mc
     }
     const isArray = Array.isArray(obj)
     const result = isArray
@@ -71,5 +74,6 @@ export const memberMap = new Map<
   { internal: StoreInternalAPI<any>; address: string[]; value: any }
 >()
 
-// This is used by {isStore}
 export const storeMap = new Map()
+
+export const parentMap = new Map()

@@ -1,5 +1,5 @@
 import { List, Store, ReverseTransform, Actor } from './types'
-import { deepClone, memberMap, storeMap } from './utils'
+import { deepClone, memberMap, parentMap, storeMap } from './utils'
 
 export const get = <T>(item: T): ReverseTransform<T> => {
   const record = storeMap.get(item) || memberMap.get(item)
@@ -29,6 +29,7 @@ export const set = <T>(
           },
           [internal.get(), internal.getMutableCopy()]
         )
+        // cause update without having to traverse again
         internal.forceUpdate()
       } else {
         internal.set(newValue)
@@ -56,6 +57,7 @@ export const subscribe = <T extends Store<any, any> | List<any>>(
   const record = storeMap.get(item) || memberMap.get(item)
   if (record) {
     const { address, internal } = record
+    // TODO: is perf optim with a condition possible here?
     return internal.subscribe(fn as any, (state: any) =>
       address.reduce((acc: any, key: any) => {
         return acc[key]
@@ -64,4 +66,9 @@ export const subscribe = <T extends Store<any, any> | List<any>>(
   } else {
     throw TypeError('TODO: cannot subscribe non-observable')
   }
+}
+
+export const parent = <T extends Store<any>>(item: T): any => {
+  const record = parentMap.get(item)
+  if (record) return record
 }

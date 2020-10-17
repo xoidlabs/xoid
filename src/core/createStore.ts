@@ -10,6 +10,7 @@ import {
   Settings,
   baseStore,
 } from './baseStore'
+import { configObject } from './config'
 
 import {
   Actor,
@@ -88,7 +89,7 @@ export function createStore<T, A extends Actor<T, any>>(
     }
     // TODO: make this part of the config
     // @ts-ignore
-    mutableCopy['🔑'] = actions
+    mutableCopy[configObject.actionsSymbol] = actions
   }
 
   return mutableCopy

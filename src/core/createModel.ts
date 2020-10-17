@@ -1,6 +1,7 @@
 import { createStore } from './createStore'
 import { Actor, Store, TransformToActions } from './types'
 import { isStore, storeMap } from './utils'
+import { set } from './xoid'
 
 type Model<T, A> = Store<T, TransformToActions<T, A>>
 
@@ -9,15 +10,26 @@ type ModelCreator = <T, A extends Actor<T, any>, K>(
   actor?: A
 ) => {
   (arg: K): Model<T, A>
-  record<A>(
-    init: Record<number | string, K | T> | K[] | T[],
-    actor?: A
-  ): Store<Record<number | string, T>, A>
-  array<A>(
-    init: Record<number, K | T> | K[] | T[],
-    actor?: A
-  ): Store<Record<number, T>, A>
-  object<A>(init: Record<string, K | T>, actor?: A): Store<Record<string, T>, A>
+  array<B>(
+    init?: Record<number, K | T> | K[] | T[],
+    actor?: B
+  ): Store<
+    Store<T, TransformToActions<T, A>>[],
+    {
+      add: (item: K) => void
+      remove: (match: number | ((item: K) => boolean)) => void
+    }
+  >
+  object<B>(
+    init?: Record<string, K | T>,
+    actor?: B
+  ): Store<
+    Record<string, Store<T, TransformToActions<T, A>>>,
+    {
+      add: (item: K, key: string) => void
+      remove: (key: string) => void
+    }
+  >
 }
 
 enum Types {
@@ -34,13 +46,13 @@ export const createModel: ModelCreator = (init, actor) => {
     const oldSet = internal.set
     // override the set function with its special version
     internal.set = (value: any) => {
+      // modify the candidate before it goes into traversal
       value = init(value)
       oldSet(value)
     }
     return store
   }
   Object.assign(storeCreator, {
-    record: recordCreator(storeCreator),
     array: recordCreator(storeCreator, Types.array),
     object: recordCreator(storeCreator, Types.object),
   })
@@ -55,7 +67,56 @@ const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
     throw TypeError('TODO: A record must be of object type')
   }
   const value = ensureStores(init, storeCreator, type)
-  const store = createStore(value, actor as any)
+
+  const defaults =
+    type === Types.array
+      ? {
+          add: (store: any) => (item: any) =>
+            set(store, (state) => [...state, item]),
+          remove: (store: any) => (match: any) => {
+            set(store, (state) => {
+              if (typeof match === 'number') {
+                return state.filter(
+                  (item: any, index: number) => index !== match
+                )
+              } else {
+                return state.filter((item: any) => !match(item))
+              }
+            })
+          },
+        }
+      : {
+          add: (store: any) => (item: any, key: string) =>
+            set(store, (state) => ({ ...state, [key]: item })),
+          remove: (store: any) => (match: any) => {
+            set(store, (state) => {
+              return Object.keys(state).reduce((result, key) => {
+                if (key !== match) {
+                  result[key] = state[key]
+                }
+                return result
+              }, {} as any)
+            })
+          },
+        }
+
+  let a: any
+  if (actor && typeof actor === 'function') {
+    a = actor
+  } else {
+    a = Object.assign(defaults, actor) // TODO: fix types for this
+  }
+  const store = createStore(value, a)
+
+  // modify the set function of the store
+  const { internal } = storeMap.get(store)
+  const oldSet = internal.set
+  // override the set function with its special version
+  internal.set = (value: any) => {
+    // modify the candidate before it goes into traversal
+    value = ensureStores(value, storeCreator, type)
+    oldSet(value)
+  }
 
   return store
 }
