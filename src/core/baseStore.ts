@@ -163,7 +163,11 @@ export function baseStore<T extends State>(
     // delete all keys
     Object.keys(mutableCopy).forEach((key) => delete mutableCopy[key])
     // generate copied one
-    const [copied, childStores] = deepClone(state, store as StoreInternalAPI<T>)
+    const [copied, normal, childStores] = deepClone(
+      state,
+      store as StoreInternalAPI<T>
+    )
+    n = normal
     // remove prev child subs
     childSubscriptions.forEach((fn) => fn())
     // add new
@@ -174,8 +178,12 @@ export function baseStore<T extends State>(
     Object.keys(copied).forEach((key) => (mutableCopy[key] = copied[key]))
   }
 
+  let n: any
+  const get2 = () => n
+
   const store: Omit<StoreInternalAPI<T>, 'getActions'> = {
     get,
+    get2,
     set,
     destroy,
     subscribe,

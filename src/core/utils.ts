@@ -29,15 +29,15 @@ export const deepClone = (
       const primitive = { [configObject.valueSymbol]: obj }
       // record the address  and store of the primitive. (for being able to subscribe and set)
       memberMap.set(primitive, { internal: store, address, value: obj })
-      return primitive
+      return [primitive, obj]
     }
-    if (hash.has(obj)) return hash.get(obj) // cyclic reference
+    if (hash.has(obj)) return [...hash.get(obj)] // cyclic reference
     const st = storeMap.get(obj)
     if (st) {
       childStores.add(st)
       const mc = st.internal.getMutableCopy()
       parentMap.set(mc, st)
-      return mc
+      return [mc, st.internal.get2()]
     }
     const isArray = Array.isArray(obj)
     const result = isArray
@@ -46,22 +46,28 @@ export const deepClone = (
       ? new obj.constructor()
       : Object.create(null)
 
+    const result2 = isArray
+      ? []
+      : obj.constructor
+      ? new obj.constructor()
+      : Object.create(null)
+
     // record the address and store of the object. (for being able to subscribe and set)
     memberMap.set(result, { internal: store, address, value: obj })
-    hash.set(obj, result)
+    hash.set(obj, [result, result2])
 
-    return Object.assign(
-      result,
-      ...Object.keys(obj).map((key) => {
-        address.push(key)
-        const val: any = { [key]: deepCloneInner(obj[key], hash, address) }
-        address = relativeAddress
-        return val
-      })
-    )
+    Object.keys(obj).map((key) => {
+      address.push(key)
+      const cloneResult = deepCloneInner(obj[key], hash, address)
+      result[key] = cloneResult[0]
+      result2[key] = cloneResult[1]
+      address = relativeAddress
+    })
+
+    return [result, result2]
   }
-  const result = deepCloneInner(state)
-  return [result, childStores]
+  const [result, result2] = deepCloneInner(state)
+  return [result, result2, childStores]
 }
 
 // TODO: If it's completely OK, turn these into WeakMaps.

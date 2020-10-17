@@ -7,6 +7,12 @@ export const get = <T>(item: T): ReverseTransform<T> => {
   else throw TypeError('TODO: cannot get non-observable value')
 }
 
+export const get2 = <T>(item: T): ReverseTransform<T> => {
+  const record = storeMap.get(item) || memberMap.get(item)
+  if (record) return record.internal.get2()
+  else throw TypeError('TODO: cannot get non-observable value')
+}
+
 export const set = <T>(
   item: T,
   fn:
@@ -22,7 +28,7 @@ export const set = <T>(
         address.reduce(
           ([acc0, acc1]: any, key: any, i: number) => {
             if (i === address.length - 1) {
-              acc0[key] = newValue
+              acc0[key] = newValue // TODO: is this unnec?
               acc1[key] = deepClone(newValue, internal, address)
             }
             return [acc0[key], acc1[key]]

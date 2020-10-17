@@ -25,6 +25,7 @@ export type GetActions<A> = () => A
 
 export interface StoreAPI<T extends State> {
   get: GetState<T>
+  get2: GetState<T>
   set: SetState<T>
   subscribe: Subscribe<T>
   shallowSubscribe: ShallowSubscribe<T>
@@ -70,7 +71,7 @@ export function createStore<T, A extends Actor<T, any>>(
     internal: store,
     address: [],
     get value() {
-      return store.get()
+      return store.get2()
     },
   })
 

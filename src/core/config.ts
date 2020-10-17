@@ -5,8 +5,8 @@ interface Config {
 }
 
 export const configObject: Config = {
-  valueSymbol: '=', //Symbol('💜'),
-  actionsSymbol: '_', //Symbol('💙'),
+  valueSymbol: '=', //🔴
+  actionsSymbol: '_', //🔵
 }
 
 export const config = (options: Partial<Config>) => {
