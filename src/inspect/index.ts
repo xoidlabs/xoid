@@ -1,14 +1,14 @@
-import { get, use, getState } from '../core'
+import { use, get } from '../core'
 
 export const inspect = (obj: any, name?: any) => {
-  const { _, ...rest } = obj
   const actions = use(obj)
   if (name) {
     if (actions) {
-      console.group(
+      const content = onlyPrimitives(get(obj))
+      console[obj.length && obj.length > 8 ? 'groupCollapsed' : 'group'](
         '%c' + name,
         'color: #07f',
-        onlyPrimitives(getState(obj)),
+        content,
         '🔷',
         actions
       )
@@ -16,8 +16,12 @@ export const inspect = (obj: any, name?: any) => {
       console.group('%c' + name, 'color: #07f')
     }
   }
-  Object.keys(rest).forEach((key) => {
-    if (typeof obj[key] === 'object' && !allKeysArePrimitives(obj[key])) {
+  Object.keys(obj).forEach((key) => {
+    if (
+      key !== '_' &&
+      typeof obj[key] === 'object' &&
+      !allKeysArePrimitives(obj[key])
+    ) {
       inspect(obj[key], key)
     }
   })

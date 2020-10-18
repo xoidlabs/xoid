@@ -106,6 +106,7 @@ const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
   } else {
     a = Object.assign(defaults, actor) // TODO: fix types for this
   }
+
   const store = createStore(value, a)
 
   // modify the set function of the store

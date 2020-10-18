@@ -70,7 +70,6 @@ export function baseStore<T extends State>(
       state = value as T
       setMutableCopy()
       forceUpdate()
-      console.log(state, parentMap.get(mutableCopy))
     }
   }
 
