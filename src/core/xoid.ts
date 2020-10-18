@@ -7,9 +7,9 @@ export const get = <T>(item: T): ReverseTransform<T> => {
   else throw TypeError('TODO: cannot get non-observable value')
 }
 
-export const get2 = <T>(item: T): ReverseTransform<T> => {
+export const getState = <T>(item: T): ReverseTransform<T> => {
   const record = storeMap.get(item) || memberMap.get(item)
-  if (record) return record.internal.get2()
+  if (record) return record.internal.getState()
   else throw TypeError('TODO: cannot get non-observable value')
 }
 
@@ -76,5 +76,5 @@ export const subscribe = <T extends Store<any, any> | List<any>>(
 
 export const parent = <T extends Store<any>>(item: T): any => {
   const record = parentMap.get(item)
-  if (record) return record
+  if (record) return record.parent
 }

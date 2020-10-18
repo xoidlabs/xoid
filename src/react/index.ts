@@ -1,7 +1,7 @@
 import { useReducer, ReactChild } from 'react'
-import { subscribe, use, get2 } from '../core'
+import { subscribe, use, getState } from '../core'
 import { Store, List, Observable } from '../core/types'
-import { useIsoLayoutEffect } from '../core/utils'
+import { storeMap, useIsoLayoutEffect } from '../core/utils'
 
 export function useStore<T, A>(store: Store<T, A>): [T, A]
 export function useStore<T>(store: Observable<T>): [T] // TODO:
@@ -11,7 +11,7 @@ export function useStore<T, A>(store: Store<T, A> | Observable<T>) {
     const unsubscribe = subscribe(store, forceUpdate)
     return () => unsubscribe()
   }, [store])
-  return [get2(store), use(store)]
+  return [getState(store), storeMap.get(store) ? use(store) : {}]
 }
 
 export function useStoreEffect<T, A>(

@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a selector store 1`] = `
+Object {
+  "actions": Object {},
+  "store": Object {
+    "=": 8,
+  },
+  "value": 8,
+}
+`;
+
+exports[`creates a store with a primitive value 1`] = `
+Object {
+  "actions": Object {},
+  "store": Object {
+    "=": 5,
+  },
+  "value": 5,
+}
+`;
+
+exports[`creates a store with a record 1`] = `
+Object {
+  "actions": Object {},
+  "store": Object {
+    "alpha": Object {
+      "=": 3,
+    },
+    "beta": Object {
+      "=": 5,
+    },
+  },
+  "value": Object {
+    "alpha": 3,
+    "beta": 5,
+  },
+}
+`;
+
+exports[`normalizes nested stores 1`] = `
+Object {
+  "actions": Object {},
+  "store": Object {
+    "=": 5,
+  },
+  "value": 5,
+}
+`;
+
+exports[`normalizes nested stores in a record 1`] = `
+Object {
+  "actions": Object {},
+  "store": Object {
+    "alpha": Object {
+      "=": 3,
+    },
+    "beta": Object {
+      "=": 5,
+    },
+  },
+  "value": Object {
+    "alpha": 3,
+    "beta": 5,
+  },
+}
+`;
+
+exports[`uses the actions in vanilla 1`] = `
+Object {
+  "store": Object {
+    "count": Object {
+      "=": 1,
+    },
+  },
+  "value": Object {
+    "count": 1,
+  },
+}
+`;

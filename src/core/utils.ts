@@ -32,12 +32,13 @@ export const deepClone = (
       return [primitive, obj]
     }
     if (hash.has(obj)) return [...hash.get(obj)] // cyclic reference
-    const st = storeMap.get(obj)
-    if (st) {
-      childStores.add(st)
-      const mc = st.internal.getMutableCopy()
-      parentMap.set(mc, st)
-      return [mc, st.internal.get2()]
+    const attemptChildStore = storeMap.get(obj)
+
+    if (attemptChildStore) {
+      childStores.add(attemptChildStore)
+      const mc = attemptChildStore.internal.getMutableCopy()
+      parentMap.set(mc, { parent: store.getMutableCopy(), address })
+      return [mc, attemptChildStore.internal.getState()]
     }
     const isArray = Array.isArray(obj)
     const result = isArray
@@ -57,11 +58,11 @@ export const deepClone = (
     hash.set(obj, [result, result2])
 
     Object.keys(obj).map((key) => {
+      address = [] // TODO: might break stuff
       address.push(key)
       const cloneResult = deepCloneInner(obj[key], hash, address)
       result[key] = cloneResult[0]
       result2[key] = cloneResult[1]
-      address = relativeAddress
     })
 
     return [result, result2]

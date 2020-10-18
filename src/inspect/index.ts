@@ -1,4 +1,4 @@
-import { get, use, get2 } from '../core'
+import { get, use, getState } from '../core'
 
 export const inspect = (obj: any, name?: any) => {
   const { _, ...rest } = obj
@@ -8,7 +8,7 @@ export const inspect = (obj: any, name?: any) => {
       console.group(
         '%c' + name,
         'color: #07f',
-        onlyPrimitives(get2(obj)),
+        onlyPrimitives(getState(obj)),
         '🔷',
         actions
       )

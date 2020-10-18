@@ -1,4 +1,4 @@
-import { deepClone } from './utils'
+import { deepClone, parentMap, storeMap } from './utils'
 import { StoreInternalAPI } from './createStore'
 import { Store, ReverseTransform } from './types'
 import { subscribe as subscribeXoid, get as getXoid } from './xoid'
@@ -70,6 +70,7 @@ export function baseStore<T extends State>(
       state = value as T
       setMutableCopy()
       forceUpdate()
+      console.log(state, parentMap.get(mutableCopy))
     }
   }
 
@@ -80,12 +81,40 @@ export function baseStore<T extends State>(
     shallowListeners.forEach((listener) => {
       listener(state)
     })
+    informTheParent()
   }
 
   const childUpdate = () => {
     listeners.forEach((listener) => {
       listener(state)
     })
+    // informTheParent()
+  }
+
+  const updateValueOnAddress = (
+    root: object,
+    address: string[],
+    newValue: any
+  ) => {
+    if (address.length) {
+      address.reduce((acc: any, key: any, i: number) => {
+        if (i === address.length - 1) acc[key] = newValue
+        return acc[key]
+      }, root)
+    } else {
+      // TODO: this must be unreachable?
+      console.error('TODO: this must be unreachable?')
+      Object.assign(root, newValue)
+    }
+  }
+
+  const informTheParent = () => {
+    const match = parentMap.get(getMutableCopy())
+    if (match) {
+      const { internal } = storeMap.get(match.parent)
+
+      updateValueOnAddress(internal.getState(), match.address, n)
+    }
   }
 
   const get: GetState<T> = () => state
@@ -179,11 +208,11 @@ export function baseStore<T extends State>(
   }
 
   let n: any
-  const get2 = () => n
+  const getState = () => n
 
   const store: Omit<StoreInternalAPI<T>, 'getActions'> = {
     get,
-    get2,
+    getState,
     set,
     destroy,
     subscribe,
