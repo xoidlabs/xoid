@@ -1,6 +1,6 @@
-import { useReducer, ReactChild } from 'react'
+import { useReducer } from 'react'
 import { subscribe, use, set, get } from '../core'
-import { Store, List, Observable, ReverseTransform } from '../core/types'
+import { Store, Observable, ReverseTransform } from '../core/types'
 import { storeMap, useIsoLayoutEffect } from '../core/utils'
 
 export function useStore<G extends Store<any, any> | Observable<any>>(
@@ -15,16 +15,22 @@ export function useStore<G extends Store<any, any> | Observable<any>>(
     const unsubscribe = subscribe(store, forceUpdate)
     return () => unsubscribe()
   }, [store])
-  // @ts-ignore
-  return [
-    get(store),
-    storeMap.get(store) ? use(store as any) : (value: any) => set(store, value),
-  ]
+  const isStore = storeMap.get(store as object)
+  if (isStore) {
+    // @ts-ignore
+    return [
+      get(store as object),
+      use(store as any) || ((value: any) => set(store as object, value)),
+    ]
+  } else {
+    // @ts-ignore
+    return [get(store as object), (value: any) => set(store as object, value)]
+  }
 }
 
-export function useStoreEffect<T, A>(
-  store: Store<T, A> | List<T>,
-  fn: (state: T) => void
+export function useStoreEffect<T extends object>(
+  store: T,
+  fn: (state: ReverseTransform<T>) => void
 ): void {
   useIsoLayoutEffect(() => {
     const unsubscribe = subscribe(store as any, fn)

@@ -1,7 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { createStore, createModel, get, set, use, useStore } from '../src'
+import {
+  createStore,
+  createModel,
+  get,
+  set,
+  use,
+  useStore,
+  subscribe,
+  destroy,
+} from '../src'
 // import { devtools, redux } from '../src/middleware'
 
 const consoleError = console.error
@@ -102,284 +111,125 @@ it('only runs when partial state changes in React', async () => {
   expect(renderCount).toBe(1)
 })
 
-// it('only re-renders if selected state has changed', async () => {
-//   const useStore = create<any>((set) => ({
-//     count: 0,
-//     inc: () => set((state) => ({ count: state.count + 1 })),
-//   }))
-//   let counterRenderCount = 0
-//   let controlRenderCount = 0
+it('only re-renders if selected state has changed', async () => {
+  const store = createStore(
+    {
+      count: 0,
+    },
+    (store) => ({
+      inc: () => set(store, (state) => ({ count: state.count + 1 })),
+    })
+  )
+  let counterRenderCount = 0
+  let controlRenderCount = 0
 
-//   function Counter() {
-//     const count = useStore((state) => state.count)
-//     counterRenderCount++
-//     return <div>count: {count}</div>
-//   }
+  function Counter() {
+    const [count] = useStore(store.count)
+    counterRenderCount++
+    return <div>count: {count}</div>
+  }
 
-//   function Control() {
-//     const inc = useStore((state) => state.inc)
-//     controlRenderCount++
-//     return <button onClick={inc}>button</button>
-//   }
+  function Control() {
+    const { inc } = use(store)
+    controlRenderCount++
+    return <button onClick={inc}>button</button>
+  }
 
-//   const { getByText, findByText } = render(
-//     <>
-//       <Counter />
-//       <Control />
-//     </>
-//   )
+  const { getByText, findByText } = render(
+    <>
+      <Counter />
+      <Control />
+    </>
+  )
 
-//   fireEvent.click(getByText('button'))
+  fireEvent.click(getByText('button'))
 
-//   await findByText('count: 1')
+  await findByText('count: 1')
 
-//   expect(counterRenderCount).toBe(2)
-//   expect(controlRenderCount).toBe(1)
-// })
+  expect(counterRenderCount).toBe(2)
+  expect(controlRenderCount).toBe(1)
+})
 
-// it('can batch updates', async () => {
-//   const useStore = create<any>((set) => ({
-//     count: 0,
-//     inc: () => set((state) => ({ count: state.count + 1 })),
-//   }))
+it('can batch updates', async () => {
+  const store = createStore(
+    {
+      count: 0,
+    },
+    (store) => ({
+      inc: () => set(store, (state) => ({ count: state.count + 1 })),
+    })
+  )
 
-//   function Counter() {
-//     const { count, inc } = useStore()
-//     React.useEffect(() => {
-//       ReactDOM.unstable_batchedUpdates(() => {
-//         inc()
-//         inc()
-//       })
-//     }, [])
-//     return <div>count: {count}</div>
-//   }
+  function Counter() {
+    const [{ count }, { inc }] = useStore(store)
+    React.useEffect(() => {
+      ReactDOM.unstable_batchedUpdates(() => {
+        inc()
+        inc()
+      })
+    }, [])
+    return <div>count: {count}</div>
+  }
 
-//   const { findByText } = render(<Counter />)
+  const { findByText } = render(<Counter />)
 
-//   await findByText('count: 2')
-// })
+  await findByText('count: 2')
+})
 
-// it('can update the selector', async () => {
-//   const useStore = create(() => ({
-//     one: 'one',
-//     two: 'two',
-//   }))
+it('can update the selector', async () => {
+  const store = createStore(() => ({
+    one: 'one',
+    two: 'two',
+  }))
 
-//   function Component({ selector }: any) {
-//     return <div>{useStore(selector)}</div>
-//   }
+  function Component({ selector }: any) {
+    return <div>{useStore(selector)}</div>
+  }
 
-//   const { findByText, rerender } = render(
-//     <Component selector={(s: any) => s.one} />
-//   )
-//   await findByText('one')
+  const { findByText, rerender } = render(<Component selector={store.one} />)
+  await findByText('one')
 
-//   rerender(<Component selector={(s: any) => s.two} />)
-//   await findByText('two')
-// })
+  rerender(<Component selector={store.two} />)
+  await findByText('two')
+})
 
-// it('can update the equality checker', async () => {
-//   const useStore = create(() => ({ value: 0 }))
-//   const { setState } = useStore
-//   const selector = (s: any) => s.value
+it('can get the store', () => {
+  const store = createStore({
+    value: 1,
+  })
 
-//   let renderCount = 0
-//   function Component({ equalityFn }: any) {
-//     const value = useStore(selector, equalityFn)
-//     return (
-//       <div>
-//         renderCount: {++renderCount}, value: {value}
-//       </div>
-//     )
-//   }
+  expect(get(store).value).toBe(1)
+  expect(get(store.value)).toBe(1)
+})
 
-//   // Set an equality checker that always returns false to always re-render.
-//   const { findByText, rerender } = render(
-//     <Component equalityFn={() => false} />
-//   )
+it('can set the store', () => {
+  const store = createStore({
+    value: 1,
+  })
 
-//   // This will cause a re-render due to the equality checker.
-//   act(() => setState({ value: 0 }))
-//   await findByText('renderCount: 2, value: 0')
-
-//   // Set an equality checker that always returns true to never re-render.
-//   rerender(<Component equalityFn={() => true} />)
-
-//   // This will NOT cause a re-render due to the equality checker.
-//   act(() => setState({ value: 1 }))
-//   await findByText('renderCount: 3, value: 0')
-// })
-
-// it('can call useStore with progressively more arguments', async () => {
-//   const useStore = create(() => ({ value: 0 }))
-//   const { setState } = useStore
-
-//   let renderCount = 0
-//   function Component({ selector, equalityFn }: any) {
-//     const value = useStore(selector, equalityFn)
-//     return (
-//       <div>
-//         renderCount: {++renderCount}, value: {JSON.stringify(value)}
-//       </div>
-//     )
-//   }
-
-//   // Render with no args.
-//   const { findByText, rerender } = render(<Component />)
-//   await findByText('renderCount: 1, value: {"value":0}')
-
-//   // Render with selector.
-//   rerender(<Component selector={(s: any) => s.value} />)
-//   await findByText('renderCount: 2, value: 0')
-
-//   // Render with selector and equality checker.
-//   rerender(
-//     <Component
-//       selector={(s: any) => s.value}
-//       equalityFn={(oldV: any, newV: any) => oldV > newV}
-//     />
-//   )
-
-//   // Should not cause a re-render because new value is less than previous.
-//   act(() => setState({ value: -1 }))
-//   await findByText('renderCount: 3, value: 0')
-
-//   act(() => setState({ value: 1 }))
-//   await findByText('renderCount: 4, value: 1')
-// })
-
-// it('can throw an error in selector', async () => {
-//   console.error = jest.fn()
-
-//   const initialState: { value?: string } = { value: 'foo' }
-//   const useStore = create(() => initialState)
-//   const { setState } = useStore
-//   const selector = (s: any) => s.value.toUpperCase()
-
-//   class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
-//     constructor(props: {}) {
-//       super(props)
-//       this.state = { hasError: false }
-//     }
-//     static getDerivedStateFromError() {
-//       return { hasError: true }
-//     }
-//     render() {
-//       return this.state.hasError ? <div>errored</div> : this.props.children
-//     }
-//   }
-
-//   function Component() {
-//     useStore(selector)
-//     return <div>no error</div>
-//   }
-
-//   const { findByText } = render(
-//     <ErrorBoundary>
-//       <Component />
-//     </ErrorBoundary>
-//   )
-//   await findByText('no error')
-
-//   delete initialState.value
-//   act(() => {
-//     setState({})
-//   })
-//   await findByText('errored')
-// })
-
-// it('can throw an error in equality checker', async () => {
-//   console.error = jest.fn()
-
-//   const initialState: { value?: string } = { value: 'foo' }
-//   const useStore = create(() => initialState)
-//   const { setState } = useStore
-//   const selector = (s: any) => s
-//   const equalityFn = (a: any, b: any) => a.value.trim() === b.value.trim()
-
-//   class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
-//     constructor(props: {}) {
-//       super(props)
-//       this.state = { hasError: false }
-//     }
-//     static getDerivedStateFromError() {
-//       return { hasError: true }
-//     }
-//     render() {
-//       return this.state.hasError ? <div>errored</div> : this.props.children
-//     }
-//   }
-
-//   function Component() {
-//     useStore(selector, equalityFn)
-//     return <div>no error</div>
-//   }
-
-//   const { findByText } = render(
-//     <ErrorBoundary>
-//       <Component />
-//     </ErrorBoundary>
-//   )
-//   await findByText('no error')
-
-//   delete initialState.value
-//   act(() => {
-//     setState({})
-//   })
-//   await findByText('errored')
-// })
-
-// it('can get the store', () => {
-//   const { getState } = create<any>((_, get) => ({
-//     value: 1,
-//     getState1: () => get(),
-//     getState2: () => getState(),
-//   }))
-
-//   expect(getState().getState1().value).toBe(1)
-//   expect(getState().getState2().value).toBe(1)
-// })
-
-// it('can set the store', () => {
-//   const { setState, getState } = create<any>((set) => ({
-//     value: 1,
-//     setState1: (v: any) => set(v),
-//     setState2: (v: any) => setState(v),
-//   }))
-
-//   getState().setState1({ value: 2 })
-//   expect(getState().value).toBe(2)
-//   getState().setState2({ value: 3 })
-//   expect(getState().value).toBe(3)
-//   getState().setState1((s: any) => ({ value: ++s.value }))
-//   expect(getState().value).toBe(4)
-//   getState().setState2((s: any) => ({ value: ++s.value }))
-//   expect(getState().value).toBe(5)
-// })
-
-// it('can set the store without merging', () => {
-//   const { setState, getState } = create((_set) => ({
-//     a: 1,
-//   }))
-
-//   // Should override the state instead of merging.
-//   setState({ b: 2 }, true)
-//   expect(getState()).toEqual({ b: 2 })
-// })
+  set(store, { value: 2 })
+  expect(get(store.value)).toBe(2)
+  set(store, { value: 3 })
+  expect(get(store.value)).toBe(3)
+  set(store, (state) => ({ value: state.value + 1 }))
+  expect(get(store.value)).toBe(4)
+  set(store.value, (state) => state + 1)
+  expect(get(store.value)).toBe(5)
+})
 
 // it('can subscribe to the store', () => {
 //   const initialState = { value: 1, other: 'a' }
-//   const { setState, getState, subscribe } = create(() => initialState)
+//   const store = createStore(initialState)
 
 //   // Should not be called if new state identity is the same
-//   let unsub = subscribe(() => {
+//   let unsub = subscribe(store, () => {
 //     throw new Error('subscriber called when new state identity is the same')
 //   })
-//   setState(initialState)
+//   set(store, initialState)
 //   unsub()
 
 //   // Should be called if new state identity is different
-//   unsub = subscribe((newState: { value: number; other: string } | null) => {
+//   unsub = subscribe(store, (newState: { value: number; other: string }) => {
 //     expect(newState && newState.value).toBe(1)
 //   })
 //   setState({ ...getState() })
@@ -428,19 +278,19 @@ it('only runs when partial state changes in React', async () => {
 //   unsub()
 // })
 
-// it('can destroy the store', () => {
-//   const { destroy, getState, setState, subscribe } = create(() => ({
-//     value: 1,
-//   }))
+it('can destroy the store', () => {
+  const store = createStore({
+    value: 1,
+  })
 
-//   subscribe(() => {
-//     throw new Error('did not clear listener on destroy')
-//   })
-//   destroy()
+  subscribe(store, () => {
+    throw new Error('did not clear listener on destroy')
+  })
+  destroy(store)
 
-//   setState({ value: 2 })
-//   expect(getState().value).toEqual(2)
-// })
+  set(store, { value: 2 })
+  expect(get(store.value)).toEqual(2)
+})
 
 // it('only calls selectors when necessary', async () => {
 //   const useStore = create(() => ({ a: 0, b: 0 }))

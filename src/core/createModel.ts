@@ -32,6 +32,7 @@ type ModelCreator = <T, A extends Actor<T, any>, K>(
   >
 }
 
+// NOTE: provision test
 enum Types {
   array,
   object,
@@ -50,6 +51,7 @@ export const createModel: ModelCreator = (init, actor) => {
       value = init(value)
       oldSet(value)
     }
+    // override
     return store
   }
   Object.assign(storeCreator, {

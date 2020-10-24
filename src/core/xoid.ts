@@ -1,13 +1,13 @@
 import { List, Store, ReverseTransform, Actor } from './types'
 import { deepClone, memberMap, parentMap, storeMap } from './utils'
 
-export const get = <T>(item: T): ReverseTransform<T> => {
+export const get = <T extends object>(item: T): ReverseTransform<T> => {
   const record = storeMap.get(item) || memberMap.get(item)
   if (record) return record.value
   else throw TypeError('TODO: cannot get non-observable value')
 }
 
-export const set = <T>(
+export const set = <T extends object>(
   item: T,
   fn:
     | ReverseTransform<T>
@@ -19,18 +19,12 @@ export const set = <T>(
     const newValue = typeof fn === 'function' ? (fn as Function)(value) : fn
     if (newValue !== value) {
       if (address.length) {
-        address.reduce(
-          ([acc0, acc1]: any, key: any, i: number) => {
-            if (i === address.length - 1) {
-              acc0[key] = newValue // TODO: is this unnec?
-              acc1[key] = deepClone(newValue, internal, address)[0]
-            }
-            return [acc0[key], acc1[key]]
-          },
-          [internal.get(), internal.getMutableCopy()]
-        )
-        // cause update without having to traverse again
-        internal.forceUpdate()
+        const newState = { ...internal.get() }
+        address.reduce((acc0: any, key: any, i: number) => {
+          if (i === address.length - 1) acc0[key] = newValue
+          return acc0[key]
+        }, newState)
+        internal.set(newState)
       } else {
         internal.set(newValue)
       }
@@ -45,30 +39,33 @@ export const use = <T, A>(item: Store<T, A>): A => {
 }
 
 export const destroy = <T extends Store<any, any>>(item: T) => {
-  const record = storeMap.get(item)
+  const record = storeMap.get(item as object)
   if (record) return record.internal.destroy()
   else throw TypeError('TODO: cannot destroy non-store')
 }
 
-export const subscribe = <T extends Store<any, any> | List<any>>(
+export const subscribe = <T extends Store<any, any>>(
   item: T,
-  fn: (state: T) => void
+  fn: (state: ReverseTransform<T>) => void
 ) => {
-  const record = storeMap.get(item) || memberMap.get(item)
+  const record = storeMap.get(item as object) || memberMap.get(item)
   if (record) {
     const { address, internal } = record
-    // TODO: is perf optim with a condition possible here?
-    return internal.subscribe(fn as any, (state: any) =>
-      address.reduce((acc: any, key: any) => {
-        return acc[key]
-      }, state)
-    )
+    if (address.length) {
+      return internal.subscribe(fn as any, (state: any) =>
+        address.reduce((acc: any, key: any) => {
+          return acc[key]
+        }, state)
+      )
+    } else {
+      return internal.subscribe(fn as any)
+    }
   } else {
     throw TypeError('TODO: cannot subscribe non-observable')
   }
 }
 
-export const parent = <T extends Store<any>>(item: T): any => {
-  const record = parentMap.get(item)
+export const parent = <T extends Store<any>>(item: T): Store<any> => {
+  const record = parentMap.get(item as object)
   if (record) return record.parent
 }

@@ -16,6 +16,7 @@ module.exports = (api, targets) => {
       ],
     ],
     plugins: [
+      '@babel/plugin-proposal-class-properties',
       '@babel/plugin-transform-react-jsx',
       ['@babel/plugin-transform-typescript', { isTSX: true }],
     ],

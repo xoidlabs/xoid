@@ -7,7 +7,7 @@ import { List } from './types'
 export const useIsoLayoutEffect =
   typeof window === 'undefined' ? useEffect : useLayoutEffect
 
-export const isStore = (store: unknown): store is StoreInternalAPI<unknown> => {
+export const isStore = (store: object): store is StoreInternalAPI<unknown> => {
   return storeMap.has(store)
 }
 
@@ -76,11 +76,11 @@ export const deepClone = (
 
 // This map is used by {get, subscribe} exports, to know the store that
 // the member (object or primitive) belongs to, and its address in that store
-export const memberMap = new Map<
+export const memberMap = new WeakMap<
   List<any>,
   { internal: StoreInternalAPI<any>; address: string[]; value: any }
 >()
 
-export const storeMap = new Map()
+export const storeMap = new WeakMap()
 
-export const parentMap = new Map()
+export const parentMap = new WeakMap()

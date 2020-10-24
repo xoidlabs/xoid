@@ -1,14 +1,13 @@
 import {
   Destroy,
-  GetMutableCopy,
+  GetSymbolicState,
   GetState,
   SetState,
   Subscribe,
   ShallowSubscribe,
-  State,
-  Initializer,
   Settings,
   baseStore,
+  StateGetter,
 } from './baseStore'
 import { configObject } from './config'
 
@@ -23,7 +22,7 @@ import { storeMap } from './utils'
 
 export type GetActions<A> = () => A
 
-export interface StoreAPI<T extends State> {
+export interface StoreAPI<T> {
   get: GetState<T>
   getState: GetState<T>
   set: SetState<T>
@@ -32,10 +31,9 @@ export interface StoreAPI<T extends State> {
   destroy: Destroy
 }
 
-export interface StoreInternalAPI<T extends State> extends StoreAPI<T> {
-  getMutableCopy: GetMutableCopy<T>
+export interface StoreInternalAPI<T> extends StoreAPI<T> {
+  getMutableCopy: GetSymbolicState<T>
   getActions: GetActions<any>
-  forceUpdate: () => void
 }
 
 /**
@@ -46,23 +44,23 @@ export interface StoreInternalAPI<T extends State> extends StoreAPI<T> {
  * [API](https://xoid.dev/docs/api/create-store/)
  */
 export function createStore<T, A extends Actor<T, any>>(
-  init: T | Initializer<T>,
+  init: T | ((get: StateGetter) => T),
   actor?: A,
   settings?: Settings
 ): Store<T, TransformToActions<T, A>>
 
 export function createStore<T>(
-  init: T | Initializer<T>,
+  init: T | ((get: StateGetter) => T),
   actor?: undefined,
   settings?: Settings
 ): Store<T, {}>
 
 export function createStore<T, A extends Actor<T, any>>(
-  init: T | Initializer<T>,
+  init: T | ((get: StateGetter) => T),
   actor?: A,
   settings?: Settings
 ) {
-  let actions: any = {}
+  let actions: any
   const getActions: GetActions<A> = () => actions
   const store = baseStore(init, settings)
   Object.assign(store, { getActions })
