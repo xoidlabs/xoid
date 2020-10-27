@@ -1,6 +1,6 @@
-import { deepClone, parentMap, storeMap } from './utils'
+import { deepClone, memberMap, parentMap, storeMap } from './utils'
 import { StoreInternalAPI } from './createStore'
-import { Store, ReverseTransform } from './types'
+import { Store, GetStoreState } from './types'
 import { subscribe, get } from './xoid'
 // zustand is used as a starting point to this file
 // https://github.com/react-spring/zustand
@@ -12,7 +12,7 @@ export type StateSelector<T, U> = (state: T) => U
 export type EqualityChecker<T> = (state: T, newState: unknown) => boolean
 export type StateListener<T> = (state: T) => void
 export type StateSliceListener<T> = (state: T | null, error?: Error) => void
-export type StateGetter = <T extends object>(store: T) => ReverseTransform<T>
+export type StateGetter = <T extends object>(store: T) => GetStoreState<T>
 
 export type GetState<T> = () => T
 export type SetState<T> = (
@@ -51,7 +51,7 @@ export class BaseClass<T> {
   private shallowListeners: Set<StateListener<T>> = new Set()
 
   // Used by selector type stores
-  private selectorSubscriptions: any[] = []
+  private subscribedStores: any[] = []
   private selectorUnsubscriptions: (() => void)[] = []
 
   private childSubscriptions: (() => void)[] = []
@@ -110,6 +110,7 @@ export class BaseClass<T> {
         : payload(this.state)
       this.setStateInner(nextState)
     } else if (
+      // TODO: disable setting state with promises
       // This condition determines if the payload is an async function, by duck typing
       payload &&
       typeof (payload as Promise<any>)?.then === 'function' &&
@@ -124,6 +125,7 @@ export class BaseClass<T> {
   private setStateInner = (value: T) => {
     if (value !== this.state) {
       this.state = value
+      // Do this to prepare symbolicState and normalizedState
       this.traverseState()
       // Fire listeners after the state is changed
       this.listeners.forEach((listener) => listener(this.state))
@@ -138,17 +140,19 @@ export class BaseClass<T> {
    */
 
   stateGetter: StateGetter = (item) => {
-    if (!this.selectorSubscriptions.includes(item)) {
+    const ownerStore = (storeMap.get(item) || memberMap.get(item)).internal
+    if (!this.subscribedStores.includes(ownerStore)) {
       const unsubscribe = subscribe(item, this.stateGetterListener)
-      this.selectorSubscriptions.push(item)
+      this.subscribedStores.push(ownerStore)
       this.selectorUnsubscriptions.push(unsubscribe)
     }
-    return get(item)
+    const val = get(item)
+    return val
   }
 
   stateGetterListener: () => void = () => {
     const newState = this.initializer(this.stateGetter)
-    this.setState(newState)
+    this.setStateInner(newState)
   }
 
   /**
@@ -209,6 +213,7 @@ export class BaseClass<T> {
     this.listeners.forEach((listener) => listener(this.state))
   }
 
+  // TODO: make this a util
   updateValueOnAddress = (root: object, address: string[], newValue: any) => {
     if (address.length) {
       address.reduce((acc: any, key: any, i: number) => {

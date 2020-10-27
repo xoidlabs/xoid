@@ -1,14 +1,14 @@
 import { useReducer } from 'react'
 import { subscribe, use, set, get } from '../core'
-import { Store, Observable, ReverseTransform } from '../core/types'
+import { Store, Useable, GetStoreState } from '../core/types'
 import { storeMap, useIsoLayoutEffect } from '../core/utils'
 
-export function useStore<G extends Store<any, any> | Observable<any>>(
+export function useStore<G extends Store<any, any> | Useable<any>>(
   store: G
 ): G extends Store<infer T, infer A>
-  ? [ReverseTransform<T>, A]
-  : G extends Observable<infer T>
-  ? [ReverseTransform<T>, (value: T | ((state: T) => T)) => void]
+  ? [GetStoreState<G>, A]
+  : G extends Useable<infer T>
+  ? [GetStoreState<G>, (value: T | ((state: T) => T)) => void]
   : never {
   const [, forceUpdate] = useReducer((c) => c + 1, 0) as [never, () => void]
   useIsoLayoutEffect(() => {
@@ -20,17 +20,17 @@ export function useStore<G extends Store<any, any> | Observable<any>>(
     // @ts-ignore
     return [
       get(store as object),
-      use(store as any) || ((value: any) => set(store as object, value)),
+      use(store as any) || ((value: any) => set(store as any, value)),
     ]
   } else {
     // @ts-ignore
-    return [get(store as object), (value: any) => set(store as object, value)]
+    return [get(store as object), (value: any) => set(store as any, value)]
   }
 }
 
 export function useStoreEffect<T extends object>(
   store: T,
-  fn: (state: ReverseTransform<T>) => void
+  fn: (state: GetStoreState<T>) => void
 ): void {
   useIsoLayoutEffect(() => {
     const unsubscribe = subscribe(store as any, fn)

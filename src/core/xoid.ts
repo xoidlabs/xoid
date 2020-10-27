@@ -1,17 +1,24 @@
-import { List, Store, ReverseTransform, Actor } from './types'
-import { deepClone, memberMap, parentMap, storeMap } from './utils'
+import { Store, GetStoreState, Useable } from './types'
+import { memberMap, parentMap, storeMap } from './utils'
 
-export const get = <T extends object>(item: T): ReverseTransform<T> => {
+export const get = <T extends object>(item: T): GetStoreState<T> => {
   const record = storeMap.get(item) || memberMap.get(item)
-  if (record) return record.value
-  else throw TypeError('TODO: cannot get non-observable value')
+  if (record) {
+    const { address, internal } = record
+    if (address.length) {
+      return address.reduce(
+        (acc: any, key: any) => acc[key],
+        internal.getState()
+      )
+    } else {
+      return internal.getState()
+    }
+  } else throw TypeError('TODO: cannot get non-observable value')
 }
 
-export const set = <T extends object>(
+export const set = <T extends Useable<any>>(
   item: T,
-  fn:
-    | ReverseTransform<T>
-    | ((state: ReverseTransform<T>) => ReverseTransform<T>)
+  fn: GetStoreState<T> | ((state: GetStoreState<T>) => GetStoreState<T>)
 ): void => {
   const record = storeMap.get(item) || memberMap.get(item)
   if (record) {
@@ -46,7 +53,7 @@ export const destroy = <T extends Store<any, any>>(item: T) => {
 
 export const subscribe = <T extends Store<any, any>>(
   item: T,
-  fn: (state: ReverseTransform<T>) => void
+  fn: (state: GetStoreState<T>) => void
 ) => {
   const record = storeMap.get(item as object) || memberMap.get(item)
   if (record) {

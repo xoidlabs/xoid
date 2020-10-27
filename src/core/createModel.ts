@@ -1,34 +1,49 @@
 import { createStore } from './createStore'
-import { Actor, Store, TransformToActions } from './types'
+import { Actor, Store, GetStoreActions } from './types'
 import { isStore, storeMap } from './utils'
-import { set } from './xoid'
+import { set, use } from './xoid'
 
-type Model<T, A> = Store<T, TransformToActions<T, A>>
+type Model<T, A> = Store<T, GetStoreActions<T, A>>
 
 type ModelCreator = <T, A extends Actor<T, any>, K>(
   init: (payload: K) => T,
   actor?: A
 ) => {
   (arg: K): Model<T, A>
-  array<B>(
-    init?: Record<number, K | T> | K[] | T[],
-    actor?: B
+  array<L extends Record<number, K | T> | K[] | T[], B>(
+    init: L,
+    actor: (
+      store: Store<
+        L,
+        {
+          // Builtins
+          add: (item: K) => void
+          remove: (match: number | ((item: K) => boolean)) => void
+        }
+      >
+    ) => B
+  ): Store<Store<T, GetStoreActions<T, A>>[], B>
+  array<L extends Record<number, K | T> | K[] | T[]>(
+    init?: L
   ): Store<
-    Store<T, TransformToActions<T, A>>[],
+    Store<T, GetStoreActions<T, A>>[],
     {
+      // Builtins
       add: (item: K) => void
       remove: (match: number | ((item: K) => boolean)) => void
     }
   >
-  object<B>(
-    init?: Record<string, K | T>,
+  object<L extends Record<string, K | T>, B extends Actor<L, any>>(
+    init?: L,
     actor?: B
   ): Store<
-    Record<string, Store<T, TransformToActions<T, A>>>,
-    {
-      add: (item: K, key: string) => void
-      remove: (key: string) => void
-    }
+    Record<string, Store<T, GetStoreActions<T, A>>>,
+    B extends undefined
+      ? {
+          add: (item: K, key: string) => void
+          remove: (key: string) => void
+        }
+      : GetStoreActions<L, B>
   >
 }
 
@@ -70,7 +85,7 @@ const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
   }
   const value = ensureStores(init, storeCreator, type)
 
-  const defaults =
+  const builtins =
     type === Types.array
       ? {
           add: (store: any) => (item: any) =>
@@ -102,17 +117,13 @@ const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
           },
         }
 
-  let a: any
-  if (actor && typeof actor === 'function') {
-    a = actor
-  } else {
-    a = Object.assign(defaults, actor) // TODO: fix types for this
-  }
-
-  const store = createStore(value, a)
-
+  const store = createStore(value)
   // modify the set function of the store
   const { internal } = storeMap.get(store)
+
+  internal.setActions(builtins)
+  internal.setActions(actor)
+
   const oldSet = internal.set
   // override the set function with its special version
   internal.set = (value: any) => {

@@ -16,7 +16,7 @@ import {
   ActorCallback,
   ActorObject,
   Store,
-  TransformToActions,
+  GetStoreActions,
 } from './types'
 import { storeMap } from './utils'
 
@@ -47,7 +47,7 @@ export function createStore<T, A extends Actor<T, any>>(
   init: T | ((get: StateGetter) => T),
   actor?: A,
   settings?: Settings
-): Store<T, TransformToActions<T, A>>
+): Store<T, GetStoreActions<T, A>>
 
 export function createStore<T>(
   init: T | ((get: StateGetter) => T),
@@ -61,35 +61,43 @@ export function createStore<T, A extends Actor<T, any>>(
   settings?: Settings
 ) {
   let actions: any
-  const getActions: GetActions<A> = () => actions
+
   const store = baseStore(init, settings)
-  Object.assign(store, { getActions })
+
+  const getActions: GetActions<A> = () => actions
+  const setActions = (actor: any) => {
+    if (actor) {
+      if (typeof actor === 'function') {
+        actions = (actor as ActorCallback<T, any>)(mutableCopy)
+      } else if (typeof actor === 'object') {
+        actions = Object.keys(actor).reduce((acc, key) => {
+          acc[key] = (actor as ActorObject<T, any>)[key](mutableCopy) // todo: add current actions as second arg
+          return acc
+        }, {} as any)
+      } else {
+        throw TypeError(
+          'TODO: an actor must be a function, object of functions, array of functions'
+        )
+      }
+      // TODO: make this part of the config
+      // @ts-ignore
+      mutableCopy[configObject.actionsSymbol] = actions
+    }
+  }
+
+  Object.assign(store, { getActions, setActions })
+
   const mutableCopy = store.getMutableCopy()
   storeMap.set(mutableCopy, {
     internal: store,
     address: [],
     get value() {
+      // TODO: is the value getter still used anywhere?
       return store.getState()
     },
   })
 
-  if (actor) {
-    if (typeof actor === 'function') {
-      actions = (actor as ActorCallback<T, any>)(mutableCopy)
-    } else if (typeof actor === 'object') {
-      actions = Object.keys(actor).reduce((acc, key) => {
-        acc[key] = (actor as ActorObject<T, any>)[key](mutableCopy) // todo: add current actions as second arg
-        return acc
-      }, {} as any)
-    } else {
-      throw TypeError(
-        'TODO: an actor must be a function, object of functions, array of functions'
-      )
-    }
-    // TODO: make this part of the config
-    // @ts-ignore
-    mutableCopy[configObject.actionsSymbol] = actions
-  }
+  setActions(actor)
 
   return mutableCopy
 }

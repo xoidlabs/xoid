@@ -2,6 +2,7 @@ node_modules/
 coverage/
 dist/
 development/
+notes.md
 Thumbs.db
 ehthumbs.db
 Desktop.ini
