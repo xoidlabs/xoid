@@ -9,7 +9,6 @@ import {
   use,
   useStore,
   subscribe,
-  destroy,
 } from '../src'
 // import { devtools, redux } from '../src/middleware'
 
@@ -57,24 +56,18 @@ it('creates a selector store', () => {
 })
 
 it('uses the actions in vanilla', async () => {
-  const store = createStore(
-    { count: 0 },
-    {
-      inc: (store) => () => set(store, (state) => ({ count: state.count + 1 })),
-    }
-  )
+  const store = createStore({ count: 0 }, (store) => ({
+    inc: () => set(store, (state) => ({ count: state.count + 1 })),
+  }))
   use(store).inc()
   const value = get(store)
   expect({ store, value }).toMatchSnapshot()
 })
 
 it('uses the actions in React', async () => {
-  const store = createStore(
-    { count: 0 },
-    {
-      inc: (store) => () => set(store, (state) => ({ count: state.count + 1 })),
-    }
-  )
+  const store = createStore({ count: 0 }, (store) => ({
+    inc: () => set(store, (state) => ({ count: state.count + 1 })),
+  }))
 
   function Counter() {
     const [{ count }, { inc }] = useStore(store)
@@ -88,13 +81,9 @@ it('uses the actions in React', async () => {
 })
 
 it('only runs when partial state changes in React', async () => {
-  const store = createStore(
-    { count: 0, count2: 'constant' },
-    {
-      inc: (store) => () =>
-        set(store, (state) => ({ ...state, count: state.count + 1 })),
-    }
-  )
+  const store = createStore({ count: 0, count2: 'constant' }, (store) => ({
+    inc: () => set(store, (state) => ({ ...state, count: state.count + 1 })),
+  }))
 
   let renderCount = 0
 
@@ -277,20 +266,6 @@ it('can set the store', () => {
 //   setState(getState())
 //   unsub()
 // })
-
-it('can destroy the store', () => {
-  const store = createStore({
-    value: 1,
-  })
-
-  subscribe(store, () => {
-    throw new Error('did not clear listener on destroy')
-  })
-  destroy(store)
-
-  set(store, { value: 2 })
-  expect(get(store.value)).toEqual(2)
-})
 
 // it('only calls selectors when necessary', async () => {
 //   const useStore = create(() => ({ a: 0, b: 0 }))

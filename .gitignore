@@ -2,6 +2,7 @@ node_modules/
 coverage/
 dist/
 development/
+.backup/
 notes.md
 Thumbs.db
 ehthumbs.db

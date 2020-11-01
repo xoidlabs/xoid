@@ -1,11 +1,16 @@
 export {
+  // Primary
+  createStore,
+  createModel,
+  // Interactors
   get,
   set,
   use,
   subscribe,
-  destroy,
+  // Utils
   parent,
-  createStore,
-  createModel,
-} from './core'
-export { useStore, useStoreEffect } from './react'
+  config,
+} from // computed
+// devtools
+'./core'
+export { useStore } from './react'

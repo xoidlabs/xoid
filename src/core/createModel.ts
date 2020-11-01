@@ -1,56 +1,54 @@
 import { createStore } from './createStore'
 import { Actor, Store, GetStoreActions } from './types'
 import { isStore, storeMap } from './utils'
-import { set, use } from './xoid'
+import { set } from './main'
+import { error } from './error'
+// PROGRESS: disable objects as the actor
+// TODO: find a new name for actor
+// TODO: make different types for models and stores
+// IMPORTANT: fix types for model vs store types
 
 type Model<T, A> = Store<T, GetStoreActions<T, A>>
+
+type ArrayBuiltins<K> = {
+  add: (item: K) => void
+  remove: (match: number | ((item: K) => boolean)) => void
+}
+
+type ObjectBuiltins<K> = {
+  add: (item: K, key: string) => void
+  remove: (key: string) => void
+}
+
+enum Types {
+  array,
+  object,
+}
 
 type ModelCreator = <T, A extends Actor<T, any>, K>(
   init: (payload: K) => T,
   actor?: A
 ) => {
+  // create function
   (arg: K): Model<T, A>
+
+  // array
   array<L extends Record<number, K | T> | K[] | T[], B>(
     init: L,
-    actor: (
-      store: Store<
-        L,
-        {
-          // Builtins
-          add: (item: K) => void
-          remove: (match: number | ((item: K) => boolean)) => void
-        }
-      >
-    ) => B
-  ): Store<Store<T, GetStoreActions<T, A>>[], B>
+    actor: (store: Store<L, ArrayBuiltins<K>>) => B
+  ): Store<Model<T, A>[], B>
   array<L extends Record<number, K | T> | K[] | T[]>(
     init?: L
-  ): Store<
-    Store<T, GetStoreActions<T, A>>[],
-    {
-      // Builtins
-      add: (item: K) => void
-      remove: (match: number | ((item: K) => boolean)) => void
-    }
-  >
+  ): Store<Model<T, A>[], ArrayBuiltins<K>>
+
+  // object
   object<L extends Record<string, K | T>, B extends Actor<L, any>>(
     init?: L,
     actor?: B
   ): Store<
-    Record<string, Store<T, GetStoreActions<T, A>>>,
-    B extends undefined
-      ? {
-          add: (item: K, key: string) => void
-          remove: (key: string) => void
-        }
-      : GetStoreActions<L, B>
+    Record<string, Model<T, A>>,
+    B extends undefined ? ObjectBuiltins<K> : GetStoreActions<L, B>
   >
-}
-
-// NOTE: provision test
-enum Types {
-  array,
-  object,
 }
 
 export const createModel: ModelCreator = (init, actor) => {
@@ -58,7 +56,7 @@ export const createModel: ModelCreator = (init, actor) => {
     const value = init(a)
     const store = createStore(value, actor)
     // modify the set function of the store
-    const { internal } = storeMap.get(store)
+    const { internal } = storeMap.get(store) as any
     const oldSet = internal.set
     // override the set function with its special version
     internal.set = (value: any) => {
@@ -81,16 +79,15 @@ const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
   actor?: A
 ) => {
   if (init && typeof init !== 'object') {
-    throw TypeError('TODO: A record must be of object type')
+    type === Types.array ? error('array-creator') : error('object-creator')
   }
-  const value = ensureStores(init, storeCreator, type)
 
+  const value = ensureStores(init, storeCreator, type)
   const builtins =
     type === Types.array
-      ? {
-          add: (store: any) => (item: any) =>
-            set(store, (state) => [...state, item]),
-          remove: (store: any) => (match: any) => {
+      ? (store: any) => ({
+          add: (item: any) => set(store, (state) => [...state, item]),
+          remove: (match: any) => {
             set(store, (state) => {
               if (typeof match === 'number') {
                 return state.filter(
@@ -101,11 +98,11 @@ const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
               }
             })
           },
-        }
-      : {
-          add: (store: any) => (item: any, key: string) =>
+        })
+      : (store: any) => ({
+          add: (item: any, key: string) =>
             set(store, (state) => ({ ...state, [key]: item })),
-          remove: (store: any) => (match: any) => {
+          remove: (match: any) => {
             set(store, (state) => {
               return Object.keys(state).reduce((result, key) => {
                 if (key !== match) {
@@ -115,12 +112,12 @@ const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
               }, {} as any)
             })
           },
-        }
+        })
 
   const store = createStore(value)
   // modify the set function of the store
-  const { internal } = storeMap.get(store)
-
+  const { internal } = storeMap.get(store) as any
+  internal.setAsRecord()
   internal.setActions(builtins)
   internal.setActions(actor)
 

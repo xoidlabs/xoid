@@ -13,7 +13,13 @@ export type ActorObject<T, A> = Record<string | number, ActorCallback<T, A>>
 export type Actor<T, A> = ActorCallback<T, A> | ActorObject<T, A>
 
 // Transform store into shape
-export type Transform<T> = T extends number | string | boolean
+export type Transform<T> = T extends
+  | null
+  | undefined
+  | number
+  | string
+  | boolean
+  | Function
   ? Useable<T>
   : T extends Useable<any>
   ? T
@@ -23,9 +29,11 @@ export type Transform<T> = T extends number | string | boolean
 
 // Transform shape into state tree
 export type GetStoreState<T> = T extends Useable<infer K>
-  ? {
-      [P in keyof K]: GetStoreState<K[P]>
-    }
+  ? K extends Function
+    ? K
+    : {
+        [P in keyof K]: GetStoreState<K[P]>
+      }
   : T
 
 // Transform actions into their executed versions

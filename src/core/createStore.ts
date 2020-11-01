@@ -8,8 +8,10 @@ import {
   Settings,
   baseStore,
   StateGetter,
+  StateSetter,
 } from './baseStore'
 import { configObject } from './config'
+import { error } from './error'
 
 import {
   Actor,
@@ -22,18 +24,16 @@ import { storeMap } from './utils'
 
 export type GetActions<A> = () => A
 
-export interface StoreAPI<T> {
+export interface StoreInternalAPI<T> {
+  getMutableCopy: GetSymbolicState<T>
+  getActions: GetActions<any>
   get: GetState<T>
   getState: GetState<T>
   set: SetState<T>
   subscribe: Subscribe<T>
   shallowSubscribe: ShallowSubscribe<T>
   destroy: Destroy
-}
-
-export interface StoreInternalAPI<T> extends StoreAPI<T> {
-  getMutableCopy: GetSymbolicState<T>
-  getActions: GetActions<any>
+  setAsRecord: any
 }
 
 /**
@@ -44,19 +44,19 @@ export interface StoreInternalAPI<T> extends StoreAPI<T> {
  * [API](https://xoid.dev/docs/api/create-store/)
  */
 export function createStore<T, A extends Actor<T, any>>(
-  init: T | ((get: StateGetter) => T),
+  init: T | ((get: StateGetter, set: StateSetter) => T),
   actor?: A,
   settings?: Settings
 ): Store<T, GetStoreActions<T, A>>
 
 export function createStore<T>(
-  init: T | ((get: StateGetter) => T),
+  init: T | ((get: StateGetter, set: StateSetter) => T),
   actor?: undefined,
   settings?: Settings
 ): Store<T, {}>
 
 export function createStore<T, A extends Actor<T, any>>(
-  init: T | ((get: StateGetter) => T),
+  init: T | ((get: StateGetter, set: StateSetter) => T),
   actor?: A,
   settings?: Settings
 ) {
@@ -69,17 +69,9 @@ export function createStore<T, A extends Actor<T, any>>(
     if (actor) {
       if (typeof actor === 'function') {
         actions = (actor as ActorCallback<T, any>)(mutableCopy)
-      } else if (typeof actor === 'object') {
-        actions = Object.keys(actor).reduce((acc, key) => {
-          acc[key] = (actor as ActorObject<T, any>)[key](mutableCopy) // todo: add current actions as second arg
-          return acc
-        }, {} as any)
       } else {
-        throw TypeError(
-          'TODO: an actor must be a function, object of functions, array of functions'
-        )
+        error('action-function')
       }
-      // TODO: make this part of the config
       // @ts-ignore
       mutableCopy[configObject.actionsSymbol] = actions
     }
@@ -89,10 +81,9 @@ export function createStore<T, A extends Actor<T, any>>(
 
   const mutableCopy = store.getMutableCopy()
   storeMap.set(mutableCopy, {
-    internal: store,
+    internal: store as any,
     address: [],
     get value() {
-      // TODO: is the value getter still used anywhere?
       return store.getState()
     },
   })

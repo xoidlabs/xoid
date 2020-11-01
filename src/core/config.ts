@@ -3,7 +3,7 @@ interface Config {
   actionsSymbol: string | symbol
   // more options to come
 }
-
+// TODO: use a rare unicode _ and = for those, maybe with some invisible characthers
 export const configObject: Config = {
   valueSymbol: '=', //🔴
   actionsSymbol: '_', //🔵

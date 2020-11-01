@@ -1,7 +1,7 @@
 import { Store, GetStoreState, Useable } from './types'
 import { memberMap, parentMap, storeMap } from './utils'
 
-export const get = <T extends object>(item: T): GetStoreState<T> => {
+export const get = <T extends Useable<any>>(item: T): GetStoreState<T> => {
   const record = storeMap.get(item) || memberMap.get(item)
   if (record) {
     const { address, internal } = record
@@ -17,17 +17,17 @@ export const get = <T extends object>(item: T): GetStoreState<T> => {
 }
 
 export const set = <T extends Useable<any>>(
-  item: T,
+  store: T,
   fn: GetStoreState<T> | ((state: GetStoreState<T>) => GetStoreState<T>)
 ): void => {
-  const record = storeMap.get(item) || memberMap.get(item)
+  const record = storeMap.get(store) || memberMap.get(store)
   if (record) {
     const { value, address, internal } = record
     const newValue = typeof fn === 'function' ? (fn as Function)(value) : fn
     if (newValue !== value) {
       if (address.length) {
         const newState = { ...internal.get() }
-        address.reduce((acc0: any, key: any, i: number) => {
+        address.reduce((acc0: any, key, i) => {
           if (i === address.length - 1) acc0[key] = newValue
           return acc0[key]
         }, newState)
@@ -45,24 +45,16 @@ export const use = <T, A>(item: Store<T, A>): A => {
   else throw TypeError('TODO: cannot use non-store')
 }
 
-export const destroy = <T extends Store<any, any>>(item: T) => {
-  const record = storeMap.get(item as object)
-  if (record) return record.internal.destroy()
-  else throw TypeError('TODO: cannot destroy non-store')
-}
-
-export const subscribe = <T extends Store<any, any>>(
+export const subscribe = <T extends Useable<any>>(
   item: T,
   fn: (state: GetStoreState<T>) => void
 ) => {
-  const record = storeMap.get(item as object) || memberMap.get(item)
+  const record = storeMap.get(item) || memberMap.get(item)
   if (record) {
     const { address, internal } = record
     if (address.length) {
       return internal.subscribe(fn as any, (state: any) =>
-        address.reduce((acc: any, key: any) => {
-          return acc[key]
-        }, state)
+        address.reduce((acc: any, key: string) => acc[key], state)
       )
     } else {
       return internal.subscribe(fn as any)
