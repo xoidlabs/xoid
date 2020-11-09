@@ -4,7 +4,7 @@ exports[`creates a selector store 1`] = `
 Object {
   "actions": undefined,
   "store": Object {
-    "=": 8,
+    "=‎‎": 8,
   },
   "value": 8,
 }
@@ -14,7 +14,7 @@ exports[`creates a store with a primitive value 1`] = `
 Object {
   "actions": undefined,
   "store": Object {
-    "=": 5,
+    "=‎‎": 5,
   },
   "value": 5,
 }
@@ -25,10 +25,10 @@ Object {
   "actions": undefined,
   "store": Object {
     "alpha": Object {
-      "=": 3,
+      "=‎‎": 3,
     },
     "beta": Object {
-      "=": 5,
+      "=‎‎": 5,
     },
   },
   "value": Object {
@@ -42,7 +42,7 @@ exports[`normalizes nested stores 1`] = `
 Object {
   "actions": undefined,
   "store": Object {
-    "=": 5,
+    "=‎‎": 5,
   },
   "value": 5,
 }
@@ -53,10 +53,10 @@ Object {
   "actions": undefined,
   "store": Object {
     "alpha": Object {
-      "=": 3,
+      "=‎‎": 3,
     },
     "beta": Object {
-      "=": 5,
+      "=‎‎": 5,
     },
   },
   "value": Object {
@@ -70,7 +70,7 @@ exports[`uses the actions in vanilla 1`] = `
 Object {
   "store": Object {
     "count": Object {
-      "=": 1,
+      "=‎‎": 1,
     },
   },
   "value": Object {

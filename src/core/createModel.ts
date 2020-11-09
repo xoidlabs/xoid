@@ -1,14 +1,9 @@
 import { createStore } from './createStore'
-import { Actor, Store, GetStoreActions } from './types'
+import { Actor, Model, Store } from './types'
 import { isStore, storeMap } from './utils'
 import { set } from './main'
 import { error } from './error'
-// PROGRESS: disable objects as the actor
-// TODO: find a new name for actor
-// TODO: make different types for models and stores
 // IMPORTANT: fix types for model vs store types
-
-type Model<T, A> = Store<T, GetStoreActions<T, A>>
 
 type ArrayBuiltins<K> = {
   add: (item: K) => void
@@ -30,31 +25,35 @@ type ModelCreator = <T, A extends Actor<T, any>, K>(
   actor?: A
 ) => {
   // create function
-  (arg: K): Model<T, A>
+  (arg: K): Model<T, A, K>
 
   // array
   array<L extends Record<number, K | T> | K[] | T[], B>(
     init: L,
     actor: (store: Store<L, ArrayBuiltins<K>>) => B
-  ): Store<Model<T, A>[], B>
+  ): Store<Model<T, A, K>[], B>
   array<L extends Record<number, K | T> | K[] | T[]>(
     init?: L
-  ): Store<Model<T, A>[], ArrayBuiltins<K>>
+  ): Store<Model<T, A, K>[], ArrayBuiltins<K>>
 
   // object
-  object<L extends Record<string, K | T>, B extends Actor<L, any>>(
-    init?: L,
-    actor?: B
-  ): Store<
-    Record<string, Model<T, A>>,
-    B extends undefined ? ObjectBuiltins<K> : GetStoreActions<L, B>
-  >
+  object<L extends Record<string, K | T>, B>(
+    init: L,
+    actor: (store: Store<L, ObjectBuiltins<K>>) => B
+  ): Store<Model<T, A, K>[], B>
+  object<L extends Record<string, K | T>>(
+    init?: L
+  ): Store<Model<T, A, K>[], ObjectBuiltins<K>>
 }
 
 export const createModel: ModelCreator = (init, actor) => {
   const storeCreator = (a: any) => {
     const value = init(a)
+    if (actor && typeof actor !== 'function') {
+      throw error('action-function-1')
+    }
     const store = createStore(value, actor)
+
     // modify the set function of the store
     const { internal } = storeMap.get(store) as any
     const oldSet = internal.set
@@ -78,9 +77,10 @@ const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
   init: T,
   actor?: A
 ) => {
-  if (init && typeof init !== 'object') {
-    type === Types.array ? error('array-creator') : error('object-creator')
-  }
+  if (init && typeof init !== 'object')
+    throw type === Types.array
+      ? error('array-creator')
+      : error('object-creator')
 
   const value = ensureStores(init, storeCreator, type)
   const builtins =
@@ -124,7 +124,6 @@ const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
   const oldSet = internal.set
   // override the set function with its special version
   internal.set = (value: any) => {
-    // modify the candidate before it goes into traversal
     value = ensureStores(value, storeCreator, type)
     oldSet(value)
   }
@@ -142,10 +141,13 @@ const ensureStores = (obj: any, storeCreator: any, type?: Types) => {
       return obj
     }
   }
+  const newObj: any = []
   Object.keys(obj).forEach((key) => {
     if (!isStore(obj[key])) {
-      obj[key] = storeCreator(obj[key])
+      newObj[key] = storeCreator(obj[key])
+    } else {
+      newObj[key] = obj[key]
     }
   })
-  return obj
+  return newObj
 }

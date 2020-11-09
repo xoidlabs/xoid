@@ -1,51 +1,72 @@
-import { Store, GetStoreState, Useable } from './types'
-import { memberMap, parentMap, storeMap } from './utils'
+import { BaseClass } from './baseStore'
+import { error } from './error'
+import { Store, GetStoreState, Abstract, Model } from './types'
+import {
+  destroy,
+  getValueByAddress,
+  memberMap,
+  parentMap,
+  setValueByAddress,
+  storeMap,
+} from './utils'
 
-export const get = <T extends Useable<any>>(item: T): GetStoreState<T> => {
+export const get = <T extends Abstract<any>>(item: T): GetStoreState<T> => {
   const record = storeMap.get(item) || memberMap.get(item)
   if (record) {
     const { address, internal } = record
     if (address.length) {
       return address.reduce(
         (acc: any, key: any) => acc[key],
-        internal.getState()
+        internal.getNormalizedState()
       )
     } else {
-      return internal.getState()
+      return internal.getNormalizedState()
     }
-  } else throw TypeError('TODO: cannot get non-observable value')
+  } else {
+    throw error('get')
+  }
 }
-
-export const set = <T extends Useable<any>>(
+export function set<T extends Model<any, any, any>>(
   store: T,
-  fn: GetStoreState<T> | ((state: GetStoreState<T>) => GetStoreState<T>)
-): void => {
+  value:
+    | (T extends Model<any, any, infer B> ? B : never)
+    | ((state: GetStoreState<T>) => GetStoreState<T>)
+): void
+export function set<T extends Abstract<any>>(
+  store: T,
+  value: GetStoreState<T> | ((state: GetStoreState<T>) => GetStoreState<T>)
+): void
+export function set<T extends Abstract<any>>(
+  store: T,
+  value: GetStoreState<T> | ((state: GetStoreState<T>) => GetStoreState<T>)
+): void {
   const record = storeMap.get(store) || memberMap.get(store)
   if (record) {
-    const { value, address, internal } = record
-    const newValue = typeof fn === 'function' ? (fn as Function)(value) : fn
-    if (newValue !== value) {
+    const { address, internal } = record
+    const normalizedState = internal.get()
+    const rawValue = getValueByAddress(normalizedState, address)
+    const newValue =
+      typeof value === 'function' ? (value as Function)(rawValue) : value
+    if (newValue !== rawValue) {
       if (address.length) {
-        const newState = { ...internal.get() }
-        address.reduce((acc0: any, key, i) => {
-          if (i === address.length - 1) acc0[key] = newValue
-          return acc0[key]
-        }, newState)
-        internal.set(newState)
+        const newState = { ...normalizedState }
+        setValueByAddress(newState, address, newValue)
+        internal.setInner(newState)
       } else {
+        console.log(newValue)
         internal.set(newValue)
       }
     }
-  } else throw TypeError('TODO: cannot get non-observable value')
+  } else throw error('set')
 }
 
 export const use = <T, A>(item: Store<T, A>): A => {
   const record = storeMap.get(item)
   if (record) return record.internal.getActions()
-  else throw TypeError('TODO: cannot use non-store')
+  else throw error('use')
 }
 
-export const subscribe = <T extends Useable<any>>(
+export const subscribe = <T extends Abstract<any>>(
   item: T,
   fn: (state: GetStoreState<T>) => void
 ) => {
@@ -53,15 +74,17 @@ export const subscribe = <T extends Useable<any>>(
   if (record) {
     const { address, internal } = record
     if (address.length) {
-      return internal.subscribe(fn as any, (state: any) =>
-        address.reduce((acc: any, key: string) => acc[key], state)
-      )
+      // create on-demand store
+      const selector = new BaseClass((get) => get(item))
+      const unsub = selector.subscribe(fn)
+      return () => {
+        unsub()
+        selector.destroy()
+      }
     } else {
       return internal.subscribe(fn as any)
     }
-  } else {
-    throw TypeError('TODO: cannot subscribe non-observable')
-  }
+  } else throw error('subscribe')
 }
 
 export const parent = <T extends Store<any>>(item: T): Store<any> => {

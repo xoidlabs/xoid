@@ -4,27 +4,27 @@ exports[`clones the state to produce two trees 1`] = `
 Array [
   Object {
     "alpha": Object {
-      "=": 3,
+      "=‎‎": 3,
     },
     "alphaFn": [Function],
     "beta": Object {
-      "=": 5,
+      "=‎‎": 5,
     },
     "deeply": Object {
       "nested": Object {
         "value": Object {
-          "=": "value1",
+          "=‎‎": "value1",
         },
       },
       "otherNested": Object {
         "value1": Object {
-          "=": "value1",
+          "=‎‎": "value1",
         },
         "value2": Object {
-          "=": "value2",
+          "=‎‎": "value2",
         },
         "value3": Object {
-          "=": "value3",
+          "=‎‎": "value3",
         },
       },
     },
@@ -57,10 +57,18 @@ Array [
     "key": "alpha",
   },
   Object {
+    "address": undefined,
+    "key": "=‎‎",
+  },
+  Object {
     "address": Array [
       "beta",
     ],
     "key": "beta",
+  },
+  Object {
+    "address": undefined,
+    "key": "=‎‎",
   },
   Object {
     "address": Array [
@@ -87,6 +95,10 @@ Array [
     "key": "value",
   },
   Object {
+    "address": undefined,
+    "key": "=‎‎",
+  },
+  Object {
     "address": Array [
       "otherNested",
     ],
@@ -99,16 +111,28 @@ Array [
     "key": "value1",
   },
   Object {
+    "address": undefined,
+    "key": "=‎‎",
+  },
+  Object {
     "address": Array [
       "value2",
     ],
     "key": "value2",
   },
   Object {
+    "address": undefined,
+    "key": "=‎‎",
+  },
+  Object {
     "address": Array [
       "value3",
     ],
     "key": "value3",
+  },
+  Object {
+    "address": undefined,
+    "key": "=‎‎",
   },
 ]
 `;

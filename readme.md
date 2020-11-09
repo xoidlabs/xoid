@@ -174,7 +174,7 @@ set(myName, 'ME')
 console.log(get(myName)) // ME
 ```
 
-Another benefit of using models are builtin `add` and `remove` actions. They are present in the store actions by default when `Model.array`s or `Model.object`s are created. These builtins has 100% consistent TypeScript types with your model schemas.
+Another benefit of using models are builtin `add` and `remove` actions. They are present in the store actions by default when `Model.array`s or `Model.object`s are created. These builtins have 100% consistent TypeScript types with your model schemas.
 
 ```js
 use(companyStore.employees).add({ name: 'third employee'})

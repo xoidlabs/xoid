@@ -1,16 +1,47 @@
-export {
-  // Primary
+import {
   createStore,
   createModel,
-  // Interactors
   get,
   set,
   use,
   subscribe,
-  // Utils
   parent,
   config,
-} from // computed
-// devtools
-'./core'
-export { useStore } from './react'
+} from './core'
+import { useStore } from './react'
+
+export {
+  createStore,
+  createModel,
+  get,
+  set,
+  use,
+  subscribe,
+  useStore,
+  parent,
+  config,
+}
+
+const xoid = {
+  createStore,
+  createModel,
+  get,
+  set,
+  use,
+  subscribe,
+  useStore,
+  parent,
+  config,
+}
+
+export default xoid
+
+export type {
+  Model,
+  Store,
+  Abstract,
+  Initializer,
+  XGet,
+  InitSet,
+  After, // StateOf // ActionsOf
+} from './core/types'

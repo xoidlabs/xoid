@@ -1,6 +1,12 @@
-import { deepClone, memberMap, parentMap, storeMap } from './utils'
+import {
+  deepClone,
+  memberMap,
+  parentMap,
+  setValueByAddress,
+  storeMap,
+} from './utils'
 import { StoreInternalAPI } from './createStore'
-import { Store, GetStoreState, Useable } from './types'
+import { Store, XGet, InitSet, Initializer } from './types'
 import { subscribe, get } from './main'
 import { error } from './error'
 // zustand is used as a starting point to this file
@@ -8,13 +14,10 @@ import { error } from './error'
 
 type Symbolic__ = any
 
-export type Settings = string
 export type StateSelector<T, U> = (state: T) => U
 export type EqualityChecker<T> = (state: T, newState: unknown) => boolean
 export type StateListener<T> = (state: T) => void
 export type StateSliceListener<T> = (state: T | null, error?: Error) => void
-export type StateGetter = <T extends Useable<any>>(store: T) => GetStoreState<T>
-export type StateSetter = <T>(value: T, decorator?: any) => void
 
 export type GetState<T> = () => T
 export type SetState<T> = (
@@ -35,10 +38,8 @@ export type ShallowSubscribe<T> = (listener: StateListener<T>) => void
 // TODO: this seems removable
 export type GetSymbolicState<T> = () => Store<T, any>
 
-export const baseStore = <T>(
-  init: T | ((get: StateGetter, set: StateSetter) => T),
-  settings?: Settings
-) => new BaseClass(init).store
+export const baseStore = <T>(init: T | Initializer<T>) =>
+  new BaseClass(init).store
 export class BaseClass<T> {
   private state: T
   private normalizedState: any
@@ -46,42 +47,35 @@ export class BaseClass<T> {
 
   private isRecord: boolean
   private isSelector: boolean
-  private initializer!: (get: StateGetter, set: StateSetter) => T
+  private initializer!: Initializer<T>
 
   store: Omit<StoreInternalAPI<T>, 'getActions'>
 
   private listeners: Set<StateListener<T>> = new Set()
   private shallowListeners: Set<StateListener<T>> = new Set()
 
-  // Used by selector type stores
-  private subscribedStores: any[] = []
-  private selectorUnsubscriptions: (() => void)[] = []
-
   private childSubscriptions: (() => void)[] = []
 
-  constructor(init: T | ((get: StateGetter, set: StateSetter) => T)) {
+  constructor(init: T | Initializer<T>) {
     // Determine if it's a selector, record it's initializer
     this.isRecord = false
     this.isSelector = typeof init === 'function'
-    if (this.isSelector)
-      this.initializer = init as (get: StateGetter, set: StateSetter) => T
+    if (this.isSelector) this.initializer = init as Initializer<T>
     this.symbolicState = {}
 
     // Create the initial state
     this.state = this.isSelector
-      ? (init as (get: StateGetter, set: StateSetter) => T)(
-          this.stateGetter,
-          this.stateSetter
-        )
+      ? (init as Initializer<T>)(this.stateGetter, this.stateSetter)
       : (init as T)
 
     // Keep symbolicState's prototype consistent with the actual state
     this.symbolicState = Array.isArray(this.state) ? [] : {}
 
     this.store = {
-      get: this.get,
-      getState: this.getNormalizedState,
+      get: this.getState,
+      getNormalizedState: this.getNormalizedState,
       set: this.setState,
+      setInner: this.setStateInner,
       destroy: this.destroy,
       subscribe: this.subscribe,
       shallowSubscribe: this.shallowSubscribe,
@@ -96,7 +90,7 @@ export class BaseClass<T> {
    * Section: several get... and set.. methods
    */
   // IMPORTANT: reduce one of them
-  get: GetState<T> = () => this.state
+  getState: GetState<T> = () => this.state
   getNormalizedState = () => this.normalizedState
   getSymbolicState = () => this.symbolicState
   setSymbolicState(payload: Symbolic__) {
@@ -124,7 +118,6 @@ export class BaseClass<T> {
         : payload(this.state)
       this.setStateInner(nextState)
     } else if (
-      // TODO: disable setting state with promises
       // This condition determines if the payload is an async function, by duck typing
       payload &&
       typeof (payload as Promise<any>)?.then === 'function' &&
@@ -152,25 +145,29 @@ export class BaseClass<T> {
   /**
    * Section: internals for selectors
    */
+  // Used by selector type stores
+  private subscribedStores: any[] = []
+  private selectorUnsubscriptions: (() => void)[] = []
 
-  stateGetter: StateGetter = (item) => {
-    const ownerStore = ((storeMap.get(item) || memberMap.get(item)) as any)
-      .internal
+  stateGetter: XGet = (item) => {
+    const record = storeMap.get(item) || memberMap.get(item)
+    const ownerStore = (record as any).internal
     if (!this.subscribedStores.includes(ownerStore)) {
-      const unsubscribe = subscribe(item, this.stateGetterListener)
+      // TODO: some optimizations are possible here
       this.subscribedStores.push(ownerStore)
+      const unsubscribe = ownerStore.subscribe(this.stateGetterListener)
       this.selectorUnsubscriptions.push(unsubscribe)
     }
-    const val = get(item)
-    return val
+    return get(item)
   }
 
-  stateSetter: StateSetter = (value: any, decorator) => {
+  stateSetter: InitSet = (value: any, decorator) => {
     this.setState(value, decorator)
   }
 
   stateGetterListener: () => void = () => {
     const newState = this.initializer(this.stateGetter, this.stateSetter)
+    // TODO: when sending this to setState, maybe shallow compare?
     this.setStateInner(newState)
   }
 
@@ -192,7 +189,7 @@ export class BaseClass<T> {
         listener(newStateSlice)
       } catch (error) {
         listener(null, error)
-        error('internal-0')
+        throw error('internal-0')
       }
     }
     // subscribe, and return the unsubscriber
@@ -232,25 +229,13 @@ export class BaseClass<T> {
     this.listeners.forEach((listener) => listener(this.state))
   }
 
-  // TODO: make this a util
-  updateValueOnAddress = (root: object, address: string[], newValue: any) => {
-    if (address.length) {
-      address.reduce((acc: any, key: any, i: number) => {
-        if (i === address.length - 1) acc[key] = newValue
-        return acc[key]
-      }, root)
-    } else {
-      console.error('TODO: this must be unreachable?')
-    }
-  }
-
   informTheParent = () => {
     if (!this.isRecord) {
       const match = parentMap.get(this.getSymbolicState())
       if (match) {
         const { internal } = storeMap.get(match.parent) as any
-        this.updateValueOnAddress(
-          internal.getState(),
+        setValueByAddress(
+          internal.getNormalizedState(),
           match.address,
           this.normalizedState
         )

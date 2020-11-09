@@ -1,12 +1,14 @@
-interface Config {
+export interface Config {
   valueSymbol: string | symbol
   actionsSymbol: string | symbol
-  // more options to come
 }
-// TODO: use a rare unicode _ and = for those, maybe with some invisible characthers
+
 export const configObject: Config = {
-  valueSymbol: '=', //🔴
-  actionsSymbol: '_', //🔵
+  // These symbols will not conflict with equal sign (=) or underscore (_) you may use in your state.
+  // Following strings are accompanied with unicode invisible characters.
+  // So even if you use plain = or _, they will simply coexist.
+  valueSymbol: '=‎‎',
+  actionsSymbol: '_‎‎',
 }
 
 export const config = (options: Partial<Config>) => {

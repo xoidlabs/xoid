@@ -2,13 +2,13 @@ import { useEffect, useLayoutEffect } from 'react'
 import { configObject } from './config'
 import { StoreInternalAPI } from './createStore'
 import { error } from './error'
-import { Store, Useable } from './types'
+import { Store, Abstract } from './types'
 
 // For SSR / React Native: https://github.com/react-spring/zustand/pull/34
 export const useIsoLayoutEffect =
   typeof window === 'undefined' ? useEffect : useLayoutEffect
 
-export const isStore = (store: Useable<any>): store is Store<any, any> =>
+export const isStore = (store: Abstract<any>): store is Store<any, any> =>
   storeMap.has(store)
 
 // Following answer is used as a starting point
@@ -26,9 +26,9 @@ export const deepClone = (
     address: string[] = relativeAddress
   ): any => {
     if (Object(obj) !== obj) {
-      const primitive = { [configObject.valueSymbol]: obj } as Useable<any>
+      const primitive = { [configObject.valueSymbol]: obj } as Abstract<any>
       // record the address  and store of the primitive. (for being able to subscribe and set)
-      memberMap.set(primitive, { internal: store, address, value: obj })
+      memberMap.set(primitive, { internal: store, address })
       return [primitive, obj]
     }
     if (hash.has(obj)) return [...hash.get(obj)] // cyclic reference
@@ -38,7 +38,7 @@ export const deepClone = (
       childStores.add(attemptChildStore)
       const mc = attemptChildStore.internal.getMutableCopy()
       parentMap.set(mc, { parent: store.getMutableCopy(), address })
-      return [mc, attemptChildStore.internal.getState()]
+      return [mc, attemptChildStore.internal.getNormalizedState()]
     }
     const isArray = Array.isArray(obj)
     const isFunction = typeof obj === 'function'
@@ -60,26 +60,28 @@ export const deepClone = (
       : Object.create(null)
 
     // record the address and store of the object. (for being able to subscribe and set)
-    memberMap.set(result, { internal: store, address, value: obj })
+    memberMap.set(result, { internal: store, address })
     hash.set(obj, [result, result2])
 
     Object.keys(obj).map((key) => {
-      address = [] // TODO: add more extensive tests to this
+      address = []
       address.push(key)
       const cloneResult = deepCloneInner(obj[key], hash, address)
       result[key] = cloneResult[0]
       result2[key] = cloneResult[1]
+      // reset the hash, because we want to consider only the children as circular deps.
+      hash = new WeakMap()
     })
 
     return [result, result2]
   }
 
   if (isStore(state)) {
-    // IMPORTANT: following parts could be changed based on the config
+    // IMPORTANT: following parts could be able to be changed based on the config
     const child = storeMap.get(state)
     childStores.add(child)
     // @ts-ignore
-    const [result, result2] = [state, child.internal.getState()]
+    const [result, result2] = [state, child.internal.getNormalizedState()]
     return [result, result2, childStores]
   } else {
     const [result, result2] = deepCloneInner(state)
@@ -87,24 +89,44 @@ export const deepClone = (
   }
 }
 
-export const destroy = <T extends Useable<any>>(item: T) => {
+export const destroy = <T extends Abstract<any>>(item: T) => {
   const record = storeMap.get(item)
   if (record) return record.internal.destroy()
-  else error('destroy')
+  else throw error('destroy')
 }
 
-// TODO: May need to convert some Sets into WeakSets as well
+export const setValueByAddress = (
+  root: object,
+  address: string[],
+  newValue: any
+) => {
+  if (address.length) {
+    address.reduce((acc: any, key: string, i) => {
+      if (i === address.length - 1) acc[key] = newValue
+      return acc[key]
+    }, root)
+  } else {
+    throw error('internal-1')
+  }
+}
+
+export const getValueByAddress = (root: object, address: string[]) => {
+  if (address.length) {
+    return address.reduce((acc: any, key: string, i) => {
+      return acc[key]
+    }, root)
+  } else {
+    return root
+  }
+}
 
 // This map is used by {get, subscribe} exports, to know the store that
 // the member (object or primitive) belongs to, and its address in that store
-export const memberMap = new WeakMap<
-  Useable<any>,
-  { internal: StoreInternalAPI<any>; address: string[]; value: any }
->()
+interface InternalRecord {
+  internal: StoreInternalAPI<any>
+  address: string[]
+}
 
-export const storeMap = new WeakMap<
-  Useable<any>,
-  { internal: StoreInternalAPI<any>; address: string[]; value: any }
->()
-
+export const memberMap = new WeakMap<Abstract<any>, InternalRecord>()
+export const storeMap = new WeakMap<Abstract<any>, InternalRecord>()
 export const parentMap = new WeakMap()
