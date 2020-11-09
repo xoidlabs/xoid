@@ -52,10 +52,10 @@ Except, in the second argument of \`createStore\` method, you can specify action
 ```js
 import { createStore, set } from 'xoid'
 
-const numberActions = {
- increment: () => set(store, (state) => state + 1),
- decrement: () => set(store, (state) => state - 1)
-}
+const numberActions = (store) => ({
+ increment: () => set(store, (s) => s + 1),
+ decrement: () => set(store, (s) => s - 1)
+})
 const alpha = createStore(3, numberActions)
 const beta = createStore(4, numberActions)
 
@@ -149,7 +149,7 @@ interface Company {
 const EmployeeModel = createModel(
   (payload: Employee) => payload, 
   (store) => {
-    greet: () => console.log(`Hey ${name}!`)
+    greet: () => console.log(`Hey ${get(store.name)}!`)
   }
 )
 
