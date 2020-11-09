@@ -38,23 +38,21 @@ npm install xoid
 
 | Exports 	| Description 	|
 |-	|-	|
-| [`createStore`](store#createstore) , [`createModel`](store#createmodel) 	| Creates stores |
-| [`get`](vanilla#get) , [`set`](vanilla#set) , [`use`](vanilla#use) , [`subscribe`](vanilla#subscribe) (vanilla) , [`useStore`](hooks#usestore) (React)| Interacts with stores |
-| [`computed`](utils#computed) , [`parent`](utils#parent) , [`config`](utils#config) , [`devtools`](utils#devtools)| Utilities |
+| [`create`](store#createstore) , [`model`](store#createmodel) 	| Creates stores |
+| [`use`](vanilla#use) , [`subscribe`](vanilla#subscribe) (vanilla) , [`useStore`](hooks#usestore) (React)| Interacts with stores |
+| [`undef`](utils#undef) , [`computed`](utils#computed) , [`parent`](utils#parent) , [`config`](utils#config) , [`devtools`](utils#devtools)| Utilities |
 
 ## Usage
-
 ### Intuitive & Familiar API
-
 Provides a similar API to **Recoil**. 
 Except, in the second argument of \`createStore\` method, you can specify actions for your store! Also, you can create derived stores with computed values.
 
 ```js
-import { createStore, set } from 'xoid'
+import { createStore } from 'xoid'
 
 const numberActions = (store) => ({
- increment: () => set(store, (s) => s + 1),
- decrement: () => set(store, (s) => s - 1)
+ increment: () => store(state => state + 1),
+ decrement: () => store(state => state - 1)
 })
 const alpha = createStore(3, numberActions)
 const beta = createStore(4, numberActions)
@@ -62,7 +60,6 @@ const beta = createStore(4, numberActions)
 // derived state
 const sum = createStore(get => get(alpha) + get(beta))
 ```
-
 ### React & Vanilla
 
 No need for wrapping components into context providers. 
@@ -101,17 +98,17 @@ With \`set\` method, you can surgically modify the parts in your state.
 This means that you can modify your deeply nested state objects without having to write a lot of code, or without using tools like **immer** or **immutablejs**.
 
 ```js
-import { createStore, get, set } from 'xoid'
+import { createStore } from 'xoid'
 
 const store = createStore({ deeply: { nested: { foo: 5 } } })
 const foo = store.deeply.nested.foo
 
-console.log(get(foo)) // 5
+console.log(foo()) // 5
 
 // set the value surgically into the store
-set(foo, 25)
+foo(25)
 
-console.log(get(store)) // { deeply: { nested: { foo: 25 } } }
+console.log(store()) // { deeply: { nested: { foo: 25 } } }
 ```
 
 ### No-API Finite State Machines!
@@ -135,7 +132,7 @@ return <div style={{ color }} onClick={onClick}/>
 Perhaps, the most powerful feature of **xoid** is this one. Major benefit of the following pattern is no-config state deserialization. (Your plain JSON data comes alive with your pre-defined actions in your model schemas) 
 
 ```js
-import { createModel, get, set, use } from 'xoid'
+import { createModel, use } from 'xoid'
 
 interface Employee {
   name: string
@@ -149,7 +146,7 @@ interface Company {
 const EmployeeModel = createModel(
   (payload: Employee) => payload, 
   (store) => {
-    greet: () => console.log(`Hey ${get(store.name)}!`)
+    greet: () => console.log(`Hey ${store.name()}!`)
   }
 )
 
@@ -169,9 +166,9 @@ const companyStore = CompanyModel({
 use(companyStore.employees[0]).greet() // Hey you!
 
 const myName = companyStore.employees[1].name
-console.log(get(myName)) // me
-set(myName, 'ME')
-console.log(get(myName)) // ME
+console.log(myName()) // me
+myName('ME')
+console.log(myName()) // ME
 ```
 
 Another benefit of using models are builtin `add` and `remove` actions. They are present in the store actions by default when `Model.array`s or `Model.object`s are created. These builtins have 100% consistent TypeScript types with your model schemas.
