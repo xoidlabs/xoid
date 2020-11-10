@@ -38,9 +38,9 @@ npm install xoid
 
 | Exports 	| Description 	|
 |-	|-	|
-| [`create`](store#createstore) , [`model`](store#createmodel) 	| Creates stores |
-| [`use`](vanilla#use) , [`subscribe`](vanilla#subscribe) (vanilla) , [`useStore`](hooks#usestore) (React)| Interacts with stores |
-| [`undef`](utils#undef) , [`computed`](utils#computed) , [`parent`](utils#parent) , [`config`](utils#config) , [`devtools`](utils#devtools)| Utilities |
+| [`createStore`](store#createstore) , [`createModel`](store#createmodel) 	| Creates stores |
+| [`use`](vanilla#use) , [`subscribe`](vanilla#subscribe) , [`useStore`](hooks#usestore) | Interacts with stores |
+| [`undef`](utils#undef) , [`parent`](utils#parent) , [`devtools`](utils#devtools)| Utilities |
 
 ## Usage
 ### Intuitive & Familiar API
