@@ -38,32 +38,32 @@ npm install xoid
 
 | Exports 	| Description 	|
 |-	|-	|
-| [`createStore`](store#createstore) , [`createModel`](store#createmodel) 	| Creates stores |
+| [`create`](store#create) , [`model`](store#model) 	| Creates stores |
 | [`use`](vanilla#use) , [`subscribe`](vanilla#subscribe) , [`useStore`](hooks#usestore) | Interacts with stores |
-| [`undef`](utils#undef) , [`parent`](utils#parent) , [`devtools`](utils#devtools)| Utilities |
+| [`parent`](utils#parent) , [`devtools`](utils#devtools)| Utilities |
 
 ## Usage
 ### Intuitive & Familiar API
 Provides a similar API to **Recoil**. 
-Except, in the second argument of \`createStore\` method, you can specify actions for your store! Also, you can create derived stores with computed values.
+Except, in the second argument of `create` method, you can specify actions for your store! Also, you can create derived stores with computed values.
 
 ```js
-import { createStore } from 'xoid'
+import { create } from 'xoid'
 
 const numberActions = (store) => ({
  increment: () => store(state => state + 1),
  decrement: () => store(state => state - 1)
 })
-const alpha = createStore(3, numberActions)
-const beta = createStore(4, numberActions)
+const alpha = create(3, numberActions)
+const beta = create(4, numberActions)
 
 // derived state
-const sum = createStore(get => get(alpha) + get(beta))
+const sum = create(get => get(alpha) + get(beta))
 ```
 ### React & Vanilla
 
 No need for wrapping components into context providers. 
-Just import \`useStore\` and start using! You can also use \`use\` method to access the actions of a store, without causing rerenders. (it's not a hook)
+Just import `useStore` and start using! You can also use `use` method to access the actions of a store, without causing rerenders. (it's not a hook)
 
 ```js
 import { useStore, use, subscribe } from 'xoid'
@@ -84,9 +84,9 @@ Every store returns a **shape** that's analogous to their state.
 You can even subscribe to "primitives" like strings or numbers.
 
 ```js
-import { createStore, useStore } from 'xoid'
+import { create, useStore } from 'xoid'
 
-const store = createStore({ name: 'John', surname: 'Doe' })
+const store = create({ name: 'John', surname: 'Doe' })
 
 // in a React component
 const [name, setName] = useStore(store.name)
@@ -94,13 +94,13 @@ const [name, setName] = useStore(store.name)
 
 ### No more hand-written reducers!
 
-With \`set\` method, you can surgically modify the parts in your state.
+With `set` method, you can surgically modify the parts in your state.
 This means that you can modify your deeply nested state objects without having to write a lot of code, or without using tools like **immer** or **immutablejs**.
 
 ```js
-import { createStore } from 'xoid'
+import { create } from 'xoid'
 
-const store = createStore({ deeply: { nested: { foo: 5 } } })
+const store = create({ deeply: { nested: { foo: 5 } } })
 const foo = store.deeply.nested.foo
 
 console.log(foo()) // 5
@@ -115,9 +115,9 @@ console.log(store()) // { deeply: { nested: { foo: 25 } } }
 No additional syntax is required to define and use finite state machines. Just use the second argument of the callback as the state transition function.
 
 ```js
-import { createStore, useStore } from 'xoid'
+import { create, useStore } from 'xoid'
 
-const machine = createStore((get, set) => {
+const machine = create((get, set) => {
   const red = { color: '#f00', onClick: () => set(green) }
   const green = { color: '#0f0', onClick: () => set(red) }
   return red
@@ -132,7 +132,7 @@ return <div style={{ color }} onClick={onClick}/>
 Perhaps, the most powerful feature of **xoid** is this one. Major benefit of the following pattern is no-config state deserialization. (Your plain JSON data comes alive with your pre-defined actions in your model schemas) 
 
 ```js
-import { createModel, use } from 'xoid'
+import { model, use } from 'xoid'
 
 interface Employee {
   name: string
@@ -143,14 +143,14 @@ interface Company {
   employees: Employee[]
 }
 
-const EmployeeModel = createModel(
+const EmployeeModel = model(
   (payload: Employee) => payload, 
   (store) => {
     greet: () => console.log(`Hey ${store.name()}!`)
   }
 )
 
-const CompanyModel = createModel((payload: Company) => ({
+const CompanyModel = model((payload: Company) => ({
   name: payload.name,
   employees: EmployeeModel.array(payload.employees),
 }))
