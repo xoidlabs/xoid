@@ -2,13 +2,13 @@ import { useEffect, useLayoutEffect } from 'react'
 import { configObject } from './config'
 import { StoreInternalAPI } from './createStore'
 import { error } from './error'
-import { Store, Abstract } from './types'
+import { X } from './types'
 
 // For SSR / React Native: https://github.com/react-spring/zustand/pull/34
 export const useIsoLayoutEffect =
   typeof window === 'undefined' ? useEffect : useLayoutEffect
 
-export const isStore = (store: Abstract<any>): store is Store<any, any> =>
+export const isStore = (store: X.Value<any>): store is X.Store<any, any> =>
   storeMap.has(store)
 
 // Following answer is used as a starting point
@@ -26,7 +26,7 @@ export const deepClone = (
     address: string[] = relativeAddress
   ): any => {
     if (Object(obj) !== obj) {
-      const primitive = { [configObject.valueSymbol]: obj } as Abstract<any>
+      const primitive = { [configObject.valueSymbol]: obj } as X.Value<any>
       // record the address  and store of the primitive. (for being able to subscribe and set)
       memberMap.set(primitive, { internal: store, address })
       return [primitive, obj]
@@ -89,7 +89,7 @@ export const deepClone = (
   }
 }
 
-export const destroy = <T extends Abstract<any>>(item: T) => {
+export const destroy = <T extends X.Value<any>>(item: T) => {
   const record = storeMap.get(item)
   if (record) return record.internal.destroy()
   else throw error('destroy')
@@ -127,6 +127,6 @@ interface InternalRecord {
   address: string[]
 }
 
-export const memberMap = new WeakMap<Abstract<any>, InternalRecord>()
-export const storeMap = new WeakMap<Abstract<any>, InternalRecord>()
+export const memberMap = new WeakMap<X.Value<any>, InternalRecord>()
+export const storeMap = new WeakMap<X.Value<any>, InternalRecord>()
 export const parentMap = new WeakMap()

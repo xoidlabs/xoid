@@ -1,5 +1,5 @@
 import { createStore } from './createStore'
-import { Actor, Model, Store } from './types'
+import { Model, X } from './types'
 import { isStore, storeMap } from './utils'
 import { set } from './main'
 import { error } from './error'
@@ -20,7 +20,7 @@ enum Types {
   object,
 }
 
-type ModelCreator = <T, A extends Actor<T, any>, K>(
+type ModelCreator = <T, A extends X.After<T, unknown>, K>(
   init: (payload: K) => T,
   actor?: A
 ) => {
@@ -30,29 +30,29 @@ type ModelCreator = <T, A extends Actor<T, any>, K>(
   // array
   array<L extends Record<number, K | T> | K[] | T[], B>(
     init: L,
-    actor: (store: Store<L, ArrayBuiltins<K>>) => B
-  ): Store<Model<T, A, K>[], B>
+    actor: (store: X.Store<L, ArrayBuiltins<K>>) => B
+  ): X.Store<Model<T, A, K>[], B>
   array<L extends Record<number, K | T> | K[] | T[]>(
     init?: L
-  ): Store<Model<T, A, K>[], ArrayBuiltins<K>>
+  ): X.Store<Model<T, A, K>[], ArrayBuiltins<K>>
 
   // object
   object<L extends Record<string, K | T>, B>(
     init: L,
-    actor: (store: Store<L, ObjectBuiltins<K>>) => B
-  ): Store<Model<T, A, K>[], B>
+    actor: (store: X.Store<L, ObjectBuiltins<K>>) => B
+  ): X.Store<Model<T, A, K>[], B>
   object<L extends Record<string, K | T>>(
     init?: L
-  ): Store<Model<T, A, K>[], ObjectBuiltins<K>>
+  ): X.Store<Model<T, A, K>[], ObjectBuiltins<K>>
 }
 
-export const createModel: ModelCreator = (init, actor) => {
+export const createModel: ModelCreator = (init, after) => {
   const storeCreator = (a: any) => {
     const value = init(a)
-    if (actor && typeof actor !== 'function') {
+    if (after && typeof after !== 'function') {
       throw error('action-function-1')
     }
-    const store = createStore(value, actor)
+    const store = createStore(value, after)
 
     // modify the set function of the store
     const { internal } = storeMap.get(store) as any

@@ -38,10 +38,7 @@ export default xoid
 
 export type {
   Model,
-  Store,
-  Abstract,
-  Initializer,
   XGet,
-  InitSet,
-  After, // StateOf // ActionsOf
+  X,
+  InitSet, // StateOf // ActionsOf
 } from './core/types'

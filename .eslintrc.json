@@ -24,7 +24,7 @@
     },
     "rules": {
       "curly": ["warn", "multi-line", "consistent"],
-      "no-console": "off",
+      "no-console": "warn",
       "no-empty-pattern": "warn",
       "no-duplicate-imports": "error",
       "import/no-unresolved": ["error", { "commonjs": true, "amd": true }],

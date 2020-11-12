@@ -1,15 +1,13 @@
 import {
   Destroy,
   GetSymbolicState,
-  GetState,
-  SetState,
   Subscribe,
   ShallowSubscribe,
   baseStore,
 } from './baseStore'
 import { configObject } from './config'
 import { error } from './error'
-import { Store, After, Initializer } from './types'
+import { Initializer, X } from './types'
 import { storeMap } from './utils'
 
 export type GetActions<A> = () => A
@@ -17,9 +15,9 @@ export type GetActions<A> = () => A
 export interface StoreInternalAPI<T> {
   getMutableCopy: GetSymbolicState<T>
   getActions: GetActions<any>
-  get: GetState<T>
-  getNormalizedState: GetState<T>
-  set: SetState<T>
+  get: X.GetState<T>
+  getNormalizedState: X.GetState<T>
+  set: X.SetState<T>
   setInner: (value: T) => void
   subscribe: Subscribe<T>
   shallowSubscribe: ShallowSubscribe<T>
@@ -28,32 +26,26 @@ export interface StoreInternalAPI<T> {
 }
 
 /**
- * ```js
- * createStore<State, Actions = undefined>(
- *   init: State | (get?: XGet<State>, set?: InitSet<State>) => State,
- *   after?: (store: Store<State>) => Actions
- * ) => Store<State, Actions>
- * ```
  * Creates a store with the first argument as the initial state.
  * Second argument runs after the state is first created.
  * Store actions can be specified in the return value of the second argument.
  * Function form of the first argument can be used to create derived state.
  *
- * [API Docs](https://xoid.dev/docs/api/create-store/)
+ * @see — https://xoid.dev/docs/api/create
  *
  */
 
 export function createStore<State, Actions = undefined>(
   init: State | Initializer<State>,
-  after?: After<State, Actions>
-): Store<State, Actions> {
+  after?: X.After<State, Actions>
+): X.Store<State, Actions> {
   // Create the store without actions
   const store = baseStore(init)
 
   // Actions
   let actions: Actions
   const getActions = () => actions
-  const setActions = (after?: After<State, Actions>) => {
+  const setActions = (after?: X.After<State, Actions>) => {
     if (after) {
       if (typeof after === 'function') {
         actions = after(mutableCopy)

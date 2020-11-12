@@ -22,11 +22,12 @@
 
 ## Why **xoid**?
 
-- Plays well with Typescript
+- Extensive Typescript support
+- Not limited to React
+-
 - Handles deeply nested states perfectly
 - Provides an easy way for (de)serialization
 - React Native, Redux Devtools supported
-- Data fetching, persisting, testing recipes
 
 To install, run the following command:
 
@@ -38,32 +39,35 @@ npm install xoid
 
 | Exports 	| Description 	|
 |-	|-	|
-| [`create`](store#create) , [`model`](store#model) 	| Creates stores |
-| [`use`](vanilla#use) , [`subscribe`](vanilla#subscribe) , [`useStore`](hooks#usestore) | Interacts with stores |
-| [`parent`](utils#parent) , [`devtools`](utils#devtools)| Utilities |
+| [`createStore`](#createstore) , [`createModel`](#createmodel) 	| Creates stores |
+| [`get`](#get) , [`set`](#set) , [`use`](#use) , [`subscribe`](#subscribe) , [`useStore`](hooks#usestore) | Interacts with stores |
+|  [`parent`](#parent) , [`config`](#config) , [`devtools`](#devtools) | Utilities |
 
 ## Usage
+
 ### Intuitive & Familiar API
+
 Provides a similar API to **Recoil**. 
-Except, in the second argument of `create` method, you can specify actions for your store! Also, you can create derived stores with computed values.
+Except, in the second argument of \`createStore\` method, you can specify actions for your store! Also, you can create derived stores with computed values.
 
 ```js
-import { create } from 'xoid'
+import { createStore, set } from 'xoid'
 
 const numberActions = (store) => ({
- increment: () => store(state => state + 1),
- decrement: () => store(state => state - 1)
+ increment: () => set(store, (s) => s + 1),
+ decrement: () => set(store, (s) => s - 1)
 })
-const alpha = create(3, numberActions)
-const beta = create(4, numberActions)
+const alpha = createStore(3, numberActions)
+const beta = createStore(4, numberActions)
 
 // derived state
-const sum = create(get => get(alpha) + get(beta))
+const sum = createStore(get => get(alpha) + get(beta))
 ```
+
 ### React & Vanilla
 
 No need for wrapping components into context providers. 
-Just import `useStore` and start using! You can also use `use` method to access the actions of a store, without causing rerenders. (it's not a hook)
+Just import \`useStore\` and start using! You can also use \`use\` method to access the actions of a store, without causing rerenders. (it's not a hook)
 
 ```js
 import { useStore, use, subscribe } from 'xoid'
@@ -84,9 +88,9 @@ Every store returns a **shape** that's analogous to their state.
 You can even subscribe to "primitives" like strings or numbers.
 
 ```js
-import { create, useStore } from 'xoid'
+import { createStore, useStore } from 'xoid'
 
-const store = create({ name: 'John', surname: 'Doe' })
+const store = createStore({ name: 'John', surname: 'Doe' })
 
 // in a React component
 const [name, setName] = useStore(store.name)
@@ -94,30 +98,30 @@ const [name, setName] = useStore(store.name)
 
 ### No more hand-written reducers!
 
-With `set` method, you can surgically modify the parts in your state.
+With \`set\` method, you can surgically modify the parts in your state.
 This means that you can modify your deeply nested state objects without having to write a lot of code, or without using tools like **immer** or **immutablejs**.
 
 ```js
-import { create } from 'xoid'
+import { createStore, get, set } from 'xoid'
 
-const store = create({ deeply: { nested: { foo: 5 } } })
+const store = createStore({ deeply: { nested: { foo: 5 } } })
 const foo = store.deeply.nested.foo
 
-console.log(foo()) // 5
+console.log(get(foo)) // 5
 
 // set the value surgically into the store
-foo(25)
+set(foo, 25)
 
-console.log(store()) // { deeply: { nested: { foo: 25 } } }
+console.log(get(store)) // { deeply: { nested: { foo: 25 } } }
 ```
 
 ### No-API Finite State Machines!
 No additional syntax is required to define and use finite state machines. Just use the second argument of the callback as the state transition function.
 
 ```js
-import { create, useStore } from 'xoid'
+import { createStore, useStore } from 'xoid'
 
-const machine = create((get, set) => {
+const machine = createStore((get, set) => {
   const red = { color: '#f00', onClick: () => set(green) }
   const green = { color: '#0f0', onClick: () => set(red) }
   return red
@@ -132,7 +136,7 @@ return <div style={{ color }} onClick={onClick}/>
 Perhaps, the most powerful feature of **xoid** is this one. Major benefit of the following pattern is no-config state deserialization. (Your plain JSON data comes alive with your pre-defined actions in your model schemas) 
 
 ```js
-import { model, use } from 'xoid'
+import { createModel, get, set, use } from 'xoid'
 
 interface Employee {
   name: string
@@ -143,14 +147,14 @@ interface Company {
   employees: Employee[]
 }
 
-const EmployeeModel = model(
+const EmployeeModel = createModel(
   (payload: Employee) => payload, 
   (store) => {
-    greet: () => console.log(`Hey ${store.name()}!`)
+    greet: () => console.log(`Hey ${get(store.name)}!`)
   }
 )
 
-const CompanyModel = model((payload: Company) => ({
+const CompanyModel = createModel((payload: Company) => ({
   name: payload.name,
   employees: EmployeeModel.array(payload.employees),
 }))
@@ -166,9 +170,9 @@ const companyStore = CompanyModel({
 use(companyStore.employees[0]).greet() // Hey you!
 
 const myName = companyStore.employees[1].name
-console.log(myName()) // me
-myName('ME')
-console.log(myName()) // ME
+console.log(get(myName)) // me
+set(myName, 'ME')
+console.log(get(myName)) // ME
 ```
 
 Another benefit of using models are builtin `add` and `remove` actions. They are present in the store actions by default when `Model.array`s or `Model.object`s are created. These builtins have 100% consistent TypeScript types with your model schemas.

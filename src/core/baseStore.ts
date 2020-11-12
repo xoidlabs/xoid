@@ -6,25 +6,16 @@ import {
   storeMap,
 } from './utils'
 import { StoreInternalAPI } from './createStore'
-import { Store, XGet, InitSet, Initializer } from './types'
-import { subscribe, get } from './main'
-import { error } from './error'
+import { X, XGet, InitSet, Initializer } from './types'
+import { get } from './main'
 // zustand is used as a starting point to this file
 // https://github.com/react-spring/zustand
 
 type Symbolic__ = any
 
 export type StateSelector<T, U> = (state: T) => U
-export type EqualityChecker<T> = (state: T, newState: unknown) => boolean
 export type StateListener<T> = (state: T) => void
 export type StateSliceListener<T> = (state: T | null, error?: Error) => void
-
-export type GetState<T> = () => T
-export type SetState<T> = (
-  value: T | ((state: T) => T),
-  decorator?: (state: T, callback: (draft: T) => T | void) => void
-) => void
-export type Destroy = () => void
 export interface Subscribe<T> {
   (listener: StateListener<T>): () => void
   <StateSlice>(
@@ -32,14 +23,16 @@ export interface Subscribe<T> {
     selector: StateSelector<T, StateSlice>
   ): () => void
 }
+export type Destroy = () => void
 
 export type ShallowSubscribe<T> = (listener: StateListener<T>) => void
 
 // TODO: this seems removable
-export type GetSymbolicState<T> = () => Store<T, any>
+export type GetSymbolicState<T> = () => X.Store<T, any>
 
 export const baseStore = <T>(init: T | Initializer<T>) =>
   new BaseClass(init).store
+
 export class BaseClass<T> {
   private state: T
   private normalizedState: any
@@ -90,7 +83,7 @@ export class BaseClass<T> {
    * Section: several get... and set.. methods
    */
   // IMPORTANT: reduce one of them
-  getState: GetState<T> = () => this.state
+  getState: X.GetState<T> = () => this.state
   getNormalizedState = () => this.normalizedState
   getSymbolicState = () => this.symbolicState
   setSymbolicState(payload: Symbolic__) {
@@ -110,20 +103,24 @@ export class BaseClass<T> {
    * {set} export is derived by using this.
    */
 
-  setState: SetState<T> = (payload: any, produce?: any) => {
+  setState: X.SetState<T> = (payload, produce) => {
     if (typeof payload === 'function') {
       // Easy usage of {immer.produce} or other similar functions
-      const nextState = produce
-        ? produce(this.state, payload)
-        : payload(this.state)
-      this.setStateInner(nextState)
-    } else if (
-      // This condition determines if the payload is an async function, by duck typing
-      payload &&
-      typeof (payload as Promise<any>)?.then === 'function' &&
-      typeof (payload as Promise<any>)?.finally === 'function'
-    ) {
-      payload.then((result: T) => this.setStateInner(result))
+      const nextState: T | Promise<T> = produce
+        ? produce(this.state, payload as (state: T) => T | Promise<T>)
+        : (payload as (state: T) => T | Promise<T>)(this.state)
+      if (
+        // This condition determines if the payload is an async function, by duck typing
+        nextState &&
+        typeof (nextState as Promise<any>)?.then === 'function' &&
+        typeof (nextState as Promise<any>)?.finally === 'function'
+      ) {
+        ;(nextState as Promise<T>).then((result: T) =>
+          this.setStateInner(result)
+        )
+      } else {
+        this.setStateInner(nextState as T)
+      }
     } else {
       this.setStateInner(payload)
     }
