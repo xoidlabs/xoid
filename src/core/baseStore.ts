@@ -8,9 +8,10 @@ import {
 import { StoreInternalAPI } from './createStore'
 import { X, XGet, InitSet, Initializer } from './types'
 import { get } from './main'
+import { error } from './error'
+import { configObject } from './config'
 // zustand is used as a starting point to this file
 // https://github.com/react-spring/zustand
-
 type Symbolic__ = any
 
 export type StateSelector<T, U> = (state: T) => U
@@ -30,10 +31,7 @@ export type ShallowSubscribe<T> = (listener: StateListener<T>) => void
 // TODO: this seems removable
 export type GetSymbolicState<T> = () => X.Store<T, any>
 
-export const baseStore = <T>(init: T | Initializer<T>) =>
-  new BaseClass(init).store
-
-export class BaseClass<T> {
+export class BaseClass<T, A> {
   private state: T
   private normalizedState: any
   private symbolicState: any
@@ -42,14 +40,12 @@ export class BaseClass<T> {
   private isSelector: boolean
   private initializer!: Initializer<T>
 
-  store: Omit<StoreInternalAPI<T>, 'getActions'>
-
   private listeners: Set<StateListener<T>> = new Set()
   private shallowListeners: Set<StateListener<T>> = new Set()
 
   private childSubscriptions: (() => void)[] = []
 
-  constructor(init: T | Initializer<T>) {
+  constructor(init: T | Initializer<T>, after?: X.After<T, A>) {
     // Determine if it's a selector, record it's initializer
     this.isRecord = false
     this.isSelector = typeof init === 'function'
@@ -64,19 +60,13 @@ export class BaseClass<T> {
     // Keep symbolicState's prototype consistent with the actual state
     this.symbolicState = Array.isArray(this.state) ? [] : {}
 
-    this.store = {
-      get: this.getState,
-      getNormalizedState: this.getNormalizedState,
-      set: this.setState,
-      setInner: this.setStateInner,
-      destroy: this.destroy,
-      subscribe: this.subscribe,
-      shallowSubscribe: this.shallowSubscribe,
-      getMutableCopy: this.getSymbolicState,
-      setAsRecord: this.setAsRecord,
-    }
     // Traverse the state to obtain {normalizedState} and {symbolicState}
     this.traverseState()
+    storeMap.set(this.symbolicState, {
+      internal: this as any,
+      address: [],
+    })
+    this.setActions(after)
   }
 
   /**
@@ -92,6 +82,21 @@ export class BaseClass<T> {
     Object.keys(symbolicState).forEach((key) => delete symbolicState[key])
     // shallowmerge it to the
     Object.keys(payload).forEach((key) => (symbolicState[key] = payload[key]))
+  }
+
+  // Section: actions
+  actions: any
+  getActions = () => this.actions
+  setActions = (after: any) => {
+    if (after) {
+      if (typeof after === 'function') {
+        this.actions = after(this.symbolicState)
+      } else {
+        throw error('action-function')
+      }
+      // @ts-ignore
+      this.symbolicState[configObject.actionsSymbol] = this.actions
+    }
   }
 
   setAsRecord() {
@@ -126,7 +131,7 @@ export class BaseClass<T> {
     }
   }
 
-  private setStateInner = (value: T) => {
+  setStateInner = (value: T) => {
     if (value !== this.state) {
       this.state = value
       // Do this to prepare symbolicState and normalizedState
@@ -242,10 +247,7 @@ export class BaseClass<T> {
 
   traverseState = () => {
     // generate copied one
-    const [symbolic, normalized, children] = deepClone(
-      this.state,
-      this.store as StoreInternalAPI<T>
-    )
+    const [symbolic, normalized, children] = deepClone(this.state, this)
     // set new normalizedState and symbolicState
     this.normalizedState = normalized
     this.setSymbolicState(symbolic)

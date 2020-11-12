@@ -36,8 +36,8 @@ export const deepClone = (
 
     if (attemptChildStore) {
       childStores.add(attemptChildStore)
-      const mc = attemptChildStore.internal.getMutableCopy()
-      parentMap.set(mc, { parent: store.getMutableCopy(), address })
+      const mc = attemptChildStore.internal.getSymbolicState()
+      parentMap.set(mc, { parent: store.getSymbolicState(), address })
       return [mc, attemptChildStore.internal.getNormalizedState()]
     }
     const isArray = Array.isArray(obj)
@@ -122,11 +122,15 @@ export const getValueByAddress = (root: object, address: string[]) => {
 
 // This map is used by {get, subscribe} exports, to know the store that
 // the member (object or primitive) belongs to, and its address in that store
-interface InternalRecord {
+export interface InternalRecord {
   internal: StoreInternalAPI<any>
   address: string[]
 }
 
+// {storeMap} and {memberMap} dichotomy is here to stay.
+// Because when {memberMap} is not needed (as in {use} export),
+// A faster lookup can be made by only searching in {storeMap}
 export const memberMap = new WeakMap<X.Value<any>, InternalRecord>()
 export const storeMap = new WeakMap<X.Value<any>, InternalRecord>()
+// TODO: merge this one into storeMap
 export const parentMap = new WeakMap()

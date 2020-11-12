@@ -43,18 +43,17 @@ export function set<T extends X.Value<any>>(
   const record = storeMap.get(store) || memberMap.get(store)
   if (record) {
     const { address, internal } = record
-    const normalizedState = internal.get()
-    const rawValue = getValueByAddress(normalizedState, address)
+    const state = internal.getState()
+    const rawValue = getValueByAddress(state, address)
     const newValue =
       typeof value === 'function' ? (value as Function)(rawValue) : value
     if (newValue !== rawValue) {
       if (address.length) {
-        const newState = { ...normalizedState }
+        const newState = { ...state }
         setValueByAddress(newState, address, newValue)
-        internal.setInner(newState)
+        internal.setStateInner(newState)
       } else {
-        console.log(newValue)
-        internal.set(newValue)
+        internal.setState(newValue)
       }
     }
   } else throw error('set')

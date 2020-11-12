@@ -1,6 +1,6 @@
 import { createStore } from './createStore'
 import { Model, X } from './types'
-import { isStore, storeMap } from './utils'
+import { InternalRecord, isStore, storeMap } from './utils'
 import { set } from './main'
 import { error } from './error'
 // IMPORTANT: fix types for model vs store types
@@ -55,10 +55,10 @@ export const createModel: ModelCreator = (init, after) => {
     const store = createStore(value, after)
 
     // modify the set function of the store
-    const { internal } = storeMap.get(store) as any
-    const oldSet = internal.set
+    const { internal } = storeMap.get(store) as InternalRecord
+    const oldSet = internal.setState
     // override the set function with its special version
-    internal.set = (value: any) => {
+    internal.setState = (value: any) => {
       // modify the candidate before it goes into traversal
       value = init(value)
       oldSet(value)
@@ -116,14 +116,14 @@ const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
 
   const store = createStore(value)
   // modify the set function of the store
-  const { internal } = storeMap.get(store) as any
+  const { internal } = storeMap.get(store) as InternalRecord
   internal.setAsRecord()
   internal.setActions(builtins)
   internal.setActions(actor)
 
-  const oldSet = internal.set
+  const oldSet = internal.setState
   // override the set function with its special version
-  internal.set = (value: any) => {
+  internal.setState = (value: any) => {
     value = ensureStores(value, storeCreator, type)
     oldSet(value)
   }
