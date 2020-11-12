@@ -16,10 +16,9 @@ export namespace X {
   export type Store<T, A = undefined> = Transform<T> & {
     [store]: A
   }
-  export type Value<T> = GetState<T> &
-    SetState<T> & {
-      [value]: T
-    }
+  export type Value<T> = {
+    [value]: T
+  }
   export type Rec<T> = X.Value<T> & T
 
   export type After<State, Actions = undefined> = (

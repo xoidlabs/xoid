@@ -5,14 +5,21 @@ import {
   setValueByAddress,
   storeMap,
 } from './utils'
-import { StoreInternalAPI } from './createStore'
 import { X, XGet, InitSet, Initializer } from './types'
 import { get } from './main'
 import { error } from './error'
 import { configObject } from './config'
+import { Address } from './transform'
+
 // zustand is used as a starting point to this file
 // https://github.com/react-spring/zustand
 type Symbolic__ = any
+
+export type SetState<T> = (
+  state: T | ((state: T) => T),
+  decorator?: X.Decorator<T>,
+  address?: Address
+) => void
 
 export type StateSelector<T, U> = (state: T) => U
 export type StateListener<T> = (state: T) => void
@@ -31,14 +38,17 @@ export type ShallowSubscribe<T> = (listener: StateListener<T>) => void
 // TODO: this seems removable
 export type GetSymbolicState<T> = () => X.Store<T, any>
 
-export class BaseClass<T, A> {
+export class Root<T, A> {
   private state: T
-  private normalizedState: any
-  private symbolicState: any
-
-  private isRecord: boolean
   private isSelector: boolean
   private initializer!: Initializer<T>
+
+  getParent(): any {}
+  setParent(root: Root<any, any>, address: Address) {}
+  setChildren(children: Set<any>) {}
+
+  private normalizedState: any
+  private symbolicState: any
 
   private listeners: Set<StateListener<T>> = new Set()
   private shallowListeners: Set<StateListener<T>> = new Set()
@@ -46,21 +56,19 @@ export class BaseClass<T, A> {
   private childSubscriptions: (() => void)[] = []
 
   constructor(init: T | Initializer<T>, after?: X.After<T, A>) {
-    // Determine if it's a selector, record it's initializer
-    this.isRecord = false
+    // Determine if it's a selector, record its initializer
     this.isSelector = typeof init === 'function'
     if (this.isSelector) this.initializer = init as Initializer<T>
-    this.symbolicState = {}
 
     // Create the initial state
     this.state = this.isSelector
-      ? (init as Initializer<T>)(this.stateGetter, this.stateSetter)
+      ? this.initializer(this.stateGetter, this.stateSetter)
       : (init as T)
 
-    // Keep symbolicState's prototype consistent with the actual state
+    // Keep {symbolicState}'s prototype consistent with the actual state
     this.symbolicState = Array.isArray(this.state) ? [] : {}
 
-    // Traverse the state to obtain {normalizedState} and {symbolicState}
+    // Traverse the state to obtain {symbolicState}
     this.traverseState()
     storeMap.set(this.symbolicState, {
       internal: this as any,
@@ -99,6 +107,8 @@ export class BaseClass<T, A> {
     }
   }
 
+  // Section: used by {createModel} to modify internals
+  private isRecord: boolean = false
   setAsRecord() {
     this.isRecord = true
   }
@@ -108,7 +118,7 @@ export class BaseClass<T, A> {
    * {set} export is derived by using this.
    */
 
-  setState: X.SetState<T> = (payload, produce) => {
+  setState: SetState<T> = (payload, produce, address) => {
     if (typeof payload === 'function') {
       // Easy usage of {immer.produce} or other similar functions
       const nextState: T | Promise<T> = produce
@@ -251,7 +261,6 @@ export class BaseClass<T, A> {
     // set new normalizedState and symbolicState
     this.normalizedState = normalized
     this.setSymbolicState(symbolic)
-
     // Remove all previous subscriptions to children
     this.childSubscriptions.forEach((unsubscribe) => unsubscribe())
     // Subscribe to the changes of children

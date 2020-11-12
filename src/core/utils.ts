@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect } from 'react'
+import { Root } from './root'
 import { configObject } from './config'
-import { StoreInternalAPI } from './createStore'
 import { error } from './error'
 import { X } from './types'
 
@@ -16,7 +16,7 @@ export const isStore = (store: X.Value<any>): store is X.Store<any, any> =>
 // answered Oct 27 '16 at 20:56 by trincot
 export const deepClone = (
   state: any,
-  store: StoreInternalAPI<any>,
+  store: Root<any, any>,
   relativeAddress: string[] = []
 ): any => {
   const childStores = new Set()
@@ -123,7 +123,7 @@ export const getValueByAddress = (root: object, address: string[]) => {
 // This map is used by {get, subscribe} exports, to know the store that
 // the member (object or primitive) belongs to, and its address in that store
 export interface InternalRecord {
-  internal: StoreInternalAPI<any>
+  internal: Root<any, any>
   address: string[]
 }
 

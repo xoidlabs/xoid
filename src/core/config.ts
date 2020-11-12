@@ -12,8 +12,5 @@ export const configObject: Config = {
 }
 
 export const config = (options: Partial<Config>) => {
-  Object.keys(options).forEach((key) => {
-    // @ts-ignore
-    configObject[key] = options[key]
-  })
+  Object.assign(configObject, options)
 }

@@ -1,4 +1,4 @@
-import { BaseClass } from './baseStore'
+import { Root } from './root'
 import { error } from './error'
 import { X, GetStoreState, Model } from './types'
 import {
@@ -74,7 +74,7 @@ export const subscribe = <T extends X.Value<any>>(
     const { address, internal } = record
     if (address.length) {
       // create on-demand store
-      const selector = new BaseClass((get) => get(item))
+      const selector = new Root((get) => get(item))
       const unsub = selector.subscribe(fn)
       return () => {
         unsub()

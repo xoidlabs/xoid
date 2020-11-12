@@ -23,14 +23,15 @@ const errorMap = {
   'action-function-1': TypeError(
     'Second argument of `createModel` should be of function or undefined type.'
   ),
-  get: TypeError('Argument of `get` should be of Store or Abstract type.'),
+  get: TypeError('Argument of `get` should be a Store, or a Store member.'),
   set: TypeError(
-    'First argument of `set` should be of Store or Abstract type.'
+    'First argument of `set` should be of Store, or a Store member.'
   ),
   use: TypeError('Argument of `use` should be of Store type.'),
   subscribe: TypeError(
-    'Argument of `subscribe` should be of Store or Abstract type.'
+    'Argument of `subscribe` should be of Store, or a Store member.'
   ),
+  parent: TypeError('Argument of `parent` should be of Store type.'),
 }
 
 type XoidError = keyof typeof errorMap
