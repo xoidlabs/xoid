@@ -10,22 +10,7 @@ import {
   storeMap,
 } from './utils'
 
-export const get = <T extends X.Value<any>>(item: T): GetStoreState<T> => {
-  const record = storeMap.get(item) || memberMap.get(item)
-  if (record) {
-    const { address, internal } = record
-    if (address.length) {
-      return address.reduce(
-        (acc: any, key: any) => acc[key],
-        internal.getNormalizedState()
-      )
-    } else {
-      return internal.getNormalizedState()
-    }
-  } else {
-    throw error('get')
-  }
-}
+export const get = 1
 export function set<T extends Model<any, any, any>>(
   store: T,
   value:
@@ -42,20 +27,20 @@ export function set<T extends X.Value<any>>(
 ): void {
   const record = storeMap.get(store) || memberMap.get(store)
   if (record) {
-    const { address, internal } = record
-    const state = internal.getState()
-    const rawValue = getValueByAddress(state, address)
-    const newValue =
-      typeof value === 'function' ? (value as Function)(rawValue) : value
-    if (newValue !== rawValue) {
-      if (address.length) {
-        const newState = { ...state }
-        setValueByAddress(newState, address, newValue)
-        internal.setStateInner(newState)
-      } else {
-        internal.setState(newValue)
-      }
-    }
+    // const { address, internal } = record
+    // const state = internal.getState()
+    // const rawValue = getValueByAddress(state, address)
+    // const newValue =
+    //   typeof value === 'function' ? (value as Function)(rawValue) : value
+    // if (newValue !== rawValue) {
+    //   if (address.length) {
+    //     const newState = { ...state }
+    //     setValueByAddress(newState, address, newValue)
+    //     internal.setStateInner(newState)
+    //   } else {
+    //     internal.setState(newValue)
+    //   }
+    // }
   } else throw error('set')
 }
 

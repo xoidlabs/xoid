@@ -3,6 +3,7 @@ import { Root } from './root'
 import { configObject } from './config'
 import { error } from './error'
 import { X } from './types'
+import { Address } from './transform'
 
 // For SSR / React Native: https://github.com/react-spring/zustand/pull/34
 export const useIsoLayoutEffect =
@@ -96,12 +97,12 @@ export const destroy = <T extends X.Value<any>>(item: T) => {
 }
 
 export const setValueByAddress = (
-  root: object,
-  address: string[],
+  root: any,
+  address: Address,
   newValue: any
 ) => {
   if (address.length) {
-    address.reduce((acc: any, key: string, i) => {
+    address.reduce((acc: any, key, i) => {
       if (i === address.length - 1) acc[key] = newValue
       return acc[key]
     }, root)
@@ -110,13 +111,20 @@ export const setValueByAddress = (
   }
 }
 
-export const getValueByAddress = (root: object, address: string[]) => {
-  if (address.length) {
-    return address.reduce((acc: any, key: string, i) => {
-      return acc[key]
-    }, root)
+export const getValueByAddress = (
+  obj: any,
+  address: Address
+): [any, boolean] => {
+  const a = [...address]
+  if (a.length) {
+    const next = a.shift()
+    if (typeof obj === 'object' && obj.hasOwnProperty(next)) {
+      return getValueByAddress(obj[next as keyof Address], a)
+    } else {
+      return [null, false]
+    }
   } else {
-    return root
+    return [obj, true]
   }
 }
 

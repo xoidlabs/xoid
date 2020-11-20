@@ -1,5 +1,6 @@
 import {
   deepClone,
+  getValueByAddress,
   memberMap,
   parentMap,
   setValueByAddress,
@@ -9,7 +10,15 @@ import { X, XGet, InitSet, Initializer } from './types'
 import { get } from './main'
 import { error } from './error'
 import { configObject } from './config'
-import { Address } from './transform'
+import {
+  Address,
+  getData,
+  setData,
+  transform,
+  XNodeData,
+  XNodeData$,
+} from './transform'
+import { set } from './createStore'
 
 // zustand is used as a starting point to this file
 // https://github.com/react-spring/zustand
@@ -39,19 +48,22 @@ export type ShallowSubscribe<T> = (listener: StateListener<T>) => void
 export type GetSymbolicState<T> = () => X.Store<T, any>
 
 export class Root<T, A> {
-  private state: T
   private isSelector: boolean
   private initializer!: Initializer<T>
 
   getParent(): any {}
   setParent(root: Root<any, any>, address: Address) {}
-  setChildren(children: Set<any>) {}
 
-  private normalizedState: any
-  private symbolicState: any
+  children?: Set<XNodeData$>
+  setChildren = (children: Set<any>) => (this.children = children)
 
-  private listeners: Set<StateListener<T>> = new Set()
-  private shallowListeners: Set<StateListener<T>> = new Set()
+  //
+  private store: any
+  getStore = () => this.store
+
+  //
+  private value: T
+  getValue = (address: Address) => getValueByAddress(this.value, address)[0]
 
   private childSubscriptions: (() => void)[] = []
 
@@ -61,97 +73,89 @@ export class Root<T, A> {
     if (this.isSelector) this.initializer = init as Initializer<T>
 
     // Create the initial state
-    this.state = this.isSelector
+    this.value = this.isSelector
       ? this.initializer(this.stateGetter, this.stateSetter)
       : (init as T)
 
-    // Keep {symbolicState}'s prototype consistent with the actual state
-    this.symbolicState = Array.isArray(this.state) ? [] : {}
-
-    // Traverse the state to obtain {symbolicState}
-    this.traverseState()
-    storeMap.set(this.symbolicState, {
-      internal: this as any,
-      address: [],
-    })
+    // Obtain {store}
+    ;[this.store, this.value] = transform(this.value, this, [])
     this.setActions(after)
   }
 
-  /**
-   * Section: several get... and set.. methods
-   */
-  // IMPORTANT: reduce one of them
-  getState: X.GetState<T> = () => this.state
-  getNormalizedState = () => this.normalizedState
-  getSymbolicState = () => this.symbolicState
-  setSymbolicState(payload: Symbolic__) {
-    const { symbolicState } = this
-    // delete all keys
-    Object.keys(symbolicState).forEach((key) => delete symbolicState[key])
-    // shallowmerge it to the
-    Object.keys(payload).forEach((key) => (symbolicState[key] = payload[key]))
-  }
-
-  // Section: actions
-  actions: any
+  // Section: Actions
+  private actions: any
   getActions = () => this.actions
   setActions = (after: any) => {
     if (after) {
-      if (typeof after === 'function') {
-        this.actions = after(this.symbolicState)
-      } else {
-        throw error('action-function')
-      }
+      if (typeof after === 'function') this.actions = after(this.store)
+      else throw error('action-function')
       // @ts-ignore
-      this.symbolicState[configObject.actionsSymbol] = this.actions
+      this.store[configObject.actionsSymbol] = this.actions
     }
   }
 
-  // Section: used by {createModel} to modify internals
+  setState: SetState<T> = (payload, decorator, address = []) => {
+    const prevValue: T = this.getValue(address)
+
+    if (typeof payload === 'function') {
+      // Easy usage of {immer.produce} or other similar functions
+      const nextValue: T | Promise<T> = decorator
+        ? decorator(prevValue, payload as (state: T) => T | Promise<T>)
+        : (payload as (state: T) => T | Promise<T>)(prevValue)
+
+      if (
+        // This condition determines if the payload is an async function, by duck typing
+        nextValue &&
+        typeof (nextValue as Promise<any>)?.then === 'function' &&
+        typeof (nextValue as Promise<any>)?.finally === 'function'
+      ) {
+        ;(nextValue as Promise<T>).then((promiseResult: T) =>
+          this.setStateInner(prevValue, promiseResult, address)
+        )
+      } else {
+        this.setStateInner(prevValue, nextValue as T, address)
+      }
+    } else {
+      this.setStateInner(prevValue, payload, address)
+    }
+  }
+
+  setStateInner = (prevValue: T, nextValue: T, address: Address) => {
+    if (nextValue === prevValue) return
+    if (address.length) {
+      // TODO: clone the object up to the point where subtree stays
+      const newValue = { ...this.value }
+      setValueByAddress(newValue, address, nextValue)
+      this.setStateInner(this.value, newValue, [])
+    } else {
+      // If there's child stores already, let them do the traversing
+      if (this.children && this.children.size) {
+        this.children.forEach((item) => {
+          const [branch, branchExists] = getValueByAddress(
+            nextValue,
+            item.address
+          )
+          if (branchExists) {
+            const childRoot = item.root
+            setValueByAddress(nextValue, item.address, childRoot.getStore())
+            childRoot.setStateInner(childRoot.value, branch, [])
+          }
+        })
+      }
+      // Set {store} and {value} trees
+      const result = transform(nextValue, this, address)
+      override(this.store, result[0])
+      this.value = result[1]
+      // Also don't lose these two
+      setData(this.store, { root: this, address: [], value: this.value })
+      this.store[configObject.actionsSymbol] = this.actions
+    }
+  }
+
+  // Section: For {createModel} to modify internals
   private isRecord: boolean = false
   setAsRecord() {
     this.isRecord = true
-  }
-
-  /**
-   * The following part is about the {setState} method.
-   * {set} export is derived by using this.
-   */
-
-  setState: SetState<T> = (payload, produce, address) => {
-    if (typeof payload === 'function') {
-      // Easy usage of {immer.produce} or other similar functions
-      const nextState: T | Promise<T> = produce
-        ? produce(this.state, payload as (state: T) => T | Promise<T>)
-        : (payload as (state: T) => T | Promise<T>)(this.state)
-      if (
-        // This condition determines if the payload is an async function, by duck typing
-        nextState &&
-        typeof (nextState as Promise<any>)?.then === 'function' &&
-        typeof (nextState as Promise<any>)?.finally === 'function'
-      ) {
-        ;(nextState as Promise<T>).then((result: T) =>
-          this.setStateInner(result)
-        )
-      } else {
-        this.setStateInner(nextState as T)
-      }
-    } else {
-      this.setStateInner(payload)
-    }
-  }
-
-  setStateInner = (value: T) => {
-    if (value !== this.state) {
-      this.state = value
-      // Do this to prepare symbolicState and normalizedState
-      this.traverseState()
-      // Fire listeners after the state is changed
-      this.listeners.forEach((listener) => listener(this.state))
-      this.shallowListeners.forEach((listener) => listener(this.state))
-      // IMPORTANT: remove this Inform the parent store
-      this.informTheParent()
-    }
   }
 
   /**
@@ -183,11 +187,12 @@ export class Root<T, A> {
     this.setStateInner(newState)
   }
 
-  /**
-   * Section: subscribing to the store.
-   * The logic is kept almost identical with zustand's logic.
-   * There's additional {shallowSubscribe} method that's used internally.
-   */
+  //Section: subscribing to the store.
+  //The logic is kept almost identical with zustand's logic.
+  //There's additional {shallowSubscribe} method that's used internally.
+
+  private listeners: Set<StateListener<T>> = new Set()
+  private shallowListeners: Set<StateListener<T>> = new Set()
 
   subscribeWithSelector = <StateSlice>(
     listener: StateSliceListener<StateSlice>,
@@ -197,7 +202,7 @@ export class Root<T, A> {
       // Selector could throw but we don't want to stop the listener from
       // being called. https://github.com/react-spring/zustand/pull/37
       try {
-        const newStateSlice = selector(this.state)
+        const newStateSlice = selector(this.value)
         listener(newStateSlice)
       } catch (error) {
         listener(null, error)
@@ -238,27 +243,13 @@ export class Root<T, A> {
   }
 
   handleChildUpdate = () => {
-    this.listeners.forEach((listener) => listener(this.state))
-  }
-
-  informTheParent = () => {
-    if (!this.isRecord) {
-      const match = parentMap.get(this.getSymbolicState())
-      if (match) {
-        const { internal } = storeMap.get(match.parent) as any
-        setValueByAddress(
-          internal.getNormalizedState(),
-          match.address,
-          this.normalizedState
-        )
-      }
-    }
+    this.listeners.forEach((listener) => listener(this.value))
   }
 
   traverseState = () => {
     // generate copied one
-    const [symbolic, normalized, children] = deepClone(this.state, this)
-    // set new normalizedState and symbolicState
+    const [symbolic, normalized, children] = deepClone(this.value, this)
+    // set new normalizedState and store
     this.normalizedState = normalized
     this.setSymbolicState(symbolic)
     // Remove all previous subscriptions to children
@@ -268,4 +259,14 @@ export class Root<T, A> {
       item.internal.shallowSubscribe(this.handleChildUpdate)
     )
   }
+}
+
+const override = (
+  target: Record<string, unknown>,
+  payload: Record<string, unknown>
+) => {
+  // delete all keys
+  Object.keys(target).forEach((key) => delete target[key])
+  // shallowmerge it to the object
+  Object.keys(payload).forEach((key) => (target[key] = payload[key]))
 }

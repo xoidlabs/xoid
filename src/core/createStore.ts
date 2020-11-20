@@ -2,6 +2,7 @@ import { error } from './error'
 import { Root } from './root'
 import { getData, transform } from './transform'
 import { GetStoreState, Initializer, X } from './types'
+import { getValueByAddress } from './utils'
 
 type TODO = any
 
@@ -18,7 +19,7 @@ export function createStore<T, Actions = undefined>(
   after?: X.After<T, Actions>
 ): X.Store<T, Actions> {
   const root = new Root(init, after)
-  return transform(root)
+  return root.getStore()
 }
 
 /**
@@ -29,7 +30,7 @@ export function createStore<T, Actions = undefined>(
 
 export const get = <T extends X.Value<any>>(item: T): GetStoreState<T> => {
   const data = getData(item)
-  if (data) return data.value
+  if (data) return data.root.getValue(data.address)
   else throw error('get')
 }
 
@@ -42,11 +43,11 @@ export const get = <T extends X.Value<any>>(item: T): GetStoreState<T> => {
 export const set = <T extends X.Value<any>>(
   item: T,
   value: TODO,
-  decorator: TODO
+  decorator?: TODO
 ): void => {
   const data = getData(item)
   if (data) data.root.setState(value, decorator, data.address)
-  else throw error('get')
+  else throw error('set')
 }
 
 /**
