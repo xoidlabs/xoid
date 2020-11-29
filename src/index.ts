@@ -1,44 +1,16 @@
-import {
-  createStore,
-  createModel,
-  get,
-  set,
-  use,
-  subscribe,
-  parent,
-  config,
-} from './core'
+import { create, get, set, use, subscribe, parent } from './core'
 import { useStore } from './react'
 
-export {
-  createStore,
-  createModel,
-  get,
-  set,
-  use,
-  subscribe,
-  useStore,
-  parent,
-  config,
-}
+export { create, get, set, use, subscribe, useStore, parent }
 
 const xoid = {
-  createStore,
-  createModel,
+  create,
   get,
   set,
   use,
   subscribe,
   useStore,
   parent,
-  config,
 }
 
 export default xoid
-
-export type {
-  Model,
-  XGet,
-  X,
-  InitSet, // StateOf // ActionsOf
-} from './core/types'

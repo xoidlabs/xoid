@@ -24,10 +24,9 @@
 
 - Extensive Typescript support
 - Not limited to React
--
 - Handles deeply nested states perfectly
 - Provides an easy way for (de)serialization
-- React Native, Redux Devtools supported
+- Redux Devtools supported
 
 To install, run the following command:
 
@@ -39,7 +38,7 @@ npm install xoid
 
 | Exports 	| Description 	|
 |-	|-	|
-| [`create`](#create)	| Creates a store or a selector |
+| [`create`](#create) | Creates a store or a selector |
 | [`get`](#get) , [`set`](#set) , [`use`](#use) | Interacts with stores |
 | [`subscribe`](#subscribe) (vanilla) , [`useStore`](hooks#usestore) (React) | Subscribes to stores |
 |  [`parent`](#parent) , [`devtools`](#devtools) | Utilities |
@@ -176,7 +175,7 @@ set(myName, 'ME')
 console.log(get(myName)) // ME
 ```
 
-Another benefit of using models are builtin `add` and `remove` actions. They are present in the store actions by default when models are created with `create.arrayOf`s or `create.objectOf` methods. These builtins have 100% consistent TypeScript types with your model schemas.
+Another benefit of using models are builtin `add` and `remove` actions. They are present in the store actions by default when models are created with `create.arrayOf` or `create.objectOf` methods. These builtins have 100% consistent TypeScript types with your model schemas.
 
 ```js
 use(companyStore.employees).add({ name: 'third employee'})

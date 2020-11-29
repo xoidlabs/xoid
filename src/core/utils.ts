@@ -1,144 +1,134 @@
-import { useEffect, useLayoutEffect } from 'react'
+import { error } from './errors'
 import { Root } from './root'
-import { configObject } from './config'
-import { error } from './error'
-import { X } from './types'
-import { Address } from './transform'
+import { Decorator, Store, Value } from './types'
 
-// For SSR / React Native: https://github.com/react-spring/zustand/pull/34
-export const useIsoLayoutEffect =
-  typeof window === 'undefined' ? useEffect : useLayoutEffect
+// Data storage
+const dataSymbol = Symbol()
+type Covid19 = { [dataSymbol]: any }
+const setData = (obj: Value<unknown>, data: TrapData) =>
+  (((obj as unknown) as Covid19)[dataSymbol] = data)
+export const getData = (obj: Value<unknown>): TrapData =>
+  ((obj as unknown) as Covid19)[dataSymbol]
 
-export const isStore = (store: X.Value<any>): store is X.Store<any, any> =>
-  storeMap.has(store)
-
-// Following answer is used as a starting point
-// https://stackoverflow.com/questions/4459928/how-to-deep-clone-in-javascript/40294058#40294058
-// answered Oct 27 '16 at 20:56 by trincot
-export const deepClone = (
-  state: any,
-  store: Root<any, any>,
-  relativeAddress: string[] = []
-): any => {
-  const childStores = new Set()
-  const deepCloneInner = (
-    obj: any,
-    hash = new WeakMap(),
-    address: string[] = relativeAddress
-  ): any => {
-    if (Object(obj) !== obj) {
-      const primitive = { [configObject.valueSymbol]: obj } as X.Value<any>
-      // record the address  and store of the primitive. (for being able to subscribe and set)
-      memberMap.set(primitive, { internal: store, address })
-      return [primitive, obj]
-    }
-    if (hash.has(obj)) return [...hash.get(obj)] // cyclic reference
-    const attemptChildStore = storeMap.get(obj)
-
-    if (attemptChildStore) {
-      childStores.add(attemptChildStore)
-      const mc = attemptChildStore.internal.getSymbolicState()
-      parentMap.set(mc, { parent: store.getSymbolicState(), address })
-      return [mc, attemptChildStore.internal.getNormalizedState()]
-    }
-    const isArray = Array.isArray(obj)
-    const isFunction = typeof obj === 'function'
-
-    const result = isArray
-      ? []
-      : isFunction
-      ? obj
-      : obj.constructor
-      ? new obj.constructor()
-      : Object.create(null)
-
-    const result2 = isArray
-      ? []
-      : isFunction
-      ? obj
-      : obj.constructor
-      ? new obj.constructor()
-      : Object.create(null)
-
-    // record the address and store of the object. (for being able to subscribe and set)
-    memberMap.set(result, { internal: store, address })
-    hash.set(obj, [result, result2])
-
-    Object.keys(obj).map((key) => {
-      address = []
-      address.push(key)
-      const cloneResult = deepCloneInner(obj[key], hash, address)
-      result[key] = cloneResult[0]
-      result2[key] = cloneResult[1]
-      // reset the hash, because we want to consider only the children as circular deps.
-      hash = new WeakMap()
-    })
-
-    return [result, result2]
-  }
-
-  if (isStore(state)) {
-    // IMPORTANT: following parts could be able to be changed based on the config
-    const child = storeMap.get(state)
-    childStores.add(child)
-    // @ts-ignore
-    const [result, result2] = [state, child.internal.getNormalizedState()]
-    return [result, result2, childStores]
-  } else {
-    const [result, result2] = deepCloneInner(state)
-    return [result, result2, childStores]
-  }
-}
-
-export const destroy = <T extends X.Value<any>>(item: T) => {
-  const record = storeMap.get(item)
-  if (record) return record.internal.destroy()
-  else throw error('destroy')
-}
-
-export const setValueByAddress = (
-  root: any,
-  address: Address,
-  newValue: any
-) => {
-  if (address.length) {
-    address.reduce((acc: any, key, i) => {
-      if (i === address.length - 1) acc[key] = newValue
-      return acc[key]
-    }, root)
-  } else {
-    throw error('internal-1')
-  }
-}
-
-export const getValueByAddress = (
-  obj: any,
+// Other
+type Handler = any
+export type Key = string | number
+export type Address = Key[]
+type TrapData = {
+  root: Root<any, unknown>
   address: Address
-): [any, boolean] => {
-  const a = [...address]
-  if (a.length) {
-    const next = a.shift()
-    if (typeof obj === 'object' && obj.hasOwnProperty(next)) {
-      return getValueByAddress(obj[next as keyof Address], a)
+  getValue: () => any
+  setValue: (newValue: any, decorator: any) => void
+}
+
+const createHandler = () => ({
+  get(target: { [dataSymbol]?: any }, key: Key) {
+    if (key === (dataSymbol as any)) {
+      return target[dataSymbol]
+    }
+    const { root, getValue, address } = getData(target)
+    // only create a new trap for existing keys
+    const value = getValue()
+    if (value[key]) {
+      if (Object.hasOwnProperty.call(value, key)) {
+        const data = getData(value[key])
+        if (data && !data.address.length) return value[key]
+        return transform(
+          root,
+          [...address, key],
+          value[key],
+          createSetter(root, value, key),
+          this
+        )
+      } else {
+        // return Array.isArray(value)
+        //   ? //@ts-ignore
+        //     value[key].bind(
+        //       value.map((item, i) =>
+        //         transform(
+        //           root,
+        //           [...address, i],
+        //           item,
+        //           createSetter(root, value, i),
+        //           this
+        //         )
+        //       )
+        //     )
+        //   : value[key]
+      }
+    }
+  },
+  set() {
+    throw error('mutation')
+  },
+})
+
+export const storeHandler = createHandler()
+export const valueHandler = createHandler()
+
+type Transform = <K>(
+  root: Root<K, unknown>,
+  address: Address,
+  value: K,
+  setValue: (value: K, decorator?: Decorator<K>) => void,
+  handler: Handler
+) => Store<K>
+
+const transform: Transform = (root, address, value, setValue, handler) => {
+  let obj = typeof value === 'object' ? value : {}
+  const data = {
+    root,
+    address,
+    getValue() {
+      return value
+    },
+    setValue,
+  }
+  setData(obj, data)
+  return new Proxy(obj, handler) as Store<any>
+}
+
+type CreateTrap = <K>(value: Root<K, unknown>, handler: Handler) => Store<K>
+export const createTrap: CreateTrap = (root, handler) => {
+  const store = transform(
+    root,
+    [],
+    root.state,
+    createSetter(root, root, 'state'),
+    handler
+  )
+  return store
+}
+
+export const createSetter = (
+  root: Root<any, any>,
+  object: Record<Key, any>,
+  key: Key
+) => <T>(
+  payload: T | ((state: T) => T | Promise<T>),
+  decorator?: Decorator<T>
+) => {
+  const prevValue: T = object[key]
+
+  if (typeof payload === 'function') {
+    // Easy usage of {immer.produce} or other similar functions
+    const nextValue: T | Promise<T> = decorator
+      ? decorator(prevValue, payload as (state: T) => T | Promise<T>)
+      : (payload as (state: T) => T | Promise<T>)(prevValue)
+
+    if (
+      // This condition determines if the payload is a promise, by duck typing
+      nextValue &&
+      typeof (nextValue as Promise<unknown>)?.then === 'function' &&
+      typeof (nextValue as Promise<unknown>)?.finally === 'function'
+    ) {
+      ;(nextValue as Promise<T>).then((promiseResult: T) =>
+        root.handleStateChange(object, key, promiseResult)
+      )
     } else {
-      return [null, false]
+      root.handleStateChange(object, key, nextValue as T)
     }
   } else {
-    return [obj, true]
+    root.handleStateChange(object, key, payload)
   }
 }
-
-// This map is used by {get, subscribe} exports, to know the store that
-// the member (object or primitive) belongs to, and its address in that store
-export interface InternalRecord {
-  internal: Root<any, any>
-  address: string[]
-}
-
-// {storeMap} and {memberMap} dichotomy is here to stay.
-// Because when {memberMap} is not needed (as in {use} export),
-// A faster lookup can be made by only searching in {storeMap}
-export const memberMap = new WeakMap<X.Value<any>, InternalRecord>()
-export const storeMap = new WeakMap<X.Value<any>, InternalRecord>()
-// TODO: merge this one into storeMap
-export const parentMap = new WeakMap()
