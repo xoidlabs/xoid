@@ -1,5 +1,6 @@
 // import { createStore } from './createStore'
-// import { Model, X } from './types'
+import { create, set } from '.'
+import { Store } from './types'
 // import { InternalRecord, isStore, storeMap } from './utils'
 // import { set } from './main'
 // import { error } from './error'
@@ -44,33 +45,6 @@
 //   object<L extends Record<string, K | T>>(
 //     init?: L
 //   ): X.Store<Model<T, A, K>[], ObjectBuiltins<K>>
-// }
-
-// export const createModel: ModelCreator = (init, after) => {
-//   const storeCreator = (a: any) => {
-//     const value = init(a)
-//     if (after && typeof after !== 'function') {
-//       throw error('action-function-1')
-//     }
-//     const store = createStore(value, after)
-
-//     // modify the set function of the store
-//     const { internal } = storeMap.get(store) as InternalRecord
-//     const oldSet = internal.setState
-//     // override the set function with its special version
-//     internal.setState = (value: any) => {
-//       // modify the candidate before it goes into traversal
-//       value = init(value)
-//       oldSet(value)
-//     }
-//     // override
-//     return store
-//   }
-//   Object.assign(storeCreator, {
-//     array: recordCreator(storeCreator, Types.array),
-//     object: recordCreator(storeCreator, Types.object),
-//   })
-//   return storeCreator as any
 // }
 
 // const recordCreator = (storeCreator: any, type?: Types) => <T, A>(
@@ -151,4 +125,27 @@
 //   })
 //   return newObj
 // }
-export const a = 5
+
+// export function objectOf<Payload, State, Actions>(
+//   model: (payload: Payload) => Store<State, Actions>
+// ) {
+//   const store = create(
+//     {} as Record<string, Store<State, Actions>>,
+//     (store) => ({
+//       add: (item: Payload, key: string) =>
+//         set(store, (state) => ({ ...state, [key]: model(item) })),
+//       //
+//       remove: (key: string) => {
+//         set(store, (state) => {
+//           return Object.keys(state).reduce((result, ownKey) => {
+//             if (ownKey !== key) {
+//               result[ownKey] = state[ownKey]
+//             }
+//             return result
+//           }, {} as Record<string, Store<State, Actions>>)
+//         })
+//       },
+//     })
+//   )
+//   return store
+// }

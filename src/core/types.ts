@@ -1,6 +1,5 @@
 const store = Symbol('store')
 const value = Symbol('value')
-const model = Symbol('model')
 
 export type XGet<Self> = {
   <T>(store: Value<T>): T
@@ -39,18 +38,20 @@ export type Transform<T> = T extends Value<any>
   ? Rec<{ [P in keyof T]: Transform<T[P]> }>
   : Value<T extends true | false ? boolean : T>
 
-// Main types
-export type Model<T, A extends Actor<T, any>, K> = Store<T, ReturnType<A>> & {
-  [model]: K
-}
+export type StateOf<T> = T extends Value<infer K>
+  ? K extends Record<any, any>
+    ? { [P in keyof K]: StateOf<K[P]> }
+    : K
+  : T
 
-// TODO: rename this
-export type Actor<T, A> = (store: Store<T, A>) => A
+// type MockStore = Store<
+//   {
+//     alpha: Store<number, undefined>
+//     deep: Store<number[], undefined>
+//   },
+//   {
+//     inc: () => void
+//   }
+// >
 
-// export type StateOf<T> = T extends Value<infer K>
-//   ? K extends Function
-//     ? K
-//     : {
-//         [P in keyof K]: GetStoreState<K[P]>
-//       }
-//   : T
+// type a = StateOf<MockStore>

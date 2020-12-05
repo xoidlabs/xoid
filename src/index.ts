@@ -1,7 +1,6 @@
-import { create, get, set, use, subscribe, parent } from './core'
+import { create, get, set, use, subscribe } from './core'
 import { useStore } from './react'
-
-export { create, get, set, use, subscribe, useStore, parent }
+export { create, get, set, use, subscribe, useStore }
 
 const xoid = {
   create,

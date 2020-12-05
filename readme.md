@@ -40,8 +40,8 @@ npm install xoid
 |-	|-	|
 | [`create`](#create) | Creates a store or a selector |
 | [`get`](#get) , [`set`](#set) , [`use`](#use) | Interacts with stores |
-| [`subscribe`](#subscribe) (vanilla) , [`useStore`](hooks#usestore) (React) | Subscribes to stores |
-|  [`parent`](#parent) , [`devtools`](#devtools) | Utilities |
+| [`subscribe`](#subscribe) , [`useStore`](hooks#usestore) | Subscribes to stores |
+| [`devtools`](#devtools) | Utilities |
 
 ## Usage
 
@@ -186,7 +186,7 @@ use(companyStore.employees).remove(2)
 // remove by match
 use(companyStore.employees).remove(item => item.name === 'third employee')
 
-// similarly, if `employees` was a EmployeeModel.object
+// similarly, if `employees` was an "objectOf(EmployeeModel)"
 use(companyStore.employees).add({ name: 'third employee'}, '0000')
 // remove by key
 use(companyStore.employees).remove('0000')

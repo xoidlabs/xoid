@@ -4,131 +4,76 @@ import { Decorator, Store, Value } from './types'
 
 // Data storage
 const dataSymbol = Symbol()
-type Covid19 = { [dataSymbol]: any }
-const setData = (obj: Value<unknown>, data: TrapData) =>
-  (((obj as unknown) as Covid19)[dataSymbol] = data)
-export const getData = (obj: Value<unknown>): TrapData =>
-  ((obj as unknown) as Covid19)[dataSymbol]
+type WithData = { [dataSymbol]: any }
+export const getData = (obj: Value<unknown>): Data =>
+  ((obj as unknown) as WithData)[dataSymbol]
 
-// Other
-type Handler = any
 export type Key = string | number
-export type Address = Key[]
-type TrapData = {
+type Data = {
   root: Root<any, unknown>
-  address: Address
-  getValue: () => any
-  setValue: (newValue: any, decorator: any) => void
+  source: Record<Key, unknown>
+  key: Key
 }
 
-const createHandler = () => ({
-  get(target: { [dataSymbol]?: any }, key: Key) {
-    if (key === (dataSymbol as any)) {
-      return target[dataSymbol]
-    }
-    const { root, getValue, address } = getData(target)
+export const createHandler = (pure: boolean) => ({
+  get(data: Data, requestedKey: Key | typeof dataSymbol) {
+    const { root, source, key } = data
+    const value = source[key] as Record<Key, unknown>
+
+    // {dataSymbol} is special. It should not create a proxy trap.
+    if (requestedKey === dataSymbol) return data
+
     // only create a new trap for existing keys
-    const value = getValue()
-    if (value[key]) {
-      if (Object.hasOwnProperty.call(value, key)) {
-        const data = getData(value[key])
-        if (data && !data.address.length) return value[key]
-        return transform(
-          root,
-          [...address, key],
-          value[key],
-          createSetter(root, value, key),
-          this
-        )
-      } else {
-        // return Array.isArray(value)
-        //   ? //@ts-ignore
-        //     value[key].bind(
-        //       value.map((item, i) =>
-        //         transform(
-        //           root,
-        //           [...address, i],
-        //           item,
-        //           createSetter(root, value, i),
-        //           this
-        //         )
-        //       )
-        //     )
-        //   : value[key]
-      }
+    if (Object.hasOwnProperty.call(value, requestedKey)) {
+      const nextValue = value[requestedKey]
+
+      // If it's a store, return its already existing proxy
+      const nextData = getData(nextValue as Value<unknown>)
+      if (nextData) return pure ? nextData.source[nextData.key] : nextValue
+
+      return transform(root, value, requestedKey, pure)
+    } else if (value[requestedKey]) {
+      // TODO: make a research on alternatives of this
+      const obj = Array.isArray(value)
+        ? value.map((item) => transform(root, value, item, false))
+        : value
+      return (value as any)[requestedKey].bind(obj)
     }
   },
+  // ownKeys(data: Data) {
+  //   return Object.keys(data.source[data.key])
+  // },
+  // has(data: Data, key) {
+  //   const value = data.source[data.key]
+  //   return key in value
+  // },
   set() {
     throw error('mutation')
   },
 })
 
-export const storeHandler = createHandler()
-export const valueHandler = createHandler()
+export const storeHandler = createHandler(false)
+export const valueHandler = createHandler(true)
 
 type Transform = <K>(
   root: Root<K, unknown>,
-  address: Address,
-  value: K,
-  setValue: (value: K, decorator?: Decorator<K>) => void,
-  handler: Handler
+  source: Record<Key, unknown>,
+  key: Key,
+  pure: boolean
 ) => Store<K>
 
-const transform: Transform = (root, address, value, setValue, handler) => {
-  let obj = typeof value === 'object' ? value : {}
+export const transform: Transform = (root, source, key, pure) => {
+  if (pure && (typeof source[key] !== 'object' || source[key] === null))
+    return source[key]
   const data = {
     root,
-    address,
-    getValue() {
-      return value
-    },
-    setValue,
+    source,
+    key,
   }
-  setData(obj, data)
-  return new Proxy(obj, handler) as Store<any>
+  return new Proxy(data, pure ? valueHandler : storeHandler) as Store<any>
 }
 
-type CreateTrap = <K>(value: Root<K, unknown>, handler: Handler) => Store<K>
-export const createTrap: CreateTrap = (root, handler) => {
-  const store = transform(
-    root,
-    [],
-    root.state,
-    createSetter(root, root, 'state'),
-    handler
-  )
-  return store
-}
-
-export const createSetter = (
-  root: Root<any, any>,
-  object: Record<Key, any>,
-  key: Key
-) => <T>(
-  payload: T | ((state: T) => T | Promise<T>),
-  decorator?: Decorator<T>
-) => {
-  const prevValue: T = object[key]
-
-  if (typeof payload === 'function') {
-    // Easy usage of {immer.produce} or other similar functions
-    const nextValue: T | Promise<T> = decorator
-      ? decorator(prevValue, payload as (state: T) => T | Promise<T>)
-      : (payload as (state: T) => T | Promise<T>)(prevValue)
-
-    if (
-      // This condition determines if the payload is a promise, by duck typing
-      nextValue &&
-      typeof (nextValue as Promise<unknown>)?.then === 'function' &&
-      typeof (nextValue as Promise<unknown>)?.finally === 'function'
-    ) {
-      ;(nextValue as Promise<T>).then((promiseResult: T) =>
-        root.handleStateChange(object, key, promiseResult)
-      )
-    } else {
-      root.handleStateChange(object, key, nextValue as T)
-    }
-  } else {
-    root.handleStateChange(object, key, payload)
-  }
+export const pure = (data: Data) => {
+  const { root, source, key } = data
+  return transform(root, source, key, true)
 }

@@ -1,13 +1,7 @@
 import { XGet, XSet, Initializer, After } from './types'
 import { error } from './errors'
-import {
-  createSetter,
-  createTrap,
-  getData,
-  Key,
-  storeHandler,
-  valueHandler,
-} from './utils'
+import { getData, Key, pure, transform } from './utils'
+import { get, set } from '.'
 
 // zustand is used as a starting point to this file
 // https://github.com/react-spring/zustand
@@ -17,14 +11,10 @@ export type StateListener<T> = (state: T) => void
 export class Root<T, A> {
   private isSelector: boolean
   private initializer!: Initializer<T>
-
-  value: any
-  state: any
+  private state: any
   private store: any
-  getStore = () => this.store
 
-  getParent(): any {}
-  setParent(root: Root<any, any>) {}
+  getStore = () => this.store
 
   constructor(init: T | Initializer<T>, after?: After<T, A>) {
     // Determine if it's a selector, record its initializer
@@ -36,8 +26,13 @@ export class Root<T, A> {
       ? this.initializer(this.stateGetter, this.stateSetter)
       : (init as T)
 
-    this.store = createTrap(this, storeHandler)
-    this.value = createTrap(this, valueHandler)
+    this.store = transform(
+      this,
+      this as Record<string | number, unknown>,
+      'state',
+      false
+    )
+
     this.setActions(after)
   }
 
@@ -60,14 +55,14 @@ export class Root<T, A> {
   }
 
   // Used by selector type stores
-  private cleanupEffects: (() => void)[] = []
-  stateSetter: XSet = createSetter(this, this, 'state')
+  private cleanup: (() => void)[] = []
+  stateSetter: XSet = (value, decorator) => set(this.store, value, decorator)
   stateGetter: XGet<T> = (item?: any) => {
-    if (typeof item === 'undefined') return this.value
+    if (typeof item === 'undefined') return get(this.store)
     const data = getData(item)
     const unsubscribe = data.root.subscribe(this.otherStateListener)
-    this.cleanupEffects.push(unsubscribe)
-    return data.getValue()
+    this.cleanup.push(unsubscribe)
+    return pure(data)
   }
 
   otherStateListener = () => {
@@ -77,7 +72,7 @@ export class Root<T, A> {
 
   destroy = () => {
     this.listeners.clear()
-    this.cleanupEffects.forEach((fn) => fn())
+    this.cleanup.forEach((fn) => fn())
   }
 
   // Section: Firing listeners after state changes
@@ -87,7 +82,10 @@ export class Root<T, A> {
     nextValue: T
   ) => {
     if (object[key] === nextValue) return
+    // before assigning the next value, rehydrate already existing addresses.
+    nextValue, this.subStores
     object[key] = nextValue
+
     this.listeners.forEach((fn) => fn(this.value))
   }
 }
