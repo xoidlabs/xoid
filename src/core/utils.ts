@@ -1,8 +1,7 @@
 import { error } from './errors'
 import { Root } from './root'
-import { Decorator, Store, Value } from './types'
+import { Store, Value } from './types'
 
-// Data storage
 const dataSymbol = Symbol()
 type WithData = { [dataSymbol]: any }
 export const getData = (obj: Value<unknown>): Data =>
@@ -33,20 +32,23 @@ export const createHandler = (pure: boolean) => ({
 
       return transform(root, value, requestedKey, pure)
     } else if (value[requestedKey]) {
-      // TODO: make a research on alternatives of this
+      console.log('rk ', requestedKey)
+      // While using array methods, don't expose values. Instead, return an array of stores
       const obj = Array.isArray(value)
-        ? value.map((item) => transform(root, value, item, false))
+        ? value.map((_item, index) => transform(root, value, index, false))
         : value
       return (value as any)[requestedKey].bind(obj)
     }
   },
-  // ownKeys(data: Data) {
-  //   return Object.keys(data.source[data.key])
-  // },
-  // has(data: Data, key) {
-  //   const value = data.source[data.key]
-  //   return key in value
-  // },
+  ownKeys(data: Data) {
+    return Object.keys(data.source[data.key] as object)
+  },
+  getOwnPropertyDescriptor() {
+    return {
+      enumerable: true,
+      configurable: true,
+    }
+  },
   set() {
     throw error('mutation')
   },
@@ -76,4 +78,43 @@ export const transform: Transform = (root, source, key, pure) => {
 export const pure = (data: Data) => {
   const { root, source, key } = data
   return transform(root, source, key, true)
+}
+
+export const isRootData = (data: Data) => {
+  return data && (data.root as Record<any, any>) === data.source
+}
+
+export const getSubstores = (store: Record<string, unknown>) => {
+  const substores: { address: string[]; root: Root<unknown, unknown> }[] = []
+
+  const traverse = (obj: Record<string, unknown>, address: string[] = []) => {
+    const data = getData(obj as Value<unknown>)
+    if (isRootData(data)) {
+      substores.push({ address, root: data.root })
+    } else if (typeof obj === 'object' && obj !== null) {
+      Object.keys(obj).forEach((key) => {
+        const newAddress = [...address, key]
+        traverse(obj[key] as Record<string, unknown>, newAddress)
+      })
+    }
+  }
+  traverse(store)
+  return substores
+}
+
+export const getValueByAddress = (
+  obj: any,
+  address: string[]
+): [any, boolean] => {
+  const a = [...address]
+  if (a.length) {
+    const next = a.shift()
+    if (typeof obj === 'object' && obj.hasOwnProperty(next)) {
+      return getValueByAddress(obj[next as string], a)
+    } else {
+      return [null, false]
+    }
+  } else {
+    return [obj, true]
+  }
 }

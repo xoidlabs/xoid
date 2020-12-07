@@ -1,7 +1,9 @@
 import { Root } from './root'
 import { error } from './errors'
-import { getData, pure } from './utils'
+import { getData, isRootData, pure } from './utils'
 import { Initializer, After, Store, Value, Decorator, StateOf } from './types'
+
+export { objectOf, arrayOf } from './model'
 
 /**
  * Creates a store with the first argument as the initial state.
@@ -54,8 +56,8 @@ export const set = <T extends Value<any>>(
     if (
       // This condition determines if the payload is a promise, by duck typing
       nextValue &&
-      typeof (nextValue as Promise<unknown>)?.then === 'function' &&
-      typeof (nextValue as Promise<unknown>)?.finally === 'function'
+      typeof (nextValue as Promise<unknown>).then === 'function' &&
+      typeof (nextValue as Promise<unknown>).finally === 'function'
     ) {
       ;(nextValue as Promise<T>).then((promiseResult: T) =>
         root.handleStateChange(source, key, promiseResult)
@@ -76,8 +78,7 @@ export const set = <T extends Value<any>>(
 
 export const use = <T, Actions>(item: Store<T, Actions>): Actions => {
   const data = getData(item)
-  if (data && (data.root as Record<any, any>) === data.source)
-    return data.root.getActions()
+  if (isRootData(data)) return data.root.getActions()
   else throw error('use')
 }
 
@@ -86,10 +87,13 @@ export const use = <T, Actions>(item: Store<T, Actions>): Actions => {
  * @see https://xoid.dev/docs/api/subscribe
  */
 
-export const subscribe = <T>(item: Value<T>, fn: (state: T) => void) => {
+export const subscribe = <T>(
+  item: Value<T>,
+  fn: (state: StateOf<T>) => void
+) => {
   const data = getData(item)
   if (data) {
-    if ((data.root as Record<any, any>) === data.source) {
+    if (isRootData(data)) {
       const selector = new Root((get) => get(item))
       return selector.subscribe(fn as any)
     } else {

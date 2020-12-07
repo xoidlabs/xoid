@@ -35,7 +35,8 @@ export type Transform<T> = T extends Value<any>
   : T extends Function
   ? Value<T>
   : T extends object
-  ? Rec<{ [P in keyof T]: Transform<T[P]> }>
+  ? // TODO: Rec perhaps can be replaced with Value
+    Rec<{ [P in keyof T]: Transform<T[P]> }>
   : Value<T extends true | false ? boolean : T>
 
 export type StateOf<T> = T extends Value<infer K>
@@ -43,15 +44,3 @@ export type StateOf<T> = T extends Value<infer K>
     ? { [P in keyof K]: StateOf<K[P]> }
     : K
   : T
-
-// type MockStore = Store<
-//   {
-//     alpha: Store<number, undefined>
-//     deep: Store<number[], undefined>
-//   },
-//   {
-//     inc: () => void
-//   }
-// >
-
-// type a = StateOf<MockStore>

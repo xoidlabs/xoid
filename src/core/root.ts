@@ -1,30 +1,56 @@
-import { XGet, XSet, Initializer, After } from './types'
+import { XGet, XSet, Initializer, After, Value, Store } from './types'
 import { error } from './errors'
-import { getData, Key, pure, transform } from './utils'
+import {
+  getData,
+  getSubstores,
+  getValueByAddress,
+  isRootData,
+  Key,
+  pure,
+  transform,
+} from './utils'
 import { get, set } from '.'
+import { Model } from './model'
 
 // zustand is used as a starting point to this file
 // https://github.com/react-spring/zustand
 
-export type StateListener<T> = (state: T) => void
+type StateListener<T> = (state: T) => void
+
+interface Options {
+  model?: Model
+}
 
 export class Root<T, A> {
+  private model?: Model
   private isSelector: boolean
   private initializer!: Initializer<T>
   private state: any
   private store: any
+  private substores: { address: string[]; root: Root<unknown, unknown> }[]
 
-  getStore = () => this.store
+  getStore: () => Store<T, A> = () => this.store
 
-  constructor(init: T | Initializer<T>, after?: After<T, A>) {
+  constructor(
+    init: T | Initializer<T>,
+    after?: After<T, A>,
+    options?: Options
+  ) {
     // Determine if it's a selector, record its initializer
     this.isSelector = typeof init === 'function'
     if (this.isSelector) this.initializer = init as Initializer<T>
+    // Set isRecord
+    this.model = options?.model
 
     // Create the initial state
     this.state = this.isSelector
       ? this.initializer(this.stateGetter, this.stateSetter)
       : (init as T)
+
+    // Determine substore addresses
+    this.substores = this.model ? [] : getSubstores(this.state)
+
+    if (this.model) this.ensureStores()
 
     this.store = transform(
       this,
@@ -49,9 +75,8 @@ export class Root<T, A> {
   // Section: subscribing to the store
   private listeners: Set<StateListener<T>> = new Set()
   subscribe = (listener: StateListener<T>) => {
-    this.listeners.add(listener as StateListener<T>)
-    return (() =>
-      this.listeners.delete(listener as StateListener<T>)) as () => void
+    this.listeners.add(listener)
+    return (() => this.listeners.delete(listener)) as () => void
   }
 
   // Used by selector type stores
@@ -70,6 +95,16 @@ export class Root<T, A> {
     this.handleStateChange(this as Record<string, unknown>, 'state', newState)
   }
 
+  ensureStores = () => {
+    Object.keys(this.state).forEach((key) => {
+      const value = this.state[key]
+      const data = getData(value)
+      if (!isRootData(data)) {
+        this.state[key] = (this.model as Model)(value)
+      }
+    })
+  }
+
   destroy = () => {
     this.listeners.clear()
     this.cleanup.forEach((fn) => fn())
@@ -82,10 +117,26 @@ export class Root<T, A> {
     nextValue: T
   ) => {
     if (object[key] === nextValue) return
-    // before assigning the next value, rehydrate already existing addresses.
-    nextValue, this.subStores
     object[key] = nextValue
 
-    this.listeners.forEach((fn) => fn(this.value))
+    if (this.model) {
+      this.ensureStores()
+    } else {
+      this.substores = this.substores.filter(({ address, root }) => {
+        const [value, sourceExists] = getValueByAddress(this.state, address)
+        if (sourceExists) {
+          set(root.store as Value<unknown>, value)
+          const addressClone = [...address]
+          const lastKey = addressClone.pop() as string
+          getValueByAddress(this.state, addressClone)[0][lastKey] = root.store
+          return true
+        } else {
+          return false
+        }
+      })
+    }
+
+    const value = get(this.store)
+    this.listeners.forEach((fn) => fn(value as T))
   }
 }
