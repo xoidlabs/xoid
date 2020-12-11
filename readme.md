@@ -22,10 +22,11 @@
 
 ## Why **xoid**?
 
+- So easy and flux-like
 - Extensive Typescript support
 - Not limited to React
+- Small bundle size
 - Handles deeply nested states perfectly
-- Provides an easy way for (de)serialization
 - Redux Devtools supported
 
 To install, run the following command:
@@ -39,9 +40,10 @@ npm install xoid
 | Exports 	| Description 	|
 |-	|-	|
 | [`create`](#create) | Creates a store or a selector |
-| [`get`](#get) , [`set`](#set) , [`use`](#use) | Interacts with stores |
-| [`subscribe`](#subscribe) , [`useStore`](hooks#usestore) | Subscribes to stores |
-| [`devtools`](#devtools) | Utilities |
+| [`useStore`](hooks#usestore) | React way of subscribing to stores |
+| [`get`](#get) , [`set`](#set) , [`use`](#use) , [`subscribe`](#subscribe) | Interacts with stores |
+| [`arrayOf`](#arrayof) , [`objectOf`](#objectof) | Utilities |
+
 
 ## Usage
 
@@ -175,7 +177,7 @@ set(myName, 'ME')
 console.log(get(myName)) // ME
 ```
 
-Another benefit of using models are builtin `add` and `remove` actions. They are present in the store actions by default when models are created with `create.arrayOf` or `create.objectOf` methods. These builtins have 100% consistent TypeScript types with your model schemas.
+Another benefit of using models are builtin `add` and `remove` actions. They are present in the actions by default if a store is created via `arrayOf` or `objectOf` helpers. These builtin actions have 100% consistent TypeScript types with your model schemas.
 
 ```js
 use(companyStore.employees).add({ name: 'third employee'})

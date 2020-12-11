@@ -15,10 +15,7 @@ export type SetState = <T>(
   decorator?: Decorator<T>
 ) => void
 
-export type Decorator<T> = (
-  state: T,
-  fn?: (draft: T) => T | Promise<T>
-) => T | Promise<T>
+export type Decorator<T> = (state: T, fn?: (draft: T) => T) => T
 
 export type Store<T, A = undefined> = Transform<T> & {
   [store]: A
@@ -35,9 +32,9 @@ export type Transform<T> = T extends Value<any>
   : T extends Function
   ? Value<T>
   : T extends object
-  ? // TODO: Rec perhaps can be replaced with Value
-    Rec<{ [P in keyof T]: Transform<T[P]> }>
-  : Value<T extends true | false ? boolean : T>
+  ? Rec<{ [P in keyof T]: Transform<T[P]> }>
+  : // TODO: Rec perhaps can be replaced with Value
+    Value<T extends true | false ? boolean : T>
 
 export type StateOf<T> = T extends Value<infer K>
   ? K extends Record<any, any>

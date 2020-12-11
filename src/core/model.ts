@@ -12,6 +12,7 @@ export function objectOf<State, Actions>(
   model: Model2<State, Actions>,
   init: Record<string, StateOf<State>> = {}
 ) {
+  console.log('objectOf Newroot')
   const root = new Root(
     init as Record<string, Store<State, Actions>>,
     (store) => ({
@@ -40,6 +41,7 @@ export function arrayOf<State, Actions>(
   model: Model2<State, Actions>,
   init: StateOf<State>[] = []
 ) {
+  console.log('arrayOf Newroot')
   const root = new Root(
     init as Store<State, Actions>[],
     (store) => ({

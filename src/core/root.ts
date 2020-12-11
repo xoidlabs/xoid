@@ -27,7 +27,7 @@ export class Root<T, A> {
   private initializer!: Initializer<T>
   private state: any
   private store: any
-  private substores: { address: string[]; root: Root<unknown, unknown> }[]
+  substores: { address: string[]; root: Root<unknown, unknown> }[]
 
   getStore: () => Store<T, A> = () => this.store
 
@@ -39,13 +39,15 @@ export class Root<T, A> {
     // Determine if it's a selector, record its initializer
     this.isSelector = typeof init === 'function'
     if (this.isSelector) this.initializer = init as Initializer<T>
-    // Set isRecord
+    // This one is for objectOf and arrayOf
     this.model = options?.model
 
     // Create the initial state
     this.state = this.isSelector
       ? this.initializer(this.stateGetter, this.stateSetter)
       : (init as T)
+
+    if (getData(this.state)) throw error('constructor')
 
     // Determine substore addresses
     this.substores = this.model ? [] : getSubstores(this.state)
@@ -117,7 +119,15 @@ export class Root<T, A> {
     nextValue: T
   ) => {
     if (object[key] === nextValue) return
-    object[key] = nextValue
+    if (
+      object[key] === this.state &&
+      typeof object[key] === 'object' &&
+      object[key] !== null
+    ) {
+      override(object[key] as any, nextValue as any)
+    } else {
+      object[key] = nextValue
+    }
 
     if (this.model) {
       this.ensureStores()
@@ -125,10 +135,12 @@ export class Root<T, A> {
       this.substores = this.substores.filter(({ address, root }) => {
         const [value, sourceExists] = getValueByAddress(this.state, address)
         if (sourceExists) {
-          set(root.store as Value<unknown>, value)
-          const addressClone = [...address]
-          const lastKey = addressClone.pop() as string
-          getValueByAddress(this.state, addressClone)[0][lastKey] = root.store
+          if (root.store !== value) {
+            set(root.store as Value<unknown>, get(value))
+            const addressClone = [...address]
+            const lastKey = addressClone.pop() as string
+            getValueByAddress(this.state, addressClone)[0][lastKey] = root.store
+          }
           return true
         } else {
           return false
@@ -139,4 +151,14 @@ export class Root<T, A> {
     const value = get(this.store)
     this.listeners.forEach((fn) => fn(value as T))
   }
+}
+
+const override = (
+  target: Record<string, unknown>,
+  payload: Record<string, unknown>
+) => {
+  // delete all keys
+  Object.keys(target).forEach((key) => delete target[key])
+  // shallowmerge it to the object
+  Object.keys(payload).forEach((key) => (target[key] = payload[key]))
 }

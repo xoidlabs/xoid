@@ -1,16 +1,18 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import {
-  createStore,
-  createModel,
-  get,
-  set,
-  use,
-  useStore,
-  subscribe,
-} from '../src'
-// import { devtools, redux } from '../src/middleware'
+import { create, get, set, use, useStore } from '../src'
+import { Store } from '../src/core/types'
+
+const debug = (store: Store<any, any>) => {
+  return {
+    self: store,
+    selfSerialized: JSON.stringify(store),
+    get: get(store),
+    getSerialized: JSON.stringify(get(store)),
+    use: use(store),
+  }
+}
 
 const consoleError = console.error
 afterEach(() => {
@@ -19,53 +21,42 @@ afterEach(() => {
 })
 
 it('creates a store with a primitive value', () => {
-  const store = createStore(5)
-  const value = get(store)
-  const actions = use(store)
-  expect({ store, value, actions }).toMatchSnapshot()
+  const store = create(5)
+  expect(debug(store)).toMatchSnapshot()
 })
 
 it('creates a store with a record', () => {
-  const store = createStore({ alpha: 3, beta: 5 })
-  const value = get(store)
-  const actions = use(store)
-  expect({ store, value, actions }).toMatchSnapshot()
+  const store = create({ alpha: 3, beta: 5 })
+  expect(debug(store)).toMatchSnapshot()
 })
 
 it('normalizes nested stores', () => {
-  const store = createStore(createStore(createStore(5)))
-  const value = get(store)
-  const actions = use(store)
-  expect({ store, value, actions }).toMatchSnapshot()
+  const store = create(create(create(5)))
+  expect(debug(store)).toMatchSnapshot()
 })
 
 it('normalizes nested stores in a record', () => {
-  const store = createStore({ alpha: createStore(3), beta: createStore(5) })
-  const value = get(store)
-  const actions = use(store)
-  expect({ store, value, actions }).toMatchSnapshot()
+  const store = create({ alpha: create(3), beta: create(5) })
+  expect(debug(store)).toMatchSnapshot()
 })
 
 it('creates a selector store', () => {
-  const a = createStore(3)
-  const b = createStore(5)
-  const store = createStore((get) => get(a) + get(b))
-  const value = get(store)
-  const actions = use(store)
-  expect({ store, value, actions }).toMatchSnapshot()
+  const a = create(3)
+  const b = create(5)
+  const store = create((get) => get(a) + get(b))
+  expect(debug(store)).toMatchSnapshot()
 })
 
 it('uses the actions in vanilla', async () => {
-  const store = createStore({ count: 0 }, (store) => ({
+  const store = create({ count: 0 }, (store) => ({
     inc: () => set(store, (state) => ({ count: state.count + 1 })),
   }))
   use(store).inc()
-  const value = get(store)
-  expect({ store, value }).toMatchSnapshot()
+  expect(debug(store)).toMatchSnapshot()
 })
 
 it('uses the actions in React', async () => {
-  const store = createStore({ count: 0 }, (store) => ({
+  const store = create({ count: 0 }, (store) => ({
     inc: () => set(store, (state) => ({ count: state.count + 1 })),
   }))
 
@@ -81,7 +72,7 @@ it('uses the actions in React', async () => {
 })
 
 it('only runs when partial state changes in React', async () => {
-  const store = createStore({ count: 0, count2: 'constant' }, (store) => ({
+  const store = create({ count: 0, count2: 'constant' }, (store) => ({
     inc: () => set(store, (state) => ({ ...state, count: state.count + 1 })),
   }))
 
@@ -101,7 +92,7 @@ it('only runs when partial state changes in React', async () => {
 })
 
 it('only re-renders if selected state has changed', async () => {
-  const store = createStore(
+  const store = create(
     {
       count: 0,
     },
@@ -140,7 +131,7 @@ it('only re-renders if selected state has changed', async () => {
 })
 
 it('can batch updates', async () => {
-  const store = createStore(
+  const store = create(
     {
       count: 0,
     },
@@ -166,7 +157,7 @@ it('can batch updates', async () => {
 })
 
 it('can update the selector', async () => {
-  const store = createStore(() => ({
+  const store = create(() => ({
     one: 'one',
     two: 'two',
   }))
@@ -184,7 +175,7 @@ it('can update the selector', async () => {
 })
 
 it('can get the store', () => {
-  const store = createStore({
+  const store = create({
     value: 1,
   })
 
@@ -193,7 +184,7 @@ it('can get the store', () => {
 })
 
 it('can set the store', () => {
-  const store = createStore({
+  const store = create({
     value: 1,
   })
 

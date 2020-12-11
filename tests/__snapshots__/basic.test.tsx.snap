@@ -2,79 +2,78 @@
 
 exports[`creates a selector store 1`] = `
 Object {
-  "actions": undefined,
-  "store": Object {
-    "=‎‎": 8,
-  },
-  "value": 8,
+  "get": 8,
+  "getSerialized": "8",
+  "self": bound Object {},
+  "selfSerialized": "{}",
+  "use": undefined,
 }
 `;
 
 exports[`creates a store with a primitive value 1`] = `
 Object {
-  "actions": undefined,
-  "store": Object {
-    "=‎‎": 5,
-  },
-  "value": 5,
+  "get": 5,
+  "getSerialized": "5",
+  "self": bound Object {},
+  "selfSerialized": "{}",
+  "use": undefined,
 }
 `;
 
 exports[`creates a store with a record 1`] = `
 Object {
-  "actions": undefined,
-  "store": Object {
-    "alpha": Object {
-      "=‎‎": 3,
-    },
-    "beta": Object {
-      "=‎‎": 5,
-    },
-  },
-  "value": Object {
+  "get": bound Object {
     "alpha": 3,
     "beta": 5,
   },
+  "getSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
+  "self": bound Object {
+    "alpha": bound Object {},
+    "beta": bound Object {},
+  },
+  "selfSerialized": "{\\"alpha\\":{},\\"beta\\":{}}",
+  "use": undefined,
 }
 `;
 
 exports[`normalizes nested stores 1`] = `
 Object {
-  "actions": undefined,
-  "store": Object {
-    "=‎‎": 5,
-  },
-  "value": 5,
+  "get": bound bound bound Object {},
+  "getSerialized": "{}",
+  "self": bound bound bound Object {},
+  "selfSerialized": "{}",
+  "use": undefined,
 }
 `;
 
 exports[`normalizes nested stores in a record 1`] = `
 Object {
-  "actions": undefined,
-  "store": Object {
-    "alpha": Object {
-      "=‎‎": 3,
-    },
-    "beta": Object {
-      "=‎‎": 5,
-    },
-  },
-  "value": Object {
+  "get": bound Object {
     "alpha": 3,
     "beta": 5,
   },
+  "getSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
+  "self": bound Object {
+    "alpha": bound Object {},
+    "beta": bound Object {},
+  },
+  "selfSerialized": "{\\"alpha\\":{},\\"beta\\":{}}",
+  "use": undefined,
 }
 `;
 
 exports[`uses the actions in vanilla 1`] = `
 Object {
-  "store": Object {
-    "count": Object {
-      "=‎‎": 1,
-    },
-  },
-  "value": Object {
+  "get": bound Object {
     "count": 1,
+  },
+  "getSerialized": "{\\"count\\":1}",
+  "self": bound Object {
+    "count": bound Object {},
+  },
+  "selfSerialized": "{\\"count\\":{}}",
+  "use": Object {
+    "inc": [Function],
   },
 }
 `;

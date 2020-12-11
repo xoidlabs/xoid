@@ -23,6 +23,9 @@ const errorMap = {
   mutation: TypeError(
     '[xoid 1006]: Mutating the store must be strictly avoided. Please use `set` method instead.'
   ),
+  constructor: TypeError(
+    '[xoid 1007]: Other stores as the initial state of `create` function is not supported.'
+  ),
 }
 
 type XoidError = keyof typeof errorMap

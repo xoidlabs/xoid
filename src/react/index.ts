@@ -12,6 +12,11 @@ export type SetState<T> = (
   decorator?: Decorator<T>
 ) => void
 
+/**
+ * Subscribes to a store, or a value inside a React function component.
+ * @see https://xoid.dev/docs/api/use-store
+ */
+
 export function useStore<S extends Value<any>>(
   store: S
 ): S extends Value<infer T> | Store<infer T>

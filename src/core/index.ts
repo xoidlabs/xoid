@@ -2,14 +2,13 @@ import { Root } from './root'
 import { error } from './errors'
 import { getData, isRootData, pure } from './utils'
 import { Initializer, After, Store, Value, Decorator, StateOf } from './types'
-
 export { objectOf, arrayOf } from './model'
 
 /**
  * Creates a store with the first argument as the initial state.
  * Second argument runs after the state is created.
  * Store actions can be specified in the return value of the second argument.
- * @see https://xoid.dev/docs/api/create-store
+ * @see https://xoid.dev/docs/api/create
  */
 
 export function create<T, Actions = undefined>(
@@ -38,7 +37,7 @@ export const get = <T>(item: Value<T>): StateOf<T> => {
 
 export const set = <T extends Value<any>>(
   item: T,
-  value: StateOf<T> | ((state: StateOf<T>) => StateOf<T> | Promise<StateOf<T>>),
+  value: StateOf<T> | ((state: StateOf<T>) => StateOf<T>),
   decorator?: Decorator<T>
 ): void => {
   const data = getData(item)
@@ -49,22 +48,10 @@ export const set = <T extends Value<any>>(
 
   if (typeof value === 'function') {
     // Easy usage of {immer.produce} or other similar functions
-    const nextValue: T | Promise<T> = decorator
-      ? decorator(prevValue, value as (state: T) => T | Promise<T>)
-      : (value as (state: T) => T | Promise<T>)(prevValue)
-
-    if (
-      // This condition determines if the payload is a promise, by duck typing
-      nextValue &&
-      typeof (nextValue as Promise<unknown>).then === 'function' &&
-      typeof (nextValue as Promise<unknown>).finally === 'function'
-    ) {
-      ;(nextValue as Promise<T>).then((promiseResult: T) =>
-        root.handleStateChange(source, key, promiseResult)
-      )
-    } else {
-      root.handleStateChange(source, key, nextValue as T)
-    }
+    const nextValue: T = decorator
+      ? decorator(prevValue, value as (state: T) => T)
+      : (value as (state: T) => T)(prevValue)
+    root.handleStateChange(source, key, nextValue as T)
   } else {
     root.handleStateChange(source, key, value)
   }
@@ -92,12 +79,18 @@ export const subscribe = <T>(
   fn: (state: StateOf<T>) => void
 ) => {
   const data = getData(item)
-  if (data) {
-    if (isRootData(data)) {
-      const selector = new Root((get) => get(item))
-      return selector.subscribe(fn as any)
-    } else {
-      return data.root.subscribe(fn)
-    }
-  } else throw error('subscribe')
+  if (!data) throw error('subscribe')
+  if (!isRootData(data)) {
+    return data.root.subscribe(() => fn(data.source[data.key] as any))
+  } else {
+    const unsubs = []
+    // TODO: intercepting might be needed
+    const subscriber = () => fn(data.source[data.key] as any)
+    unsubs.push(data.root.subscribe(subscriber))
+    data.root.substores.forEach((substore) => {
+      if (addressBeginsWith(substore.address, data.address)) {
+        unsubs.push(substore.root.subscribe(subscriber))
+      }
+    })
+  }
 }
