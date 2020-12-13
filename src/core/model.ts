@@ -10,11 +10,11 @@ export function objectOf<State, Actions>(
   model: Model<State, Actions>,
   init: Record<string, StateOf<State>> = {}
 ) {
-  console.log('objectOf Newroot')
   const root = new Root(
     init as Record<string, Store<State, Actions>>,
     (store) => ({
       add: (item: StateOf<State>, key: string) =>
+        //@ts-ignore
         set(store, (state) => ({ ...state, [key]: item })),
       //
       remove: (key: string) => {
@@ -38,7 +38,6 @@ export function arrayOf<State, Actions>(
   model: Model<State, Actions>,
   init: StateOf<State>[] = []
 ) {
-  console.log('arrayOf Newroot')
   const root = new Root(
     init as Store<State, Actions>[],
     (store) => ({

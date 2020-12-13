@@ -36,19 +36,16 @@ export type Transform<T> = T extends Value<any>
   ? Value<T>
   : T extends object
   ? Rec<{ [P in keyof T]: Transform<T[P]> }>
-  : // TODO: Rec perhaps can be replaced with Value
-    Value<T extends true | false ? boolean : T>
-
-// export type StateOf<T> = T extends Value<infer K>
-//   ? K extends Record<any, any>
-//     ? { [P in keyof K]: StateOf<K[P]> }
-//     : K
-//   : T
+  : Value<T extends true | false ? boolean : T>
 
 export type StateOf<T> = T extends Value<infer K>
-  ? K extends Record<any, any>
+  ? K extends Function
+    ? K
+    : K extends object
     ? { [P in keyof K]: StateOf<K[P]> }
     : K
-  : T extends Record<any, any>
+  : T extends Function
+  ? T
+  : T extends object
   ? { [P in keyof T]: StateOf<T[P]> }
   : T

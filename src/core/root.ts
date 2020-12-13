@@ -23,12 +23,12 @@ interface Options {
 }
 
 export class Root<T, A> {
-  private model?: Model
   private isSelector: boolean
   private initializer!: Initializer<T>
   private state: any
   private store: any
   substores: { address: string[]; root: Root<unknown, unknown> }[]
+  model?: Model
 
   getStore: () => Store<T, A> = () => this.store
 
@@ -69,7 +69,7 @@ export class Root<T, A> {
   private actions: any
   getActions = () => this.actions
   setActions = (after: any) => {
-    if (after) {
+    if (typeof after !== 'undefined') {
       if (typeof after === 'function') this.actions = after(this.store)
       else throw error('action-function')
     }
@@ -137,7 +137,7 @@ export class Root<T, A> {
         const [value, sourceExists] = getValueByAddress(this.state, address)
         if (sourceExists) {
           if (root.store !== value) {
-            console.log(value, 'TODO')
+            // TODO: is there cases where value is impure?
             set(root.store as Value<unknown>, value)
             const addressClone = [...address]
             const lastKey = addressClone.pop() as string

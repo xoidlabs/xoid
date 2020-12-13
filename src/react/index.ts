@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useLayoutEffect } from 'react'
+import { useReducer, useEffect, useLayoutEffect, useRef } from 'react'
 import { get, set, subscribe, use } from '../core'
 import { Decorator, StateOf, Store, Value } from '../core/types'
 import { getData, isRootData } from '../core/utils'
@@ -17,22 +17,56 @@ export type SetState<T> = (
  * @see https://xoid.dev/docs/api/use-store
  */
 
+export function useStore(): any
 export function useStore<S extends Value<any>>(
-  store: S
-): S extends Value<infer T> | Store<infer T>
-  ? [StateOf<T>, SetState<T>]
-  : S extends Store<infer T, infer A>
+  store: S,
+  explicitSubscriptions?: true
+): S extends Store<infer T, infer A>
   ? [StateOf<T>, A]
-  : never {
+  : S extends Value<infer T>
+  ? [StateOf<T>, SetState<T>]
+  : never
+
+export function useStore(store?: Value<any>, optimizePerformance?: true): any {
+  const [, forceUpdate] = useReducer((c) => c + 1, 0) as [never, () => void]
+  const unsubsRef = useRef([] as (() => void)[])
+  const unsubs = unsubsRef.current
+  useIsoLayoutEffect(() => {
+    if (store) unsubs.push(subscribe(store, forceUpdate))
+    return () => unsubs.forEach((fn) => fn())
+  }, [store])
+
+  const getter = (item: any) => (
+    unsubs.push(subscribe(item, forceUpdate)), get(item)
+  )
+  if (typeof store === 'undefined') return getter
+
   const data = getData(store)
   if (!data)
     throw TypeError(
-      '[ @xoid/react ]: Argument of `useStore` should be a Store or a Store member.'
+      '[ xoid ]: Argument of `useStore` should be a Store or a Store member.'
     )
+
+  if (store && !optimizePerformance) {
+    data.root.substores.forEach((substore) => {
+      // TODO:
+      if (addressBeginsWith(substore.address, (data as any).address || []))
+        unsubs.push(substore.root.subscribe(forceUpdate))
+    })
+    if (data.root.model) {
+      data.root.getStore().forEach((substoreRoot: Value<unknown>) => {
+        unsubs.push(subscribe(substoreRoot, forceUpdate))
+      })
+    }
+  }
+
   const isStore = isRootData(data)
-  const [, forceUpdate] = useReducer((c) => c + 1, 0) as [never, () => void]
-  useIsoLayoutEffect(() => subscribe(store, forceUpdate), [store])
   const setState = (value: any) => set(store, value)
-  //@ts-ignore
   return [get(store), isStore ? use(store) || setState : setState]
+}
+
+function addressBeginsWith(a: string[], b: string[]) {
+  return b.every(function (key, i) {
+    return a[i] === key
+  })
 }

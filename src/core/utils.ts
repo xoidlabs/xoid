@@ -21,7 +21,7 @@ type Data = {
 
 export const createHandler = (pure: boolean) => ({
   get(target: Record<Key, unknown>, requestedKey: Key | typeof dataSymbol) {
-    const data = dataMap.get(target)
+    const data: Data = dataMap.get(target)
     const { root } = data
     // {dataSymbol} is special. It should not create a proxy trap.
     if (requestedKey === dataSymbol) return data
@@ -36,6 +36,10 @@ export const createHandler = (pure: boolean) => ({
 
       return transform(root, target, requestedKey, pure)
     } else if (target[requestedKey]) {
+      if (pure) {
+        const data: Data = dataMap.get(target)
+        return (target as any)[requestedKey].bind(purify(data))
+      }
       return (target as any)[requestedKey].bind(target)
     }
   },
@@ -73,6 +77,7 @@ export const pure = (data: Data) => {
   const { root, source, key } = data
   return transform(root, source, key, true)
 }
+const purify = pure
 
 export const isRootData = (data: Data) => {
   return data && (data.root as Record<any, any>) === data.source
@@ -111,12 +116,6 @@ export const getValueByAddress = (
   } else {
     return [obj, true]
   }
-}
-
-export function addressBeginsWith(a: string[], b: string[]) {
-  return b.every(function (key, i) {
-    return a[i] === key
-  })
 }
 
 export const override = (

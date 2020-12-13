@@ -79,7 +79,4 @@ export default [
   createESMConfig('src/index.ts', 'dist/index.js'),
   createCommonJSConfig('src/index.ts', 'dist/index.cjs.js'),
   createIIFEConfig('src/index.ts', 'dist/index.iife.js', 'xoid'),
-  // createCommonJSConfig('src/shallow.ts', 'dist/shallow.js'),
-  // createCommonJSConfig('src/middleware.ts', 'dist/middleware.js'),
-  // createCommonJSConfig('src/vanilla.ts', 'dist/vanilla.js'),
 ]

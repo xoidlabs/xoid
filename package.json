@@ -1,8 +1,8 @@
 {
   "name": "xoid",
   "private": true,
-  "version": "0.1.0",
-  "description": "Think less about state-management, focus on building awesomeness 🚀",
+  "version": "0.0.7",
+  "description": "Think less about state-management",
   "main": "index.cjs.js",
   "module": "index.js",
   "types": "index.d.ts",
@@ -118,6 +118,5 @@
     "react": ">=16.8"
   },
   "dependencies": {
-    "clone-deep": "^4.0.1"
   }
 }

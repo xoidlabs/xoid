@@ -1,6 +1,6 @@
 import { Root } from './root'
 import { error } from './errors'
-import { addressBeginsWith, getData, isRootData, pure } from './utils'
+import { getData, isRootData, pure } from './utils'
 import { Initializer, After, Store, Value, Decorator, StateOf } from './types'
 export { objectOf, arrayOf } from './model'
 
@@ -77,17 +77,13 @@ export const subscribe = <T>(
   item: Value<T>,
   fn: (state: StateOf<T>) => void
 ) => {
+  if (!item) throw error('subscribe')
   const data = getData(item)
   if (!data) throw error('subscribe')
 
   const unsubs = [] as (() => void)[]
   const subscriber = () => fn(get(item))
   unsubs.push(data.root.subscribe(subscriber))
-  data.root.substores.forEach((substore) => {
-    // TODO:
-    if (addressBeginsWith(substore.address, (data as any).address || []))
-      unsubs.push(substore.root.subscribe(subscriber))
-  })
   return () => unsubs.forEach((unsub) => unsub())
 }
 
