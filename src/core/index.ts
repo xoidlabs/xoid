@@ -1,6 +1,6 @@
 import { Root } from './root'
 import { error } from './errors'
-import { getData, isRootData, pure } from './utils'
+import { addressBeginsWith, getData, isRootData, pure } from './utils'
 import { Initializer, After, Store, Value, Decorator, StateOf } from './types'
 export { objectOf, arrayOf } from './model'
 
@@ -20,7 +20,7 @@ export function create<T, Actions = undefined>(
 }
 
 /**
- * Gets the value of a store, or a value.
+ * Gets the value of a store, or a store member.
  * @see https://xoid.dev/docs/api/get
  */
 
@@ -31,7 +31,7 @@ export const get = <T>(item: Value<T>): StateOf<T> => {
 }
 
 /**
- * Sets the value of a store, or a value.
+ * Sets the value of a store, or a store member.
  * @see https://xoid.dev/docs/api/set
  */
 
@@ -45,7 +45,6 @@ export const set = <T extends Value<any>>(
 
   const { root, source, key } = data
   const prevValue = source[key] as T
-
   if (typeof value === 'function') {
     // Easy usage of {immer.produce} or other similar functions
     const nextValue: T = decorator
@@ -59,7 +58,7 @@ export const set = <T extends Value<any>>(
 
 /**
  * Gets actions of a store.
- * Actions are defined at the second argument of `createStore` or `createModel` methods.
+ * Actions are defined at the second argument of `create` method.
  * @see https://xoid.dev/docs/api/use
  */
 
@@ -70,7 +69,7 @@ export const use = <T, Actions>(item: Store<T, Actions>): Actions => {
 }
 
 /**
- * Subscribes to a store, or a value.
+ * Subscribes to a store, or a store member.
  * @see https://xoid.dev/docs/api/subscribe
  */
 
@@ -80,17 +79,35 @@ export const subscribe = <T>(
 ) => {
   const data = getData(item)
   if (!data) throw error('subscribe')
-  if (!isRootData(data)) {
-    return data.root.subscribe(() => fn(data.source[data.key] as any))
-  } else {
-    const unsubs = []
-    // TODO: intercepting might be needed
-    const subscriber = () => fn(data.source[data.key] as any)
-    unsubs.push(data.root.subscribe(subscriber))
-    data.root.substores.forEach((substore) => {
-      if (addressBeginsWith(substore.address, data.address)) {
-        unsubs.push(substore.root.subscribe(subscriber))
-      }
-    })
+
+  const unsubs = [] as (() => void)[]
+  const subscriber = () => fn(get(item))
+  unsubs.push(data.root.subscribe(subscriber))
+  data.root.substores.forEach((substore) => {
+    // TODO:
+    if (addressBeginsWith(substore.address, (data as any).address || []))
+      unsubs.push(substore.root.subscribe(subscriber))
+  })
+  return () => unsubs.forEach((unsub) => unsub())
+}
+
+/**
+ * Converts reactive store into a JS object by generating a deepcopy.
+ * Useful for JSON serialization and debugging.
+ * @see https://xoid.dev/docs/api/current
+ */
+
+export const current = <T>(item: Value<T>): StateOf<T> => {
+  const inner = (obj: any) => {
+    if (typeof obj === 'object') {
+      const newNode = new (obj as any).constructor()
+      Object.keys(obj).forEach((key) => {
+        newNode[key] = inner((obj as any)[key])
+      })
+      return newNode
+    } else {
+      return obj
+    }
   }
+  return inner(get(item))
 }

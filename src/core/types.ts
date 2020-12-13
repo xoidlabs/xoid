@@ -1,12 +1,12 @@
 const store = Symbol('store')
 const value = Symbol('value')
 
-export type XGet<Self> = {
+export type XGet = {
   <T>(store: Value<T>): T
-  (): Self
+  (): unknown
 }
 export type XSet = <T>(value: T, decorator?: Decorator<T>) => void
-export type Initializer<T> = (get: XGet<T>, set: XSet) => T
+export type Initializer<T> = (get: XGet, set: XSet) => T
 
 export type GetState = <T>(store: Value<T>) => T
 export type SetState = <T>(
@@ -25,7 +25,10 @@ export type Value<T> = {
 }
 export type Rec<T> = Value<T> & T
 
-export type After<State, Actions = undefined> = (store: Store<State>) => Actions
+export type After<State, Actions = undefined> = (
+  store: Store<State>,
+  destroy: () => void
+) => Actions
 
 export type Transform<T> = T extends Value<any>
   ? T
@@ -36,8 +39,16 @@ export type Transform<T> = T extends Value<any>
   : // TODO: Rec perhaps can be replaced with Value
     Value<T extends true | false ? boolean : T>
 
+// export type StateOf<T> = T extends Value<infer K>
+//   ? K extends Record<any, any>
+//     ? { [P in keyof K]: StateOf<K[P]> }
+//     : K
+//   : T
+
 export type StateOf<T> = T extends Value<infer K>
   ? K extends Record<any, any>
     ? { [P in keyof K]: StateOf<K[P]> }
     : K
+  : T extends Record<any, any>
+  ? { [P in keyof T]: StateOf<T[P]> }
   : T

@@ -1,6 +1,25 @@
-import { create, get, set, use, subscribe, objectOf, arrayOf } from './core'
+import {
+  create,
+  get,
+  set,
+  use,
+  subscribe,
+  objectOf,
+  arrayOf,
+  current,
+} from './core'
 import { useStore } from './react'
-export { create, get, set, use, subscribe, objectOf, arrayOf, useStore }
+export {
+  create,
+  get,
+  set,
+  use,
+  subscribe,
+  objectOf,
+  arrayOf,
+  current,
+  useStore,
+}
 
 const xoid = Object.assign(create, {
   create,
@@ -10,6 +29,7 @@ const xoid = Object.assign(create, {
   subscribe,
   objectOf,
   arrayOf,
+  current,
   useStore,
 })
 

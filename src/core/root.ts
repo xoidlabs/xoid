@@ -6,16 +6,17 @@ import {
   getValueByAddress,
   isRootData,
   Key,
+  override,
   pure,
   transform,
 } from './utils'
 import { get, set } from '.'
-import { Model } from './model'
 
 // zustand is used as a starting point to this file
 // https://github.com/react-spring/zustand
 
 type StateListener<T> = (state: T) => void
+type Model = any
 
 interface Options {
   model?: Model
@@ -84,7 +85,7 @@ export class Root<T, A> {
   // Used by selector type stores
   private cleanup: (() => void)[] = []
   stateSetter: XSet = (value, decorator) => set(this.store, value, decorator)
-  stateGetter: XGet<T> = (item?: any) => {
+  stateGetter: XGet = (item?: any) => {
     if (typeof item === 'undefined') return get(this.store)
     const data = getData(item)
     const unsubscribe = data.root.subscribe(this.otherStateListener)
@@ -136,7 +137,8 @@ export class Root<T, A> {
         const [value, sourceExists] = getValueByAddress(this.state, address)
         if (sourceExists) {
           if (root.store !== value) {
-            set(root.store as Value<unknown>, get(value))
+            console.log(value, 'TODO')
+            set(root.store as Value<unknown>, value)
             const addressClone = [...address]
             const lastKey = addressClone.pop() as string
             getValueByAddress(this.state, addressClone)[0][lastKey] = root.store
@@ -151,14 +153,4 @@ export class Root<T, A> {
     const value = get(this.store)
     this.listeners.forEach((fn) => fn(value as T))
   }
-}
-
-const override = (
-  target: Record<string, unknown>,
-  payload: Record<string, unknown>
-) => {
-  // delete all keys
-  Object.keys(target).forEach((key) => delete target[key])
-  // shallowmerge it to the object
-  Object.keys(payload).forEach((key) => (target[key] = payload[key]))
 }

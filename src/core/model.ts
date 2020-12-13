@@ -2,14 +2,12 @@ import { set } from '.'
 import { Root } from './root'
 import { StateOf, Store } from './types'
 
-export type Model = (payload: any) => unknown
-
-export type Model2<State, Actions> = (
+export type Model<State, Actions> = (
   state: StateOf<State>
 ) => Store<State, Actions>
 
 export function objectOf<State, Actions>(
-  model: Model2<State, Actions>,
+  model: Model<State, Actions>,
   init: Record<string, StateOf<State>> = {}
 ) {
   console.log('objectOf Newroot')
@@ -17,7 +15,6 @@ export function objectOf<State, Actions>(
     init as Record<string, Store<State, Actions>>,
     (store) => ({
       add: (item: StateOf<State>, key: string) =>
-        //@ts-ignore
         set(store, (state) => ({ ...state, [key]: item })),
       //
       remove: (key: string) => {
@@ -32,13 +29,13 @@ export function objectOf<State, Actions>(
         })
       },
     }),
-    { model: model as Model2<State, Actions> }
+    { model: model as Model<State, Actions> }
   )
   return root.getStore()
 }
 
 export function arrayOf<State, Actions>(
-  model: Model2<State, Actions>,
+  model: Model<State, Actions>,
   init: StateOf<State>[] = []
 ) {
   console.log('arrayOf Newroot')
@@ -57,7 +54,7 @@ export function arrayOf<State, Actions>(
         })
       },
     }),
-    { model: model as Model2<State, Actions> }
+    { model: model as Model<State, Actions> }
   )
   return root.getStore()
 }

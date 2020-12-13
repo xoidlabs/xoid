@@ -2,7 +2,7 @@ import { error } from './errors'
 import { Root } from './root'
 import { Store, Value } from './types'
 
-const dataMap = new Map()
+const dataMap = new WeakMap()
 
 const dataSymbol = Symbol()
 type WithData = { [dataSymbol]: any }
@@ -111,4 +111,20 @@ export const getValueByAddress = (
   } else {
     return [obj, true]
   }
+}
+
+export function addressBeginsWith(a: string[], b: string[]) {
+  return b.every(function (key, i) {
+    return a[i] === key
+  })
+}
+
+export const override = (
+  target: Record<string, unknown>,
+  payload: Record<string, unknown>
+) => {
+  // delete all keys
+  Object.keys(target).forEach((key) => delete target[key])
+  // shallowmerge it to the object
+  Object.keys(payload).forEach((key) => (target[key] = payload[key]))
 }

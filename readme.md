@@ -3,9 +3,6 @@
 </p> 
 
 <p align="center">
-  <a href="https://github.com/onurkerimov/xoid/actions?query=workflow%3ALint" >
-    <img alt="Build Status" src="https://img.shields.io/github/workflow/status/onurkerimov/xoid/Lint?style=flat&colorA=293140&colorB=293140">
-  </a>
   <a href="https://bundlephobia.com/result?p=xoid" >
     <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=293140&colorB=293140">
   </a>
@@ -27,7 +24,6 @@
 - Not limited to React
 - Small bundle size
 - Handles deeply nested states perfectly
-- Redux Devtools supported
 
 To install, run the following command:
 
@@ -39,10 +35,10 @@ npm install xoid
 
 | Exports 	| Description 	|
 |-	|-	|
-| [`create`](#create) | Creates a store or a selector |
-| [`useStore`](hooks#usestore) | React way of subscribing to stores |
-| [`get`](#get) , [`set`](#set) , [`use`](#use) , [`subscribe`](#subscribe) | Interacts with stores |
-| [`arrayOf`](#arrayof) , [`objectOf`](#objectof) | Utilities |
+| [`create`](#create) | Creates a store |
+| [`get`](#get) , [`set`](#set) , [`use`](#use) | Interacts with stores |
+| [`subscribe`](#subscribe) , [`useStore`](hooks#usestore) | Subscribes to stores |
+| [`current`](#current) , [`arrayOf`](#arrayof) , [`objectOf`](#objectof) | Utilities |
 
 
 ## Usage
@@ -135,10 +131,10 @@ return <div style={{ color }} onClick={onClick}/>
 ```
 
 ### Models 
-Perhaps, the most powerful feature of **xoid** is this one. Major benefit of the following pattern is no-config state deserialization. (Your plain JSON data comes alive with your pre-defined actions in your model schemas) 
+Perhaps, the most powerful feature of **xoid** is this one. Here's an example of easy state (de)serialization. (Your plain JSON data comes alive with your pre-defined actions in your model schemas) 
 
 ```js
-import { create, get, set, use } from 'xoid'
+import { create, arrayOf, get, set, use } from 'xoid'
 
 interface Employee {
   name: string
@@ -158,7 +154,7 @@ const EmployeeModel = (payload: Employee) => create(
 
 const CompanyModel = (payload: Company) => create({
   name: payload.name,
-  employees: create.arrayOf(EmloyeeModel, payload.employees),
+  employees: arrayOf(EmloyeeModel, payload.employees),
 })
 
 const companyStore = CompanyModel({
@@ -172,9 +168,9 @@ const companyStore = CompanyModel({
 use(companyStore.employees[0]).greet() // Hey you!
 
 const myName = companyStore.employees[1].name
-console.log(get(myName)) // me
-set(myName, 'ME')
-console.log(get(myName)) // ME
+console.log(get(myName)) // 'me'
+set(myName, 'my new name')
+console.log(get(myName)) // 'my new name'
 ```
 
 Another benefit of using models are builtin `add` and `remove` actions. They are present in the actions by default if a store is created via `arrayOf` or `objectOf` helpers. These builtin actions have 100% consistent TypeScript types with your model schemas.

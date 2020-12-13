@@ -1,12 +1,4 @@
-/* eslint-disable prettier/prettier */
-const internalError = (id: number) => {
-  return Error(
-    `xoid Internal Error ${id}: This is probably a problem with xoid. Please report this on https://github.com/onurkerimov/xoid/issues.`
-  )
-}
-
 const errorMap = {
-  destroy: internalError(1103),
   'action-function': TypeError(
     'Second argument of `createStore` should be of function or undefined type.'
   ),
@@ -28,6 +20,4 @@ const errorMap = {
   ),
 }
 
-type XoidError = keyof typeof errorMap
-
-export const error = (id: XoidError) => errorMap[id]
+export const error = (id: keyof typeof errorMap) => errorMap[id]
