@@ -2,7 +2,7 @@ const store = Symbol('store')
 const value = Symbol('value')
 
 export type XGet = {
-  <T>(store: Value<T>): T
+  <T>(item: Value<T>): StateOf<T>
   (): unknown
 }
 export type XSet = <T>(value: T, decorator?: Decorator<T>) => void

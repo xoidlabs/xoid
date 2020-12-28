@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a selector store 1`] = `
+Object {
+  "current": 8,
+  "currentSerialized": "8",
+  "get": 8,
+  "getSerialized": "8",
+  "self": bound Object {},
+  "selfSerialized": "{}",
+  "use": undefined,
+}
+`;
+
+exports[`creates a store with a primitive value 1`] = `
+Object {
+  "current": 5,
+  "currentSerialized": "5",
+  "get": 5,
+  "getSerialized": "5",
+  "self": bound Object {},
+  "selfSerialized": "{}",
+  "use": undefined,
+}
+`;
+
+exports[`creates a store with a record 1`] = `
+Object {
+  "current": Object {
+    "alpha": 3,
+    "beta": 5,
+  },
+  "currentSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
+  "get": bound Object {
+    "alpha": 3,
+    "beta": 5,
+  },
+  "getSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
+  "self": bound Object {
+    "alpha": bound Object {},
+    "beta": bound Object {},
+  },
+  "selfSerialized": "{\\"alpha\\":{},\\"beta\\":{}}",
+  "use": undefined,
+}
+`;
+
+exports[`normalizes nested stores in a record 1`] = `
+Object {
+  "current": Object {
+    "alpha": 3,
+    "beta": 5,
+  },
+  "currentSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
+  "get": bound Object {
+    "alpha": 3,
+    "beta": 5,
+  },
+  "getSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
+  "self": bound Object {
+    "alpha": bound Object {},
+    "beta": bound Object {},
+  },
+  "selfSerialized": "{\\"alpha\\":{},\\"beta\\":{}}",
+  "use": undefined,
+}
+`;
+
+exports[`uses the actions in vanilla 1`] = `
+Object {
+  "current": Object {
+    "count": 1,
+  },
+  "currentSerialized": "{\\"count\\":1}",
+  "get": bound Object {
+    "count": 1,
+  },
+  "getSerialized": "{\\"count\\":1}",
+  "self": bound Object {
+    "count": bound Object {},
+  },
+  "selfSerialized": "{\\"count\\":{}}",
+  "use": Object {
+    "inc": [Function],
+  },
+}
+`;

@@ -7,7 +7,6 @@ import {
   isRootData,
   Key,
   override,
-  pure,
   transform,
 } from './utils'
 import { get, set } from '.'
@@ -56,9 +55,11 @@ export class Root<T, A> {
     if (this.model) this.ensureStores()
 
     this.store = transform(
-      this,
-      this as Record<string | number, unknown>,
-      'state',
+      {
+        root: this,
+        source: this as Record<string | number, unknown>,
+        key: 'state',
+      },
       false
     )
 
@@ -90,7 +91,7 @@ export class Root<T, A> {
     const data = getData(item)
     const unsubscribe = data.root.subscribe(this.otherStateListener)
     this.cleanup.push(unsubscribe)
-    return pure(data)
+    return transform(data, true)
   }
 
   otherStateListener = () => {

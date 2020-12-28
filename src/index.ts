@@ -1,14 +1,3 @@
-import {
-  create,
-  get,
-  set,
-  use,
-  subscribe,
-  objectOf,
-  arrayOf,
-  current,
-} from './core'
-import { useStore } from './react'
 export {
   create,
   get,
@@ -18,19 +7,6 @@ export {
   objectOf,
   arrayOf,
   current,
-  useStore,
-}
-
-const xoid = Object.assign(create, {
-  create,
-  get,
-  set,
-  use,
-  subscribe,
-  objectOf,
-  arrayOf,
-  current,
-  useStore,
-})
-
-export default xoid
+} from './core'
+export type { Value, Store, StateOf } from './core'
+export { useStore } from './react'

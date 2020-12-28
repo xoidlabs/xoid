@@ -1,14 +1,15 @@
 import { Root } from './root'
 import { error } from './errors'
-import { getData, isRootData, pure } from './utils'
+import { getData, isRootData, transform } from './utils'
 import { Initializer, After, Store, Value, Decorator, StateOf } from './types'
+
 export { objectOf, arrayOf } from './model'
+export type { Store, Value, StateOf } from './types'
 
 /**
  * Creates a store with the first argument as the initial state.
- * Second argument runs after the state is created.
  * Store actions can be specified in the return value of the second argument.
- * @see https://xoid.dev/docs/api/create
+ * @see [xoid.dev/docs/api/create](https://xoid.dev/docs/api/create)
  */
 
 export function create<T, Actions = undefined>(
@@ -21,18 +22,18 @@ export function create<T, Actions = undefined>(
 
 /**
  * Gets the value of a store, or a store member.
- * @see https://xoid.dev/docs/api/get
+ * @see [xoid.dev/docs/api/get](https://xoid.dev/docs/api/get)
  */
 
 export const get = <T>(item: Value<T>): StateOf<T> => {
   const data = getData(item)
-  if (data) return pure(data)
+  if (data) return transform(data, true) as any
   else throw error('get')
 }
 
 /**
  * Sets the value of a store, or a store member.
- * @see https://xoid.dev/docs/api/set
+ * @see [xoid.dev/docs/api/set](https://xoid.dev/docs/api/set)
  */
 
 export const set = <T extends Value<any>>(
@@ -59,7 +60,7 @@ export const set = <T extends Value<any>>(
 /**
  * Gets actions of a store.
  * Actions are defined at the second argument of `create` method.
- * @see https://xoid.dev/docs/api/use
+ * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
 
 export const use = <T, Actions>(item: Store<T, Actions>): Actions => {
@@ -70,27 +71,38 @@ export const use = <T, Actions>(item: Store<T, Actions>): Actions => {
 
 /**
  * Subscribes to a store, or a store member.
- * @see https://xoid.dev/docs/api/subscribe
+ * @see [xoid.dev/docs/api/subscribe](https://xoid.dev/docs/api/subscribe)
  */
 
 export const subscribe = <T>(
   item: Value<T>,
   fn: (state: StateOf<T>) => void
 ) => {
-  if (!item) throw error('subscribe')
   const data = getData(item)
-  if (!data) throw error('subscribe')
+  let previousValue = get(item)
+  const unsubs = new Set<() => void>()
 
-  const unsubs = [] as (() => void)[]
-  const subscriber = () => fn(get(item))
-  unsubs.push(data.root.subscribe(subscriber))
+  const intercept = () =>
+    transform(data, true, (subItem: any) => {
+      const subData = getData(subItem)
+      unsubs.add(subData.root.subscribe(forceUpdate))
+    })
+
+  const forceUpdate = () => {
+    const value = intercept()
+    if (previousValue !== value) fn(value)
+    previousValue = value
+  }
+
+  unsubs.add(data.root.subscribe(forceUpdate))
+
   return () => unsubs.forEach((unsub) => unsub())
 }
 
 /**
  * Converts reactive store into a JS object by generating a deepcopy.
  * Useful for JSON serialization and debugging.
- * @see https://xoid.dev/docs/api/current
+ * @see [xoid.dev/docs/api/current](https://xoid.dev/docs/api/current)
  */
 
 export const current = <T>(item: Value<T>): StateOf<T> => {

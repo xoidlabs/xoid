@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create, get, set, use, useStore } from '../src'
+import { create, get, set, current, use, useStore } from '../src'
 import { Store } from '../src/core/types'
 
 const debug = (store: Store<any, any>) => {
@@ -10,6 +10,8 @@ const debug = (store: Store<any, any>) => {
     selfSerialized: JSON.stringify(store),
     get: get(store),
     getSerialized: JSON.stringify(get(store)),
+    current: current(store),
+    currentSerialized: JSON.stringify(current(store)),
     use: use(store),
   }
 }
@@ -31,7 +33,12 @@ it('creates a store with a record', () => {
 })
 
 it('normalizes nested stores', () => {
-  const store = create(create(create(5)))
+  const store = create(create(5))
+  expect(debug(store)).toMatchSnapshot()
+})
+
+it('normalizes nested stores 2', () => {
+  const store = create(create({ a: create(5), b: create(7) }))
   expect(debug(store)).toMatchSnapshot()
 })
 
@@ -198,222 +205,123 @@ it('can set the store', () => {
   expect(get(store.value)).toBe(5)
 })
 
-// it('can subscribe to the store', () => {
-//   const initialState = { value: 1, other: 'a' }
-//   const store = createStore(initialState)
+it('ensures parent components subscribe before children', async () => {
+  const store = create<any>(() => ({
+    children: {
+      '1': { text: 'child 1' },
+      '2': { text: 'child 2' },
+    },
+  }))
 
-//   // Should not be called if new state identity is the same
-//   let unsub = subscribe(store, () => {
-//     throw new Error('subscriber called when new state identity is the same')
-//   })
-//   set(store, initialState)
-//   unsub()
+  function changeState() {
+    set(store, {
+      children: {
+        '3': { text: 'child 3' },
+      },
+    })
+  }
 
-//   // Should be called if new state identity is different
-//   unsub = subscribe(store, (newState: { value: number; other: string }) => {
-//     expect(newState && newState.value).toBe(1)
-//   })
-//   setState({ ...getState() })
-//   unsub()
+  function Child({ id }: any) {
+    const [text] = useStore(store.children[id].text)
+    return <div>{text}</div>
+  }
 
-//   // Should not be called when state slice is the same
-//   unsub = subscribe(
-//     () => {
-//       throw new Error('subscriber called when new state is the same')
-//     },
-//     (s) => s.value
-//   )
-//   setState({ other: 'b' })
-//   unsub()
+  function Parent() {
+    const [childStates] = useStore(store.children)
+    return (
+      <>
+        <button onClick={changeState}>change state</button>
+        {Object.keys(childStates).map((id: any) => (
+          <Child id={id} key={id} />
+        ))}
+      </>
+    )
+  }
 
-//   // Should be called when state slice changes
-//   unsub = subscribe(
-//     (value: number | null) => {
-//       expect(value).toBe(initialState.value + 1)
-//     },
-//     (s) => s.value
-//   )
-//   setState({ value: initialState.value + 1 })
-//   unsub()
+  const { getByText, findByText } = render(<Parent />)
 
-//   // Should not be called when equality checker returns true
-//   unsub = subscribe(
-//     () => {
-//       throw new Error('subscriber called when equality checker returned true')
-//     },
-//     undefined as any,
-//     () => true
-//   )
-//   setState({ value: initialState.value + 2 })
-//   unsub()
+  fireEvent.click(getByText('change state'))
 
-//   // Should be called when equality checker returns false
-//   unsub = subscribe(
-//     (value: number | null) => {
-//       expect(value).toBe(initialState.value + 2)
-//     },
-//     (s) => s.value,
-//     () => false
-//   )
-//   setState(getState())
-//   unsub()
-// })
+  await findByText('child 3')
+})
 
-// it('only calls selectors when necessary', async () => {
-//   const useStore = create(() => ({ a: 0, b: 0 }))
-//   const { setState } = useStore
-//   let inlineSelectorCallCount = 0
-//   let staticSelectorCallCount = 0
+// https://github.com/pmndrs/zustand/issues/84
+it('ensures the correct subscriber is removed on unmount', async () => {
+  const store = create(() => ({ count: 0 }))
 
-//   function staticSelector(s: any) {
-//     staticSelectorCallCount++
-//     return s.a
-//   }
+  function increment() {
+    set(store, ({ count }) => ({ count: count + 1 }))
+  }
 
-//   function Component() {
-//     useStore((s) => (inlineSelectorCallCount++, s.b))
-//     useStore(staticSelector)
-//     return (
-//       <>
-//         <div>inline: {inlineSelectorCallCount}</div>
-//         <div>static: {staticSelectorCallCount}</div>
-//       </>
-//     )
-//   }
+  function Count() {
+    const [c] = useStore(store.count)
+    return <div>count: {c}</div>
+  }
 
-//   const { rerender, findByText } = render(<Component />)
-//   await findByText('inline: 1')
-//   await findByText('static: 1')
+  function CountWithInitialIncrement() {
+    React.useLayoutEffect(increment, [])
+    return <Count />
+  }
 
-//   rerender(<Component />)
-//   await findByText('inline: 2')
-//   await findByText('static: 1')
+  function Component() {
+    const [Counter, setCounter] = React.useState(
+      () => CountWithInitialIncrement
+    )
+    React.useLayoutEffect(() => {
+      setCounter(() => Count)
+    }, [])
+    return (
+      <>
+        <Counter />
+        <Count />
+      </>
+    )
+  }
 
-//   act(() => setState({ a: 1, b: 1 }))
-//   await findByText('inline: 4')
-//   await findByText('static: 2')
-// })
+  const { findAllByText } = render(<Component />)
 
-// it('ensures parent components subscribe before children', async () => {
-//   const useStore = create<any>(() => ({
-//     children: {
-//       '1': { text: 'child 1' },
-//       '2': { text: 'child 2' },
-//     },
-//   }))
-//   const api = useStore
+  expect((await findAllByText('count: 1')).length).toBe(2)
 
-//   function changeState() {
-//     api.setState({
-//       children: {
-//         '3': { text: 'child 3' },
-//       },
-//     })
-//   }
+  act(increment)
 
-//   function Child({ id }: any) {
-//     const text = useStore((s) => s.children[id].text)
-//     return <div>{text}</div>
-//   }
+  expect((await findAllByText('count: 2')).length).toBe(2)
+})
 
-//   function Parent() {
-//     const childStates = useStore((s) => s.children)
-//     return (
-//       <>
-//         <button onClick={changeState}>change state</button>
-//         {Object.keys(childStates).map((id) => (
-//           <Child id={id} key={id} />
-//         ))}
-//       </>
-//     )
-//   }
+// https://github.com/pmndrs/zustand/issues/86
+it('ensures a subscriber is not mistakenly overwritten', async () => {
+  const store = create(() => ({ count: 0 }))
 
-//   const { getByText, findByText } = render(<Parent />)
+  function Count1() {
+    const [c] = useStore(store.count)
+    return <div>count1: {c}</div>
+  }
 
-//   fireEvent.click(getByText('change state'))
+  function Count2() {
+    const [c] = useStore(store.count)
+    return <div>count2: {c}</div>
+  }
 
-//   await findByText('child 3')
-// })
+  // Add 1st subscriber.
+  const { findAllByText, rerender } = render(<Count1 />)
 
-// // https://github.com/onurkerimov/xoid/issues/84
-// it('ensures the correct subscriber is removed on unmount', async () => {
-//   const useStore = create(() => ({ count: 0 }))
-//   const api = useStore
+  // Replace 1st subscriber with another.
+  rerender(<Count2 />)
 
-//   function increment() {
-//     api.setState(({ count }) => ({ count: count + 1 }))
-//   }
+  // Add 2 additional subscribers.
+  rerender(
+    <>
+      <Count2 />
+      <Count1 />
+      <Count1 />
+    </>
+  )
 
-//   function Count() {
-//     const c = useStore((s) => s.count)
-//     return <div>count: {c}</div>
-//   }
+  // Call all subscribers
+  act(() => set(store, { count: 1 }))
 
-//   function CountWithInitialIncrement() {
-//     React.useLayoutEffect(increment, [])
-//     return <Count />
-//   }
-
-//   function Component() {
-//     const [Counter, setCounter] = React.useState(
-//       () => CountWithInitialIncrement
-//     )
-//     React.useLayoutEffect(() => {
-//       setCounter(() => Count)
-//     }, [])
-//     return (
-//       <>
-//         <Counter />
-//         <Count />
-//       </>
-//     )
-//   }
-
-//   const { findAllByText } = render(<Component />)
-
-//   expect((await findAllByText('count: 1')).length).toBe(2)
-
-//   act(increment)
-
-//   expect((await findAllByText('count: 2')).length).toBe(2)
-// })
-
-// // https://github.com/onurkerimov/xoid/issues/86
-// it('ensures a subscriber is not mistakenly overwritten', async () => {
-//   const useStore = create(() => ({ count: 0 }))
-//   const { setState } = useStore
-
-//   function Count1() {
-//     const c = useStore((s) => s.count)
-//     return <div>count1: {c}</div>
-//   }
-
-//   function Count2() {
-//     const c = useStore((s) => s.count)
-//     return <div>count2: {c}</div>
-//   }
-
-//   // Add 1st subscriber.
-//   const { findAllByText, rerender } = render(<Count1 />)
-
-//   // Replace 1st subscriber with another.
-//   rerender(<Count2 />)
-
-//   // Add 2 additional subscribers.
-//   rerender(
-//     <>
-//       <Count2 />
-//       <Count1 />
-//       <Count1 />
-//     </>
-//   )
-
-//   // Call all subscribers
-//   act(() => setState({ count: 1 }))
-
-//   expect((await findAllByText('count1: 1')).length).toBe(2)
-//   expect((await findAllByText('count2: 1')).length).toBe(1)
-// })
+  expect((await findAllByText('count1: 1')).length).toBe(2)
+  expect((await findAllByText('count2: 1')).length).toBe(1)
+})
 
 // it('can use exposed types', () => {
 //   interface ExampleState extends State {
