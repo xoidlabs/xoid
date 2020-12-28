@@ -19,11 +19,14 @@
 
 ## Why **xoid**?
 
-- So easy and flux-like
-- Extensive Typescript support
+- Easy to learn
 - Not limited to React
-- Small bundle size
+- Extensive Typescript support
+- Small bundle size (2.2 kB gzipped)
 - Handles deeply nested states perfectly
+- Computed values, transient updates, async stuff
+- High performance React apps with fine-grained updates
+- Alias or destructure parts of state without losing reactivity
 
 To install, run the following command:
 
@@ -36,8 +39,7 @@ npm install xoid
 | Exports 	| Description 	|
 |-	|-	|
 | [`create`](#create) | Creates a store |
-| [`get`](#get) , [`set`](#set) , [`use`](#use) | Interacts with stores |
-| [`subscribe`](#subscribe) , [`useStore`](hooks#usestore) | Subscribes to stores |
+| [`get`](#get) , [`set`](#set) , [`use`](#use) , [`subscribe`](#subscribe) , [`useStore`](hooks#usestore) | Interacts with stores |
 | [`current`](#current) , [`arrayOf`](#arrayof) , [`objectOf`](#objectof) | Utilities |
 
 
@@ -46,7 +48,7 @@ npm install xoid
 ### Intuitive & Familiar API
 
 Provides a similar API to **Recoil**. 
-Except, in the second argument of \`create\` method, you can specify actions for your store! Also, you can create derived stores with computed values.
+Except, in the second argument of `create` method, you can specify actions for your store! Also, you can create derived stores with computed values.
 
 ```js
 import { create, set } from 'xoid'
@@ -65,7 +67,7 @@ const sum = create(get => get(alpha) + get(beta))
 ### React & Vanilla
 
 No need for wrapping components into context providers. 
-Just import \`useStore\` and start using! You can also use \`use\` method to access the actions of a store, without causing rerenders. (it's not a hook)
+Just import `useStore` and start using! You can also use `use` method to access the actions of a store, without causing rerenders. (it's not a hook)
 
 ```js
 import { useStore, use, subscribe } from 'xoid'
@@ -96,7 +98,7 @@ const [name, setName] = useStore(store.name)
 
 ### No more hand-written reducers!
 
-With \`set\` method, you can surgically modify the parts in your state.
+With `set` method, you can surgically modify the parts in your state.
 This means that you can modify deeply nested values without having to write a lot of code, or without using tools like **immer** or **immutablejs**.
 
 ```js
@@ -111,6 +113,20 @@ console.log(get(foo)) // 5
 set(foo, 25)
 
 console.log(get(store)) // { deeply: { nested: { foo: 25 } } }
+```
+
+### Nested Stores 
+You can store your application's data as deeply nested structures without worrying about UI performance. While using `useStore` hook, **xoid** never automatically subscribes to child stores.
+
+```js
+import { create, set } from 'xoid'
+
+const store = create({ title: 'hello', oftenUpdatingChildStore: create(0) })
+setInterval(() => set(store.oftenUpdatingChildStore, (count) => count + 1, 50)
+
+// In a React component
+const [state] = useStore(store)
+console.log(state.oftenUpdatingChildStore) // component subscribes to the child store only when it's being read.
 ```
 
 ### No-API Finite State Machines!
@@ -136,38 +152,24 @@ Perhaps, the most powerful feature of **xoid** is this one. Here's an example of
 ```js
 import { create, arrayOf, get, set, use } from 'xoid'
 
-interface Employee {
-  name: string
-}
-
-interface Company {
-  name: string
-  employees: Employee[]
-}
-
-const EmployeeModel = (payload: Employee) => create(
-  payload, 
-  (store) => ({
-    greet: () => console.log(`Hey ${get(store.name)}!`)
-  })
+const EmployeeModel = (payload) => create(
+  { name: payload.name }, 
+  (store) => ({ greet: () => console.log(`Hey ${get(store.name)}!`) })
 )
 
-const CompanyModel = (payload: Company) => create({
+const CompanyModel = (payload) => create({
   name: payload.name,
   employees: arrayOf(EmloyeeModel, payload.employees),
 })
 
 const companyStore = CompanyModel({
   name: 'my-awesome-company',
-  employees: [
-    { name: 'you' },
-    { name: 'me' }
-  ]
+  employees: [{ name: 'you' }, { name: 'me' }]
 })
 
 use(companyStore.employees[0]).greet() // Hey you!
+const myName = companyStore.employees[1].name // you can alias stores
 
-const myName = companyStore.employees[1].name
 console.log(get(myName)) // 'me'
 set(myName, 'my new name')
 console.log(get(myName)) // 'my new name'
@@ -179,17 +181,13 @@ Another benefit of using models are builtin `add` and `remove` actions. They are
 use(companyStore.employees).add({ name: 'third employee'})
 use(companyStore.employees[2]).greet() // Hey third employee!
 
-// remove by id
-use(companyStore.employees).remove(2)
-// remove by match
-use(companyStore.employees).remove(item => item.name === 'third employee')
+use(companyStore.employees).remove(2) // by index
+use(companyStore.employees).remove(item => item.name === 'third employee') // by filter function
 
-// similarly, if `employees` was an "objectOf(EmployeeModel)"
+// if `employees` was an "objectOf(EmployeeModel)"
 use(companyStore.employees).add({ name: 'third employee'}, '0000')
-// remove by key
-use(companyStore.employees).remove('0000')
-// remove by match
-use(companyStore.employees).remove(item => item.name === 'third employee')
+use(companyStore.employees).remove('0000') // by key
+use(companyStore.employees).remove(item => item.name === 'third employee') // by filter function
 
 ```
 
