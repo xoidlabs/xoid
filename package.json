@@ -2,7 +2,7 @@
   "name": "xoid",
   "private": true,
   "version": "0.0.8",
-  "description": "Think less about state-management",
+  "description": "Scalable, fine-grained, and minimal state-management library for React and vanilla JavaScript",
   "main": "index.cjs.js",
   "module": "index.js",
   "types": "index.d.ts",
@@ -61,7 +61,7 @@
   "bugs": {
     "url": "https://github.com/onurkerimov/xoid/issues"
   },
-  "homepage": "https://github.com/onurkerimov/xoid",
+  "homepage": "https://xoid.dev",
   "jest": {
     "testRegex": "test.(js|ts|tsx)$",
     "coverageDirectory": "./coverage/",

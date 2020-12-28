@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="300" src="logo.png" />
+  <img width="300" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/logo.png" />
 </p> 
 
 <p align="center">
@@ -38,9 +38,9 @@ npm install xoid
 
 | Exports 	| Description 	|
 |-	|-	|
-| [`create`](#create) | Creates a store |
-| [`get`](#get) , [`set`](#set) , [`use`](#use) , [`subscribe`](#subscribe) , [`useStore`](hooks#usestore) | Interacts with stores |
-| [`current`](#current) , [`arrayOf`](#arrayof) , [`objectOf`](#objectof) | Utilities |
+| [`create`](#https://xoid.dev/docs/api/create) | Creates a store |
+| [`get`](#https://xoid.dev/docs/api/get) , [`set`](#https://xoid.dev/docs/api/set) , [`use`](#https://xoid.dev/docs/api/use) , [`subscribe`](#https://xoid.dev/docs/api/subscribe) , [`useStore`](hooks#https://xoid.dev/docs/api/usestore) | Interacts with stores |
+| [`current`](#https://xoid.dev/docs/api/current) , [`arrayOf`](#https://xoid.dev/docs/api/arrayof) , [`objectOf`](#https://xoid.dev/docs/api/objectof) | Utilities |
 
 
 ## Usage
@@ -84,7 +84,7 @@ const unsubscribe = subscribe(alpha, a => console.log(a))
 
 ### No more selector functions!
 
-Every store returns a **shape** that's analogous to their state. 
+Every store is a *representation* of state, with the same tree structure as the state. 
 You can even subscribe to "primitives" like strings or numbers.
 
 ```js
