@@ -38,9 +38,9 @@ npm install xoid
 
 | Exports 	| Description 	|
 |-	|-	|
-| [`create`](#https://xoid.dev/docs/api/create) | Creates a store |
-| [`get`](#https://xoid.dev/docs/api/get) , [`set`](#https://xoid.dev/docs/api/set) , [`use`](#https://xoid.dev/docs/api/use) , [`subscribe`](#https://xoid.dev/docs/api/subscribe) , [`useStore`](hooks#https://xoid.dev/docs/api/usestore) | Interacts with stores |
-| [`current`](#https://xoid.dev/docs/api/current) , [`arrayOf`](#https://xoid.dev/docs/api/arrayof) , [`objectOf`](#https://xoid.dev/docs/api/objectof) | Utilities |
+| [`create`](https://xoid.dev/docs/api/create) | Creates a store |
+| [`get`](https://xoid.dev/docs/api/get) , [`set`](https://xoid.dev/docs/api/set) , [`use`](https://xoid.dev/docs/api/use) , [`subscribe`](https://xoid.dev/docs/api/subscribe) , [`useStore`](hookshttps://xoid.dev/docs/api/usestore) | Interacts with stores |
+| [`current`](https://xoid.dev/docs/api/current) , [`arrayOf`](https://xoid.dev/docs/api/arrayof) , [`objectOf`](https://xoid.dev/docs/api/objectof) | Utilities |
 
 
 ## Usage
