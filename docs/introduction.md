@@ -20,11 +20,17 @@ Or if you're using <a href="https://classic.yarnpkg.com/en/docs/install/" target
 yarn add xoid
 ```
 
-**xoid** is easy to get start with. If you have familiarized yourself with the API summary on the landing page (or the GitHub README), we recommend diving into examples:
+**xoid** is easy to get started with. If you've read the API summary on the landing page (or the GitHub README), you're already familiar with the basics. As the next step, you can directly dive into examples:
 
-- [Basic Todos](https://github.com/onurkerimov/xoid/blob/master/examples/basic-todos)
-- [Counter](https://github.com/onurkerimov/xoid/blob/master/examples/counter-derived-state)
-- [Celcius-Fahrenheit conversion](https://github.com/onurkerimov/xoid/blob/master/examples/celcius-fahrenheit)
-- [Finite state stopwatch](https://github.com/onurkerimov/xoid/blob/master/examples/finite-state-stopwatch)
-- [Transient update resize observer](https://github.com/onurkerimov/xoid/blob/master/examples/transient-update-resize-observer)
-- [Trello clone](https://github.com/onurkerimov/xoid/blob/master/examples/trello)
+- [Basic Todos](https://github.com/onurkerimov/xoid/blob/master/examples/basic-todos) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/basic-todos)
+
+- [Counter](https://github.com/onurkerimov/xoid/blob/master/examples/counter-derived-state) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/counter-derived-state)
+
+- [Celcius-Fahrenheit conversion](https://github.com/onurkerimov/xoid/blob/master/examples/celcius-fahrenheit) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/celcius-fahrenheit)
+
+- [Finite state stopwatch](https://github.com/onurkerimov/xoid/blob/master/examples/finite-state-stopwatch) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/finite-state-stopwatch)
+
+- [Transient update resize observer](https://github.com/onurkerimov/xoid/blob/master/examples/transient-update-resize-observer) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/transient-update-resize-observer)
+
+
+- [Trello clone](https://github.com/onurkerimov/xoid/blob/master/examples/trello) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/trello)

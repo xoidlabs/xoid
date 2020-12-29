@@ -1,5 +1,5 @@
 import React from 'react'
-import Board from './components/Board'
-import rootStore from './store'
+import Board from './Board'
+import rootStore from '../store'
 
 export default () => <Board store={rootStore.board} />
