@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import { use, useStore } from 'xoid'
-import { BoardStore, CardPayload } from '../models'
+import { BoardStore } from '../models'
 import Column from './Column'
 import Editable from './Editable'
 
