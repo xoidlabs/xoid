@@ -16,6 +16,7 @@ const store = arrayOf(TodoModel, [
 
 export const Todos = () => {
   const get = useStore()
+  get(store)
   return (
     <>
       {store.map((todo, key) => (

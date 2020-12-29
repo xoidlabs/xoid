@@ -1,4 +1,4 @@
-import { create, arrayOf } from '../basic-todos/src/node_modules/xoid'
+import { create, arrayOf } from 'xoid'
 
 export interface BoardPayload {
   title: string
