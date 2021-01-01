@@ -8,5 +8,5 @@ export {
   arrayOf,
   current,
 } from './core'
-export type { Value, Store, StateOf } from './core'
+export type { Value, Store, Pure } from './core'
 export { useStore } from './react'

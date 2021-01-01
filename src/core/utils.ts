@@ -42,9 +42,11 @@ export const createHandler = (pure: boolean, callback?: Function) => ({
         callback
       )
     } else if (target[requestedKey]) {
-      return (target as any)[requestedKey].bind(
-        pure && data ? transform(data, true) : target
-      )
+      return (target as any)[requestedKey].bind
+        ? (target as any)[requestedKey].bind(
+            pure && data ? transform(data, true) : target
+          )
+        : (target as any)[requestedKey]
     }
   },
   set(target: Record<Key, unknown>, key: Key, value: unknown) {

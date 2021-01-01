@@ -1,19 +1,19 @@
 import { set } from '.'
 import { Root } from './root'
-import { StateOf, Store } from './types'
+import { Pure, Store } from './types'
 
 export type Model<State, Actions> = (
-  state: StateOf<State>
+  state: Pure<State>
 ) => Store<State, Actions>
 
 export function objectOf<State, Actions>(
   model: Model<State, Actions>,
-  init: Record<string, StateOf<State>> = {}
+  init: Record<string, Pure<State>> = {}
 ) {
   const root = new Root(
     init as Record<string, Store<State, Actions>>,
     (store) => ({
-      add: (item: StateOf<State>, key: string) =>
+      add: (item: Pure<State>, key: string) =>
         //@ts-ignore
         set(store, (state) => ({ ...state, [key]: item })),
       //
@@ -36,14 +36,14 @@ export function objectOf<State, Actions>(
 
 export function arrayOf<State, Actions>(
   model: Model<State, Actions>,
-  init: StateOf<State>[] = []
+  init: Pure<State>[] = []
 ) {
   const root = new Root(
     init as Store<State, Actions>[],
     (store) => ({
       //@ts-ignore
-      add: (item: StateOf<State>) => set(store, (state) => [...state, item]),
-      remove: (match: number | ((item: StateOf<State>) => boolean)) => {
+      add: (item: Pure<State>) => set(store, (state) => [...state, item]),
+      remove: (match: number | ((item: Pure<State>) => boolean)) => {
         set(store, (state) => {
           if (typeof match === 'number') {
             return state.filter((item: any, index: number) => index !== match)

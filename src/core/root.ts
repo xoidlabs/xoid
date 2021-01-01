@@ -157,6 +157,7 @@ export class Root<T, A> {
 }
 
 const shallowCopy = (obj: any) => {
-  if (typeof obj === 'object' && obj !== null) return Object.assign({}, obj)
+  if (typeof obj === 'object' && obj !== null)
+    return Object.assign(new obj.constructor(), obj)
   else return obj
 }

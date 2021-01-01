@@ -1,10 +1,10 @@
 import { Root } from './root'
 import { error } from './errors'
 import { getData, isRootData, transform } from './utils'
-import { Initializer, After, Store, Value, Decorator, StateOf } from './types'
+import { Initializer, After, Store, Value, Decorator, Pure } from './types'
 
 export { objectOf, arrayOf } from './model'
-export type { Store, Value, StateOf } from './types'
+export type { Store, Value, Pure } from './types'
 
 /**
  * Creates a store with the first argument as the initial state.
@@ -25,7 +25,7 @@ export function create<T, Actions = undefined>(
  * @see [xoid.dev/docs/api/get](https://xoid.dev/docs/api/get)
  */
 
-export const get = <T>(item: Value<T>): StateOf<T> => {
+export const get = <T>(item: Value<T>): Pure<T> => {
   const data = getData(item)
   if (data) return transform(data, true) as any
   else throw error('get')
@@ -38,7 +38,7 @@ export const get = <T>(item: Value<T>): StateOf<T> => {
 
 export const set = <T extends Value<any>>(
   item: T,
-  value: StateOf<T> | ((state: StateOf<T>) => StateOf<T>),
+  value: Pure<T> | ((state: Pure<T>) => Pure<T>),
   decorator?: Decorator<T>
 ): void => {
   const data = getData(item)
@@ -75,7 +75,7 @@ export const use = <T, Actions>(item: Store<T, Actions>): Actions => {
 
 export const subscribe = <T>(
   item: Value<T>,
-  fn: (state: StateOf<T>) => void
+  fn: (state: Pure<T>) => void
 ) => {
   const data = getData(item)
   let previousValue = get(item)
@@ -104,7 +104,7 @@ export const subscribe = <T>(
  * @see [xoid.dev/docs/api/current](https://xoid.dev/docs/api/current)
  */
 
-export const current = <T>(item: Value<T>): StateOf<T> => {
+export const current = <T>(item: Value<T>): Pure<T> => {
   const inner = (obj: any) => {
     if (typeof obj === 'object') {
       const newNode = new (obj as any).constructor()
