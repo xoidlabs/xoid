@@ -45,7 +45,7 @@ export const set = <T extends Value<any>>(
   if (!data) throw error('set')
 
   const { root, source, key } = data
-  const prevValue = source[key] as T
+  const prevValue = transform(data, true)
   if (typeof value === 'function') {
     // Easy usage of {immer.produce} or other similar functions
     const nextValue: T = decorator

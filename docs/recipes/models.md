@@ -104,3 +104,27 @@ const ABModel = (payload: {
 :::
 
 Calling `ABModel({alpha: number, beta: number})` would create a store without problems. However trying to use this model with `objectOf` or `arrayOf` results in a typecheck error.
+
+### One nice thing about models
+
+Stores created with `objectOf` or `arrayOf` will have two actions called `add` and `remove` by default. Their usage is documented under [`objectOf`](api/objectOf) and [`arrayOf`](api/arrayOf) titles in API section. 
+
+```js
+const TodoModel = (payload: TodoPayload) =>
+  create(payload, (store) => ({ toggle: () => set(store.checked, (s) => !s) }))
+
+const todosArray = arrayOf(TodoModel, [
+  { title: 'groceries', checked: true },
+  { title: 'world invasion', checked: false },
+])
+
+const todosObject = objectOf(TodoModel, {
+  'uuid-aaaa': { title: 'groceries', checked: true },
+  'uuid-bbbb': { title: 'world invasion', checked: false },
+})
+
+use(todosArray).add({ title: 'third todo', checked: false })
+use(todosObject).add({ title: 'third todo', checked: false }, 'uuid-cccc')
+
+use(todosArray).remove(2) // by index
+use(todosObject).remove('uuid-bbbb') // by key

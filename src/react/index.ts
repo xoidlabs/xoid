@@ -21,7 +21,7 @@ export function useStore(): <T>(item: Value<T>) => StateOf<T>
 export function useStore<S extends Value<any>>(
   store: S
 ): S extends Store<infer T, infer A>
-  ? [StateOf<T>, A]
+  ? [StateOf<T>, A extends undefined ? SetState<T> : A]
   : S extends Value<infer T>
   ? [StateOf<T>, SetState<T>]
   : never
