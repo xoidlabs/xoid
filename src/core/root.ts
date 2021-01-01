@@ -44,8 +44,8 @@ export class Root<T, A> {
 
     // Create the initial state
     this.state = this.isSelector
-      ? this.initializer(this.stateGetter, this.stateSetter)
-      : (init as T)
+      ? shallowCopy(this.initializer(this.stateGetter, this.stateSetter))
+      : shallowCopy(init as T)
 
     if (getData(this.state)) throw error('constructor')
 
@@ -154,4 +154,9 @@ export class Root<T, A> {
     const value = get(this.store)
     this.listeners.forEach((fn) => fn(value as T))
   }
+}
+
+const shallowCopy = (obj: any) => {
+  if (typeof obj === 'object' && obj !== null) return Object.assign({}, obj)
+  else return obj
 }

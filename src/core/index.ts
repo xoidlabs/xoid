@@ -43,7 +43,6 @@ export const set = <T extends Value<any>>(
 ): void => {
   const data = getData(item)
   if (!data) throw error('set')
-
   const { root, source, key } = data
   const prevValue = transform(data, true)
   if (typeof value === 'function') {
