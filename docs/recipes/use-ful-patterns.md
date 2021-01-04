@@ -5,7 +5,7 @@ title: "'Use'ful patterns"
 
 ### Getters for derived state
 
-Most commonly, "useables" of a store would be an object of functions. However, there's no limitations on what `use` method will return. One useful pattern is adding derived state as getters.
+Usually, "useables" of a store would be an object of functions. However, there are no limitations on what `use` method will return. One useful pattern is adding derived state as getters.
 
 ```js
 const store = create(
@@ -14,15 +14,11 @@ const store = create(
     beta: 5
   },
   (store) => {
-    const sum = create(store.alpha + store.beta);
-    const product = create(store.alpha * store.beta);
+    const sum = create((get) => get(store.alpha) + get(store.beta))
+    const product = create((get) => get(store.alpha) * get(store.beta))
     return {
-      get sum() {
-        return get(sum);
-      },
-      get product() {
-        return get(product);
-      }
+      get sum() { return get(sum) },
+      get product() { return get(product) }
     };
   }
 );

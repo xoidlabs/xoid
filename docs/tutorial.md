@@ -30,7 +30,6 @@ const App = () => <Foo />
 The component is able to modify the `fooStore`, and it will rerender by it's state updates. No context providers are needed. The experience is similar to `React.useState`, but additionally, the state can be shared other React components too.
 
 The store we have created will show up as: 
-![](/docs/assets/*.png)
 
 Let's add intrinsic actions to our store:
 
