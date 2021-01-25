@@ -9,4 +9,4 @@ export {
   current,
 } from './core'
 export type { Value, Store, Pure } from './core'
-export { useStore } from './react'
+export { useStore, useModel } from './react'

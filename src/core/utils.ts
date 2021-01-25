@@ -121,4 +121,6 @@ export const override = (
   Object.keys(target).forEach((key) => delete target[key])
   // shallowmerge it to the object
   Object.keys(payload).forEach((key) => (target[key] = payload[key]))
+  // if array, also modify {.length} correctly
+  if (Array.isArray(target)) (target as any).length = payload.length
 }

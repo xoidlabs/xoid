@@ -3,8 +3,7 @@ id: finite-state-machines
 title: Finite State Machines
 ---
 
-# 
-**xoid** is **not** specialized for **fsm**s (finite state machines), however, a considerable range of fsms can be expressed by only using the first argument of `create` function.
+**xoid** is **not** specialized for **fsm**s (finite state machines), however, a considerable range of fsms can be expressed only by using the first argument of `create` function.
 
 ```js
 const fsm = create<{
@@ -39,7 +38,7 @@ const fsm = create<{
   return solid;
 })
 
-const Sum = () => {
+const Water = () => {
   const [{ name, actions }] = useStore(fsm)
   return (
     <div>

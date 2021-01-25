@@ -2,7 +2,7 @@ import React from 'react'
 import styled from '@emotion/styled'
 import { useStore } from 'xoid'
 import Editable from './Editable'
-import { CardStore } from '../models'
+import { CardModel } from '../models'
 
 const Self = {
   Container: styled.div`
@@ -30,7 +30,10 @@ const Self = {
   `,
 }
 
-const Card = (props: { store: CardStore; removeCard: () => void }) => {
+const Card = (props: {
+  store: ReturnType<typeof CardModel>
+  removeCard: () => void
+}) => {
   useStore(props.store)
   return (
     <Self.Container>

@@ -8,7 +8,7 @@ title: Local component state
 ```js title="./helpers.ts"
 import { create, set } from 'xoid';
 
-export const BooleanModel = (payload: boolean) =>
+export const BooleanModel = (payload: boolean = false) =>
   create(payload, (x) => [
     () => set(x, true),
     () => set(x, false)
@@ -16,14 +16,31 @@ export const BooleanModel = (payload: boolean) =>
 ```
 
 ```js title="./Component.tsx"
-import { useMemo } from 'react';
-import { useStore } from 'xoid';
 import { BooleanModel } from './helpers';
+import { useModel } from 'xoid';
 
 // inside React
-const [isOpen, [openList, closeList]] = useStore(
-  useMemo(() => BooleanModel(false), [])
-);
+const [isOpen, [openList, closeList]] = useModel(BooleanModel)
+
 ```
 
-> Note that [useMemo doesn't guarantee that the callback will run only once](https://reactjs.org/docs/hooks-faq.html#how-to-create-expensive-objects-lazily). You may consider [`use-constant`](https://www.npmjs.com/package/use-constant) package for stricter scenarios.
+### 
+
+```js title="./Component.tsx"
+import { BooleanModel } from './helpers';
+import { useModel } from 'xoid';
+
+// inside React
+const [uploadStatus, { add, remove, set }] = useModel(() => arrayOf(() => BooleanModel(true)))
+
+type MatrixPayload = VectorPayload[]
+type VectorPayload = number[]
+const MatrixModel = (payload: MatrixPayload) => arrayOf(VectorModel, payload)
+const VectorModel = (payload: VectorPayload) => arrayOf(() => create(0), payload)
+```
+
+```js
+{map((store) => (
+  <Todo store={store} />
+))}
+```

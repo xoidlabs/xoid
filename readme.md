@@ -42,6 +42,20 @@ npm install xoid
 | [`get`](https://xoid.dev/docs/api/get) , [`set`](https://xoid.dev/docs/api/set) , [`use`](https://xoid.dev/docs/api/use) , [`subscribe`](https://xoid.dev/docs/api/subscribe) , [`useStore`](https://xoid.dev/docs/api/usestore) | Interacts with stores |
 | [`current`](https://xoid.dev/docs/api/current) , [`arrayOf`](https://xoid.dev/docs/api/arrayof) , [`objectOf`](https://xoid.dev/docs/api/objectof) | Utilities |
 
+## Examples
+
+- [Basic Todos](https://github.com/onurkerimov/xoid/blob/master/examples/basic-todos) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/basic-todos)
+
+- [Counter](https://github.com/onurkerimov/xoid/blob/master/examples/counter) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/counter)
+
+- [Celcius-Fahrenheit conversion](https://github.com/onurkerimov/xoid/blob/master/examples/celcius-fahrenheit) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/celcius-fahrenheit)
+
+- [Finite state stopwatch](https://github.com/onurkerimov/xoid/blob/master/examples/finite-state-stopwatch) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/finite-state-stopwatch)
+
+- [Transient update resize observer](https://github.com/onurkerimov/xoid/blob/master/examples/transient-update-resize-observer) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/transient-update-resize-observer)
+
+
+- [Trello clone](https://github.com/onurkerimov/xoid/blob/master/examples/trello) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/trello)
 
 ## Usage
 
@@ -57,11 +71,11 @@ const numberActions = (store) => ({
  increment: () => set(store, (s) => s + 1),
  decrement: () => set(store, (s) => s - 1)
 })
-const alpha = create(3, numberActions)
-const beta = create(4, numberActions)
+export const alpha = create(3, numberActions)
+export const beta = create(4, numberActions)
 
 // derived state
-const sum = create(get => get(alpha) + get(beta))
+export const sum = create(get => get(alpha) + get(beta))
 ```
 
 ### React & Vanilla
@@ -85,7 +99,7 @@ const unsubscribe = subscribe(alpha, a => console.log(a))
 ### No more selector functions!
 
 Every store is a *representation* of state, with the same tree structure as the state. 
-You can even subscribe to "primitives" like strings or numbers.
+You can even subscribe to "primitives" like strings, booleans, or numbers.
 
 ```js
 import { create, useStore } from 'xoid'

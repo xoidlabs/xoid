@@ -15,31 +15,33 @@ const store = arrayOf(TodoModel, [
 ])
 
 export const Todos = () => {
-  const get = useStore()
-  get(store)
+  useStore(store)
   return (
     <>
       {store.map((todo, key) => (
-        <div key={key}>
-          <input
-            type="checkbox"
-            checked={get(todo.checked)}
-            onChange={use(todo).toggle}
-          />
-          <input
-            style={{
-              textDecoration: get(todo.checked) ? 'line-through' : 'none',
-            }}
-            value={get(todo.title)}
-            onChange={(e) => set(todo.title, e.target.value)}
-          />
-        </div>
+        <Todo store={todo} key={key} />
       ))}
       <button
         onClick={() => use(store).add({ title: 'unnamed', checked: false })}>
         +
       </button>
     </>
+  )
+}
+
+const Todo = (props: { store: ReturnType<typeof TodoModel> }) => {
+  const [{ title, checked }, { toggle }] = useStore(props.store)
+  return (
+    <div>
+      <input type="checkbox" checked={checked} onChange={toggle} />
+      <input
+        style={{
+          textDecoration: checked ? 'line-through' : 'none',
+        }}
+        value={title}
+        onChange={(e) => set(props.store.title, e.target.value)}
+      />
+    </div>
   )
 }
 

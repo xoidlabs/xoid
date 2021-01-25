@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import styled from '@emotion/styled'
 import { use, useStore } from 'xoid'
-import { ColumnStore } from '../models'
+import { ColumnModel } from '../models'
 import Card from './Card'
 import Editable from './Editable'
 
@@ -30,7 +30,7 @@ const Self = {
   `,
 }
 
-const Column = function (props: { store: ColumnStore }) {
+const Column = function (props: { store: ReturnType<typeof ColumnModel> }) {
   useStore(props.store.cards)
 
   const ref = useRef<HTMLDivElement>(null)

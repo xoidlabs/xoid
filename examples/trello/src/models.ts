@@ -34,7 +34,3 @@ export const CardModel = ({ id, title }: CardPayload) =>
     id,
     title,
   })
-
-export type BoardStore = ReturnType<typeof BoardModel>
-export type ColumnStore = ReturnType<typeof ColumnModel>
-export type CardStore = ReturnType<typeof CardModel>

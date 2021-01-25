@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import { use, useStore } from 'xoid'
-import { BoardStore } from '../models'
+import { BoardModel } from '../models'
 import Column from './Column'
 import Editable from './Editable'
 
@@ -33,7 +33,7 @@ const Self = {
   `,
 }
 
-const Board = (props: { store: BoardStore }) => {
+const Board = (props: { store: ReturnType<typeof BoardModel> }) => {
   useStore(props.store.columns)
   return (
     <Self.Container>

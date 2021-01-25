@@ -30,14 +30,11 @@ export const RequestModel = (endpoint, init) =>
 ```
 
 ```js title="./Component.js"
-import { useMemo } from 'react';
-import { useStore } from 'xoid';
 import { RequestModel } from './helpers';
+import { useModel } from 'xoid';
 
 // inside React
-const [{ data, error, loading }] = useStore(
-  useMemo(() => RequestModel('/some-address'), [])
-);
+const [{ data, error, loading }] = useModel(() => RequestModel('/some-address'));
 ```
 
 Of course you could build the same functionality without **xoid**, by using `useState` and `useEffect`. However note that with **xoid**, `RequestModel` is framework agnostic and can be used outside React too:
@@ -68,8 +65,6 @@ useEffect(
   []
 );
 ```
-
-> Note that [useMemo doesn't guarantee that the callback will run only once](https://reactjs.org/docs/hooks-faq.html#how-to-create-expensive-objects-lazily). You may consider [`use-constant`](https://www.npmjs.com/package/use-constant) package for stricter scenarios.
 
 ## Async actions
 ```js
