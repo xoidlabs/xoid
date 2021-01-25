@@ -1,6 +1,6 @@
 ---
 id: models
-title: Composing stores using models
+title: Using arrayOf and objectOf
 ---
 
 In **xoid**, models are the recommended way of creating stores. Usually, a store is composed of conceptually separable entities. Models can be thought as the formal way of declaring those entities. For instance, in a basic kanban board app, main entities would be **the board**, **columns** and **cards**. In the store, we can define and use `BoardModel`, `ColumnModel` and `CardModel`.

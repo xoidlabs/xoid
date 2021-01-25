@@ -21,9 +21,7 @@ Or if you're using <a href="https://classic.yarnpkg.com/en/docs/install/" target
 yarn add xoid
 ```
 
-## Quick Introduction
-
-In this quick introduction, only `create`, `set`, `use`, `useStore` exports will be introduced. These exports are enough to receive a flux-like experience from **xoid**. There are also `get` and `subscribe` exports which are mostly used outside React, and `arrayOf` and `objectOf`, which are explained in the "Advanced Usage" section.
+## Quick Start
 
 **xoid** is based on stores. Stores can be initialized with objects, arrays or primitive values.
 
@@ -79,20 +77,16 @@ import { create } from 'xoid'
 export const countPlusOne = create(get => get(counter) + 1)
 ```
 
+To subscribe to a specific state portion of an **xoid** store, there's no need for selector functions. 
 
-## Examples
+```js
+import { create } from 'xoid'
+export const store = create({alpha: 0, beta: 1, deeply: { nested: { value: 2 }}})
 
-We recommend learning **xoid** through directly diving into examples:
+const Counter = () => {
+  const [value] = useStore(store.deeply.nested.value)
+  return <div>{value}</div>
+}
+```
 
-- [Basic Todos](https://github.com/onurkerimov/xoid/blob/master/examples/todos-basic) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/todos-basic)
-
-- [Counter](https://github.com/onurkerimov/xoid/blob/master/examples/counter) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/counter)
-
-- [Celcius-Fahrenheit conversion](https://github.com/onurkerimov/xoid/blob/master/examples/celcius-fahrenheit) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/celcius-fahrenheit)
-
-- [Finite state stopwatch](https://github.com/onurkerimov/xoid/blob/master/examples/finite-state-stopwatch) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/finite-state-stopwatch)
-
-- [Transient update resize observer](https://github.com/onurkerimov/xoid/blob/master/examples/transient-update-resize-observer) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/transient-update-resize-observer)
-
-
-- [Trello clone](https://github.com/onurkerimov/xoid/blob/master/examples/trello) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/trello)
+Only `create`, `set`, `use`, `useStore` exports are covered in this quick start guide. These exports are enough to receive a flux-like experience. There are also `get`, `current`, `subscribe`, `arrayOf`, `objectOf` and `useModel` exports, which you can find more info on the next section, or the [API Reference](api/create) section.

@@ -36,11 +36,11 @@ npm install xoid
 
 ## API Overview
 
-| Exports 	| Description 	|
-|-	|-	|
-| [`create`](https://xoid.dev/docs/api/create) | Creates a store |
-| [`get`](https://xoid.dev/docs/api/get) , [`set`](https://xoid.dev/docs/api/set) , [`use`](https://xoid.dev/docs/api/use) , [`subscribe`](https://xoid.dev/docs/api/subscribe) , [`useStore`](https://xoid.dev/docs/api/usestore) | Interacts with stores |
-| [`current`](https://xoid.dev/docs/api/current) , [`arrayOf`](https://xoid.dev/docs/api/arrayof) , [`objectOf`](https://xoid.dev/docs/api/objectof) | Utilities |
+| Exports        | Description           |
+| ---------| ---------- |
+| [`create`](api/create) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof)  | Creates a store       |
+| [`get`](api/get) , [`set`](api/set) , [`use`](api/use) , [`current`](api/current) , [`subscribe`](api/subscribe) | Interacts with stores |
+| [`useStore`](api/usestore) , [`useModel`](api/usemodel) | React integration |
 
 ## Examples
 
