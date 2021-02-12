@@ -1,9 +1,10 @@
 import { Store } from '@xoid/core';
+import { Observable } from '@xoid/engine';
 /**
  * Subscribes to a store, or a value inside a React function component.
  * @see [xoid.dev/docs/api-react/usestore](https://xoid.dev/docs/api-react/usestore)
  */
-export declare function useStore<T>(store: Store<T>): T;
+export declare function useStore<T>(store: Observable<T>): T;
 /**
  * Subscribes to a store, or a value inside a React function component.
  * @see [xoid.dev/docs/api-react/usesetup](https://xoid.dev/docs/api-react/usesetup)

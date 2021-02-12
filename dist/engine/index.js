@@ -37,14 +37,10 @@ const createSelector = (store, init) => {
         unsubs.forEach((fn) => fn());
         unsubs.clear();
         const result = init(getter);
-        // if(isPromise(result)) result.then(value => store(value)) else
         store(result);
     };
     updateState();
 };
-// function isPromise(obj) {
-//   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
-// }
 const createSubscribe = (effect) => (store, fn) => {
     let prevValue = store();
     let cleanup;

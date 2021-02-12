@@ -29,6 +29,7 @@
   },
   "peerDependencies": {
     "@xoid/core": ">=0.9.5",
+    "@xoid/engine": ">=0.9.5",
     "react": "*"
   }
 }

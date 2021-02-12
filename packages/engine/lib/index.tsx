@@ -56,39 +56,33 @@ export const createSelector = (store: Observable<any>, init: Function) => {
     unsubs.forEach((fn) => fn())
     unsubs.clear()
     const result = init(getter)
-    // if(isPromise(result)) result.then(value => store(value)) else
     store(result)
   }
   updateState()
 }
 
-// function isPromise(obj) {
-//   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
-// }
-
-const createSubscribe = (effect: boolean) => <T extends Observable<any>>(
-  store: T,
-  fn: Listener<StateOf<T>>
-): (() => void) => {
-  let prevValue = store()
-  let cleanup: unknown
-  const runCleanup = () => {
-    if (cleanup && typeof cleanup === 'function') cleanup()
-    cleanup = undefined
+const createSubscribe =
+  (effect: boolean) =>
+  <T extends Observable<any>>(store: T, fn: Listener<StateOf<T>>): (() => void) => {
+    let prevValue = store()
+    let cleanup: unknown
+    const runCleanup = () => {
+      if (cleanup && typeof cleanup === 'function') cleanup()
+      cleanup = undefined
+    }
+    const listener = () => {
+      runCleanup()
+      const nextValue = store()
+      if (nextValue !== prevValue) cleanup = fn(nextValue)
+      prevValue = nextValue
+    }
+    if (effect) fn(store())
+    const unsub = (store as any)[META].root.subscribe(listener)
+    return () => {
+      runCleanup()
+      unsub()
+    }
   }
-  const listener = () => {
-    runCleanup()
-    const nextValue = store()
-    if (nextValue !== prevValue) cleanup = fn(nextValue)
-    prevValue = nextValue
-  }
-  if (effect) fn(store())
-  const unsub = (store as any)[META].root.subscribe(listener)
-  return () => {
-    runCleanup()
-    unsub()
-  }
-}
 
 export const subscribe = createSubscribe(false)
 export const effect = createSubscribe(true)

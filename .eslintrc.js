@@ -22,5 +22,5 @@ module.exports = {
     "spaced-comment": ["error", "always", { "markers": ["/"] }]
   },
   settings: {},
-  ignorePatterns: ["*.js"],
+  ignorePatterns: ["*.js", "dist/**"],
 };

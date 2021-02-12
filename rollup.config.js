@@ -57,11 +57,13 @@ async function main() {
       copyTargets.push({ src: 'README.md', dest: outputPath })
     }
 
-    if(main && pkg.name !== 'xoid') {
-      output.push({
-        file: path.join(outputPath, main),
-        format: 'cjs',
-      })
+    if(main) {
+      if(pkg.name !== 'xoid') {
+        output.push({
+          file: path.join(outputPath, main),
+          format: 'cjs',
+        })
+      }
       if(types) {
         copyTargets.push({ src: typesPath, dest: outputPath })
       }
