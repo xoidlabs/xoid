@@ -14,7 +14,14 @@
     "plugin:import/errors",
     "plugin:import/warnings"
   ],
-  "plugins": ["@typescript-eslint", "react", "prettier", "react-hooks", "import", "jest"],
+  "plugins": [
+    "@typescript-eslint", 
+    "react", 
+    "prettier", 
+    "react-hooks", 
+    "import", 
+    "jest"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2018,
