@@ -12,7 +12,7 @@ Two major distinguishing features:
 
 - In **xoid**, stores can be combined in a nested fashion. When a React component subscribes to a store, it doesn't automatically subscribe to the child stores inside it. This is an optimization for avoiding unnecessary rerenders in React components. It makes it possible to have nested structures without worrying about UI performance. 
 
-- Not having to normalize state means a lot less cognitive overhead. Because mental representation of your domain is most likely a deeply nested structure, so why not have it embodied in your app's state, as it is? This can be a huge productivity boost.
+- Not having to normalize state means a lot less cognitive overhead. Because mental representation of your business domain is most likely a deeply nested structure, so why not have it embodied in your app's state, as it is? This can be a huge productivity boost.
   
 - This feature is recommended, but it's not enforced. There are no best practices here. If you prefer having normalized state, you can always decide not to use this feature by not combining stores in a nested fashion. Then, you'll get a Redux-like experience from **xoid**. 
 

@@ -9,4 +9,4 @@ Next section provides a full API introduction. Most fundamental concepts are int
 | ---------| ---------- |
 | [`create`](api/create) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof)  | Creates a store       |
 | [`get`](api/get) , [`set`](api/set) , [`use`](api/use) , [`current`](api/current) , [`subscribe`](api/subscribe) | Interacts with stores |
-| [`useStore`](api/usestore) , [`useModel`](api/usemodel) | React integration |
+| [`useStore`](api/usestore) , [`useLocal`](api/uselocal) | React integration |

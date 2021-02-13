@@ -14,39 +14,26 @@
   </a>
 </p>
 
-> **xoid** is a scalable state management library with small API surface. 
-> While learning it takes  ~10 mins, you can still manage great complexity with it.
+**xoid** is a scalable, React-focused state management library with a small API surface. Its name denotes being small, simple, and borrowing inspiration from Redu**X**, Mob**X** and **X**state. **xoid** is similar to them, but not exactly them. This is what "oid" part stands for, as in "human**oid**".
 
-## Why **xoid**?
-
-- Easy to learn
-- Not limited to React
-- Extensive Typescript support
-- Small bundle size (2.2 kB gzipped)
-- Handles deeply nested states perfectly
-- Computed values, transient updates, async stuff
-- High performance React apps with fine-grained updates
-- Alias or destructure parts of state without losing reactivity
+**xoid** is lightweight (2.2 kB gzipped), but quite powerful. Its composed of fundamental, low-level building blocks that can be used for building complex state managament patterns. One of the biggest aims of **xoid** is unifying global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself simple and approachable enough for newcomers. More features are explained below, and the [documentation website](https://xoid.dev/).
 
 To install, run the following command:
 
 ```bash
 npm install xoid
 ```
-
-## API Overview
-
-| Exports        | Description           |
-| ---------| ---------- |
-| [`create`](api/create) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof)  | Creates a store       |
-| [`get`](api/get) , [`set`](api/set) , [`use`](api/use) , [`current`](api/current) , [`subscribe`](api/subscribe) | Interacts with stores |
-| [`useStore`](api/usestore) , [`useModel`](api/usemodel) | React integration |
-
+or
+```bash
+yarn add xoid
+```
 ## Examples
 
-- [Basic Todos](https://github.com/onurkerimov/xoid/blob/master/examples/basic-todos) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/basic-todos)
-
 - [Counter](https://github.com/onurkerimov/xoid/blob/master/examples/counter) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/counter)
+
+- [Todos (Basic)](https://github.com/onurkerimov/xoid/blob/master/examples/todos-basic) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/todos-basic)
+
+- [Todos (Filtered)](https://github.com/onurkerimov/xoid/blob/master/examples/todos-filtered) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/todos-filtered)
 
 - [Celcius-Fahrenheit conversion](https://github.com/onurkerimov/xoid/blob/master/examples/celcius-fahrenheit) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/celcius-fahrenheit)
 
@@ -57,48 +44,40 @@ npm install xoid
 
 - [Trello clone](https://github.com/onurkerimov/xoid/blob/master/examples/trello) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/trello)
 
+## API Overview
+
+| Exports        | Description           |
+| ---------| ---------- |
+| [`create`](api/create) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof)  | Creates a store       |
+| [`get`](api/get) , [`set`](api/set) , [`use`](api/use) , [`current`](api/current) , [`subscribe`](api/subscribe) | Interacts with stores |
+| [`useStore`](api/usestore) , [`useLocal`](api/uselocal) | React integration |
+
 ## Usage
 
-### Intuitive & Familiar API
 
-Provides a similar API to **Recoil**. 
-Except, in the second argument of `create` method, you can specify actions for your store! Also, you can create derived stores with computed values.
+**xoid** is based on atomic stores. To create a store, `create` method is used. Actions are optionally defined in the second argument. Also, you can create derived stores with computed values. To use it with React, just import `useStore` hook. No context providers are necessary.
 
 ```js
-import { create, set } from 'xoid'
+import { create, set, useStore } from 'xoid'
 
-const numberActions = (store) => ({
+const NumberModel = (number) => create(number, (store) => ({
  increment: () => set(store, (s) => s + 1),
  decrement: () => set(store, (s) => s - 1)
-})
-export const alpha = create(3, numberActions)
-export const beta = create(4, numberActions)
+}))
 
-// derived state
-export const sum = create(get => get(alpha) + get(beta))
-```
+const alpha = NumberModel(3)
+const beta = NumberModel(5)
+const sum = create(get => get(alpha) + get(beta))
 
-### React & Vanilla
-
-No need for wrapping components into context providers. 
-Just import `useStore` and start using! You can also use `use` method to access the actions of a store, without causing rerenders. (it's not a hook)
-
-```js
-import { useStore, use, subscribe } from 'xoid'
-
-// in a React component
-const [number, { increment, decrement }] = useStore(alpha)
-
-// use the actions only, without causing rerender
-const { increment, decrement } = use(alpha)
-
-// outside React
-const unsubscribe = subscribe(alpha, a => console.log(a))
+const App = () => {
+  const [num, { increment, decrement }] = useStore(alpha)
+  return <div onClick={increment}>{num}</div>
+}
 ```
 
 ### No more selector functions!
 
-Every store is a *representation* of state, with the same tree structure as the state. 
+Every store is a *representation* of state, with the same tree structure as the state. Every leaf of the state tree is available on the store tree.
 You can even subscribe to "primitives" like strings, booleans, or numbers.
 
 ```js
@@ -129,22 +108,8 @@ set(foo, 25)
 console.log(get(store)) // { deeply: { nested: { foo: 25 } } }
 ```
 
-### Nested Stores 
-You can store your application's data as deeply nested structures without worrying about UI performance. While using `useStore` hook, **xoid** never automatically subscribes to child stores.
-
-```js
-import { create, set } from 'xoid'
-
-const store = create({ title: 'hello', oftenUpdatingChildStore: create(0) })
-setInterval(() => set(store.oftenUpdatingChildStore, (count) => count + 1, 50)
-
-// In a React component
-const [state] = useStore(store)
-console.log(state.oftenUpdatingChildStore) // component subscribes to the child store only when it's being read.
-```
-
 ### No-API Finite State Machines!
-No additional syntax is required to define and use finite state machines. Just use the second argument of the callback as the state transition function.
+No additional syntax is required to define and use finite state machines. Just use the second callback argument as the state transition function.
 
 ```js
 import { create, useStore } from 'xoid'
@@ -160,8 +125,40 @@ const [{ color, onClick }] = useStore(machine)
 return <div style={{ color }} onClick={onClick}/>
 ```
 
+### Nested data
+
+You can combine your stores in a nested fashion without worrying about UI-performance. Because, when a parent store is subscribed using `useStore` hook, updates in its child stores will not cause re-renders, unless that portion of the state is explicitly mentioned. This is a feature inspired by MobX and can be a huge productivity boost. 
+
+```js
+import { create, set } from 'xoid'
+
+const store = create({ title: 'hello', childStore: create(0) })
+setInterval(() => set(store.childStore, (count) => count + 1, 50)
+
+// In a React component
+const [state] = useStore(store)
+console.log(state.childStore) // component subscribes to the child store only when it's being read.
+```
+
+### Local state
+One of the most important aims of **xoid** is to unify global state and the local component state in a single API. With the **useLocal** hook, you can create on-demand stores that kept around throughout a component's lifecycle. This way, you can keep the component logic truly framework-agnostic.
+
+```js
+import { create, useLocal, useStore } from 'xoid'
+
+const AppModel = () => {  
+  const alpha = NumberModel(3)
+  const beta = NumberModel(4)
+  const sum = create(get => get(alpha) + get(beta)) 
+}
+
+// In a React component
+const store = useLocal(AppModel)
+const [{alpha, beta, sum}] = useStore(store)
+```
+
 ### Models 
-Perhaps, the most powerful feature of **xoid** is this one. Here's an example of easy state (de)serialization. (Your plain JSON data comes alive with your pre-defined actions in your model schemas) 
+Models are an advanced feature of **xoid**, and they're directly related to `arrayOf` and `objectOf` exports. Here's an example of easy state (de)serialization. (Your plain JSON data comes alive with your pre-defined actions in your model declarations) 
 
 ```js
 import { create, arrayOf, get, set, use } from 'xoid'
@@ -176,20 +173,16 @@ const CompanyModel = (payload) => create({
   employees: arrayOf(EmloyeeModel, payload.employees),
 })
 
+// initialize a store using the above models
 const companyStore = CompanyModel({
   name: 'my-awesome-company',
   employees: [{ name: 'you' }, { name: 'me' }]
 })
 
-use(companyStore.employees[0]).greet() // Hey you!
-const myName = companyStore.employees[1].name // you can alias stores
-
-console.log(get(myName)) // 'me'
-set(myName, 'my new name')
-console.log(get(myName)) // 'my new name'
+use(companyStore.employees[0]).greet() // 'Hey you!'
 ```
 
-Another benefit of using models are builtin `add` and `remove` actions. They are present in the actions by default if a store is created via `arrayOf` or `objectOf` helpers. These builtin actions have 100% consistent TypeScript types with your model schemas.
+Another benefit of using models are built-in `add` and `remove` actions. These builtin actions have 100% consistent TypeScript types with your model declarations.
 
 ```js
 use(companyStore.employees).add({ name: 'third employee'})
@@ -204,6 +197,17 @@ use(companyStore.employees).remove('0000') // by key
 use(companyStore.employees).remove(item => item.name === 'third employee') // by filter function
 
 ```
+
+## Why **xoid**?
+
+- Easy to learn
+- Not limited to React
+- Extensive Typescript support
+- Small bundle size (2.2 kB gzipped)
+- Handles deeply nested states perfectly
+- Computed values, transient updates, async stuff
+- High performance React apps with fine-grained updates
+- Alias or destructure parts of state without losing reactivity
 
 ## Thanks
 Following awesome projects inspired **xoid** a lot.
