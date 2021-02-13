@@ -7,7 +7,10 @@ const dataSymbol = Symbol()
 const setData = (obj: any, data: Data) => {
   dataMap.set(obj, data)
 }
-export const getData = (obj: Value<unknown>): Data => (obj as any)[dataSymbol]
+export const getData = (obj: Value<unknown>): Data =>
+  (typeof obj === 'object' || typeof obj === 'function') && obj !== null
+    ? (obj as any)[dataSymbol]
+    : undefined
 
 export type Key = string | number
 export type Data = {
@@ -82,19 +85,27 @@ export const getSubstores = (store: Record<string, unknown>) => {
   const substores: { address: string[]; root: Root<unknown, unknown> }[] = []
 
   const traverse = (obj: Record<string, unknown>, address: string[] = []) => {
-    const data = getData(obj as Value<unknown>)
-    if (isRootData(data)) {
-      substores.push({ address, root: data.root })
-    } else if (typeof obj === 'object' && obj !== null) {
-      Object.keys(obj).forEach((key) => {
-        const newAddress = [...address, key]
-        traverse(obj[key] as Record<string, unknown>, newAddress)
-      })
+    if (!isComplexObject(store)) {
+      const data = getData(obj as Value<unknown>)
+      if (isRootData(data)) {
+        substores.push({ address, root: data.root })
+      } else if (typeof obj === 'object' && obj !== null) {
+        Object.keys(obj).forEach((key) => {
+          const newAddress = [...address, key]
+          traverse(obj[key] as Record<string, unknown>, newAddress)
+        })
+      }
     }
   }
   traverse(store)
   return substores
 }
+
+const isComplexObject = (value: any) =>
+  typeof value === 'object' &&
+  !['[object Object]', '[object Array]'].includes(
+    Object.prototype.toString.call(value)
+  )
 
 export const getValueByAddress = (
   obj: any,

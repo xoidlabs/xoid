@@ -1,6 +1,6 @@
 import { useReducer, useEffect, useLayoutEffect, useRef } from 'react'
 import { get, set, subscribe, use } from '../core'
-import { Decorator, Pure, Store, Value } from '../core/types'
+import { Pure, Store, Value } from '../core/types'
 import { getData, isRootData, transform } from '../core/utils'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
@@ -8,8 +8,7 @@ const useIsoLayoutEffect =
   typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 export type SetState<T> = (
-  state: Pure<T> | ((state: Pure<T>) => Pure<T> | Promise<Pure<T>>),
-  decorator?: Decorator<T>
+  state: Pure<T> | ((state: Pure<T>) => Pure<T> | Promise<Pure<T>>)
 ) => void
 
 /**

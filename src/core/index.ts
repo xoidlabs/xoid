@@ -1,7 +1,7 @@
 import { Root } from './root'
 import { error } from './errors'
 import { getData, isRootData, transform } from './utils'
-import { Initializer, After, Store, Value, Decorator, Pure } from './types'
+import { Initializer, After, Store, Value, Pure } from './types'
 
 export { objectOf, arrayOf } from './model'
 export type { Store, Value, Pure } from './types'
@@ -38,18 +38,17 @@ export const get = <T>(item: Value<T>): Pure<T> => {
 
 export const set = <T extends Value<any>>(
   item: T,
-  value: Pure<T> | ((state: Pure<T>) => Pure<T>),
-  decorator?: Decorator<T>
+  value: Pure<T> | ((state: Pure<T>) => Pure<T>)
 ): void => {
   const data = getData(item)
   if (!data) throw error('set')
   const { root, source, key } = data
   const prevValue = transform(data, true)
   if (typeof value === 'function') {
-    // Easy usage of {immer.produce} or other similar functions
-    const nextValue: T = decorator
-      ? decorator(prevValue, value as (state: T) => T)
-      : (value as (state: T) => T)(prevValue)
+    const nextValue =
+      typeof value === 'function'
+        ? (value as (state: T) => T)(prevValue)
+        : value
     root.handleStateChange(source, key, nextValue as T)
   } else {
     root.handleStateChange(source, key, value)
@@ -73,10 +72,7 @@ export const use = <T, Actions>(item: Store<T, Actions>): Actions => {
  * @see [xoid.dev/docs/api/subscribe](https://xoid.dev/docs/api/subscribe)
  */
 
-export const subscribe = <T>(
-  item: Value<T>,
-  fn: (state: Pure<T>) => void
-) => {
+export const subscribe = <T>(item: Value<T>, fn: (state: Pure<T>) => void) => {
   const data = getData(item)
   let previousValue = get(item)
   const unsubs = new Set<() => void>()

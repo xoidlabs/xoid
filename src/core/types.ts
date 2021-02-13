@@ -5,17 +5,14 @@ export type XGet = {
   <T>(item: Value<T>): Pure<T>
   (): unknown
 }
-export type XSet = <T>(value: T, decorator?: Decorator<T>) => void
+export type XSet = <T>(value: T) => void
 export type Initializer<T> = (get: XGet, set: XSet) => T
 
 export type GetState = <T>(store: Value<T>) => T
 export type SetState = <T>(
   store: Value<T>,
-  state: T | ((state: T) => T | Promise<T>),
-  decorator?: Decorator<T>
+  state: T | ((state: T) => T | Promise<T>)
 ) => void
-
-export type Decorator<T> = (state: T, fn?: (draft: T) => T) => T
 
 export type Store<T, A = undefined> = Transform<T> & {
   [store]: A

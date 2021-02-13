@@ -36,7 +36,7 @@ export class Root<T, A> {
     after?: After<T, A>,
     options?: Options
   ) {
-    // Determine if it's a selector, record its initializer
+    // Determine if it's a selector, keep its initializer function
     this.isSelector = typeof init === 'function'
     if (this.isSelector) this.initializer = init as Initializer<T>
     // This one is for objectOf and arrayOf
@@ -85,7 +85,7 @@ export class Root<T, A> {
 
   // Used by selector type stores
   private cleanup: (() => void)[] = []
-  stateSetter: XSet = (value, decorator) => set(this.store, value, decorator)
+  stateSetter: XSet = (value) => set(this.store, value)
   stateGetter: XGet = (item?: any) => {
     if (typeof item === 'undefined') return get(this.store)
     const data = getData(item)
