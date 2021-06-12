@@ -14,9 +14,11 @@
   </a>
 </p>
 
-**xoid** is a scalable, React-focused state management library with a small API surface. Its name denotes being small, simple, and borrowing inspiration from Redu**X**, Mob**X** and **X**state. **xoid** is similar to them, but not exactly them. This is what "oid" part stands for, as in "human**oid**".
+**xoid** is an atomic state management library. **X** in its name shows the inspiration it receives from these great projects: Redu**X**, Mob**X** and **X**state. These projects roughly represent different paradigms in state management. **xoid** aims to combine best of these worlds in a very lightweight API. 
 
-**xoid** is lightweight (2.2 kB gzipped), but quite powerful. Its composed of fundamental, low-level building blocks that can be used for building complex state managament patterns. One of the biggest aims of **xoid** is unifying global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself simple and approachable enough for newcomers. More features are explained below, and the [documentation website](https://xoid.dev/).
+In **xoid**, immutable updates (Redux world) and mutable updates (MobX world) are supported. You can create a single store, multiple stores, or even combine them in a nested fashion. Computed values, transient updates and async stuff are supported out of the box, without the addition of middlewares or any other library. 
+
+**xoid** has extensive Typescript support and it has  only 4 exports (`create`, `ref`, `use`, `watch`) For React integration, **@xoid/react** is used. (`useStore` and `useLocal`). Size of both combined is 1.3kB + 0.25kB ~= 1.6 kB!
 
 To install, run the following command:
 
@@ -46,39 +48,67 @@ yarn add xoid
 
 ## API Overview
 
-| Exports        | Description           |
+
+| Package        | Exports           |
 | ---------| ---------- |
-| [`create`](api/create) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof)  | Creates a store       |
-| [`get`](api/get) , [`set`](api/set) , [`use`](api/use) , [`current`](api/current) , [`subscribe`](api/subscribe) | Interacts with stores |
-| [`useStore`](api/usestore) , [`useLocal`](api/uselocal) | React integration |
+| `xoid` | [`create`](api/create) , [`ref`](api/ref) , [`use`](api/use) , [`watch`](api/watch) |
+| `@xoid/react`| [`useStore`](api/usestore) , [`useLocal`](api/uselocal) |
+| `@xoid/devtools` | [`devtools`](api/devtools)|
+
+Detailed explanation is in the [documentation website](https://xoid.dev/).
 
 ## Usage
+**xoid** is based on a simple idea:
+```js
+import create from 'xoid'
 
+const store = create(3)
 
-**xoid** is based on atomic stores. To create a store, `create` method is used. Actions are optionally defined in the second argument. Also, you can create derived stores with computed values. To use it with React, just import `useStore` hook. No context providers are necessary.
+store() // 3 (get the value)
+store(5) // void (set the value to 5)
+store(state => state++) // void (also set the value)
+store() // 6
+```
+
+*Stores* have the same tree structure as the *state*. 
+Both mutable and immutable updates are supported.
+```js
+import create from 'xoid'
+
+const store = create({ alpha: 3 })
+
+store.alpha(5) // set the value "surgically"
+store(state => { state.alpha = 5 }) // mutable
+store(state => ({ ...state, alpha: 5 })) // immutable
+
+const state = store()
+console.log(state) // { alpha: 5 }
+```
+
+Actions are optionally defined in the second argument of `create` method. Also, you can create derived stores with computed values. To use it with React, just import `useStore` hook. No context providers are necessary.
 
 ```js
-import { create, set, useStore } from 'xoid'
+import create, { watch, use } from 'xoid'
+import { useStore } from '@xoid/react'
 
 const NumberModel = (number) => create(number, (store) => ({
- increment: () => set(store, (s) => s + 1),
- decrement: () => set(store, (s) => s - 1)
+ increment: store(s => ++s),
+ decrement: store(s => --s),
 }))
 
 const alpha = NumberModel(3)
 const beta = NumberModel(5)
-const sum = create(get => get(alpha) + get(beta))
+const sum = watch((get) => get(alpha) + get(beta))
 
 const App = () => {
-  const [num, { increment, decrement }] = useStore(alpha)
+  const [num, { increment }] = useStore(alpha, true)
   return <div onClick={increment}>{num}</div>
 }
 ```
 
 ### No more selector functions!
 
-Every store is a *representation* of state, with the same tree structure as the state. Every leaf of the state tree is available on the store tree.
-You can even subscribe to "primitives" like strings, booleans, or numbers.
+Every leaf of the state tree is available on the store tree as well. You can even subscribe to "primitives" like strings, booleans, or numbers.
 
 ```js
 import { create, useStore } from 'xoid'
@@ -89,55 +119,38 @@ const store = create({ name: 'John', surname: 'Doe' })
 const [name, setName] = useStore(store.name)
 ```
 
-### No more hand-written reducers!
-
-With `set` method, you can surgically modify the parts in your state.
-This means that you can modify deeply nested values without having to write a lot of code, or without using tools like **immer** or **immutablejs**.
-
-```js
-import { create, get, set } from 'xoid'
-
-const store = create({ deeply: { nested: { foo: 5 } } })
-const foo = store.deeply.nested.foo
-
-console.log(get(foo)) // 5
-
-// set the value surgically into the store
-set(foo, 25)
-
-console.log(get(store)) // { deeply: { nested: { foo: 25 } } }
-```
-
 ### No-API Finite State Machines!
 No additional syntax is required to define and use finite state machines. Just use the second callback argument as the state transition function.
 
 ```js
 import { create, useStore } from 'xoid'
 
-const machine = create((get, set) => {
+const machine = () => {
   const red = { color: '#f00', onClick: () => set(green) }
   const green = { color: '#0f0', onClick: () => set(red) }
-  return red
-})
+  const set = create(red)
+  return set
+}
 
 // in a React component
-const [{ color, onClick }] = useStore(machine)
-return <div style={{ color }} onClick={onClick}/>
+const { color, onClick } = useStore(machine)
+return <div style={{ color }} onClick={onClick} />
 ```
 
-### Nested data
+### Smart subscription
 
-You can combine your stores in a nested fashion without worrying about UI-performance. Because, when a parent store is subscribed using `useStore` hook, updates in its child stores will not cause re-renders, unless that portion of the state is explicitly mentioned. This is a feature inspired by MobX and can be a huge productivity boost. 
+Only the state nodes that are "destructured" will be subscribed to. This means, you don't need to worry about often occuring changes in an unrelated state portion. 
 
 ```js
 import { create, set } from 'xoid'
 
-const store = create({ title: 'hello', childStore: create(0) })
-setInterval(() => set(store.childStore, (count) => count + 1, 50)
+const store = create({ alpha: 3, beta: 5 })
+setInterval(() => store.beta((count) => ++count, 50)
 
 // In a React component
-const [state] = useStore(store)
-console.log(state.childStore) // component subscribes to the child store only when it's being read.
+const { alpha } = useStore(store)
+// component will render only once and it's completely isolated from store.beta's changes
+
 ```
 
 ### Local state
@@ -146,15 +159,16 @@ One of the most important aims of **xoid** is to unify global state and the loca
 ```js
 import { create, useLocal, useStore } from 'xoid'
 
-const AppModel = () => {  
+const AppModel = () => {
   const alpha = NumberModel(3)
   const beta = NumberModel(4)
   const sum = create(get => get(alpha) + get(beta)) 
+  return { alpha, beta, sum }
 }
 
 // In a React component
 const store = useLocal(AppModel)
-const [{alpha, beta, sum}] = useStore(store)
+const { alpha, beta, sum } = useStore(store)
 ```
 
 ### Models 
@@ -203,8 +217,7 @@ use(companyStore.employees).remove(item => item.name === 'third employee') // by
 - Easy to learn
 - Not limited to React
 - Extensive Typescript support
-- Small bundle size (2.2 kB gzipped)
-- Handles deeply nested states perfectly
+- Small bundle size (1.5 kB gzipped)
 - Computed values, transient updates, async stuff
 - High performance React apps with fine-grained updates
 - Alias or destructure parts of state without losing reactivity

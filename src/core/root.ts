@@ -1,12 +1,12 @@
 import { XGet, XSet, Initializer, After, Value, Store } from './types'
 import { error } from './errors'
 import {
+  dataSymbol,
   getData,
   getSubstores,
   getValueByAddress,
   isRootData,
   Key,
-  override,
   transform,
 } from './utils'
 import { get, set } from '.'
@@ -39,14 +39,15 @@ export class Root<T, A> {
     // Determine if it's a selector, keep its initializer function
     this.isSelector = typeof init === 'function'
     if (this.isSelector) this.initializer = init as Initializer<T>
+
     // This one is for objectOf and arrayOf
     this.model = options?.model
 
     // Create the initial state
     this.state = this.isSelector
-      ? shallowCopy(this.initializer(this.stateGetter, this.stateSetter))
-      : shallowCopy(init as T)
-
+      ? this.initializer(this.stateGetter, this.stateSetter)
+      : (init as T)
+    console.log(this.state)
     if (getData(this.state)) throw error('constructor')
 
     // Determine substore addresses
@@ -87,6 +88,7 @@ export class Root<T, A> {
   private cleanup: (() => void)[] = []
   stateSetter: XSet = (value) => set(this.store, value)
   stateGetter: XGet = (item?: any) => {
+    // get own value, if no arg is supplied
     if (typeof item === 'undefined') return get(this.store)
     const data = getData(item)
     const unsubscribe = data.root.subscribe(this.otherStateListener)
@@ -96,16 +98,17 @@ export class Root<T, A> {
 
   otherStateListener = () => {
     const newState = this.initializer(this.stateGetter, this.stateSetter)
-    this.handleStateChange(this as Record<string, unknown>, 'state', newState)
+    this.state = newState
+    const value = get(this.store)
+    this.listeners.forEach((fn) => fn(value as T))
   }
 
   ensureStores = () => {
     Object.keys(this.state).forEach((key) => {
       const value = this.state[key]
       const data = getData(value)
-      if (!isRootData(data)) {
-        this.state[key] = (this.model as Model)(value)
-      }
+      const isRoot = isRootData(data)
+      if (!isRoot) this.state[key] = (this.model as Model)(value)
     })
   }
 
@@ -121,43 +124,24 @@ export class Root<T, A> {
     nextValue: T
   ) => {
     if (object[key] === nextValue) return
-    if (
-      object[key] === this.state &&
-      typeof object[key] === 'object' &&
-      object[key] !== null
-    ) {
-      override(object[key] as any, nextValue as any)
-    } else {
-      object[key] = nextValue
-    }
+    object[key] = nextValue
 
     if (this.model) {
       this.ensureStores()
     } else {
       this.substores = this.substores.filter(({ address, root }) => {
         const [value, sourceExists] = getValueByAddress(this.state, address)
-        if (sourceExists) {
-          if (root.store !== value) {
-            // TODO: is there cases where value is impure?
-            set(root.store as Value<unknown>, value)
-            const addressClone = [...address]
-            const lastKey = addressClone.pop() as string
-            getValueByAddress(this.state, addressClone)[0][lastKey] = root.store
-          }
-          return true
-        } else {
-          return false
+        if (sourceExists && root.store !== value) {
+          set(root.store as Value<unknown>, value)
+          const addressClone = [...address]
+          const lastKey = addressClone.pop() as string
+          getValueByAddress(this.state, addressClone)[0][lastKey] = root.store
         }
+        return sourceExists
       })
     }
 
     const value = get(this.store)
     this.listeners.forEach((fn) => fn(value as T))
   }
-}
-
-const shallowCopy = (obj: any) => {
-  if (typeof obj === 'object' && obj !== null)
-    return Object.assign(new obj.constructor(), obj)
-  else return obj
 }

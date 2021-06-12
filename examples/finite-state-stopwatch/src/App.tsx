@@ -1,44 +1,43 @@
 import React from 'react'
-import { create, set, useStore } from 'xoid'
+import create from 'xoid'
+import { useStore } from '@xoid/react'
 
-const timerMachine = create((get, transition) => {
-  let interval: ReturnType<typeof setTimeout>
+const timerMachine = () => {
+  const store = create(stopped)
   const time = create(0)
+  let interval: ReturnType<typeof setTimeout>
 
   function stopped() {
     clearInterval(interval)
-    set(time, 0)
+    time(0)
     return {
-      time,
       playPauseButton: 'play',
-      handlePlayPause: () => transition(playing),
+      handlePlayPause: () => store(playing),
       handleStop: () => {},
     }
   }
   function playing() {
-    interval = setInterval(() => set(time, (i) => i + 1), 100)
+    interval = setInterval(() => time((i) => i + 1), 100)
     return {
-      time,
       playPauseButton: 'pause',
-      handlePlayPause: () => transition(paused),
-      handleStop: () => transition(stopped),
+      handlePlayPause: () => store(paused),
+      handleStop: () => store(stopped),
     }
   }
   function paused() {
     clearInterval(interval)
     return {
-      time,
       playPauseButton: 'play',
-      handlePlayPause: () => transition(playing),
-      handleStop: () => transition(stopped),
+      handlePlayPause: () => store(playing),
+      handleStop: () => store(stopped),
     }
   }
 
-  return stopped()
-})
+  return create((get) => ({ ...get(store), time }))
+}
 
 const Stopwatch = () => {
-  const [{ time, playPauseButton, handlePlayPause, handleStop }] = useStore(
+  const { time, playPauseButton, handlePlayPause, handleStop } = useStore(
     timerMachine
   )
 

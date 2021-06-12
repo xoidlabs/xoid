@@ -100,8 +100,9 @@ export const subscribe = <T>(item: Value<T>, fn: (state: Pure<T>) => void) => {
  * @see [xoid.dev/docs/api/current](https://xoid.dev/docs/api/current)
  */
 
-export const current = <T>(item: Value<T>): Pure<T> => {
-  const inner = (obj: any) => {
+export const current = <T>(item: T): Pure<T> => {
+  const inner = (payload: any) => {
+    const obj = getData(payload) ? get(payload) : payload
     if (typeof obj === 'object') {
       const newNode = new (obj as any).constructor()
       Object.keys(obj).forEach((key) => {
@@ -112,5 +113,5 @@ export const current = <T>(item: Value<T>): Pure<T> => {
       return obj
     }
   }
-  return inner(get(item))
+  return inner(item)
 }

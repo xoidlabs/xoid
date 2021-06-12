@@ -8,8 +8,8 @@ const debug = (store: Store<any, any>) => {
   return {
     self: store,
     selfSerialized: JSON.stringify(store),
-    get: get(store),
-    getSerialized: JSON.stringify(get(store)),
+    get: store(),
+    getSerialized: JSON.stringify(store()),
     current: current(store),
     currentSerialized: JSON.stringify(current(store)),
     use: use(store),

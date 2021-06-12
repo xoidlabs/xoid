@@ -1,18 +1,20 @@
 import React from 'react'
-import { create, set, useStore } from 'xoid'
+import create from 'xoid'
+import { useStore } from '@xoid/react'
 
 const celcius = create(20, (self) => (num: number) => {
-  set(self, num)
-  set(fahrenheit, num * (9 / 5) + 32)
+  self(num)
+  fahrenheit(num * (9 / 5) + 32)
 })
+
 const fahrenheit = create(68, (self) => (num: number) => {
-  set(self, num)
-  set(celcius, num - 32 * (5 / 9))
+  self(num)
+  celcius(num - 32 * (5 / 9))
 })
 
 export default () => {
-  const [C, setC] = useStore(celcius)
-  const [F, setF] = useStore(fahrenheit)
+  const [C, setC] = useStore(celcius, true)
+  const [F, setF] = useStore(fahrenheit, true)
   return (
     <div>
       <input

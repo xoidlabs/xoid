@@ -21,9 +21,7 @@ export function objectOf<State, Actions>(
         // @ts-ignore
         set(store, (state) => {
           return Object.keys(state).reduce((result, ownKey) => {
-            if (ownKey !== key) {
-              result[ownKey] = state[ownKey]
-            }
+            if (ownKey !== key) result[ownKey] = state[ownKey]
             return result
           }, {} as Record<string, Store<State, Actions>>)
         })

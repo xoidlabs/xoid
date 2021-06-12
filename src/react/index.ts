@@ -1,2 +1,2 @@
 export { useStore } from './useStore'
-export { useLocal  } from './useLocal'
+export { useLocal } from './useLocal'

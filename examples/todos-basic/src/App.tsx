@@ -1,28 +1,28 @@
 import React from 'react'
-import { create, arrayOf, useStore, set, use } from 'xoid'
+import x, { create, arrayOf, useStore } from 'xoid'
 
 type TodoPayload = {
   title: string
   checked: boolean
 }
 
-const TodoModel = (payload: TodoPayload) =>
-  create(payload, (store) => ({ toggle: () => set(store.checked, (s) => !s) }))
+const TodoModel = x({ title: x.string, checked: x.boolean }, (s) => ({
+  toggle: () => (s.checked = !s.checked),
+}))
 
-const store = arrayOf(TodoModel, [
+const store = x.arrayOf(TodoModel)([
   { title: 'groceries', checked: true },
   { title: 'world invasion', checked: false },
 ])
 
 export const Todos = () => {
-  useStore(store)
+  const [state, { add }] = useStore(store)
   return (
     <>
-      {store.map((todo, key) => (
+      {state.map((todo, key) => (
         <Todo store={todo} key={key} />
       ))}
-      <button
-        onClick={() => use(store).add({ title: 'unnamed', checked: false })}>
+      <button onClick={() => add({ title: 'unnamed', checked: false })}>
         +
       </button>
     </>
@@ -39,7 +39,7 @@ const Todo = (props: { store: ReturnType<typeof TodoModel> }) => {
           textDecoration: checked ? 'line-through' : 'none',
         }}
         value={title}
-        onChange={(e) => set(props.store.title, e.target.value)}
+        onChange={(e) => (props.store.title = e.target.value)}
       />
     </div>
   )
