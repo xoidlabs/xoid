@@ -1,8 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create, get, set, current, use, useStore } from '../src'
-import { Store } from '../src/core/types'
+import { create, use, useStore, Store } from '../src/xoid'
 
 const debug = (store: Store<any, any>) => {
   return {
@@ -10,8 +9,6 @@ const debug = (store: Store<any, any>) => {
     selfSerialized: JSON.stringify(store),
     get: store(),
     getSerialized: JSON.stringify(store()),
-    current: current(store),
-    currentSerialized: JSON.stringify(current(store)),
     use: use(store),
   }
 }
@@ -47,16 +44,16 @@ it('normalizes nested stores in a record', () => {
   expect(debug(store)).toMatchSnapshot()
 })
 
-it('creates a selector store', () => {
-  const a = create(3)
-  const b = create(5)
-  const store = create((get) => get(a) + get(b))
-  expect(debug(store)).toMatchSnapshot()
-})
+// it('creates a selector store', () => {
+//   const a = create(3)
+//   const b = create(5)
+//   const store = create((get) => get(a) + get(b))
+//   expect(debug(store)).toMatchSnapshot()
+// })
 
 it('uses the actions in vanilla', async () => {
   const store = create({ count: 0 }, (store) => ({
-    inc: () => set(store, (state) => ({ count: state.count + 1 })),
+    inc: () => store((state) => ({ count: state.count + 1 })),
   }))
   use(store).inc()
   expect(debug(store)).toMatchSnapshot()
@@ -64,12 +61,13 @@ it('uses the actions in vanilla', async () => {
 
 it('uses the actions in React', async () => {
   const store = create({ count: 0 }, (store) => ({
-    inc: () => set(store, (state) => ({ count: state.count + 1 })),
+    inc: () => store((state) => ({ count: state.count + 1 })),
   }))
 
   function Counter() {
-    const [{ count }, { inc }] = useStore(store)
-    React.useEffect(inc, [])
+    const { count } = useStore(store)
+    const { inc } = use(store)
+    React.useEffect(inc, [inc])
     return <div>count: {count}</div>
   }
 
@@ -80,13 +78,13 @@ it('uses the actions in React', async () => {
 
 it('only runs when partial state changes in React', async () => {
   const store = create({ count: 0, count2: 'constant' }, (store) => ({
-    inc: () => set(store, (state) => ({ ...state, count: state.count + 1 })),
+    inc: () => store((state) => ({ ...state, count: state.count + 1 })),
   }))
 
   let renderCount = 0
 
   function Counter() {
-    const [c2] = useStore(store.count2)
+    const c2 = useStore(store.count2)
     React.useEffect(use(store).inc, [])
     renderCount++
     return <div>count: {c2}</div>
@@ -98,57 +96,19 @@ it('only runs when partial state changes in React', async () => {
   expect(renderCount).toBe(1)
 })
 
-it('only re-renders if selected state has changed', async () => {
-  const store = create(
-    {
-      count: 0,
-    },
-    (store) => ({
-      inc: () => set(store, (state) => ({ count: state.count + 1 })),
-    })
-  )
-  let counterRenderCount = 0
-  let controlRenderCount = 0
-
-  function Counter() {
-    const [count] = useStore(store.count)
-    counterRenderCount++
-    return <div>count: {count}</div>
-  }
-
-  function Control() {
-    const { inc } = use(store)
-    controlRenderCount++
-    return <button onClick={inc}>button</button>
-  }
-
-  const { getByText, findByText } = render(
-    <>
-      <Counter />
-      <Control />
-    </>
-  )
-
-  fireEvent.click(getByText('button'))
-
-  await findByText('count: 1')
-
-  expect(counterRenderCount).toBe(2)
-  expect(controlRenderCount).toBe(1)
-})
-
 it('can batch updates', async () => {
   const store = create(
     {
       count: 0,
     },
     (store) => ({
-      inc: () => set(store, (state) => ({ count: state.count + 1 })),
+      inc: () => store((state) => ({ count: state.count + 1 })),
     })
   )
 
   function Counter() {
-    const [{ count }, { inc }] = useStore(store)
+    const { count } = useStore(store)
+    const { inc } = use(store)
     React.useEffect(() => {
       ReactDOM.unstable_batchedUpdates(() => {
         inc()
@@ -186,8 +146,8 @@ it('can get the store', () => {
     value: 1,
   })
 
-  expect(get(store).value).toBe(1)
-  expect(get(store.value)).toBe(1)
+  expect(store().value).toBe(1)
+  expect(store.value()).toBe(1)
 })
 
 it('can set the store', () => {
@@ -195,18 +155,18 @@ it('can set the store', () => {
     value: 1,
   })
 
-  set(store, { value: 2 })
-  expect(get(store.value)).toBe(2)
-  set(store, { value: 3 })
-  expect(get(store.value)).toBe(3)
-  set(store, (state) => ({ value: state.value + 1 }))
-  expect(get(store.value)).toBe(4)
-  set(store.value, (state) => state + 1)
-  expect(get(store.value)).toBe(5)
+  store({ value: 2 })
+  expect(store.value()).toBe(2)
+  store({ value: 3 })
+  expect(store.value()).toBe(3)
+  store((state) => ({ value: state.value + 1 }))
+  expect(store.value()).toBe(4)
+  store.value((state) => state + 1)
+  expect(store.value()).toBe(5)
 })
 
 it('ensures parent components subscribe before children', async () => {
-  const store = create<any>(() => ({
+  const store = create(() => ({
     children: {
       '1': { text: 'child 1' },
       '2': { text: 'child 2' },
@@ -247,14 +207,14 @@ it('ensures parent components subscribe before children', async () => {
 
 // https://github.com/pmndrs/zustand/issues/84
 it('ensures the correct subscriber is removed on unmount', async () => {
-  const store = create(() => ({ count: 0 }))
+  const store = create({ count: 0 })
 
   function increment() {
-    set(store, ({ count }) => ({ count: count + 1 }))
+    store(({ count }) => ({ count: count + 1 }))
   }
 
   function Count() {
-    const [c] = useStore(store.count)
+    const c = useStore(store.count)
     return <div>count: {c}</div>
   }
 
@@ -289,15 +249,15 @@ it('ensures the correct subscriber is removed on unmount', async () => {
 
 // https://github.com/pmndrs/zustand/issues/86
 it('ensures a subscriber is not mistakenly overwritten', async () => {
-  const store = create(() => ({ count: 0 }))
+  const store = create({ count: 0 })
 
   function Count1() {
-    const [c] = useStore(store.count)
+    const c = useStore(store.count)
     return <div>count1: {c}</div>
   }
 
   function Count2() {
-    const [c] = useStore(store.count)
+    const c = useStore(store.count)
     return <div>count2: {c}</div>
   }
 
@@ -317,7 +277,7 @@ it('ensures a subscriber is not mistakenly overwritten', async () => {
   )
 
   // Call all subscribers
-  act(() => set(store, { count: 1 }))
+  act(() => store({ count: 1 }))
 
   expect((await findAllByText('count1: 1')).length).toBe(2)
   expect((await findAllByText('count2: 1')).length).toBe(1)
