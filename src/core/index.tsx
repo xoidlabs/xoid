@@ -1,2 +1,2 @@
-export { create, watch, use } from './core'
+export { create, ref, watch, use } from './core'
 export { useStore } from './react'

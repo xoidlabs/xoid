@@ -1,5 +1,5 @@
 import { useReducer, useMemo, useEffect, useLayoutEffect, useRef } from 'react'
-import { META } from './core'
+import { META } from './createCell'
 import { resolverFactory } from './resolverFactory'
 import { DetransformInner, Unsub, Value } from './types'
 import { watchHelper } from './utils'

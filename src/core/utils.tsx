@@ -1,4 +1,4 @@
-import { META } from './core'
+import { META } from './createCell'
 import { resolverFactory } from './resolverFactory'
 import { Detransform, Store, Unsub } from './types'
 

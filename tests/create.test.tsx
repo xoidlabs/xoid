@@ -1,15 +1,5 @@
 import { create } from '../src/core'
-
-const debug = (store: any) => {
-  return {
-    self: store,
-    selfSerialized: JSON.stringify(store),
-    selfTypeof: typeof store,
-    get: store(),
-    getSerialized: JSON.stringify(store()),
-    getTypeof: typeof store(),
-  }
-}
+import { debug } from '../src/test-helpers'
 
 it('creates a store with a primitive value', () => {
   const store = create(5)

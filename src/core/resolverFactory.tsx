@@ -1,5 +1,5 @@
 import { Meta } from './cellFactory'
-import { createCell } from './core'
+import { createCell } from './createCell'
 
 const isPrimitive = (value: any) =>
   (typeof value !== 'object' && typeof value !== 'function') || value === null
@@ -19,7 +19,7 @@ export const resolverFactory = (options: Options) => {
     const meta = createCell(parentMeta, key)[symbol]
     if (options.interceptor) options.interceptor(meta)
 
-    if (isPrimitive(node)) return node
+    if (isPrimitive(node) || parentMeta.isPrimitive) return node
 
     if (cache.get(node)) return cache.get(node)
     const proxy: any = new Proxy(node, {

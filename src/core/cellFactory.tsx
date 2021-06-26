@@ -47,7 +47,7 @@ export const cellFactory = (options: Options) => {
         return key in meta.node
       },
       ownKeys() {
-        return Reflect.ownKeys(meta.node[key])
+        return Reflect.ownKeys(meta.node)
       },
       getOwnPropertyDescriptor() {
         return {

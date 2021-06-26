@@ -6,7 +6,9 @@ Object {
   "getSerialized": "5",
   "getTypeof": "number",
   "self": [Function],
+  "selfKeys": "[[non-object]]",
   "selfSerialized": undefined,
+  "selfSpread": "[[non-object]]",
   "selfTypeof": "function",
 }
 `;
@@ -17,7 +19,9 @@ Object {
   "getSerialized": "5",
   "getTypeof": "number",
   "self": [Function],
+  "selfKeys": "[[non-object]]",
   "selfSerialized": undefined,
+  "selfSpread": "[[non-object]]",
   "selfTypeof": "function",
 }
 `;
@@ -30,7 +34,13 @@ Object {
   "getSerialized": "{\\"val\\":25}",
   "getTypeof": "object",
   "self": [Function],
+  "selfKeys": Array [
+    "val",
+  ],
   "selfSerialized": undefined,
+  "selfSpread": Object {
+    "val": [Function],
+  },
   "selfTypeof": "function",
 }
 `;
@@ -43,7 +53,13 @@ Object {
   "getSerialized": "{\\"val\\":25}",
   "getTypeof": "object",
   "self": [Function],
+  "selfKeys": Array [
+    "val",
+  ],
   "selfSerialized": undefined,
+  "selfSpread": Object {
+    "val": [Function],
+  },
   "selfTypeof": "function",
 }
 `;
@@ -54,7 +70,9 @@ Object {
   "getSerialized": "25",
   "getTypeof": "number",
   "self": [Function],
+  "selfKeys": "[[non-object]]",
   "selfSerialized": undefined,
+  "selfSpread": "[[non-object]]",
   "selfTypeof": "function",
 }
 `;
@@ -65,7 +83,9 @@ Object {
   "getSerialized": "25",
   "getTypeof": "number",
   "self": [Function],
+  "selfKeys": "[[non-object]]",
   "selfSerialized": undefined,
+  "selfSpread": "[[non-object]]",
   "selfTypeof": "function",
 }
 `;
@@ -81,7 +101,21 @@ Object {
   "getSerialized": "[0,2,4,6]",
   "getTypeof": "object",
   "self": [Function],
+  "selfKeys": Array [
+    "0",
+    "1",
+    "2",
+    "3",
+    "length",
+  ],
   "selfSerialized": undefined,
+  "selfSpread": Object {
+    "0": [Function],
+    "1": [Function],
+    "2": [Function],
+    "3": [Function],
+    "length": [Function],
+  },
   "selfTypeof": "function",
 }
 `;
@@ -106,7 +140,21 @@ Object {
   "getSerialized": "[0,2,4,6]",
   "getTypeof": "object",
   "self": [Function],
+  "selfKeys": Array [
+    "0",
+    "1",
+    "2",
+    "3",
+    "length",
+  ],
   "selfSerialized": undefined,
+  "selfSpread": Object {
+    "0": [Function],
+    "1": [Function],
+    "2": [Function],
+    "3": [Function],
+    "length": [Function],
+  },
   "selfTypeof": "function",
 }
 `;
