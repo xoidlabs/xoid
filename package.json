@@ -1,8 +1,8 @@
 {
   "name": "xoid",
   "private": true,
-  "version": "0.2.0",
-  "description": "Scalable, fine-grained, and minimal state-management library for React and vanilla JavaScript",
+  "version": "0.8.0",
+  "description": "Minimal state-management for React and plain JavaScript",
   "main": "index.cjs.js",
   "module": "index.js",
   "types": "index.d.ts",

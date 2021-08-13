@@ -1,13 +1,5 @@
-import React, {
-  useReducer,
-  useMemo,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-} from 'react'
-import { create } from '../core'
-import { Store, DetransformInner, Value } from '../core/types'
-import { watchHelper } from '../core/utils'
+import { useReducer, useEffect, useLayoutEffect, useRef } from 'react'
+import { create, subscribe, Store } from '../core'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect =
@@ -24,14 +16,10 @@ const useConstant = <T extends any>(fn: () => T): T => {
  * @see [xoid.dev/docs/api/use-store](https://xoid.dev/docs/api/use-store)
  */
 
-export function useStore<T>(store: Value<T>): DetransformInner<T> {
+export function useStore<T>(store: Store<T>): T {
   const forceUpdate = useReducer((c) => c + 1, 0)[1]
-  const [unsubAll, getter] = useMemo(() => watchHelper(store, forceUpdate), [
-    store,
-    forceUpdate,
-  ])
-  useIsoLayoutEffect(() => unsubAll)
-  return getter()
+  useIsoLayoutEffect(() => subscribe(store, forceUpdate), [])
+  return store()
 }
 
 /**
@@ -39,27 +27,14 @@ export function useStore<T>(store: Value<T>): DetransformInner<T> {
  * @see [xoid.dev/docs/api/use-local](https://xoid.dev/docs/api/use-local)
  */
 
-export function useLocal<S>(model: () => S): any
-export function useLocal<S, P>(model: (deps: Store<P>) => S, props: P): any
-export function useLocal<S, P>(
-  model: (deps?: Store<P | undefined>) => S,
-  props?: P
-): any {
+export function useLocal<T>(model: () => T): T
+export function useLocal<T, P>(model: (deps: Store<P>) => T, props: P): T
+export function useLocal(model: (deps: any) => any, props?: any): any {
   const deps = useConstant(() => create(props))
-  const isMounted = useConstant(() => create(false))
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    const im = isMounted()
-    if (im) deps(props)
-    else isMounted(true)
-  }, [props])
+  useEffect(() => deps(props), [props])
   return useConstant(() => model(deps))
 }
-
-/**
- * Subscribes to a store, or a value inside a React function component.
- * @see [xoid.dev/docs/api/reactive](https://xoid.dev/docs/api/reactive)
- */
 
 const x = (store: Store<string | number>) => {
   return <Xoid store={store} />
