@@ -31,7 +31,7 @@ export const resolverFactory = (options: Options) => {
       },
       set(_, prop: string, value) {
         const childMeta = createCell(meta, prop)[symbol]
-        childMeta.extras.setValue(value)
+        childMeta.runtime.setValue(value)
         return true
       },
     })

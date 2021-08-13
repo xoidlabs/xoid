@@ -4,6 +4,7 @@ export type Meta = {
   proxyCache: Record<string, any>
   identity: {}
   key: string
+  runtime?: any
 }
 
 type Options = {
@@ -33,7 +34,7 @@ export const cellFactory = (options: Options) => {
       proxyCache: {},
       identity: {},
     }
-    ;(meta as any).extras = options.extendMeta(meta)
+    ;(meta as any).runtime = options.extendMeta(meta)
 
     const proxy: any = new Proxy(options.getProxyTarget(meta), {
       get(_, childKey: string) {

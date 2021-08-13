@@ -1,10 +1,11 @@
 import React from 'react'
-import { create, set, useStore } from 'xoid'
+import { create, use } from 'xoid'
+import { useStore } from '@xoid/react'
 
 const NumberModel = (payload: number) =>
   create(payload, (store) => ({
-    increment: () => set(store, (state) => state + 1),
-    decrement: () => set(store, (state) => state - 1),
+    increment: () => store((state) => state + 1),
+    decrement: () => store((state) => state - 1),
   }))
 type NumberType = ReturnType<typeof NumberModel>
 
@@ -13,7 +14,8 @@ const blueStore = NumberModel(5)
 const sumStore = create((get) => get(redStore) + get(blueStore))
 
 const NumberCounter = (props: { store: NumberType }) => {
-  const [state, { increment, decrement }] = useStore(props.store)
+  const state = useStore(props.store)
+  const { increment, decrement } = use(props.store)
   return (
     <div>
       {state}
@@ -24,7 +26,7 @@ const NumberCounter = (props: { store: NumberType }) => {
 }
 
 const Sum = () => {
-  const [state] = useStore(sumStore)
+  const state = useStore(sumStore)
   return <div>{state}</div>
 }
 

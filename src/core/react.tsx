@@ -18,7 +18,7 @@ export function useStore<T>(store: Value<T>): DetransformInner<T> {
   const [unsubAll, getter] = useMemo(() => watchHelper(store, forceUpdate), [
     store,
   ])
-  useIsoLayoutEffect(() => unsubAll)
+  unsubAll()
   return getter()
 }
 
