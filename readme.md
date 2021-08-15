@@ -14,11 +14,12 @@
   </a>
 </p>
 
-**xoid** is an atomic state management library. **X** in its name shows the inspiration it receives from these great projects: Redu**X**, Mob**X** and **X**state. These projects roughly represent different paradigms in state management. **xoid** aims to combine best of these worlds in a very lightweight API. 
+**xoid** is a state-management library with the aim of unifying global state and local component state in a single API. This API has a small surface area and it's composed of building blocks for creating scalable state-management patterns. **X** in its name denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. While it was first inspired by **Recoil**, it has become a framework-agnostic state-management solution, with no external dependencies. 
 
-In **xoid**, immutable updates (Redux world) and mutable updates (MobX world) are supported. You can create a single store, multiple stores, or even combine them in a nested fashion. Computed values, transient updates and async stuff are supported out of the box, without the addition of middlewares or any other library. 
+The core package consists of only two exports (`create` and `subscribe`). For React integration, **@xoid/react** is used (`useStore` and `useLocal`). Both packages combined are just **0.8kB** gzipped! Things like computed values, transient updates and async stuff are possible out of the box, without the addition of middlewares or any other library. It has an extensive Typescript support. 
 
-**xoid** has extensive Typescript support and it has  only 4 exports (`create`, `ref`, `use`, `watch`) For React integration, **@xoid/react** is used. (`useStore` and `useLocal`). Size of both combined is 1.3kB + 0.25kB ~= 1.6 kB!
+
+In **xoid**, no selector function is necessary for reaching partial states.
 
 To install, run the following command:
 
@@ -48,10 +49,9 @@ yarn add xoid
 
 ## API Overview
 
-
 | Package        | Exports           |
 | ---------| ---------- |
-| `xoid` | [`create`](api/create) , [`ref`](api/ref) , [`use`](api/use) , [`watch`](api/watch) |
+| `xoid` | [`create`](api/create) , [`subscribe`](api/subscribe) |
 | `@xoid/react`| [`useStore`](api/usestore) , [`useLocal`](api/uselocal) |
 | `@xoid/devtools` | [`devtools`](api/devtools)|
 
@@ -61,24 +61,21 @@ Detailed explanation is in the [documentation website](https://xoid.dev/).
 **xoid** is based on a simple idea:
 ```js
 import create from 'xoid'
-
 const store = create(3)
 
 store() // 3 (get the value)
-store(5) // void (set the value to 5)
-store(state => state++) // void (also set the value)
+store(5) // set the value to 5
+store(state => state + 1) // also set the value
 store() // 6
 ```
 
-*Stores* have the same tree structure as the *state*. 
-Both mutable and immutable updates are supported.
+An **xoid** store is a *lens* () have the same tree structure as the *state*. 
 ```js
 import create from 'xoid'
 
 const store = create({ alpha: 3 })
 
 store.alpha(5) // set the value "surgically"
-store(state => { state.alpha = 5 }) // mutable
 store(state => ({ ...state, alpha: 5 })) // immutable
 
 const state = store()
@@ -88,21 +85,21 @@ console.log(state) // { alpha: 5 }
 Actions are optionally defined in the second argument of `create` method. Also, you can create derived stores with computed values. To use it with React, just import `useStore` hook. No context providers are necessary.
 
 ```js
-import create, { watch, use } from 'xoid'
+import x, { use } from 'xoid'
 import { useStore } from '@xoid/react'
 
-const NumberModel = (number) => create(number, (store) => ({
+const NumberModel = x((store) => ({
  increment: store(s => ++s),
  decrement: store(s => --s),
 }))
 
 const alpha = NumberModel(3)
 const beta = NumberModel(5)
-const sum = watch((get) => get(alpha) + get(beta))
+const sum = create((get) => get(alpha) + get(beta))
 
 const App = () => {
-  const [num, { increment }] = useStore(alpha, true)
-  return <div onClick={increment}>{num}</div>
+  const a = useStore(alpha)
+  return <div onClick={use(alpha).increment}>{num}</div>
 }
 ```
 
@@ -125,32 +122,17 @@ No additional syntax is required to define and use finite state machines. Just u
 ```js
 import { create, useStore } from 'xoid'
 
-const machine = () => {
-  const red = { color: '#f00', onClick: () => set(green) }
-  const green = { color: '#0f0', onClick: () => set(red) }
-  const set = create(red)
-  return set
+const createMachine = () => {
+  const red = { color: '#f00', onClick: () => store(green) }
+  const green = { color: '#0f0', onClick: () => store(red) }
+  const store = create(red)
+  return store
 }
 
 // in a React component
+const machine = useLocal(createMachine)
 const { color, onClick } = useStore(machine)
 return <div style={{ color }} onClick={onClick} />
-```
-
-### Smart subscription
-
-Only the state nodes that are "destructured" will be subscribed to. This means, you don't need to worry about often occuring changes in an unrelated state portion. 
-
-```js
-import { create, set } from 'xoid'
-
-const store = create({ alpha: 3, beta: 5 })
-setInterval(() => store.beta((count) => ++count, 50)
-
-// In a React component
-const { alpha } = useStore(store)
-// component will render only once and it's completely isolated from store.beta's changes
-
 ```
 
 ### Local state
@@ -169,47 +151,6 @@ const AppModel = () => {
 // In a React component
 const store = useLocal(AppModel)
 const { alpha, beta, sum } = useStore(store)
-```
-
-### Models 
-Models are an advanced feature of **xoid**, and they're directly related to `arrayOf` and `objectOf` exports. Here's an example of easy state (de)serialization. (Your plain JSON data comes alive with your pre-defined actions in your model declarations) 
-
-```js
-import { create, arrayOf, get, set, use } from 'xoid'
-
-const EmployeeModel = (payload) => create(
-  { name: payload.name }, 
-  (store) => ({ greet: () => console.log(`Hey ${get(store.name)}!`) })
-)
-
-const CompanyModel = (payload) => create({
-  name: payload.name,
-  employees: arrayOf(EmloyeeModel, payload.employees),
-})
-
-// initialize a store using the above models
-const companyStore = CompanyModel({
-  name: 'my-awesome-company',
-  employees: [{ name: 'you' }, { name: 'me' }]
-})
-
-use(companyStore.employees[0]).greet() // 'Hey you!'
-```
-
-Another benefit of using models are built-in `add` and `remove` actions. These builtin actions have 100% consistent TypeScript types with your model declarations.
-
-```js
-use(companyStore.employees).add({ name: 'third employee'})
-use(companyStore.employees[2]).greet() // Hey third employee!
-
-use(companyStore.employees).remove(2) // by index
-use(companyStore.employees).remove(item => item.name === 'third employee') // by filter function
-
-// if `employees` was an "objectOf(EmployeeModel)"
-use(companyStore.employees).add({ name: 'third employee'}, '0000')
-use(companyStore.employees).remove('0000') // by key
-use(companyStore.employees).remove(item => item.name === 'third employee') // by filter function
-
 ```
 
 ## Why **xoid**?
