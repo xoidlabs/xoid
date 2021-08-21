@@ -14,9 +14,10 @@
   </a>
 </p>
 
-**xoid** is a state-management library. Biggest aim of **xoid** is to unify the patterns of global state and local component state in a single API. This API has a small surface area and it's composed of building blocks for creating advanced state management patterns.**X** in its name denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. 
+**xoid** is a framework-agnostic state management library. **X** in its name  denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed with emphasis on simplicity and scalability.  It has extensive Typescript support.
 
-**xoid** is only **0.8kB** gzipped. Things like computed values, transient updates, and async stuff are possible out of the box, without the addition of middlewares or any other library.  It has extensive Typescript support.
+**xoid** is lightweight (1 kB gzipped), but quite powerful. Its composed of building blocks for building advanced state managament patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself simple and approachable enough for newcomers. More features are explained below, and the [documentation website](https://xoid.dev/).
+
 
 
 To install, run the following command:
@@ -52,11 +53,12 @@ yarn add xoid
 
 | Package        | Exports           |
 | - | - |
-| `xoid` | [`create`](api/create) , [`subscribe`](api/subscribe) , [`model`](api/model) , [`list`](api/list) , [`use`](api/use) |
+| `xoid` | combines **@xoid/core** and **@xoid/model** |
+| `@xoid/core` | [`create`](api/create) , [`subscribe`](api/subscribe) |
+| `@xoid/model` | [`model`](api/model) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof) , [`use`](api/use)  |
 | `@xoid/react`| [`useStore`](api/usestore) , [`useSetup`](api/usesetup) |
-| `@xoid/devtools` | [`devtools`](api/devtools)|
+<!-- | `@xoid/devtools` | [`devtools`](api/devtools)| -->
 
-Detailed explanation is in the [documentation website](https://xoid.dev/).
 
 
 ## Quick Tutorial
@@ -82,8 +84,8 @@ In **xoid**, every store is an ES6 Proxy wrapper around the state. This means th
 import { create } from 'xoid'
 
 const store = create({ alpha: ['foo', 'bar'], deep: { beta: 5 } })
-store.alpha[0]() // 'foo'
-store.deep() // { beta: 5 }
+store.alpha() // ['foo', 'bar']
+store.deep.beta() // 5
 ```
 
 
@@ -124,22 +126,35 @@ const state = useStore(store.alpha)
 ```
 
 
-There's also the `useSetup` hook that's similar to `React.useMemo`. 
-Except, it's guaranteed to run only **once**, and instead of a dependency array, 
-it has an optional second argument to consume the component props as a store.
+There's also the `useSetup` hook that can be used to create local state. It's similar to `React.useMemo`, except it's guaranteed to run only **once**.
 
 ```js
-import { useSetup } from '@xoid/react'
+import { create } from 'xoid'
+import { useSetup, useStore } from '@xoid/react'
 
 // in a React component
-const setup = useSetup((deps: Store<Props>) => {
-  const sum = create((get) => get(deps.alpha) + get(deps.beta))
-  return { sum }
-}, props)
+const setup = useSetup(() => {
+  const alpha = create(5)
+  return { alpha }
+})
+// can later be subscribed
+const state = useStore(setup.alpha)
 ```
+> `useSetup` is **non-render-causing**. Values returned by that can later be subscribed by the component, or its child components, or they can be kept around to apply side-effects. 
 
-`useSetup` is **non-render-causing**. Values returned by that can later be subscribed by the component, or its child components, or they can be kept around to apply side-effects. 
+`useSetup` also has an optional second argument to consume variables in the component scope, by converting them into stores and keeping them synced.
 
+```js
+import { subscribe } from 'xoid'
+import { useSetup } from '@xoid/react'
+
+const App = (props: Props) => {
+  const setup = useSetup((deps) => {
+    // `deps` has the type: Store<Props>
+    subscribe(deps.something, console.log)
+  }, props)
+}
+```
 
 ### Subscriptions
 
@@ -162,7 +177,7 @@ useEffect(() => subscribe(store.alpha, (state) => {
 ## Advanced concepts
 
 Until this point, `create` and `subscribe` from **xoid**, and `useStore` and `useSetup` from **@xoid/react** are covered.
-There are also `model`, `list`, and `use` functions, which can be used to associate certain actions with stores.
+There are also `model`, `arrayOf`, `objectOf`, and `use` functions, which can be used to associate certain actions with stores.
 
 ```js
 import { model, use, Store } from 'xoid'
@@ -176,24 +191,23 @@ const $num = NumberModel(5)
 use($num).inc()
 $num() // 6
 ```
-Observe that `NumberModel` is a custom `create` function that assigns "useable"s.
+Observe that `NumberModel` is a custom `create` function that creates "useable" stores.
 If you look at the type of `$num`, it will display as `Store<number> & Useable<{inc: () => void, dec: () => void}>`.
 
-
-With `list`, you can create a custom create function that receives an array or an object, and makes sure that every element of it is of the same model type.
+With `arrayOf`, you can create a custom create function that receives an array, and makes sure that every element of it is of the same model type. (there's also `objectOf`)
 
 ```js
-import { model, list, use } from 'xoid'
+import { model, arrayOf, use } from 'xoid'
 import { NumberModel } from './some-file'
 
-const NumberListModel = list(NumberModel)
+const NumberArrayModel = arrayOf(NumberModel)
 
-const $numList = NumberListModel([1, 3, 5]) // or { a: 1, b: 3, c: 5 }
-$numList.forEach($item => use($item).inc())
-console.log($numList()) // [2, 4, 6]
+const $numArray = NumberArrayModel([1, 3, 5]) // or { a: 1, b: 3, c: 5 }
+$numArray.forEach($item => use($item).inc())
+console.log($numArray()) // [2, 4, 6]
 ```
 
-By combining `model` and `list`, much more advanced patterns than in "nested reducers" concept in Redux can be achieved. Plus it's much easier to use. Also note that the same coding style can be used inside components too.
+By combining `model`, `arrayOf`, and `objectOf`, much more advanced patterns than "nested reducers" concept in Redux are possible. Plus it's much easier to use. Also note that the same coding style can be used for local component state too.
 
 
 ## Demonstration
@@ -211,7 +225,7 @@ const TodoModel = x((store: Store<TodoType>) => ({
   toggle: () => store.checked((s) => !s),
 }))
 
-const TodoListModel = x.list(TodoModel, (store) => ({
+const TodoListModel = x.arrayOf(TodoModel, (store) => ({
   add: (p: TodoType) => store((s) => [...s, p]),
 }))
 
@@ -219,7 +233,6 @@ const store = TodoListModel([
   { title: 'groceries', checked: true },
   { title: 'world invasion', checked: false },
 ])
-
 
 use(store).add({ title: 'finish up readme', checked: false })
 use(store[2]).toggle() // ✅
@@ -230,7 +243,7 @@ const { toggle } = use(store[0])
 ```
 
 > It's very cheap to create **xoid** stores. 
-> Absolutely **zero** traversal or deep copying occur while `create`, `list`, `model` functions run.
+> Absolutely **zero** traversal or deep copying occur while `create`, `arrayOf`, `objectOf`, `model` functions run.
 > You can easily store complex objects such as DOM elements inside **xoid** stores.
 > Association of the store nodes with "useable" actions only occurs once when a node is visited by `use` function.
 
@@ -274,15 +287,15 @@ return <div style={{ color }} onClick={onClick} />
 ## Why **xoid**?
 
 - Easy to learn
+- Small bundle size
 - Framework-agnostic
 - Extensive Typescript support
-- Small bundle size (1 kB gzipped)
+- Easy to work with nested states
 - Computed values, transient updates
+- Can be used as an optics (lenses) library
 - No middlewares are required for async stuff
-- Can be used to express finite state machines
-- Can also be used as an optics (lenses) library
-- Same API for local component state and global state
-
+- Can also be used to express finite state machines
+- Global state and local component state in the same API
 
 
 ## Thanks
