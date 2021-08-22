@@ -1,0 +1,37 @@
+{
+  "name": "@xoid/development",
+  "version": "0.0.5",
+  "main": "./index.js",
+  "module": "./index.esm.js",
+  "types": "./types",
+  "sideEffects": false,
+  "description": "Simple and scalable state management for humanoids",
+  "homepage": "https://xoid.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/onurkerimov/xoid",
+    "directory": "./packages/xoid"
+  },
+  "keywords": [
+    "framework-agnostic",
+    "state",
+    "management",
+    "state-management",
+    "react",
+    "redux",
+    "recoil",
+    "atom",
+    "store",
+    "optics"
+  ],
+  "scripts": {
+    "test": "jest --watch",
+    "build": "rollup --config"
+  },
+  "devDependencies": {
+  },
+  "dependencies": {
+    "@xoid/core": ">=0.8.6",
+    "@xoid/model": ">=0.8.5"
+  }
+}

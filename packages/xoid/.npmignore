@@ -1,0 +1,5 @@
+lib/**/*.{ts,tsx}
+tests/**/*.{ts,tsx}
+rollup.config.js
+jest.config.js
+coverage

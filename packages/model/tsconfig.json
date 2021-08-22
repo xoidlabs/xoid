@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "jsx": "react",
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "strict": true,
+    "importHelpers": true,
+    "declaration": true,
+    "declarationDir": "./types",
+    "isolatedModules": true
+  },
+  "include": ["./lib"]
+  
+}
