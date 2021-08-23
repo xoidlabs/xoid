@@ -1,5 +1,5 @@
 import React from 'react'
-import create from 'xoid'
+import { create } from 'xoid'
 import { useStore } from '@xoid/react'
 
 const celcius = create(20)

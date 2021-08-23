@@ -1,6 +1,4 @@
-// @ts-ignore
 import { Init, Store, State } from '@xoid/core'
-// @ts-ignore
 import { META, RECORD, createInstance } from '@xoid/core/utils'
 
 const USEABLE = Symbol('use') 

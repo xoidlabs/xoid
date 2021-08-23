@@ -1,24 +1,16 @@
 import typescript from 'rollup-plugin-typescript2';
+const makeConfig = require('../helpers/make-config')
 
-const createOptions = () => ({
-  input: './lib/index.tsx',
-  plugins: [typescript({ useTsconfigDeclarationDir: true })],
-  external: ['@xoid/core', '@xoid/model'],
-})
-
-export default [
-  {
-    ...createOptions(),
-    output: {
-      file: './index.js',
-      format: 'cjs',
+export default makeConfig({
+  source: 'lib', 
+  destination: 'dist',
+  entries: {
+    'index.tsx': { 
+      cjs: 'index.js', 
+      esm: 'esm/index.js', 
+      external: ['@xoid/core', '@xoid/model'] 
     },
   },
-  {
-    ...createOptions(),
-    output: {
-      file: './index.esm.js',
-      format: 'esm',
-    },
-  }
-];
+  copy: { 'package.json': 'dist' },
+  getPlugins: () => ([typescript({ useTsconfigDeclarationDir: true })])
+})
