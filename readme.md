@@ -2,6 +2,8 @@
   <img width="300" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/logo.png" />
 </p> 
 
+---
+
 <p align="center">
   <a href="https://bundlephobia.com/result?p=xoid" >
     <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=293140&colorB=293140">
