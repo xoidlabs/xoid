@@ -16,7 +16,7 @@
 
 **xoid** is a framework-agnostic state management library. **X** in its name  denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed with emphasis on simplicity and scalability.  It has extensive Typescript support.
 
-**xoid** is lightweight (1 kB gzipped), but quite powerful. Its composed of building blocks for building advanced state managament patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself simple and approachable enough for newcomers. More features are explained below, and the [documentation website](https://xoid.dev/).
+**xoid** is lightweight (1.8 kB gzipped), but quite powerful. Its composed of building blocks for  advanced state managament patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself simple and approachable enough for newcomers. More features are explained below, and the [documentation website](https://xoid.dev/).
 
 
 
@@ -51,15 +51,25 @@ yarn add xoid
 
 ## API Overview
 
-| Package        | Exports           |
-| - | - |
-| `xoid` | combines **@xoid/core** and **@xoid/model** |
-| `@xoid/core` | [`create`](api/create) , [`subscribe`](api/subscribe) |
-| `@xoid/model` | [`model`](api/model) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof) , [`use`](api/use)  |
-| `@xoid/react`| [`useStore`](api/usestore) , [`useSetup`](api/usesetup) |
-<!-- | `@xoid/devtools` | [`devtools`](api/devtools)| -->
+`xoid` package consists of the following 8 exports. These exports can be divided into 3 main sections.
+
+| Section | Exports           | Description |
+| - | - | - |
+| Core API | [`create`](api/create) , [`effect`](api/effect) , [`subscribe`](api/subscribe) | Most commonly used, lower-level exports. |
+| Model API | [`model`](api/model) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof) , [`use`](api/use) | Adds "actions" to provide a flux-like experience. |
+| Helper(s) | [`ready`](api/ready) | A helper function that's usually used with refs |
+
+### Other packages
 
 
+| Package        | Exports           | Description |
+| - | - | - |
+| `@xoid/react`| [`useStore`](api/usestore) , [`useSetup`](api/usesetup) | **React** integration |
+| `@xoid/devtools` | `devtools` | **Redux Devtools** integration |
+| `@xoid/core` | [`create`](api/create) , [`effect`](api/effect) , [`subscribe`](api/subscribe) | Bundles only the core API (Internally used by `xoid`) |
+| `@xoid/observable` | `observable` , [`effect`](api/effect) , [`subscribe`](api/subscribe) | Lite version that doesn't use ES6 Proxies|
+
+> All the `effect` and `subscribe` exports that are shared among the packages are the same.
 
 ## Quick Tutorial
 
@@ -78,7 +88,7 @@ store() // 6
 ```
 
 
-In **xoid**, every store is an ES6 Proxy wrapper around the state. This means that no selector function is necessary to "focus" a deep branch of state.
+In **xoid**, via ES6 Proxies, every store is an observable tree. No selector function is necessary to "focus" a deep branch of state.
 
 ```js
 import { create } from 'xoid'
@@ -102,7 +112,7 @@ assert(previousState !== store()) // ✅
 
 ### Derived state
 
-For derived state, the same `create` function is used. A derived store has the same properties above. Their API was heavily inspired by **Recoil**.
+The same `create` function is used for creating derived stores. This API was heavily inspired by **Recoil**.
 
 ```js
 import { create } from 'xoid'
@@ -116,7 +126,7 @@ const sum = create((get) => get(alpha) + get(beta))
 
 ### React integration
 
-To consume a store by a React component, `useStore` from **@xoid/react** package is used.
+For usage in React, `useStore` from **@xoid/react** package is used.
 
 ```js
 import { useStore } from '@xoid/react'
@@ -140,9 +150,9 @@ const setup = useSetup(() => {
 // can later be subscribed
 const state = useStore(setup.alpha)
 ```
-> `useSetup` is **non-render-causing**. Values returned by that can later be subscribed by the component, or its child components, or they can be kept around to apply side-effects. 
+> `useSetup` is guaranteed to be **non-render-causing**. Values returned by that can later be subscribed by the component, or its child components, or can be kept around to apply side-effects. 
 
-`useSetup` also has an optional second argument to consume variables in the component scope, by converting them into stores and keeping them synced.
+`useSetup` has an optional second argument to consume outer variables. In the following example, `deps` will be a store with an internal state that's in sync with the `props` variable.
 
 ```js
 import { subscribe } from 'xoid'
@@ -158,26 +168,18 @@ const App = (props: Props) => {
 
 ### Subscriptions
 
-For subscription, `subscribe` is used. 
+For subscriptions, `subscribe` and `effect` are used. They are almost same, except while `effect` runs the callback immediately, `subscribe` waits for the first change after subscription.
 
 ```js
 import { subscribe } from 'xoid'
 
-const unsub = subscribe(store.alpha, (state) => {
-  console.log(state)
-})
-
-// the same function can easily be used inside a React.useEffect
-useEffect(() => subscribe(store.alpha, (state) => {
-  console.log(state)
-}), [])
+const unsub = subscribe(store.alpha, console.log)
 ```
 
 
-## Advanced concepts
+## Model API
 
-Until this point, `create` and `subscribe` from **xoid**, and `useStore` and `useSetup` from **@xoid/react** are covered.
-There are also `model`, `arrayOf`, `objectOf`, and `use` functions, which can be used to associate certain actions with stores.
+Until this point, the core API of `xoid` and **@xoid/react** are covered. There are also `model`, `arrayOf`, `objectOf`, `use` functions, which are part of the Model API. They can be used to associate certain actions with stores.
 
 ```js
 import { model, use, Store } from 'xoid'
@@ -191,8 +193,8 @@ const $num = NumberModel(5)
 use($num).inc()
 $num() // 6
 ```
-Observe that `NumberModel` is a custom `create` function that creates "useable" stores.
-If you look at the type of `$num`, it will display as `Store<number> & Useable<{inc: () => void, dec: () => void}>`.
+> Observe that `NumberModel` is a custom `create` function that creates "useable" stores.
+If you look at the type of `$num`, it will be displayed as `Store<number> & Useable<{inc: () => void, dec: () => void}>`.
 
 With `arrayOf`, you can create a custom create function that receives an array, and makes sure that every element of it is of the same model type. (there's also `objectOf`)
 
@@ -202,12 +204,12 @@ import { NumberModel } from './some-file'
 
 const NumberArrayModel = arrayOf(NumberModel)
 
-const $numArray = NumberArrayModel([1, 3, 5]) // or { a: 1, b: 3, c: 5 }
-$numArray.forEach($item => use($item).inc())
+const $numArray = NumberArrayModel([1, 3, 5])
+Object.entries($numArray).forEach([key, $item] => use($item).inc())
 console.log($numArray()) // [2, 4, 6]
 ```
 
-By combining `model`, `arrayOf`, and `objectOf`, much more advanced patterns than "nested reducers" concept in Redux are possible. Plus it's much easier to use. Also note that the same coding style can be used for local component state too.
+By combining `model`, `arrayOf`, and `objectOf`, much more advanced patterns than "nested reducers" concept in Redux are possible. Note that the same coding style can also be used for local component state.
 
 
 ## Demonstration
@@ -243,16 +245,16 @@ const { toggle } = use(store[0])
 ```
 
 > It's very cheap to create **xoid** stores. 
-> Absolutely **zero** traversal or deep copying occur while `create`, `arrayOf`, `objectOf`, `model` functions run.
+> Absolutely **zero** traversal or deep copying occur while `create`, `arrayOf`, `objectOf`, `model` run.
 > You can easily store complex objects such as DOM elements inside **xoid** stores.
-> Association of the store nodes with "useable" actions only occurs once when a node is visited by `use` function.
+> Association of the store nodes with "useable" actions only occurs once when a node is visited by the `use` function.
 
 
-## Extra features
+## More features
 
 ### Feature: Optics (lenses)
 
-Setting `true` as the second argument of `create` function means "mutable: true". This way, surgical changes won't be immutably propagate to root. Instead, the original object will be mutated.
+Setting the second argument of `create` function as `true` means "mutable: true". This way, surgical changes won't be immutably propagate to root. Instead, the original object will be mutated.
 ```js
 import { create } from 'xoid'
 
@@ -261,14 +263,48 @@ const objLens = create(obj, true)
 objLens.some.value(512)
 console.log(obj) // { some: { value: 512 } }
 ```
+> Type of `objLens` would be: `MutableStore<{ some: { value: number } }>`. `MutableStore`s have the same properties with `Store`s. This is only a helper type for extra safety.
 
+### Feature: Using as an alternative to `React.useRef`
 
-### Feature/pattern: Finite state machines
-
-No additional syntax is required to define and use finite state machines. Just use the second callback argument as the state transition function.
+In **xoid**, a mutable store can be used to grab refs. Another way to generate mutable stores is using zero arguments when creating stores.
+```js
+const ref = create<HTMLElement>()
+```
+> Type of `ref` would be: `MutableStore<HTMLElement | undefined>`
 
 ```js
-import { create, useStore } from 'xoid'
+import { create, ready, effect } from 'xoid'
+import { useSetup } from '@xoid/react'
+
+// inside React
+const setup = useSetup((ref) => {
+  const ref = create<HTMLDivElement>()
+  return { ref }
+})
+
+return <div ref={setup.ref} />
+```
+> `ready` is a helper function that's usually used with refs. It makes it possible to work with non-existent object addresses, that'll be satisfied later. 
+
+```js
+effect($color, ready(ref).style.color)
+
+// is roughly equivalent to
+
+effect($color, (color) => {
+  const element = ref()
+  if(element) element.style.color = color 
+})
+```
+
+### Pattern: Finite state machines
+
+No additional syntax is required for state machines. Just use the good old `create` function.
+
+```js
+import { create } from 'xoid'
+import { useStore } from '@xoid/react'
 
 const createMachine = () => {
   const red = { color: '#f00', onClick: () => store(green) }
@@ -278,7 +314,7 @@ const createMachine = () => {
 }
 
 // in a React component
-const machine = useLocal(createMachine)
+const machine = useSetup(createMachine)
 const { color, onClick } = useStore(machine)
 return <div style={{ color }} onClick={onClick} />
 ```
