@@ -51,12 +51,12 @@ yarn add xoid
 
 ## API Overview
 
-`xoid` package consists of the following 8 exports. These exports can be divided into 3 main sections.
+Exports of `xoid` can be divided into 3 main sections.
 
 | Section | Exports           | Description |
 | - | - | - |
 | Core API | [`create`](api/create) , [`effect`](api/effect) , [`subscribe`](api/subscribe) | Most commonly used, lower-level exports. |
-| Model API | [`model`](api/model) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof) , [`use`](api/use) | Adds "actions" to provide a flux-like experience. |
+| Model API | [`model`](api/model) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof) , [`use`](api/use) | Adds "useables" to provide a flux-like experience. |
 | Helper(s) | [`ready`](api/ready) | A helper function that's usually used with refs |
 
 ### Other packages
@@ -231,17 +231,24 @@ const TodoListModel = x.arrayOf(TodoModel, (store) => ({
   add: (p: TodoType) => store((s) => [...s, p]),
 }))
 
-const store = TodoListModel([
-  { title: 'groceries', checked: true },
-  { title: 'world invasion', checked: false },
-])
+const StoreModel = x({
+  todos: TodoListModel
+})
 
-use(store).add({ title: 'finish up readme', checked: false })
-use(store[2]).toggle() // ✅
+const store = StoreModel({
+  boardTitle: 'myTodos',
+  todos: [
+    { title: 'groceries', checked: true },
+    { title: 'world invasion', checked: false },
+  ]
+})
+
+use(store.todos).add({ title: 'finish up readme', checked: false }) // ✅
+use(store.todos[2]).toggle() // ✅
 
 // inside React
-const { title, checked } = useStore(store[0])
-const { toggle } = use(store[0])
+const { title, checked } = useStore(store.todos[0])
+const { toggle } = use(store.todos[0])
 ```
 
 > It's very cheap to create **xoid** stores. 
@@ -329,8 +336,8 @@ return <div style={{ color }} onClick={onClick} />
 - Easy to work with nested states
 - Computed values, transient updates
 - Can be used as an optics (lenses) library
-- No middlewares are required for async stuff
 - Can also be used to express finite state machines
+- No middleware is required for async/generator stuff
 - Global state and local component state in the same API
 
 
