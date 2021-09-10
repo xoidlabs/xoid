@@ -66,10 +66,8 @@ Exports of `xoid` can be divided into 3 main sections.
 | - | - | - |
 | `@xoid/react`| [`useStore`](api/usestore) , [`useSetup`](api/usesetup) | **React** integration |
 | `@xoid/devtools` | `devtools` | **Redux Devtools** integration |
-| `@xoid/core` | [`create`](api/create) , [`effect`](api/effect) , [`subscribe`](api/subscribe) | Bundles only the core API (Internally used by `xoid`) |
-| `@xoid/observable` | `observable` , [`effect`](api/effect) , [`subscribe`](api/subscribe) | Lite version that doesn't use ES6 Proxies|
 
-> All the `effect` and `subscribe` exports that are shared among the packages are the same.
+> There are also `@xoid/core` (only the Core API) and `@xoid/observable` (lite version), intended for library authors.
 
 ## Quick Tutorial
 
@@ -175,7 +173,7 @@ import { subscribe } from 'xoid'
 
 const unsub = subscribe(store.alpha, console.log)
 ```
-
+> To cleanup side-effects, a function can be returned in the subscriber function. (Similar to `React.useEffect`)
 
 ## Model API
 
