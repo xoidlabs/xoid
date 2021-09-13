@@ -7,7 +7,7 @@
     "strict": true,
     "importHelpers": true,
     "declaration": true,
-    "declarationDir": "./dist/types",
+    "declarationDir": "./dist",
     "isolatedModules": true
   },
   "include": ["./lib"]

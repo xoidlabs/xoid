@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { create } from 'xoid'
-import { useStore, useLocal } from '@xoid/react'
+import { useStore, useSetup } from '@xoid/react'
 
-const createTimer = (_, create: Create) => {
+const TimerSetup = () => {
   const state = create(stopped)
   const time = create(0)
   let interval: ReturnType<typeof setTimeout>
@@ -37,9 +37,9 @@ const createTimer = (_, create: Create) => {
 }
 
 const Stopwatch = () => {
-  const timer = useLocal(createTimer)
-  const time = useStore(timer.time)
-  const { playPauseButton, handlePlayPause, handleStop } = useStore(timer.state)
+  const setup = useSetup(TimerSetup)
+  const time = useStore(setup.time)
+  const { playPauseButton, handlePlayPause, handleStop } = useStore(setup.state)
 
   return (
     <div>

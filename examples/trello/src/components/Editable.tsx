@@ -1,18 +1,24 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useStore, Value } from 'xoid'
+import { create, effect, Observable } from 'xoid'
+import { useSetup, useStore } from '@xoid/react'
 
-export default (props: { children: Value<string> }) => {
-  const [isEditable, setEditable] = useState(false)
-  const [title, setTitle] = useStore(props.children)
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    ref.current?.focus()
-  })
-  return isEditable ? (
+export default (props: { children: Observable<string> }) => {
+  const [isEditable, setEditable] = useSetup(false)
+  const title = useStore(props.children)
+  const setTitle = props.children
+  const ref = useRef<HTMLDivElement>()
+
+  return (
     <div
       ref={ref}
-      contentEditable={true}
-      suppressContentEditableWarning={true}
+      contentEditable={isEditable}
+      suppressContentEditableWarning={isEditable}
+      onClick={() => {
+        setEditable(true);
+        setTimeout(() => {
+          ref.current?.focus();
+        });
+      }}
       onFocus={() => ref.current && selectAllText(ref.current)}
       onBlur={() => {
         setTitle(ref.current?.textContent || title)
@@ -20,8 +26,37 @@ export default (props: { children: Value<string> }) => {
       }}>
       {title}
     </div>
-  ) : (
-    <div onClick={() => setEditable(true)}>{title.trim() || 'untitled'}</div>
+  )
+}
+
+const xxx = (props: { children: Observable<string> }) => {
+  const { $title, $isEditable, ref } = useSetup((deps) => {
+    const $isEditable = create(false)
+    effect($isEditable, ready(ref).contentEditable)
+    effect(deps.title, ready(ref).textContent)
+    const ref = create<HTMLDivElement>()
+
+    return { $title, $isEditable, ref }
+  }, props)
+
+  const title = useStore($title)
+
+  return (
+    <div
+      ref={ref}
+      onClick={() => {
+        $isEditable(true);
+        setTimeout(() => {
+          ref()?.focus();
+        });
+      }}
+      onFocus={() => ref() && selectAllText(ref())}
+      onBlur={() => {
+        $title(ready(ref).textContent() || title)
+        $isEditable(false)
+      }}>
+      {title}
+    </div>
   )
 }
 

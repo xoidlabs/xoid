@@ -1,20 +1,22 @@
 import React from 'react'
-import x, { useStore, Store } from 'xoid'
+import x, { use, Store, StoreOf } from 'xoid'
+import { useStore } from '@xoid/react' 
 
-type TodoPayload = {
+type TodoType = {
   title: string
   checked: boolean
 }
 
-const TodoModel = x((store: Store<TodoPayload>) => ({
+const TodoModel = x((store: Store<TodoType>) => ({
   toggle: () => store.checked((s) => !s),
+  rename: (title: string) => store.title(title),
 }))
 
-const TodoListModel = x.list(TodoModel, (store) => ({
-  add: (p: TodoPayload) => store((s) => [...s, p]),
+const TodoListModel = x.arrayOf(TodoModel, (store) => ({
+  add: (p: TodoType) => store((s) => [...s, p]),
 }))
 
-const store = TodoListModel.create([
+const store = TodoListModel([
   { title: 'groceries', checked: true },
   { title: 'world invasion', checked: false },
 ])
@@ -27,16 +29,16 @@ export const Todos = () => {
       {state.map((todo, key) => (
         <Todo store={todo} key={key} />
       ))}
-      <button onClick={() => add({ title: 'unnamed', checked: false })}>
+      <button onClick={() => add({ title: 'untitled', checked: false })}>
         +
       </button>
     </>
   )
 }
 
-const Todo = (props: { store: ReturnType<typeof TodoModel> }) => {
+const Todo = (props: { store: StoreOf<typeof TodoModel> }) => {
   const { title, checked } = useStore(props.store)
-  const { toggle } = use(props.store)
+  const { toggle, rename } = use(props.store)
   return (
     <div>
       <input type="checkbox" checked={checked} onChange={toggle} />
@@ -45,7 +47,7 @@ const Todo = (props: { store: ReturnType<typeof TodoModel> }) => {
           textDecoration: checked ? 'line-through' : 'none',
         }}
         value={title}
-        onChange={(e) => props.store.title(e.target.value)}
+        onChange={(e) => rename(e.target.value)}
       />
     </div>
   )

@@ -1,30 +1,24 @@
-import React, { useEffect, useRef } from 'react'
-import { create, set, use, subscribe } from 'xoid'
+import React from 'react'
+import { create, ready, subscribe } from 'xoid'
+import { useSetup } from '@xoid/react'
 
 const ResizeObserver = (window as any).ResizeObserver as any
 
-const createResizeObserver = (element: HTMLDivElement) =>
-  create({} as { width: number; height: number }, (store) => {
-    const observer = new ResizeObserver(([entry]: any) => {
-      const { width, height } = entry.contentRect
-      set(store, { width, height })
-    })
-    observer.observe(element)
-    return { cleanup: () => observer.destroy() }
+const ROSetup = (_: unknown, onCleanup: (fn: Function) => void) => {
+  const ref = create<HTMLDivElement>()
+  const store = create({} as { width: number; height: number })
+  const observer = new ResizeObserver(([entry]) => store(entry.contentRect))
+  subscribe(ref, (element) => {
+    if(element) observer.observe(element)
+    return () => observer.disconnect(element)
   })
+  subscribe(store, ({ width, height }) => ready(ref).innerHTML(`${width} x ${height}`))
+  return ref
+}
 
 export default () => {
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useSetup(ROSetup)
   console.log('this component renders only once!')
-
-  useEffect(() => {
-    if (!ref.current) return
-    const store = createResizeObserver(ref.current)
-    subscribe(store, ({ width, height }) => {
-      ;(ref.current as HTMLDivElement).innerHTML = `${width} x ${height}`
-    })
-    return use(store).cleanup
-  }, [])
 
   return (
     <>
@@ -42,7 +36,7 @@ export default () => {
           background: 'rebeccapurple',
           color: 'white',
           fontSize: 25,
-        }}></div>
+        }} />
     </>
   )
 }

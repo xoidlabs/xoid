@@ -1,36 +1,27 @@
-import { create, arrayOf } from 'xoid'
+import { model, arrayOf, Store } from 'xoid'
 
-export interface BoardPayload {
+export interface BoardType {
   title: string
-  columns: ColumnPayload[]
+  columns: ColumnType[]
 }
 
-export interface ColumnPayload {
+export interface ColumnType {
   id: number
   title: string
-  cards: CardPayload[]
+  cards: CardType[]
 }
 
-export interface CardPayload {
+export interface CardType {
   id: number
   title: string
 }
 
-export const BoardModel = ({ title, columns }: BoardPayload) =>
-  create({
-    title,
-    columns: arrayOf(ColumnModel, columns),
-  })
+export const CardModel = model<CardType>()
 
-export const ColumnModel = ({ id, title, cards }: ColumnPayload) =>
-  create({
-    id,
-    title,
-    cards: arrayOf(CardModel, cards),
-  })
+export const ColumnModel = model<ColumnType>({
+  cards: arrayOf(CardModel),
+})
 
-export const CardModel = ({ id, title }: CardPayload) =>
-  create({
-    id,
-    title,
-  })
+export const BoardModel = model<BoardType>({
+  columns: arrayOf(ColumnModel),
+})

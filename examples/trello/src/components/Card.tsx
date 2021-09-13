@@ -34,7 +34,6 @@ const Card = (props: {
   store: ReturnType<typeof CardModel>
   removeCard: () => void
 }) => {
-  useStore(props.store)
   return (
     <Self.Container>
       <Self.Title>
