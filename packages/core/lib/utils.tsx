@@ -1,4 +1,6 @@
+//@ts-nocheck
 import { createSelector, createRoot, createTarget, META, RECORD, Observable } from '@xoid/engine'
+//@ts-check
 
 type Meta = {
   parentMeta?: Meta

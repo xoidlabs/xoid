@@ -7,7 +7,8 @@ export default makeConfig({
   entries: {
     'index.tsx': { 
       cjs: 'index.js', 
-      external: [] 
+      esm: 'index.esm.js', 
+      external: ['@xoid/engine'] 
     },
   },
   copy: { 'package.json': 'dist', 'README.md': 'dist' },

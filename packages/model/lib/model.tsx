@@ -1,8 +1,13 @@
-import { Init, Store, State } from '@xoid/core'
-import { META, RECORD, createInstance } from '@xoid/core/utils'
+//@ts-nocheck
+import { Init, Store, StateOf } from '@xoid/core'
+import { META, RECORD } from '@xoid/engine'
+import { createInstance } from '@xoid/core/utils'
+//@ts-check
 
-const USEABLE = Symbol('use') 
-const fromShape = (shape: any) => Object.assign(createInstance(shape), shape)
+export type StoreOf<T> = Store<ExtractLHS<T>> & ExtractRHS<T>
+
+const USEABLE = Symbol('use')
+const fromShape = (shape: any) => Object.assign(createInstance({ shape }), shape)
 const memoizedUseables = new WeakMap()
 
 type Merge<T extends any[], U extends any[]> = Array<T[number] & U[number]>
@@ -23,11 +28,11 @@ export type ObjectStore<M extends Model<any, any>> = M extends Model<infer T, in
   : never
 
 export type ArrayModel<M extends Model<any, any>, U = undefined> = {
-  (state: Init<State<ArrayStore<M>>>, mutable?: boolean): ArrayStore<M> & Useable<U>
+  (state: Init<StateOf<ArrayStore<M>>>, mutable?: boolean): ArrayStore<M> & Useable<U>
 } & (M extends Model<infer T, infer V> ? Shape<T[], Useable<V>[] & Useable<U>> : never)
 
 export type ObjectModel<M extends Model<any, any>, U = undefined> = {
-  (state: Init<State<ObjectStore<M>>>, mutable?: boolean): ObjectStore<M> & Useable<U>
+  (state: Init<StateOf<ObjectStore<M>>>, mutable?: boolean): ObjectStore<M> & Useable<U>
 } & (M extends Model<infer T, infer V>
   ? Shape<Record<string, T>, Record<string, Useable<V>> & Useable<U>>
   : never)
@@ -43,13 +48,6 @@ type TraverseRHS<T> = T extends object ? { [K in keyof T]: ExtractRHS<T[K]> } : 
 /**
  * Creates a model of the specified type.
  * Returns a store creator function.
- * @example
- * import x from 'xoid';
- *
- * const NumberModel = x(store => ({ inc: () => store(s => s + 1) }))
- * const $num = NumberModel(5)
- * use($num).inc()
- * console.log($num()) // 6
  * @see [xoid.dev/docs/api/model](https://xoid.dev/docs/api/model)
  */
 
@@ -69,6 +67,11 @@ export function model(payload?: any, useable?: any) {
   return fromShape(shape)
 }
 
+function wrapped(store: any, o: any) {
+  const dh = store[META].root.devtoolsHelper
+  return dh ? dh(store, o, []) : o
+}
+
 /**
  * Consumes "useables" of stores created via `model`, `arrayOf`, or `objectOf`.
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
@@ -77,28 +80,19 @@ export function model(payload?: any, useable?: any) {
 // @ts-ignore
 export const use = <T extends any>(store: Useable<T>): T => {
   const attempt = memoizedUseables.get(store)
-  if (attempt) return attempt
+  if (attempt) return wrapped(store, attempt)
   const shape = (store as any)[META]?.shape
-  if (!shape) return undefined as any
-  const useable = shape[USEABLE]
+  const useable = shape && shape[USEABLE]
   if (typeof useable === 'function') {
     const u = useable(store)
     memoizedUseables.set(store, u)
-    return u
+    return wrapped(store, u)
   }
 }
 
 /**
  * Returns a store creator function that receives an object,
  * where each element is a model of the specified type.
- * @example
- * import x from 'xoid';
- *
- * const NumberModel = x(store => ({ inc: () => store(s => s + 1) }))
- * const NumberArrayModel = x.arrayOf(NumberModel)
- * const $arr = NumberArrayModel([1, 3, 5])
- * $arr.forEach($item => use($item).inc())
- * console.log($arr()) // [2, 4, 6]
  * @see [xoid.dev/docs/api/arrayof](https://xoid.dev/docs/api/arrayof)
  */
 
@@ -110,14 +104,6 @@ export const arrayOf = <M extends Model<any, any>, U = undefined>(
 /**
  * Returns a store creator function that receives an object,
  * where each value are models of the specified type.
- * @example
- * import x from 'xoid';
- *
- * const NumberModel = x(store => ({ inc: () => store(s => s + 1) }))
- * const NumberObjectModel = x.objectOf(NumberModel)
- * const $obj = NumberObjectModel({a: 1, b: 3, c: 5 })
- * Object.entries($obj).forEach([key, $item] => use($item).inc())
- * console.log($obj()) // { a: 2, b: 4, c: 6 }
  * @see [xoid.dev/docs/api/objectof](https://xoid.dev/docs/api/objectof)
  */
 

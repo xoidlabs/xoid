@@ -29,5 +29,8 @@
   },
   "peerDependencies": {
     "@xoid/engine": ">=0.9.0"
+  },
+  "devDependencies": {
+    "@xoid/engine": "^0.9.0"
   }
 }

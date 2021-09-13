@@ -6,9 +6,10 @@
     "downlevelIteration": true,
     "strict": true,
     "importHelpers": true,
-    "isolatedModules": true,
     "declaration": true,
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "isolatedModules": true
   },
   "include": ["./lib"]
+  
 }

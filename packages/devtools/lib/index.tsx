@@ -1,4 +1,7 @@
-import { createRoot, META, Observable, subscribe } from '@xoid/engine'
+//@ts-ignore
+import { createRoot, META, subscribe } from '@xoid/engine'
+//@ts-ignore
+import type { Observable } from '@xoid/engine'
 
 const snapshot = <T extends any>(store: Observable<T>) => store()
 
@@ -108,7 +111,7 @@ const createDevtoolsHelper = () => {
 
         const action = { type: `${begin}.${actionAddress.join('.')}` }
         if (isAsync) {
-          action.async = true
+          (action as any).async = true
           let attemptTimes = calledTimesMap.get(target)
           if (!attemptTimes) {
             attemptTimes = { i: 0 }
