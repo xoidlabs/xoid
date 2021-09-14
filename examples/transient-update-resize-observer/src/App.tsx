@@ -12,6 +12,7 @@ const ROSetup = (_: unknown, onCleanup: (fn: Function) => void) => {
     if(element) observer.observe(element)
     return () => observer.disconnect(element)
   })
+  onCleanup(() => observer.destroy())
   subscribe(store, ({ width, height }) => ready(ref).innerHTML(`${width} x ${height}`))
   return ref
 }

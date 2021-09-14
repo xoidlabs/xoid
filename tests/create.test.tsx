@@ -1,5 +1,5 @@
-import { create } from '../src/core'
-import { debug } from '../src/test-helpers'
+import { create } from '../packages/core/lib'
+import { debug } from '../packages/helpers/debug'
 
 it('creates a store with a primitive value', () => {
   const store = create(5)

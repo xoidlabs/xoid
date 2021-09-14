@@ -1,10 +1,10 @@
-import { create, watch } from '../src/core'
+import { create, effect } from '../packages/core/lib'
 
 it('handles state mutations', async () => {
   const store = create({ alpha: 5 })
   const state = store()
   const watcher = jest.fn()
-  watch(store.alpha, watcher)
+  effect(store.alpha, watcher)
 
   state.alpha = 12
   expect(watcher).toBeCalledTimes(1)
@@ -17,7 +17,7 @@ it('handles state mutations', async () => {
 it('handles state mutations (function form)', async () => {
   const store = create({ alpha: 5 })
   const watcher = jest.fn()
-  watch(store.alpha, watcher)
+  effect(store.alpha, watcher)
 
   store.alpha(12)
   expect(watcher).toBeCalledTimes(1)
@@ -30,7 +30,7 @@ it('handles state mutations (function form)', async () => {
 it('handles state mutations (previousValue form)', async () => {
   const store = create({ alpha: 5 })
   const watcher = jest.fn()
-  watch(store.alpha, watcher)
+  effect(store.alpha, watcher)
 
   store.alpha((value) => ++value)
   expect(watcher).toBeCalledTimes(1)
@@ -45,7 +45,7 @@ it.only('handles multiple state mutations (previousValue form)', async () => {
 
   const alphaWatcher = jest.fn()
   const betaWatcher = jest.fn()
-  watch(store, (state) => {
+  effect(store, (state) => {
     alphaWatcher(state.alpha)
     betaWatcher(state.beta)
   })
@@ -68,7 +68,7 @@ it('handles deep state mutations', async () => {
   const state = store()
 
   const innerWatcher = jest.fn()
-  watch(store.deep, (state) => {
+  effect(store.deep, (state) => {
     innerWatcher(state.alpha)
   })
 

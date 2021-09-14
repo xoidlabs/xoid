@@ -1,23 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create, watch, use, useStore } from '../src/core'
-
-const debug = (store: any) => {
-  return {
-    self: store,
-    selfSerialized: JSON.stringify(store),
-    selfTypeof: typeof store,
-    get: store(),
-    getSerialized: JSON.stringify(store()),
-    getTypeof: typeof store(),
-  }
-}
+import { fireEvent, render } from '@testing-library/react'
+import { create, effect, use, useStore } from '../packages/core/lib'
 
 it('can run watcher', () => {
   const store = create({ alpha: 5 })
   const watcher = jest.fn()
-  watch(store.alpha, watcher)
+  effect(store.alpha, watcher)
 
   expect(watcher).toBeCalledTimes(1)
   expect(watcher).toBeCalledWith(5)
@@ -27,7 +16,7 @@ it('can debounce updates', async () => {
   const store = create({ alpha: 5 })
   const state = store()
   const watcher = jest.fn()
-  watch(store.alpha, watcher)
+  effect(store.alpha, watcher)
 
   state.alpha = 12
   expect(watcher).toBeCalledTimes(1)
@@ -42,7 +31,7 @@ it('can batch updates', async () => {
   const store = create({ alpha: 5 })
   const state = store()
   const watcher = jest.fn()
-  watch(store.alpha, watcher)
+  effect(store.alpha, watcher)
   expect(watcher).toBeCalledTimes(1)
   expect(watcher).toBeCalledWith(5)
 
@@ -62,7 +51,7 @@ it('can intercept destructurings', async () => {
   const watcher = jest.fn((state) => {
     state.alpha
   })
-  watch(store, watcher)
+  effect(store, watcher)
   expect(watcher).toBeCalledTimes(1)
   expect(watcher).toBeCalledWith({ alpha: 5 })
 
@@ -78,7 +67,7 @@ it('can avoid running when state portion is unwatched', async () => {
   const store = create({ alpha: 5 })
   const state = store()
   const watcher = jest.fn()
-  watch(store, watcher)
+  effect(store, watcher)
   expect(watcher).toBeCalledTimes(1)
 
   state.alpha = 12
@@ -92,7 +81,7 @@ it.only('can batch state updates', async () => {
   const store = create({ alpha: 5 })
   const state = store()
   const watcher = jest.fn()
-  watch(store.alpha, watcher)
+  effect(store.alpha, watcher)
 
   state.alpha = 12
   state.alpha = 15
@@ -120,7 +109,7 @@ it('handles methods of special objects', async () => {
   const state = store()
 
   const watcher = jest.fn()
-  watch(store.alpha, watcher)
+  effect(store.alpha, watcher)
 
   state.increment()
   state.increment()

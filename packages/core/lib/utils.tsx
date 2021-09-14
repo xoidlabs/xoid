@@ -37,7 +37,6 @@ export const createCell = (parentMeta: Meta, key: string) => {
         copy[key] = value
         parentMeta.node = copy
       }
-      console.log('setted to', address)
     },
     cache: {},
     shape,
