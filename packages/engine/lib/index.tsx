@@ -55,15 +55,9 @@ export const createSelector = (store: Observable<any>, init: any) => {
   const updateState = () => {
     unsubs.forEach((fn) => fn())
     unsubs.clear()
-    const result = (init as Function)(getter)
-    if(isPromise(result)) result.then(value => store(value))
-    else store(result)
+    return store((init as Function)(getter))
   }
   updateState()
-}
-
-function isPromise(obj) {
-  return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
 }
 
 const createSubscribe = (effect: boolean) => <T extends Observable<any>>(
@@ -79,7 +73,7 @@ const createSubscribe = (effect: boolean) => <T extends Observable<any>>(
   const listener = () => {
     runCleanup()
     const nextValue = store()
-    if (nextValue !== prevValue) cleanup = fn(nextValue)
+    if (nextValue !== prevValue) cleanup = fn(nextValue as any)
     prevValue = nextValue
   }
   if (effect) fn(store())
