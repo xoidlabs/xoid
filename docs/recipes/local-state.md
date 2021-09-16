@@ -127,9 +127,7 @@ In our **xoid** model on the other hand, we can achieve the same functionality b
 import { create } from 'xoid'
 
 const CustomModel = (deps: Store<Props>) => {
-  const alpha = create((get) => get(deps.alpha))
-  const beta = create((get) => get(deps.beta))
-  const sum = create((get) => get(alpha) + get(beta))
+  const sum = create((get) => get(deps.alpha) + get(.depsbeta))
 
   return create({ alpha, beta, sum })
 }
@@ -185,9 +183,7 @@ import { create, get } from 'xoid'
 import { debounce } from "lodash";
 
 const AppModel = (deps: Store<Props>) => {
-  const alpha = create((get) => get(deps.alpha))
-  const beta = create((get) => get(deps.beta))
-  const sum = create((get) => get(alpha) + get(beta))
+  const sum = create((get) => get(deps.alpha) + get(deps.beta))
 
   const debouncedOnChange = debounce((a) => get(deps.onChange)(a), 500)
   create((get) => debouncedOnChange(get(alpha), get(beta)))

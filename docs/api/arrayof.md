@@ -5,32 +5,24 @@ title: arrayOf
 
 `import { arrayOf } from 'xoid'`
 
-`arrayOf`, along with [`objectOf`](`objectOf`), is part of the concept of models. It creates an array store, based on the model in it's first argument. The second argument is optional. If provided, it will be used as the initial state, otherwise an empty array is used.
+Models are special **create** functions. `arrayOf` creates a special **create** function that receives an array as the initial state. It makes sure that each array element is of the same model type. Second argument can optionally be used to attach usables to the root itself.
 
 ```js
-import { arrayOf, current, set, use } from 'xoid';
+import { model, arrayOf, use } from 'xoid';
 
-const NumberModel = (payload: number) =>
-  create(payload, (store) => ({
-    increment: () => set(store, (state) => state + 1),
-    decrement: () => set(store, (state) => state - 1)
-  }));
+const NumberModel = model((store) => ({
+  increment: () => store((state) => state + 1),
+  decrement: () => store((state) => state - 1)
+}))
 
-const numbers = arrayOf(NumberModel, [1, 3]); // second argument is optional
+const NumberArrayModel = arrayOf(NumberModel, (store) => ({
+  add: (num: number) => store(state => [...state, num])
+}))
 
-use(numbers).add(5);
-use(numbers).add(7);
-numbers.forEach((number) => use(number).increment());
-console.log(current(numbers)); // [2, 4, 6, 8]
-```
+const numbers = NumberArrayModel([1, 3])
+use(numbers).add(5)
+use(numbers).add(7)
+Object.entries(numbers).forEach(([_key, num]) => use(num).increment())
 
-It has `add` and `remove` actions, fully type-consistent with your models.
-
-```js
-{
-  // simply add by your payload definition
-  add: (item: ModelPayload) => void
-  // Two overloads: remove by array index or filter function
-  remove: (match: number | ((item: ModelPayload) => boolean)) => void
-}
+numbers() // [2, 4, 6, 8]
 ```

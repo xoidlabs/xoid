@@ -5,23 +5,29 @@ title: use
 
 `import { use } from 'xoid'`
 
-`use` method lets you use the actions that are specified in the second argument of [`create`](create#defining-store-actions).
+`use` method grabs the "usables" of a store. Usables are defined by using the [`model`](model) function.
 
 ```js
-import { create, set, use, useStore } from 'xoid';
+import { model, set, use, useStore } from 'xoid';
 
-const storeWithActions = create(5, (store) => ({
-  increment: (by: number) => set(store, (state) => state + by),
-  reset: () => set(store, 0)
+const CounterModel = model((store) => ({
+  incrementBy: (by: number) => store((state) => state + by),
+  reset: () => store(0)
 }));
 
-use(storeWithActions).increment(20); // void
+const counter = CounterModel(5)
 
-console.log(get(storeWithActions)); // 25
+use(counter).incrementBy(20); // void
+
+counter() // 25
 ```
 
-It will throw an error when it's applied to non-store values:
+It will throw an error when it's applied to non-observable values:
 
 ```js
 use({}); // throws
 ```
+
+:::tip Tip
+For an enhanced developer experience, `@xoid/devtools` package can be used. Please see [Redux Devtools integration](../recipes/redux-devtools-integration) in the Recipes section.
+:::

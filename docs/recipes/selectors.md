@@ -3,23 +3,16 @@ id: selectors
 title: Selector patterns
 ---
 
-### Using selectors (lenses) to work easily with reference IDs
+### Using selectors to work with reference IDs
 
 ```js
-type RootPayload = {
+type RootType = {
   users: Record<string, { name: string }>
   androidUsers: string[]
   iOsUsers: string[]
 }
 
-const RootModel = (payload: RootPayload) =>
-  create({
-    users: objectOf((user) => create(user), payload.users),
-    androidUsers: payload.androidUsers,
-    iOsUsers: payload.iOsUsers,
-  })
-
-const rootStore = RootModel({
+const rootStore = create<RootType>({
   users: {
     aaaa: { name: 'foo' },
     bbbb: { name: 'bar' },

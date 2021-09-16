@@ -3,31 +3,27 @@ id: finite-state-machines
 title: Finite State Machines
 ---
 
-**xoid** is **not** specialized for **fsm**s (finite state machines), however, a considerable range of fsms can be expressed only by using the first argument of `create` function.
+In **xoid**, a wide range of FSMs can be expressed only by using only the `create` function.
 
 ```js
-const fsm = create<{
-  name: string;
-  actions: Record<'melt' | 'freeze' | 'condense' | 'vaporize', () => void>;
-}>((_get, set) => {
-
+const createFsm = () => {
   function melt() {
-    set(liquid)
+    store(liquid)
     console.log('I melted')
   }
 
   function freeze() {
-    set(solid)
+    store(solid)
     console.log('I freezed')
   }
 
   function condense() {
-    set(liquid)
+    store(liquid)
     console.log('I condensed')
   }
 
   function vaporize() {
-    set(gas)
+    store(gas)
     console.log('I vaporized')
   }
 
@@ -35,11 +31,13 @@ const fsm = create<{
   const liquid = { name: "water", actions: { freeze, vaporize } };
   const gas = { name: "vapor", actions: { condense } };
 
-  return solid;
-})
+  const store = create(solid)
+  return store;
+}
 
 const Water = () => {
-  const [{ name, actions }] = useStore(fsm)
+  const fsm = useSetup(createFsm)
+  const { name, actions } = useStore(fsm)
   return (
     <div>
       {name}
@@ -51,3 +49,4 @@ const Water = () => {
     </div>
   )
 }
+```

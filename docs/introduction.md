@@ -21,72 +21,110 @@ Or if you're using <a href="https://classic.yarnpkg.com/en/docs/install/" target
 yarn add xoid
 ```
 
-## Quick Start
+## Quick Tutorial
 
-**xoid** is based on stores. Stores can be initialized with objects, arrays or primitive values.
+### Store
 
-```js
-import { create } from 'xoid'
-export const counter = create(0)
-```
-
-Stores can be instantly consumed by React components.
-
-```js
-import { useStore } from 'xoid'
-const Counter = () => {
-  const [count, setCount] = useStore(counter)
-  return <div onClick={() => setCount(count + 1)}>{count}</div>
-}
-```
-
-Stores can also have intrinsic actions. You can specify them in the second argument.
-
-```js
-import { create, set } from 'xoid'
-export const counter = create(0, (store) => ({
-  increment: () => set(store, state => state + 1),
-  decrement: () => set(store, state => state - 1),
-}))
-```
-
-A store with actions can be consumed in a React component as the following.
-
-```js
-import { useStore } from 'xoid'
-const Counter = () => {
-  const [count, { increment, decrement }] = useStore(counter)
-  return <div onClick={increment}>{count}</div>
-}
-```
-
-You can use `use` export, if you want to use actions without causing rerenders. (`use` is not a hook)
-
-```js
-import { use } from 'xoid'
-const Counter = () => {
-  const { increment } = use(counter)
-  return <div onClick={increment}>inc!</div>
-}
-```
-
-Also, you can create derived stores with computed values.
+Stores are standalone setter/getter objects that hold state. `create` function is used to create them.
 
 ```js
 import { create } from 'xoid'
-export const countPlusOne = create(get => get(counter) + 1)
+
+const store = create(3)
+store() // 3 (get the value)
+store(5) // void (set the value to 5)
+store(state => state + 1) // void (also set the value)
+store() // 6
 ```
 
-To subscribe to a specific state portion of an **xoid** store, there's no need for selector functions. 
+
+In **xoid**, via ES6 Proxies, every store is an observable tree. No selector function is necessary to "focus" a deep branch of state.
 
 ```js
 import { create } from 'xoid'
-export const store = create({alpha: 0, beta: 1, deeply: { nested: { value: 2 }}})
 
-const Counter = () => {
-  const [value] = useStore(store.deeply.nested.value)
-  return <div>{value}</div>
+const store = create({ alpha: ['foo', 'bar'], deep: { beta: 5 } })
+store.alpha() // ['foo', 'bar']
+store.deep.beta() // 5
+```
+
+
+**xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root. This can prevent writing hard-coded reducers.
+
+```js
+const previousState = store() // { alpha: ['foo', 'bar'], deep: { beta: 5 } }
+store.deep.beta(s => s + 1)
+
+assert(store.deep.beta() === 6) // ✅
+assert(previousState !== store()) // ✅
+```
+
+
+### Derived state
+
+The same `create` function is used for creating derived stores. This API was heavily inspired by **Recoil**.
+
+```js
+import { create } from 'xoid'
+
+const alpha = create(3)
+const beta = create(5)
+// derived store
+const sum = create((get) => get(alpha) + get(beta))
+```
+
+
+### React integration
+
+For usage in React, `useStore` from **@xoid/react** package is used.
+
+```js
+import { useStore } from '@xoid/react'
+
+// in a React component
+const state = useStore(store.alpha)
+```
+
+
+There's also the `useSetup` hook that can be used to create local state. It's similar to `React.useMemo`, except it's guaranteed to run only **once**.
+
+```js
+import { create } from 'xoid'
+import { useSetup, useStore } from '@xoid/react'
+
+// in a React component
+const setup = useSetup(() => {
+  const alpha = create(5)
+  return { alpha }
+})
+// can later be subscribed
+const state = useStore(setup.alpha)
+```
+> `useSetup` is guaranteed to be **non-render-causing**. Values returned by that can later be subscribed by the component, or its child components, or can be kept around to apply side-effects. 
+
+`useSetup` has an optional second argument to consume outer variables. In the following example, `deps` will be a store with an internal state that's in sync with the `props` variable.
+
+```js
+import { subscribe } from 'xoid'
+import { useSetup } from '@xoid/react'
+
+const App = (props: Props) => {
+  const setup = useSetup((deps) => {
+    // `deps` has the type: Store<Props>
+    subscribe(deps.something, console.log)
+  }, props)
 }
 ```
 
-Only `create`, `set`, `use`, `useStore` exports are covered in this quick start guide. These exports are enough to receive a flux-like experience. There are also `get`, `current`, `subscribe`, `arrayOf`, `objectOf` and `useModel` exports, which you can find more info on the next section, or the [API Reference](api/create) section.
+### Subscriptions
+
+For subscriptions, `subscribe` and `effect` are used. They are almost same, except while `effect` runs the callback immediately, `subscribe` waits for the first change after subscription.
+
+```js
+import { subscribe } from 'xoid'
+
+const unsub = subscribe(store.alpha, console.log)
+```
+> To cleanup side-effects, a function can be returned in the subscriber function. (Similar to `React.useEffect`)
+
+Until this point, the core API and **@xoid/react** are covered. This was the essential part of the API. More parts are covered in the next section.

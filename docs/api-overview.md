@@ -3,10 +3,21 @@ id: api-overview
 title: API Overview
 ---
 
-Next section provides a full API introduction. Most fundamental concepts are introduced before specialized ones. In the following sections, parts of the API are documented in the following order.
+Next section provides a full API introduction. In the following sections, parts of the API are documented in the following order.
 
-| Exports        | Description           |
-| ---------| ---------- |
-| [`create`](api/create) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof)  | Creates a store       |
-| [`get`](api/get) , [`set`](api/set) , [`use`](api/use) , [`current`](api/current) , [`subscribe`](api/subscribe) | Interacts with stores |
-| [`useStore`](api/usestore) , [`useLocal`](api/uselocal) | React integration |
+Exports of `xoid` can be divided into 3 main sections.
+
+| Section | Exports           | Description |
+| - | - | - |
+| Core API | [`create`](api/create) , [`subscribe`](api/subscribe) , [`effect`](api/effect) | Most commonly used, lower-level exports |
+| Model API | [`model`](api/model) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof) , [`use`](api/use) | "Useables" for a flux-like experience |
+| Helper(s) | [`ready`](api/ready) | A helper function that's usually used with refs |
+
+### Other packages
+
+| Package        | Exports           | Description |
+| - | - | - |
+| `@xoid/react`| [`useStore`](api-react/usestore) , [`useSetup`](api-react/usesetup) | **React** integration |
+| `@xoid/devtools` | [`devtools`](./recipes/redux-devtools-integration) | **Redux Devtools** integration |
+
+> There are also `@xoid/core` and `@xoid/observable` intended for library authors.

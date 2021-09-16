@@ -5,45 +5,89 @@ title: create
 
 `import { create } from 'xoid'`
 
-`create` is the store creator function. It returns a proxy object that _represents_ state. This representation of state has the same tree structure with the actual state. It's values are not directly readable, nor it can be modified. To interact with the state; [`get`](get) , [`set`](set) , [`use`](use) , [`subscribe`](subscribe) core methods are used.
+
+`create` is used to create stores. Stores are standalone setter/getter objects and they're the main means of exchanging observability. 
 
 ## Basic state
 
-Create a store by using the first argument as the initial state. State can be an object, an array, or a primitive such as a number, a string or a symbol.
+A store is created with an initial state. The initial state can be anything, it can even be a complex object such as a DOM element.
 
 ```js
-const alpha = create(5);
-const deepStore = create({ deeply: { nested: { value: 'OK' } } });
+const store = create(3)
+store() // 3 (get the value)
+store(5) // void (set the value to 5)
+store(state => state + 1) // void (also set the value)
+store() // 6
 ```
 
-`deepStore` will have the same shape with its state. So, `deepStore.deeply.nested.value` is an observable address that exists in the store.
+
+In **xoid**, via ES6 Proxies, every store is an observable tree. No selector function is necessary to "focus" a deep branch of state.
+
+```js
+const store = create({ alpha: ['foo', 'bar'], deep: { beta: 5 } })
+store.alpha() // ['foo', 'bar']
+store.deep.beta() // 5
+```
 
 ## Derived state
 
 By providing a function as the first argument, you can create a store that's value is derived by other stores.
 
 ```js
+import { alpha, beta } from './some-file'
+
 const sum = create((get) => get(alpha) + get(beta));
 ```
 
-> If you are familiar with **Recoil**, you can think of `xoid.create` as both Recoil functions combined: `Recoil.atom` , and `Recoil.selector`.
+## Async functions
 
-## Defining actions
-
-`create` function has an optional second argument which accepts a function. This function runs only once after the state is created. Return value of this function is stored internally, to be used by [`use`](use) method.
+`create` can also receive async functions.
 
 ```js
-import { create, set, use, useStore } from 'xoid';
+type SomeValue = {}
+declare const asyncFn: (a: any) => Promise<SomeValue>
 
-const storeWithActions = create(5, (store) => ({
-  increment: () => set(store, (state) => state + 1),
-  reset: () => set(store, 0)
-}));
+const store = create(async (get) => {
+  const state = get(otherStore)
+  return await asyncFn(state)
+});
+```
+> Type of `store` would be `Store<undefined | SomeValue>`
 
-use(storeWithActions).increment();
+## Mutable stores (refs)
 
-// also, in a React component
-const [value, { increment }] = useStore(storeWithActions);
+**xoid** is based on immutable updates. This means that any change that's made to store nodes will propagate to the root. This is the desired behavior for most cases. Here's an example of an immutable update.
+```js
+const previousState = store()
+
+store.deep.beta(s => s + 1)
+
+assert(store.deep.beta() === 6) // ✅
+assert(previousState !== store()) // ✅
+assert(previousState.deep !== store.deep()) // ✅
+```
+> Here, `store.deep.beta` is updated, and the update propagated to the ancestor objects (`store.deep` and `store`)
+
+However, sometimes it might be more convenient to apply mutable updates. By setting the second argument to `true`, instead of a `Store`, a `MutableStore` is produced. Mutable stores directly mutate the original object. No propagations or object copying occur.
+
+Mutable stores are convenient for complex object such as the `document.body`.
+
+```js
+const $body = create(document.body, true) // MutableStore<HTMLElement>
+
+$body.style.background('blue') // won't try to copy the `body`, as intended
 ```
 
-You can use this second argument to define actions for your store. See the documentation for [`use`](use) for some possible patterns.
+Another way of creating a `MutableStore` is using zero arguments. 
+
+```js
+const $ref = create<HTMLElement>() // MutableStore<HTMLElement | undefined>
+$ref(document.body)
+```
+
+The same coding style can be used to grab events.
+
+```js
+const $event = create<MouseEvent>() // MutableStore<MouseEvent | undefined>
+window.addEventListener('mousemove', $event)
+```

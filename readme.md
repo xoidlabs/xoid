@@ -181,7 +181,7 @@ Until this point, the core API of `xoid` and **@xoid/react** are covered. There 
 ```js
 import { model, use, Store } from 'xoid'
 
-const NumberModel = x((store: Store<number>) => ({ 
+const NumberModel = model((store: Store<number>) => ({ 
   inc: () => store(s => s + 1),
   dec: () => store(s => s - 1) 
 }))
