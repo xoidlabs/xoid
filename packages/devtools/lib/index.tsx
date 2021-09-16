@@ -1,7 +1,4 @@
-//@ts-ignore
-import { createRoot, META, subscribe } from '@xoid/engine'
-//@ts-ignore
-import type { Observable } from '@xoid/engine'
+import { createRoot, META, Observable, subscribe } from '@xoid/engine'
 
 const snapshot = <T extends any>(store: Observable<T>) => store()
 
@@ -105,13 +102,13 @@ const createDevtoolsHelper = () => {
       apply(target, thisArg, args) {
         if (target[META] || !store[META].root.devtoolsChannel)
           return Reflect.apply(target, thisArg, args)
-        const storeAddress = store[META].address.slice(1)
+        const storeAddress = store[META].address.slice(1).map(shorten)
         const begin = storeAddress.length ? `(*.${storeAddress.join('.')})` : '*'
         const isAsync = Object.prototype.toString.call(target) === '[object AsyncFunction]'
 
-        const action = { type: `${begin}.${actionAddress.join('.')}` }
+        const action = { type: `${begin}.${actionAddress.map(nodot).join('.')}` }
         if (isAsync) {
-          (action as any).async = true
+          action.async = true
           let attemptTimes = calledTimesMap.get(target)
           if (!attemptTimes) {
             attemptTimes = { i: 0 }
@@ -131,6 +128,13 @@ const createDevtoolsHelper = () => {
     })
   }
   return getAddress
+}
+
+const shorten = (s: string) => {
+  return s.length < 10 ? nodot(s) : nodot(s.slice(0, 3)) + '..' + nodot(s.slice(-3))
+}
+const nodot = (s: string) => {
+  return s.replace('.', '\\.')
 }
 
 const calledTimesMap = new WeakMap()
