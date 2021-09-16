@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { createInstance } from './utils'
 import { subscribe as _subscribe, effect as _effect } from '@xoid/engine'
-import type { Observable } from '@xoid/engine'
+import type { Init, Observable } from '@xoid/engine'
 export type { Observable, Init, GetState, Listener, StateOf } from '@xoid/engine'
 //@ts-check
 
@@ -12,8 +12,8 @@ export type MutableStore<T> = MutableObservable<T> &
   (T extends object ? { [K in keyof T]: MutableStore<T[K]> } : {})
 
 export type Create = {
-  <T>(init: Init<T>, mutable?: false): T extends Promise<infer R> ? Store<undefined | R> : Store<T>
-  <T>(init: Init<T>, mutable: true): T extends Promise<infer R> ? Store<undefined | R> : MutableStore<T>
+  <T>(init: Init<T>, mutable?: false): Store<T>
+  <T>(init: Init<T>, mutable: true): MutableStore<T>
   <T>(): MutableStore<T | undefined>
 }
 
