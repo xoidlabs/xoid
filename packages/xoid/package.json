@@ -1,9 +1,9 @@
 {
-  "name": "@xoid/development",
-  "version": "0.0.5",
+  "name": "xoid",
+  "version": "0.9.1",
   "main": "./index.js",
   "module": "./index.esm.js",
-  "types": "./types",
+  "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Simple and scalable state management for humanoids",
   "homepage": "https://xoid.dev",
@@ -31,7 +31,7 @@
   "devDependencies": {
   },
   "dependencies": {
-    "@xoid/core": ">=0.8.6",
-    "@xoid/model": ">=0.8.5"
+    "@xoid/core": ">=0.9.1",
+    "@xoid/model": ">=0.9.1"
   }
 }

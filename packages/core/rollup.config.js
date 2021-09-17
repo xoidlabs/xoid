@@ -5,7 +5,7 @@ export default makeConfig({
   source: 'lib', 
   destination: 'dist',
   entries: {
-    'index.tsx': { cjs: 'index.js', esm: 'esm/index.js' },
+    'index.tsx': { cjs: 'index.js', esm: 'esm/index.js', external: ['./utils'] },
     'utils.tsx': { cjs: 'utils.js', esm: 'esm/utils.js' }
   },
   copy: { 'package.json': 'dist' },

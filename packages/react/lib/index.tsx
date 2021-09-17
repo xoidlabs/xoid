@@ -11,7 +11,7 @@ const useConstant = <T extends any>(fn: () => T): T => {
 }
 
 /**
- * Subscribes to an xoid observable inside a React function component.
+ * Subscribes to a store, or a value inside a React function component.
  * @see [xoid.dev/docs/api/usestore](https://xoid.dev/docs/api/usestore)
  */
 
@@ -22,7 +22,7 @@ export function useStore<T>(store: Store<T>): T {
 }
 
 /**
- * Subscribes to an xoid observable inside a React function component.
+ * Subscribes to a store, or a value inside a React function component.
  * @see [xoid.dev/docs/api/usesetup](https://xoid.dev/docs/api/usesetup)
  */
 

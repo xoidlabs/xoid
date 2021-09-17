@@ -19,8 +19,8 @@ export const createCell = (parentMeta: Meta, key: string) => {
   if (Object.prototype.hasOwnProperty.call(parentMeta.cache, key)) return parentMeta.cache[key]
   const root = parentMeta.root
   const shape = parentMeta.shape && (parentMeta.shape[key] || parentMeta.shape[RECORD])
-  const address = [...(parentMeta.address || []), key]
-
+  const address = parentMeta.address ? Object.assign([], parentMeta.address) : []
+  address.push(key)
   const meta = {
     parentMeta,
     root,
@@ -86,12 +86,13 @@ export const createInstance = (options: { shape?: any; onSet?: (value: any) => v
     const isFunction = typeof init === 'function'
     if (!arguments.length) mutable = true
     const root = createRoot()
+    Object.assign(root, { mutable, onSet })
     const store = createCell(
       {
         node: { value: init },
         shape: { value: shape },
         cache: {},
-        root: { ...root, mutable, onSet },
+        root,
       },
       'value'
     )
