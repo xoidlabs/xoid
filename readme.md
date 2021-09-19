@@ -4,13 +4,13 @@
 
 <p align="center">
   <a href="https://bundlephobia.com/result?p=xoid" >
-    <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=293140&colorB=293140">
+    <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=293140&colorB=75e2f3">
   </a>
   <a href="https://www.npmjs.com/package/xoid">
-    <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&colorA=293140&colorB=293140">
+    <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&colorA=293140&colorB=75e2f3">
   </a>
   <a href="https://www.npmjs.com/package/xoid">
-    <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=293140&colorB=293140"/>
+    <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=293140&colorB=75e2f3"/>
   </a>
 </p>
 
