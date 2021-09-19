@@ -1,6 +1,6 @@
 <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
   <g id="root" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="matrix(1, 0, 0, 1, -0.214273, -0.516228)">
-    <rect id="background.accent" fill="#76e2f4" x="0" y="0" width="160" height="160"></rect>
+    <rect id="background.accent" fill="#d3f9ff" x="0" y="0" width="160" height="160"></rect>
     <path d="M23 23l0 114l114 0l0 -114l-114 0zm-2 -2l118 0l0 118l-118 0l0 -118z" id="shape.primary" fill="#301781" fill-rule="nonzero" style="stroke-miterlimit: 16; stroke-linejoin: round; fill-rule: nonzero;"></path>
     <g id="group" transform="matrix(1, 0, 0, 1, 24.548065, 114.817047)">
       <rect id="Rectangle-14" x="0" y="0" width="96" height="22"></rect>
