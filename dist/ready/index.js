@@ -3,35 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var utils = require('@xoid/core/utils');
-
-const META = Symbol();
-// function isPromise(obj) {
-//   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
-// }
-const createSubscribe = (effect) => (store, fn) => {
-    let prevValue = store();
-    let cleanup;
-    const runCleanup = () => {
-        if (cleanup && typeof cleanup === 'function')
-            cleanup();
-        cleanup = undefined;
-    };
-    const listener = () => {
-        runCleanup();
-        const nextValue = store();
-        if (nextValue !== prevValue)
-            cleanup = fn(nextValue);
-        prevValue = nextValue;
-    };
-    if (effect)
-        fn(store());
-    const unsub = store[META].root.subscribe(listener);
-    return () => {
-        runCleanup();
-        unsub();
-    };
-};
-const effect = createSubscribe(true);
+var engine = require('@xoid/engine');
 
 function ready(store) {
     const customTarget = (address = []) => {
@@ -49,14 +21,14 @@ function ready(store) {
         };
         // @ts-ignore
         const targetStore = utils.createInstance({ onSet })(undefined, true);
-        const meta = targetStore[META];
+        const meta = targetStore[engine.META];
         const setTargetStore = (state) => {
             if (meta.node === state)
                 return;
             meta.node = state;
             meta.root.notify();
         };
-        effect(store, () => {
+        engine.effect(store, () => {
             const state = store();
             if (!state)
                 return;
@@ -74,8 +46,8 @@ function ready(store) {
 function addressProxy(fn, address) {
     return new Proxy(fn(address), {
         get: (target, prop) => {
-            if (prop === META)
-                return target[META];
+            if (prop === engine.META)
+                return target[engine.META];
             const newAddress = address.map(s => s);
             newAddress.push(prop);
             return addressProxy(fn, newAddress);

@@ -1,33 +1,5 @@
 import { createInstance } from '@xoid/core/utils';
-
-const META = Symbol();
-// function isPromise(obj) {
-//   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
-// }
-const createSubscribe = (effect) => (store, fn) => {
-    let prevValue = store();
-    let cleanup;
-    const runCleanup = () => {
-        if (cleanup && typeof cleanup === 'function')
-            cleanup();
-        cleanup = undefined;
-    };
-    const listener = () => {
-        runCleanup();
-        const nextValue = store();
-        if (nextValue !== prevValue)
-            cleanup = fn(nextValue);
-        prevValue = nextValue;
-    };
-    if (effect)
-        fn(store());
-    const unsub = store[META].root.subscribe(listener);
-    return () => {
-        runCleanup();
-        unsub();
-    };
-};
-const effect = createSubscribe(true);
+import { META, effect } from '@xoid/engine';
 
 function ready(store) {
     const customTarget = (address = []) => {
