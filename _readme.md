@@ -4,13 +4,13 @@
 
 <p align="center">
   <a href="https://bundlephobia.com/result?p=xoid" >
-    <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=293140&colorB=75e2f3">
+    <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=293140&colorB=d3f9ff">
   </a>
   <a href="https://www.npmjs.com/package/xoid">
-    <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&colorA=293140&colorB=75e2f3">
+    <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&colorA=293140&colorB=d3f9ff">
   </a>
   <a href="https://www.npmjs.com/package/xoid">
-    <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=293140&colorB=75e2f3"/>
+    <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=293140&colorB=d3f9ff"/>
   </a>
 </p>
 
@@ -55,15 +55,15 @@ Exports of `xoid` can be divided into 3 main sections.
 
 | Section | Exports           | Description |
 | - | - | - |
-| Core API | [`create`](docs/api/create) , [`effect`](docs/api/effect) , [`subscribe`](docs/api/subscribe) | Most commonly used, lower-level exports |
-| Model API | [`model`](docs/api/model) , [`arrayOf`](docs/api/arrayof) , [`objectOf`](docs/api/objectof) , [`use`](docs/api/use) | "Useables" for a flux-like experience |
-| Helper(s) | [`ready`](docs/api/ready) | A helper function that's usually used with refs |
+| Core API | [`create`](docs/api/create.md) , [`effect`](docs/api/effect.md) , [`subscribe`](docs/api/subscrib.mde) | Most commonly used, lower-level exports |
+| Model API | [`model`](docs/api/model.md) , [`arrayOf`](docs/api/arrayof.md) , [`objectOf`](docs/api/objectof.md) , [`use`](docs/api/use.md) | "Useables" for a flux-like experience |
+| Helper(s) | [`ready`](docs/api/ready.md) | A helper function that's usually used with refs |
 
 ### Other packages
 
 | Package        | Exports           | Description |
 | - | - | - |
-| `@xoid/react`| [`useStore`](docs/api/react/usestore) , [`useSetup`](docs/api/react/usesetup) | **React** integration |
+| `@xoid/react`| [`useStore`](docs/api-react/usestore.md) , [`useSetup`](docs/api-react/usesetup.md) | **React** integration |
 | `@xoid/devtools` | [`devtools`](#redux-devtools-integration) | **Redux Devtools** integration |
 
 > There are also `@xoid/core` and `@xoid/observable` intended for library authors.
