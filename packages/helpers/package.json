@@ -1,7 +1,5 @@
 {
-  "name": "helpers",
-  "private":"true",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT"
+  "name": "xoid-helpers",
+  "version": "0.1.0",
+  "private": "true"
 }

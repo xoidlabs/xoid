@@ -1,6 +1,6 @@
 {
   "name": "@xoid/devtools",
-  "version": "0.9.0",
+  "version": "0.9.5",
   "main": "./index.js",
   "module": "./esm/index.js",
   "types": "./index.d.ts",
@@ -25,6 +25,6 @@
     "optics"
   ],
   "peerDependencies": {
-    "@xoid/engine": ">=0.9.0"
+    "@xoid/engine": ">=0.9.5"
   }
 }

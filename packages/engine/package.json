@@ -1,6 +1,6 @@
 {
   "name": "@xoid/engine",
-  "version": "0.9.2",
+  "version": "0.9.5",
   "main": "./index.js",
   "sideEffects": false,
   "description": "Simple and scalable state management for humanoids",

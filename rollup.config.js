@@ -16,10 +16,12 @@ async function main() {
   const results = [];
   const packages = [];
 
+  console.log('Found following packages:')
   await workspacesRun({ cwd: __dirname, orderByDeps: true }, async (pkg) => {
-    // if (!pkg.config.private) {
+    if (!pkg.config.private) {
+      console.log('- ', pkg.name)
       packages.push(pkg);
-    // }
+    }
   });
 
   packages.forEach((pkg) => {
@@ -51,8 +53,11 @@ async function main() {
         copyTargets.push({ src: packageConfigFile, dest: outputPath })
       }  
     })
+    if(pkg.name == 'xoid') {
+      copyTargets.push({ src: 'README.md', dest: outputPath })
+    }
 
-    if(main) {
+    if(main && pkg.name !== 'xoid') {
       output.push({
         file: path.join(outputPath, main),
         format: 'cjs',

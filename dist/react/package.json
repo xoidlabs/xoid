@@ -1,6 +1,6 @@
 {
   "name": "@xoid/react",
-  "version": "0.9.2",
+  "version": "0.9.5",
   "main": "./index.js",
   "module": "./esm/index.js",
   "types": "./index.d.ts",
@@ -27,7 +27,7 @@
   "devDependencies": {
   },
   "peerDependencies": {
-    "@xoid/core": ">=0.8.5",
+    "@xoid/core": ">=0.9.5",
     "react": "*"
   }
 }
