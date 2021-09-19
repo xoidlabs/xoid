@@ -11,8 +11,6 @@
     "downlevelIteration": true,
     "strict": true,
     "importHelpers": true,
-    "declaration": true,
-    "declarationDir": "./dist",
     "isolatedModules": true
   },
   "include": ["./packages"]

@@ -4,6 +4,7 @@
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",
+  "private":"true",
   "sideEffects": false,
   "description": "Simple and scalable state management for humanoids",
   "homepage": "https://xoid.dev",
