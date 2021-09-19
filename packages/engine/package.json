@@ -2,6 +2,7 @@
   "name": "@xoid/engine",
   "version": "0.9.5",
   "main": "./index.js",
+  "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Simple and scalable state management for humanoids",
   "homepage": "https://xoid.dev",
