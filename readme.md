@@ -363,3 +363,6 @@ Following awesome projects inspired **xoid** a lot.
 - [Recoil](https://github.com/facebookexperimental/Recoil)
 - [zustand](https://github.com/pmndrs/zustand)
 - [mobx-state-tree](https://github.com/mobxjs/mobx-state-tree)
+
+Thanks to [Anatoly](http://a-maslennikov.com/) for the icon [#24975](https://www.flaticon.com/free-icon/ruler_245975).
+
