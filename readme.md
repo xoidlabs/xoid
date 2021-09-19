@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="310" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/logo2.svg" />
+  <img width="310" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/logo.svg" />
 </p> 
 
 <p align="center">
