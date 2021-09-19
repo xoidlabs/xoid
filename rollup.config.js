@@ -77,7 +77,11 @@ async function main() {
       }
     }
 
-    if(pkg.name == '@xoid/core') {
+    if(pkg.name === '@xoid/model' || pkg.name === '@xoid/ready') {
+      external.push('@xoid/core/utils')
+    }
+
+    if(pkg.name === '@xoid/core') {
       results.push({
         input: path.join(basePath, 'lib/utils.tsx'),
         output: [
