@@ -1,8 +1,6 @@
-//@ts-nocheck
 import { Init, Store, StateOf } from '@xoid/core'
 import { META, RECORD } from '@xoid/engine'
 import { createInstance } from '@xoid/core/utils'
-//@ts-check
 
 export type StoreOf<T> = Store<ExtractLHS<T>> & ExtractRHS<T>
 

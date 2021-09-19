@@ -1,6 +1,6 @@
 {
-  "name": "@xoid/model",
-  "version": "0.8.5",
+  "name": "xoid",
+  "version": "0.9.1",
   "main": "./index.js",
   "module": "./esm/index.js",
   "types": "./index.d.ts",
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/onurkerimov/xoid",
-    "directory": "./packages/model"
+    "directory": "./packages/xoid"
   },
   "keywords": [
     "framework-agnostic",
@@ -26,8 +26,9 @@
   ],
   "devDependencies": {
   },
-  "peerDependencies": {
-    "@xoid/core": ">=0.9.0",
-    "@xoid/engine": ">=0.9.0"
+  "dependencies": {
+    "@xoid/core": ">=0.9.1",
+    "@xoid/model": ">=0.9.1",
+    "@xoid/ready": ">=0.9.1"
   }
 }

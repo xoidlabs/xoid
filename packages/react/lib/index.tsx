@@ -1,7 +1,5 @@
-//@ts-nocheck
 import { useReducer, useEffect, useLayoutEffect, useRef } from 'react'
 import { create, subscribe, Store } from '@xoid/core'
-//@ts-check
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect

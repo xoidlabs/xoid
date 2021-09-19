@@ -8,7 +8,6 @@
     },
     "target": "es5",
     "jsx": "react",
-    "esModuleInterop": true,
     "downlevelIteration": true,
     "strict": true,
     "importHelpers": true,
