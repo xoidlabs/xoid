@@ -1,0 +1,1 @@
+[Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension) integration for [xoid](https://xoid.dev)
