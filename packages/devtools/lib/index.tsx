@@ -19,13 +19,14 @@ export const devtools = <T extends any>(store: Observable<T>, name?: string) => 
     ) {
       console.warn('[Warning] Please install/enable Redux devtools extension')
     }
-    return
+    return () => void 0
   }
 
-  const dt = extension.connect({ name })
-  store[META].root.devtoolsHelper = createDevtoolsHelper()
-  const channel = (store[META].root.devtoolsChannel = createRoot())
+  const dt = extension.connect({ name }) as any
+  (store as any)[META].root.devtoolsHelper = createDevtoolsHelper()
+  const channel = ((store as any)[META].root.devtoolsChannel = createRoot())
   let currentAction: any
+  //@ts-ignore
   const unsub0 = channel.subscribe((state: any) => {
     if (!state && currentAction) {
       dt.send(currentAction, snapshot(store))
@@ -90,14 +91,16 @@ function isEligible(o: any) {
   )
 }
 const createDevtoolsHelper = () => {
-  const getAddress = (store: any, obj: any, actionAddress: any): any => {
+  const getAddress = (store: any, obj: any, actionAddress: string[]): any => {
     if (!isEligible(obj)) return obj
 
     return new Proxy(obj, {
       get: (target, prop) => {
         if (prop === META) return target[META]
         if (!isEligible(target[prop])) return target[prop]
-        return getAddress(store, obj[prop], [...actionAddress, prop])
+        const newActionAddress = actionAddress.map(i => i)
+        newActionAddress.push(prop as string)
+        return getAddress(store, obj[prop], newActionAddress)
       },
       apply(target, thisArg, args) {
         if (target[META] || !store[META].root.devtoolsChannel)
@@ -108,6 +111,7 @@ const createDevtoolsHelper = () => {
 
         const action = { type: `${begin}.${actionAddress.map(nodot).join('.')}` }
         if (isAsync) {
+          //@ts-ignore
           action.async = true
           let attemptTimes = calledTimesMap.get(target)
           if (!attemptTimes) {

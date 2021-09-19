@@ -1,14 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "jsx": "react",
-    "esModuleInterop": true,
-    "downlevelIteration": true,
-    "strict": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "declaration": true,
-    "declarationDir": "./dist"
-  },
+  "extends": "../../tsconfig.json",
   "include": ["./lib"]
 }

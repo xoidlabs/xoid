@@ -1,5 +1,7 @@
+//@ts-nocheck
 import { useReducer, useEffect, useLayoutEffect, useRef } from 'react'
-import { create, subscribe, Store } from '../core'
+import { create, subscribe, Store } from '@xoid/core'
+//@ts-check
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
@@ -12,7 +14,7 @@ const useConstant = <T extends any>(fn: () => T): T => {
 
 /**
  * Subscribes to a store, or a value inside a React function component.
- * @see [xoid.dev/docs/api/usestore](https://xoid.dev/docs/api/usestore)
+ * @see [xoid.dev/docs/api-react/usestore](https://xoid.dev/docs/api-react/usestore)
  */
 
 export function useStore<T>(store: Store<T>): T {
@@ -23,7 +25,7 @@ export function useStore<T>(store: Store<T>): T {
 
 /**
  * Subscribes to a store, or a value inside a React function component.
- * @see [xoid.dev/docs/api/usesetup](https://xoid.dev/docs/api/usesetup)
+ * @see [xoid.dev/docs/api-react/usesetup](https://xoid.dev/docs/api-react/usesetup)
  */
 
 export function useSetup<T>(

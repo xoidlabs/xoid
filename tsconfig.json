@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@xoid/*/utils": ["./packages/*/lib/utils"],
+      "@xoid/*": ["./packages/*/lib"],
+    },
+    "target": "es5",
+    "jsx": "react",
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "strict": true,
+    "importHelpers": true,
+    "declaration": true,
+    "declarationDir": "./dist",
+    "isolatedModules": true
+  },
+  "include": ["./packages"]
+}

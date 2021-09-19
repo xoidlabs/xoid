@@ -46,7 +46,7 @@ export const createRoot = () => {
   return { listeners, notify, subscribe }
 }
 
-export const createSelector = (store: Observable<any>, init: any) => {
+export const createSelector = (store: Observable<any>, init: Function) => {
   const unsubs = new Set<() => void>()
   const getter = (store: Observable<any>) => {
     unsubs.add(subscribe(store, updateState))
@@ -55,16 +55,16 @@ export const createSelector = (store: Observable<any>, init: any) => {
   const updateState = () => {
     unsubs.forEach((fn) => fn())
     unsubs.clear()
-    const result = (init as Function)(getter)
-    if(isPromise(result)) result.then(value => store(value))
-    else store(result)
+    const result = init(getter)
+    // if(isPromise(result)) result.then(value => store(value)) else
+    store(result)
   }
   updateState()
 }
 
-function isPromise(obj) {
-  return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
-}
+// function isPromise(obj) {
+//   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
+// }
 
 const createSubscribe = (effect: boolean) => <T extends Observable<any>>(
   store: T,

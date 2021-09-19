@@ -1,5 +1,5 @@
 import { MutableStore, Store } from '@xoid/core'
-import { createInstance } from '@xoid/core/src/utils'
+import { createInstance } from '@xoid/core/utils'
 import { IsObservable, META, effect } from '@xoid/engine'
 
 export type ReadyStore<T> = ReadyObservable<T> &
@@ -26,6 +26,7 @@ export function ready(store: any): any {
       lastValue = value
       hasLastValue = true
     }
+    // @ts-ignore
     const targetStore = createInstance({ onSet })(undefined, true)
     const meta = targetStore[META]
     const setTargetStore = (state: any) => {
@@ -46,11 +47,13 @@ export function ready(store: any): any {
   return addressProxy(customTarget, [])
 }
 
-function addressProxy(fn: any, address: any): any {
+function addressProxy(fn: any, address: string[]): any {
   return new Proxy(fn(address), {
     get: (target, prop) => {
       if (prop === META) return target[META]
-      return addressProxy(fn, [...address, prop])
+      const newAddress = address.map(s => s)
+      newAddress.push(prop as string)
+      return addressProxy(fn, newAddress)
     },
   })
 }
