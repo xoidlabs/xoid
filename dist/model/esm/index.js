@@ -1,17 +1,17 @@
 import { createRoot, createSelector, RECORD, createTarget, META } from '@xoid/engine';
 
-var createCell = function (pm, key) {
+const createCell = (pm, key) => {
     if (Object.prototype.hasOwnProperty.call(pm.cache, key))
         return pm.cache[key];
-    var root = pm.root;
-    var shape = pm.shape && (pm.shape[key] || pm.shape[RECORD]);
-    var address = pm.address ? pm.address.map(function (s) { return s; }) : [];
+    const root = pm.root;
+    const shape = pm.shape && (pm.shape[key] || pm.shape[RECORD]);
+    const address = pm.address ? pm.address.map((s) => s) : [];
     address.push(key);
-    var meta = {
+    const meta = {
         parentMeta: pm,
-        root: root,
-        key: key,
-        address: address,
+        root,
+        key,
+        address,
         get node() {
             return pm.node[key];
         },
@@ -20,23 +20,23 @@ var createCell = function (pm, key) {
                 pm.node[key] = value;
             }
             else {
-                var copy = shallowClone(pm.node);
+                const copy = shallowClone(pm.node);
                 copy[key] = value;
                 pm.node = copy;
             }
         },
         cache: {},
-        shape: shape,
+        shape,
     };
-    var target = createTarget(meta, root.onSet);
-    var proxy = new Proxy(target, {
-        get: function (_, prop) {
+    const target = createTarget(meta, root.onSet);
+    const proxy = new Proxy(target, {
+        get(_, prop) {
             if (prop === META)
                 return meta;
             // start: prototype stuff
-            var node = meta.node;
+            const node = meta.node;
             if (prop === Symbol.toPrimitive)
-                return function () { return node; };
+                return () => node;
             if (!Object.prototype.hasOwnProperty.call(node, prop) &&
                 Array.isArray(node) &&
                 Object.prototype.hasOwnProperty.call(Array.prototype, prop)) {
@@ -45,18 +45,18 @@ var createCell = function (pm, key) {
             // end: prototype stuff
             return createCell(meta, prop);
         },
-        set: function () {
+        set() {
             return false;
         },
-        has: function (_, key) {
+        has(_, key) {
             return key in meta.node;
         },
-        ownKeys: function (t) {
-            var keys = Reflect.ownKeys(meta.node);
+        ownKeys(t) {
+            let keys = Reflect.ownKeys(meta.node);
             keys = keys.concat(Reflect.ownKeys(t));
             return Array.from(new Set(keys));
         },
-        getOwnPropertyDescriptor: function (t, k) {
+        getOwnPropertyDescriptor(t, k) {
             if (Reflect.ownKeys(t).includes(k))
                 return Reflect.getOwnPropertyDescriptor(t, k);
             return Reflect.getOwnPropertyDescriptor(meta.node, k);
@@ -65,50 +65,42 @@ var createCell = function (pm, key) {
     pm.cache[key] = proxy;
     return proxy;
 };
-var createInstance = function (options) {
-    if (options === void 0) { options = {}; }
-    return function (init, mutable) {
-        var shape = options.shape, onSet = options.onSet;
-        var isFunction = typeof init === 'function';
-        if (!arguments.length)
-            mutable = true;
-        var root = createRoot();
-        Object.assign(root, { mutable: mutable, onSet: onSet });
-        var store = createCell({
-            node: { value: init },
-            shape: { value: shape },
-            cache: {},
-            root: root,
-        }, 'value');
-        if (isFunction)
-            createSelector(store, init);
-        return store;
-    };
+const createInstance = (options = {}) => function (init, mutable) {
+    const { shape, onSet } = options;
+    const isFunction = typeof init === 'function';
+    if (!arguments.length)
+        mutable = true;
+    const root = createRoot();
+    Object.assign(root, { mutable, onSet });
+    const store = createCell({
+        node: { value: init },
+        shape: { value: shape },
+        cache: {},
+        root,
+    }, 'value');
+    if (isFunction)
+        createSelector(store, init);
+    return store;
 };
-var shallowClone = function (obj) {
-    return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
-};
+const shallowClone = (obj) => Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
 
-var USEABLE = Symbol('use');
-var fromShape = function (shape) {
-    return new Proxy(createInstance({ shape: shape }), {
-        get: function (_, prop) {
-            if (shape[prop])
-                return shape[prop];
-        },
-    });
-};
-var memoizedUseables = new WeakMap();
+const USEABLE = Symbol('use');
+const fromShape = (shape) => new Proxy(createInstance({ shape }), {
+    get(_, prop) {
+        if (shape[prop])
+            return shape[prop];
+    },
+});
+const memoizedUseables = new WeakMap();
 function model(payload, useable) {
-    var _a;
-    var isFunction = typeof payload === 'function';
-    var shape = (_a = {}, _a[USEABLE] = isFunction ? payload : useable, _a);
+    const isFunction = typeof payload === 'function';
+    const shape = { [USEABLE]: isFunction ? payload : useable };
     if (!isFunction)
         Object.assign(shape, payload);
     return fromShape(shape);
 }
 function wrapped(store, o) {
-    var dh = store[META].root.devtoolsHelper;
+    const dh = store[META].root.devtoolsHelper;
     return dh ? dh(store, o, []) : o;
 }
 /**
@@ -116,15 +108,15 @@ function wrapped(store, o) {
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
 // @ts-ignore
-var use = function (store) {
+const use = (store) => {
     var _a;
-    var attempt = memoizedUseables.get(store);
+    const attempt = memoizedUseables.get(store);
     if (attempt)
         return wrapped(store, attempt);
-    var shape = (_a = store[META]) === null || _a === void 0 ? void 0 : _a.shape;
-    var useable = shape && shape[USEABLE];
+    const shape = (_a = store[META]) === null || _a === void 0 ? void 0 : _a.shape;
+    const useable = shape && shape[USEABLE];
     if (typeof useable === 'function') {
-        var u = useable(store);
+        const u = useable(store);
         memoizedUseables.set(store, u);
         return wrapped(store, u);
     }
@@ -134,18 +126,12 @@ var use = function (store) {
  * where each element is a model of the specified type.
  * @see [xoid.dev/docs/api/arrayof](https://xoid.dev/docs/api/arrayof)
  */
-var arrayOf = function (model, useable) {
-    var _a;
-    return fromShape((_a = {}, _a[USEABLE] = useable, _a[RECORD] = model, _a));
-};
+const arrayOf = (model, useable) => fromShape({ [USEABLE]: useable, [RECORD]: model });
 /**
  * Returns a store creator function that receives an object,
  * where each value are models of the specified type.
  * @see [xoid.dev/docs/api/objectof](https://xoid.dev/docs/api/objectof)
  */
-var objectOf = function (model, useable) {
-    var _a;
-    return fromShape((_a = {}, _a[USEABLE] = useable, _a[RECORD] = model, _a));
-};
+const objectOf = (model, useable) => fromShape({ [USEABLE]: useable, [RECORD]: model });
 
 export { arrayOf, model, objectOf, use };

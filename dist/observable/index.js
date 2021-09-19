@@ -3,8 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const META = Symbol();
-const RECORD = Symbol();
-const USEABLE = Symbol();
 const createTarget = (meta, onSet = (meta, value) => {
     meta.node = value;
     meta.root.notify();
@@ -71,11 +69,17 @@ const createSubscribe = (effect) => (store, fn) => {
 const subscribe = createSubscribe(false);
 const effect = createSubscribe(true);
 
-exports.META = META;
-exports.RECORD = RECORD;
-exports.USEABLE = USEABLE;
-exports.createRoot = createRoot;
-exports.createSelector = createSelector;
-exports.createTarget = createTarget;
+const observable = (init) => {
+    const isFunction = typeof init === 'function';
+    const meta = { root: createRoot(), node: init };
+    const target = createTarget(meta);
+    //@ts-ignore
+    const obj = Object.assign(target, { [META]: meta });
+    if (isFunction)
+        createSelector(obj, init);
+    return obj;
+};
+
 exports.effect = effect;
+exports.observable = observable;
 exports.subscribe = subscribe;

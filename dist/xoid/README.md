@@ -1,16 +1,16 @@
 <p align="center">
-  <img width="300" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/logo.png" />
+  <img width="310" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/logo.svg" />
 </p> 
 
 <p align="center">
   <a href="https://bundlephobia.com/result?p=xoid" >
-    <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=293140&colorB=293140">
+    <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=293140&colorB=75e2f3">
   </a>
   <a href="https://www.npmjs.com/package/xoid">
-    <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&colorA=293140&colorB=293140">
+    <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&colorA=293140&colorB=75e2f3">
   </a>
   <a href="https://www.npmjs.com/package/xoid">
-    <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=293140&colorB=293140"/>
+    <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=293140&colorB=75e2f3"/>
   </a>
 </p>
 
@@ -363,3 +363,6 @@ Following awesome projects inspired **xoid** a lot.
 - [Recoil](https://github.com/facebookexperimental/Recoil)
 - [zustand](https://github.com/pmndrs/zustand)
 - [mobx-state-tree](https://github.com/mobxjs/mobx-state-tree)
+
+Thanks to [Anatoly](http://a-maslennikov.com/) for the icon [#24975](https://www.flaticon.com/free-icon/ruler_245975).
+

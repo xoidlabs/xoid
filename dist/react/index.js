@@ -6,9 +6,9 @@ var react = require('react');
 var core = require('@xoid/core');
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
-var useIsoLayoutEffect = typeof window === 'undefined' ? react.useEffect : react.useLayoutEffect;
-var useConstant = function (fn) {
-    var ref = react.useRef();
+const useIsoLayoutEffect = typeof window === 'undefined' ? react.useEffect : react.useLayoutEffect;
+const useConstant = (fn) => {
+    const ref = react.useRef();
     if (!ref.current)
         ref.current = { c: fn() };
     return ref.current.c;
@@ -18,22 +18,22 @@ var useConstant = function (fn) {
  * @see [xoid.dev/docs/api-react/usestore](https://xoid.dev/docs/api-react/usestore)
  */
 function useStore(store) {
-    var forceUpdate = react.useReducer(function (c) { return c + 1; }, 0)[1];
-    useIsoLayoutEffect(function () { return core.subscribe(store, forceUpdate); }, []);
+    const forceUpdate = react.useReducer((c) => c + 1, 0)[1];
+    useIsoLayoutEffect(() => core.subscribe(store, forceUpdate), []);
     return store();
 }
 function useSetup(model, props) {
-    var setup = useConstant(function () {
-        var deps = core.create(props, false);
-        var fns = [];
-        var onCleanup = function (fn) { return fns.push(fn); };
-        var main = model(deps, onCleanup);
-        return { main: main, deps: deps, fns: fns };
+    const setup = useConstant(() => {
+        const deps = core.create(props, false);
+        const fns = [];
+        const onCleanup = (fn) => fns.push(fn);
+        const main = model(deps, onCleanup);
+        return { main, deps, fns };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useIsoLayoutEffect(function () { return setup.deps(props); }, [props]);
+    useIsoLayoutEffect(() => setup.deps(props), [props]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useIsoLayoutEffect(function () { return function () { return setup.fns.forEach(function (fn) { return fn(); }); }; }, []);
+    useIsoLayoutEffect(() => () => setup.fns.forEach((fn) => fn()), []);
     return setup.main;
 }
 

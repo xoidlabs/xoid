@@ -6,7 +6,7 @@
       "@xoid/*/utils": ["./packages/*/lib/utils"],
       "@xoid/*": ["./packages/*/lib"],
     },
-    "target": "es5",
+    "target": "es6",
     "jsx": "react",
     "downlevelIteration": true,
     "strict": true,

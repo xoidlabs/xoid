@@ -7,7 +7,8 @@ export const observable = <T extends any>(init: Init<T>): Observable<T> => {
   const isFunction = typeof init === 'function'
   const meta = { root: createRoot(), node: init }
   const target = createTarget(meta)
+  //@ts-ignore
   const obj = Object.assign(target, { [META]: meta })
-  if (isFunction) createSelector((obj as unknown) as Observable<T>, init)
+  if (isFunction) createSelector((obj as unknown) as Observable<T>, init as Function)
   return obj as any
 }
