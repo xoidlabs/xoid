@@ -65,8 +65,9 @@ Exports of `xoid` can be divided into 3 main sections.
 | - | - | - |
 | `@xoid/react`| [`useStore`](docs/api-react/usestore.md) , [`useSetup`](docs/api-react/usesetup.md) | **React** integration |
 | `@xoid/devtools` | [`devtools`](#redux-devtools-integration) | **Redux Devtools** integration |
+<!-- | `@xoid/redux` | `fromRedux` | **Redux** interoperability plugin | -->
 
-> There are also `@xoid/core` and `@xoid/observable` intended for library authors.
+> There are also `@xoid/core` and `@xoid/observable` intended for more minimal usage
 
 ## Quick Tutorial
 
