@@ -1,6 +1,4 @@
-//@ts-nocheck
 import { createSelector, createRoot, createTarget, META, RECORD, Observable } from '@xoid/engine'
-//@ts-check
 
 type Meta = {
   parentMeta?: Meta
@@ -15,27 +13,27 @@ type Meta = {
   }
 }
 
-export const createCell = (parentMeta: Meta, key: string) => {
-  if (Object.prototype.hasOwnProperty.call(parentMeta.cache, key)) return parentMeta.cache[key]
-  const root = parentMeta.root
-  const shape = parentMeta.shape && (parentMeta.shape[key] || parentMeta.shape[RECORD])
-  const address = parentMeta.address ? Object.assign([], parentMeta.address) : []
+export const createCell = (pm: Meta, key: string) => {
+  if (Object.prototype.hasOwnProperty.call(pm.cache, key)) return pm.cache[key]
+  const root = pm.root
+  const shape = pm.shape && (pm.shape[key] || pm.shape[RECORD])
+  const address = pm.address ? pm.address.map((s) => s) : [] as string[]
   address.push(key)
   const meta = {
-    parentMeta,
+    parentMeta: pm,
     root,
     key,
     address,
     get node() {
-      return parentMeta.node[key]
+      return pm.node[key]
     },
     set node(value) {
       if (root.mutable) {
-        parentMeta.node[key] = value
+        pm.node[key] = value
       } else {
-        const copy = shallowClone(parentMeta.node)
+        const copy = shallowClone(pm.node)
         copy[key] = value
-        parentMeta.node = copy
+        pm.node = copy
       }
     },
     cache: {},
@@ -76,7 +74,7 @@ export const createCell = (parentMeta: Meta, key: string) => {
       return Reflect.getOwnPropertyDescriptor(meta.node, k)
     },
   })
-  parentMeta.cache[key] = proxy
+  pm.cache[key] = proxy
   return proxy
 }
 

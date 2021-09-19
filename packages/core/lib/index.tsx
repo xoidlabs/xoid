@@ -1,9 +1,7 @@
-//@ts-nocheck
 import { createInstance } from './utils'
 import { subscribe as _subscribe, effect as _effect } from '@xoid/engine'
 import type { Init, Observable } from '@xoid/engine'
 export type { Observable, Init, GetState, Listener, StateOf } from '@xoid/engine'
-//@ts-check
 
 export type Store<T> = Observable<T> & (T extends object ? { [K in keyof T]: Store<T[K]> } : {})
 

@@ -3,6 +3,7 @@
   "version": "0.9.0",
   "main": "./index.js",
   "module": "./esm/index.js",
+  "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Simple and scalable state management for humanoids",
   "homepage": "https://xoid.dev",
@@ -23,14 +24,7 @@
     "store",
     "optics"
   ],
-  "scripts": {
-    "test": "jest --watch",
-    "build": "rollup --config"
-  },
   "peerDependencies": {
     "@xoid/engine": ">=0.9.0"
-  },
-  "devDependencies": {
-    "@xoid/engine": "^0.9.0"
   }
 }

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": ".",
     "baseUrl": ".",
     "paths": {
       "@xoid/*/utils": ["./packages/*/lib/utils"],
@@ -11,7 +12,9 @@
     "downlevelIteration": true,
     "strict": true,
     "importHelpers": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "declaration": true,
+    "declarationDir": "dist/ts-out"
   },
   "include": ["./packages"]
 }

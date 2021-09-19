@@ -1,15 +1,18 @@
+import fs from 'fs';
 import path from 'path';
-// import typescript from '@rollup/plugin-typescript';
-import workspacesRun from 'workspaces-run';
 import typescript from 'rollup-plugin-typescript2';
+import workspacesRun from 'workspaces-run';
+import copy from 'rollup-plugin-copy';
 
 async function main() {
+  const copyTargets = []
   const plugins = [
     typescript({
-      declaration: true,
-      emitDeclarationOnly: true,
-      outDir: 'dist/typo',
-    })
+      typescript: require('typescript'),
+      tsconfig: './tsconfig.json',
+      useTsconfigDeclarationDir: true,
+    }),
+    copy({ targets: copyTargets })
   ];
 
   const results = [];
@@ -22,28 +25,50 @@ async function main() {
   });
 
   packages.forEach((pkg) => {
-    const external = [
-      ...Object.keys(pkg.config.dependencies || []),
-      ...Object.keys(pkg.config.peerDependencies || [])
-    ];
-    const basePath = path.relative(__dirname, pkg.dir);
-    let input = path.join(basePath, 'lib/index.tsx');
+    const {
+      dependencies,
+      peerDependencies,
+      main,
+      module,
+      types,
+    } = pkg.config
 
+    const external = [
+      ...Object.keys(dependencies || []),
+      ...Object.keys(peerDependencies || [])
+    ];
+    const basePath = path.relative(__dirname, pkg.dir)
+    const outputPath = basePath.replace('packages/', 'dist/');
+    const typesPath = path.join('dist/ts-out', basePath, 'lib/*');
+    let input = path.join(basePath, 'lib/index.tsx');
     const output = []
 
-    if(pkg.config.main) {
+    if(main) {
       output.push({
-        file: path.join(basePath, pkg.config.main),
+        file: path.join(outputPath, main),
         format: 'cjs',
       })
+      if(types) {
+        copyTargets.push({ src: typesPath, dest: outputPath })
+      }
     }
     
-    if(pkg.config.module) {
-      output.push({
-        file: path.join(basePath, pkg.config.module),
-        format: 'esm',
-      })
-    }
+    // if(module) {
+    //   output.push({
+    //     file: path.join(outputPath, module),
+    //     format: 'esm',
+    //   })
+    //   if(types) {
+    //     copyTargets.push({ src: typesPath, dest: path.join(outputPath, 'esm') })
+    //   }
+    // }
+
+    ['package.json', 'README.md'].forEach((fileName) => {
+      const packageConfigFile = path.join(basePath, fileName)
+      if(fs.existsSync(packageConfigFile)) {
+        copyTargets.push({ src: packageConfigFile, dest: outputPath })
+      }  
+    })
 
     results.push({
       input,
@@ -52,8 +77,6 @@ async function main() {
       plugins,
     });
   });
-
-  console.log(results)
   return results;
 }
 
