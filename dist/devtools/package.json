@@ -1,6 +1,6 @@
 {
   "name": "@xoid/devtools",
-  "version": "0.9.5",
+  "version": "0.1.0",
   "main": "./index.js",
   "module": "./esm/index.js",
   "types": "./index.d.ts",
@@ -12,6 +12,7 @@
     "url": "https://github.com/onurkerimov/xoid",
     "directory": "./packages/devtools"
   },
+  "license": "MIT",
   "keywords": [
     "framework-agnostic",
     "state",

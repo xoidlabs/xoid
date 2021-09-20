@@ -8,8 +8,8 @@ export declare type MutableStore<T> = MutableObservable<T> & (T extends object ?
     [K in keyof T]: MutableStore<T[K]>;
 } : {});
 export declare type Create = {
-    <T>(init: Init<T>, mutable?: false): T extends Promise<infer R> ? Store<undefined | R> : Store<T>;
-    <T>(init: Init<T>, mutable: true): T extends Promise<infer R> ? Store<undefined | R> : MutableStore<T>;
+    <T>(init: Init<T>, mutable?: false): Store<T>;
+    <T>(init: Init<T>, mutable: true): MutableStore<T>;
     <T>(): MutableStore<T | undefined>;
 };
 /**

@@ -12,6 +12,7 @@
     "url": "https://github.com/onurkerimov/xoid",
     "directory": "./packages/react"
   },
+  "license": "MIT",
   "keywords": [
     "framework-agnostic",
     "state",
@@ -27,6 +28,6 @@
   "devDependencies": {
   },
   "peerDependencies": {
-    "@xoid/core": ">=0.9.5"
+    "@xoid/engine": ">=0.9.5"
   }
 }

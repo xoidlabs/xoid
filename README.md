@@ -14,7 +14,7 @@
   </a>
 </p>
 
-**xoid** is a framework-agnostic state management library. **X** in its name  denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed with emphasis on simplicity and scalability.  It has extensive Typescript support.
+**xoid** is a framework-agnostic state management library. **X** in its name denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed with emphasis on simplicity and scalability. It has extensive Typescript support.
 
 **xoid** is lightweight (1.8 kB gzipped), but quite powerful. Its composed of building blocks for  advanced state managament patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself simple and approachable enough for newcomers. More features are explained below, and the [documentation website](https://xoid.dev/).
 
@@ -115,6 +115,8 @@ const beta = create(5)
 const sum = create((get) => get(alpha) + get(beta))
 ```
 
+### Subscriptions
+
 For subscriptions, `subscribe` and `effect` are used. They are the same, except `effect` runs the callback immediately, while `subscribe` waits for the first update after subscription.
 
 ```js
@@ -124,9 +126,9 @@ const unsub = subscribe(store.alpha, console.log)
 ```
 > To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
-### React integration
+## React integration
 
-For usage in React, `useStore` from **@xoid/react** package is used.
+**@xoid/react** is based on two hooks. `useStore` subscribes the component to the observable values. 
 
 ```js
 import { useStore } from '@xoid/react'
@@ -135,8 +137,7 @@ import { useStore } from '@xoid/react'
 const state = useStore(store.alpha)
 ```
 
-
-There's also the `useSetup` hook that can be used to create local state. It's similar to `React.useMemo`, except it's guaranteed to run only **once**.
+The other hook is `useSetup`. It's guaranteed to be **non-render-causing**. It's philosophically similar to `React.useMemo` and runs the callback function only **once**. 
 
 ```js
 import { create } from 'xoid'
@@ -147,12 +148,11 @@ const setup = useSetup(() => {
   const alpha = create(5)
   return { alpha }
 })
-// can later be subscribed
+// values returned by that can later be subscribed
 const state = useStore(setup.alpha)
 ```
-> `useSetup` is guaranteed to be **non-render-causing**. Values returned by that can later be subscribed by the component, or its child components, or can be kept around to apply side-effects. 
 
-`useSetup` has an optional second argument to consume outer variables. In the following example, `deps` will be a store with an internal state that's in sync with the `props` variable.
+`useSetup` has an optional second argument to respond to outer variables. In the following example, `props` are turned into a store called `deps`. As the component rerenders, new `props` objects are fed to this store.
 
 ```js
 import { subscribe } from 'xoid'

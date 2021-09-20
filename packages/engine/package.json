@@ -11,6 +11,7 @@
     "url": "https://github.com/onurkerimov/xoid",
     "directory": "./packages/engine"
   },
+  "license": "MIT",
   "keywords": [
     "framework-agnostic",
     "state",
