@@ -51,23 +51,17 @@ yarn add xoid
 
 ## API Overview
 
-Exports of `xoid` can be divided into 3 main sections.
-
-| Section | Exports           | Description |
-| - | - | - |
-| Core API | [`create`](docs/api/create.md) , [`effect`](docs/api/effect.md) , [`subscribe`](docs/api/subscrib.mde) | Most commonly used, lower-level exports |
-| Model API | [`model`](docs/api/model.md) , [`arrayOf`](docs/api/arrayof.md) , [`objectOf`](docs/api/objectof.md) , [`use`](docs/api/use.md) | "Useables" for a flux-like experience |
-| Helper(s) | [`ready`](docs/api/ready.md) | A helper function that's usually used with refs |
+| Section | Exports           |
+| - | - |
+| Core API | [`create`](docs/api/create.md), [`effect`](docs/api/effect.md), [`subscribe`](docs/api/subscrib.mde) |
+| Model API | [`model`](docs/api/model.md), [`arrayOf`](docs/api/arrayof.md), [`objectOf`](docs/api/objectof.md), [`use`](docs/api/use.md) |
+| Helper(s) | [`ready`](docs/api/ready.md) |
 
 ### Other packages
 
-| Package        | Exports           | Description |
-| - | - | - |
-| `@xoid/react`| [`useStore`](docs/api-react/usestore.md) , [`useSetup`](docs/api-react/usesetup.md) | **React** integration |
-| `@xoid/devtools` | [`devtools`](#redux-devtools-integration) | **Redux Devtools** integration |
-<!-- | `@xoid/redux` | `fromRedux` | **Redux** interoperability plugin | -->
-
-> There are also `@xoid/core` and `@xoid/observable` intended for more minimal usage
+- `@xoid/react` - **React** integration
+- `@xoid/devtools` - **Redux Devtools** integration
+- `@xoid/core` and `@xoid/observable` - Intended for minimal usage
 
 ## Quick Tutorial
 
@@ -86,7 +80,7 @@ store() // 6
 ```
 
 
-In **xoid**, via ES6 Proxies, every store is an observable tree. No selector function is necessary to "focus" a deep branch of state.
+In **xoid**, every store is an observable tree. No selector function is necessary to "focus" a deep branch of state.
 
 ```js
 import { create } from 'xoid'
@@ -97,7 +91,7 @@ store.deep.beta() // 5
 ```
 
 
-**xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root. This can prevent writing hard-coded reducers.
+**xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
 ```js
 const previousState = store() // { alpha: ['foo', 'bar'], deep: { beta: 5 } }
@@ -110,7 +104,7 @@ assert(previousState !== store()) // ✅
 
 ### Derived state
 
-The same `create` function is used for creating derived stores. This API was heavily inspired by **Recoil**.
+Stores can be derived from other stores, if the state is initialized with a function. This API was heavily inspired by **Recoil**.
 
 ```js
 import { create } from 'xoid'
@@ -121,6 +115,14 @@ const beta = create(5)
 const sum = create((get) => get(alpha) + get(beta))
 ```
 
+For subscriptions, `subscribe` and `effect` are used. They are the same, except `effect` runs the callback immediately, while `subscribe` waits for the first update after subscription.
+
+```js
+import { subscribe } from 'xoid'
+
+const unsub = subscribe(store.alpha, console.log)
+```
+> To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
 ### React integration
 
@@ -163,18 +165,6 @@ const App = (props: Props) => {
   }, props)
 }
 ```
-
-### Subscriptions
-
-For subscriptions, `subscribe` and `effect` are used. They are almost same, except while `effect` runs the callback immediately, `subscribe` waits for the first change after subscription.
-
-```js
-import { subscribe } from 'xoid'
-
-const unsub = subscribe(store.alpha, console.log)
-```
-> To cleanup side-effects, a function can be returned in the subscriber function. (Similar to `React.useEffect`)
-
 ## Model API
 
 Until this point, the core API of `xoid` and **@xoid/react** are covered. There are also `model`, `arrayOf`, `objectOf`, `use` functions, which are part of the Model API. They can be used to associate certain actions with stores.
