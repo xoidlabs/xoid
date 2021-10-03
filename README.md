@@ -19,7 +19,6 @@
 **xoid** is lightweight (1.8 kB gzipped), but quite powerful. Its composed of building blocks for  advanced state managament patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself simple and approachable enough for newcomers. More features are explained below.
 
 
-
 To install, run the following command:
 
 ```bash
@@ -49,14 +48,6 @@ yarn add xoid
 - [Trello clone](https://github.com/onurkerimov/xoid/blob/master/examples/trello) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/trello)
 
 
-## API Overview
-
-| Section | Exports           |
-| - | - |
-| Core API | [`create`](docs/api/create.md), [`effect`](docs/api/effect.md), [`subscribe`](docs/api/subscrib.mde) |
-| Model API | [`model`](docs/api/model.md), [`arrayOf`](docs/api/arrayof.md), [`objectOf`](docs/api/objectof.md), [`use`](docs/api/use.md) |
-| Helper(s) | [`ready`](docs/api/ready.md) |
-
 ### Other packages
 
 - `@xoid/react` - **React** integration
@@ -64,6 +55,10 @@ yarn add xoid
 - `@xoid/tree` - Tree of observables (experimental)
 
 ## Quick Tutorial
+
+**xoid** only has 6 exports: `create`, `effect`, `subscribe`, `use`, `select` and `lens`.
+Its React integration **@xoid/react** only has 2 hooks: `useAtom`, `useSetup`.
+In this README, all of them will be covered.
 
 ### Atom
 
