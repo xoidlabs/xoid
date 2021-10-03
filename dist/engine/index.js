@@ -12,10 +12,10 @@ const createTarget = (meta, onSet = (meta, value) => {
     return function (input) {
         if (arguments.length === 0)
             return meta.node;
-        const newValue = typeof input === 'function' ? input(meta.node) : input;
-        if (meta.node === newValue)
+        const nextValue = typeof input === 'function' ? input(meta.node) : input;
+        if (meta.node === nextValue)
             return;
-        onSet(meta, newValue);
+        onSet(meta, nextValue);
     };
 };
 const createRoot = () => {
@@ -25,7 +25,7 @@ const createRoot = () => {
         listeners.add(listener);
         return () => listeners.delete(listener);
     };
-    return { listeners, notify, subscribe };
+    return { notify, subscribe };
 };
 const createSelector = (store, init) => {
     const unsubs = new Set();
@@ -42,23 +42,29 @@ const createSelector = (store, init) => {
     updateState();
 };
 const createSubscribe = (effect) => (store, fn) => {
-    let prevValue = store();
+    // cleanup + runCleanup
     let cleanup;
     const runCleanup = () => {
         if (cleanup && typeof cleanup === 'function')
             cleanup();
         cleanup = undefined;
     };
+    // Listener
+    let prevValue = store();
     const listener = () => {
-        runCleanup();
         const nextValue = store();
-        if (nextValue !== prevValue)
-            cleanup = fn(nextValue);
-        prevValue = nextValue;
+        if (nextValue !== prevValue) {
+            runCleanup();
+            cleanup = fn(nextValue, prevValue);
+            prevValue = nextValue;
+        }
     };
+    // If it's an effect, also collect the cleanup value at the first run
     if (effect)
-        fn(store());
+        cleanup = fn(prevValue, prevValue);
+    // Actually subscribe internally
     const unsub = store[META].root.subscribe(listener);
+    // Return unsub
     return () => {
         runCleanup();
         unsub();

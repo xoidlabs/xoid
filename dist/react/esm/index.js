@@ -1,5 +1,6 @@
-import { useReducer, useEffect, useLayoutEffect, useRef } from 'react';
-import { subscribe, create } from '@xoid/core';
+import { useReducer, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
+import { select, create } from 'xoid';
+import { subscribe } from '@xoid/engine';
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
@@ -9,18 +10,17 @@ const useConstant = (fn) => {
         ref.current = { c: fn() };
     return ref.current.c;
 };
-/**
- * Subscribes to a store, or a value inside a React function component.
- * @see [xoid.dev/docs/api-react/usestore](https://xoid.dev/docs/api-react/usestore)
- */
-function useStore(store) {
+function useAtom(store, selector) {
     const forceUpdate = useReducer((c) => c + 1, 0)[1];
-    useIsoLayoutEffect(() => subscribe(store, forceUpdate), []);
-    return store();
+    const item = useMemo(() => {
+        return selector ? select(store, selector) : store;
+    }, [store, selector]);
+    useIsoLayoutEffect(() => subscribe(item, forceUpdate), []);
+    return item();
 }
 function useSetup(model, props) {
     const setup = useConstant(() => {
-        const deps = create(props, false);
+        const deps = create(props);
         const fns = [];
         const onCleanup = (fn) => fns.push(fn);
         const main = model(deps, onCleanup);
@@ -33,4 +33,4 @@ function useSetup(model, props) {
     return setup.main;
 }
 
-export { useSetup, useStore };
+export { useAtom, useSetup };

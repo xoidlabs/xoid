@@ -224,9 +224,7 @@ it('ensures the correct subscriber is removed on unmount', async () => {
   }
 
   function Component() {
-    const [Counter, setCounter] = React.useState(
-      () => CountWithInitialIncrement
-    )
+    const [Counter, setCounter] = React.useState(() => CountWithInitialIncrement)
     React.useLayoutEffect(() => {
       setCounter(() => Count)
     }, [])
@@ -282,91 +280,3 @@ it('ensures a subscriber is not mistakenly overwritten', async () => {
   expect((await findAllByText('count1: 1')).length).toBe(2)
   expect((await findAllByText('count2: 1')).length).toBe(1)
 })
-
-// it('can use exposed types', () => {
-//   interface ExampleState extends State {
-//     num: number
-//     numGet: () => number
-//     numGetState: () => number
-//     numSet: (v: number) => void
-//     numSetState: (v: number) => void
-//   }
-
-//   const listener: StateListener<ExampleState> = (state) => {
-//     if (state) {
-//       const value = state.num * state.numGet() * state.numGetState()
-//       state.numSet(value)
-//       state.numSetState(value)
-//     }
-//   }
-//   const selector: StateSelector<ExampleState, number> = (state) => state.num
-//   const partial: PartialState<ExampleState> = { num: 2, numGet: () => 2 }
-//   const partialFn: PartialState<ExampleState> = (state) => ({
-//     ...state,
-//     num: 2,
-//   })
-//   const equalityFn: EqualityChecker<ExampleState> = (state, newState) =>
-//     state !== newState
-
-//   const storeApi = create<ExampleState>((set, get) => ({
-//     num: 1,
-//     numGet: () => get().num,
-//     numGetState: () => {
-//       // TypeScript can't get the type of storeApi when it trys to enforce the signature of numGetState.
-//       // Need to explicitly state the type of storeApi.getState().num or storeApi type will be type 'any'.
-//       const result: number = storeApi.getState().num
-//       return result
-//     },
-//     numSet: (v) => {
-//       set({ num: v })
-//     },
-//     numSetState: (v) => {
-//       storeApi.setState({ num: v })
-//     },
-//   }))
-//   const useStore = storeApi
-
-//   const stateCreator: StateCreator<ExampleState> = (set, get) => ({
-//     num: 1,
-//     numGet: () => get().num,
-//     numGetState: () => get().num,
-//     numSet: (v) => {
-//       set({ num: v })
-//     },
-//     numSetState: (v) => {
-//       set({ num: v })
-//     },
-//   })
-
-//   function checkAllTypes(
-//     _getState: GetState<ExampleState>,
-//     _partialState: PartialState<ExampleState>,
-//     _setState: SetState<ExampleState>,
-//     _state: State,
-//     _stateListener: StateListener<ExampleState>,
-//     _stateSelector: StateSelector<ExampleState, number>,
-//     _storeApi: StoreApi<ExampleState>,
-//     _subscribe: Subscribe<ExampleState>,
-//     _destroy: Destroy,
-//     _equalityFn: EqualityChecker<ExampleState>,
-//     _stateCreator: StateCreator<ExampleState>,
-//     _useStore: UseStore<ExampleState>
-//   ) {
-//     expect(true).toBeTruthy()
-//   }
-
-//   checkAllTypes(
-//     storeApi.getState,
-//     Math.random() > 0.5 ? partial : partialFn,
-//     storeApi.setState,
-//     storeApi.getState(),
-//     listener,
-//     selector,
-//     storeApi,
-//     storeApi.subscribe,
-//     storeApi.destroy,
-//     equalityFn,
-//     stateCreator,
-//     useStore
-//   )
-// })

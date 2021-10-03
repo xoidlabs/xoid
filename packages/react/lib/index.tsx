@@ -1,6 +1,7 @@
-import { useReducer, useEffect, useLayoutEffect, useRef } from 'react'
-import { create, subscribe, Store } from '@xoid/core'
-import { Observable } from '@xoid/engine'
+import { useReducer, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
+// @ts-ignore
+import { create, select } from 'xoid'
+import { Atom, subscribe } from '@xoid/engine'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
@@ -12,31 +13,38 @@ const useConstant = <T extends any>(fn: () => T): T => {
 }
 
 /**
- * Subscribes to a store, or a value inside a React function component.
+ * Subscribes to an xoid atom inside a React function component.
  * @see [xoid.dev/docs/api-react/usestore](https://xoid.dev/docs/api-react/usestore)
  */
 
-export function useStore<T>(store: Observable<T>): T {
+export function useAtom<T>(store: Atom<T>): T
+export function useAtom<T, U>(store: Atom<T>, selector: (state: T) => U): U
+export function useAtom<T, U extends keyof T>(store: Atom<T>, selector: U): T[U]
+export function useAtom<T, U>(store: Atom<T>, selector?: (state: T) => U): any {
   const forceUpdate = useReducer((c) => c + 1, 0)[1]
-  useIsoLayoutEffect(() => subscribe(store, forceUpdate), [])
-  return store()
+  const item = useMemo(() => {
+    return selector ? select(store, selector) : store
+  }, [store, selector])
+
+  useIsoLayoutEffect(() => subscribe(item, forceUpdate), [])
+  return item()
 }
 
 /**
- * Subscribes to a store, or a value inside a React function component.
+ * Can be used to create local state inside React components. Similar to `React.useMemo`.
  * @see [xoid.dev/docs/api-react/usesetup](https://xoid.dev/docs/api-react/usesetup)
  */
 
 export function useSetup<T>(
-  model: (deps: Store<undefined>, onCleanup: (fn: () => void) => void) => T
+  model: (deps: Atom<undefined>, onCleanup: (fn: () => void) => void) => T
 ): T
 export function useSetup<T, P>(
-  model: (deps: Store<P>, onCleanup: (fn: () => void) => void) => T,
+  model: (deps: Atom<P>, onCleanup: (fn: () => void) => void) => T,
   props: P
 ): T
 export function useSetup(model: (deps: any, onCleanup: any) => any, props?: any): any {
   const setup = useConstant(() => {
-    const deps = create(props, false)
+    const deps = create(props)
     const fns: any[] = []
     const onCleanup = (fn: any) => fns.push(fn)
     const main = model(deps, onCleanup)

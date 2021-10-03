@@ -61,57 +61,64 @@ yarn add xoid
 
 - `@xoid/react` - **React** integration
 - `@xoid/devtools` - **Redux Devtools** integration
-- `@xoid/core` and `@xoid/observable` - Intended for minimal usage
+- `@xoid/tree` - Tree of observables (experimental)
 
 ## Quick Tutorial
 
-### Store
+### Atom
 
-Stores are standalone setter/getter objects that hold state. `create` function is used to create them.
-
-```js
-import { create } from 'xoid'
-
-const store = create(3)
-store() // 3 (get the value)
-store(5) // void (set the value to 5)
-store(state => state + 1) // void (also set the value)
-store() // 6
-```
-
-
-In **xoid**, every store is an observable tree. No selector function is necessary to "focus" a deep branch of state.
+Atoms are standalone setter/getter objects that hold state. `create` function is used to create them.
 
 ```js
 import { create } from 'xoid'
 
-const store = create({ alpha: ['foo', 'bar'], deep: { beta: 5 } })
-store.alpha() // ['foo', 'bar']
-store.deep.beta() // 5
+const atom = create(3)
+atom() // 3 (get the value)
+atom(5) // void (set the value to 5)
+atom(state => state + 1) // void (also set the value)
+atom() // 6
 ```
 
-
-**xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
+With `use` function, own actions of an atom can be used.
 
 ```js
-const previousState = store() // { alpha: ['foo', 'bar'], deep: { beta: 5 } }
-store.deep.beta(s => s + 1)
+import { create, use } from 'xoid'
 
-assert(store.deep.beta() === 6) // ✅
-assert(previousState !== store()) // ✅
+const numberAtom = create(5, (atom) => ({
+  increment: () => atom(s => s + 1),
+  decrement: () => atom(s => s - 1)
+}))
+
+use(numberAtom).increment()
 ```
 
+`select` function makes it easy to work with deep branches of state. **xoid** is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
+
+```js
+import { create, select } from 'xoid'
+
+const atom = create({ alpha: ['foo', 'bar'], deep: { beta: 5 } })
+const previousState = atom()
+
+// select and modify `.deep.beta` address
+const deepBeta = select(atom, s => s.deep.beta)
+deepBeta(s => s + 1)
+
+// root state is replaced with new immutable state
+assert(atom() !== previousState) // ✅
+assert(atom().deep.beta === 6) // ✅
+```
 
 ### Derived state
 
-Stores can be derived from other stores, if the state is initialized with a function. This API was heavily inspired by **Recoil**.
+Atoms can be derived from other atoms, if the state is initialized with a function. This API was heavily inspired by **Recoil**.
 
 ```js
 import { create } from 'xoid'
 
 const alpha = create(3)
 const beta = create(5)
-// derived store
+// derived atom
 const sum = create((get) => get(alpha) + get(beta))
 ```
 
@@ -122,37 +129,22 @@ For subscriptions, `subscribe` and `effect` are used. They are the same, except 
 ```js
 import { subscribe } from 'xoid'
 
-const unsub = subscribe(store.alpha, console.log)
+const unsub = subscribe(select(atom, s => s.alpha), console.log)
 ```
 > To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
 ## React integration
 
-**@xoid/react** is based on two hooks. `useStore` subscribes the component to the observable values. 
+**@xoid/react** is based on two hooks. `useAtom` subscribes the component to the observable values. 
 
 ```js
-import { useStore } from '@xoid/react'
+import { useAtom } from '@xoid/react'
 
 // in a React component
-const state = useStore(store.alpha)
+const state = useAtom(atom.alpha)
 ```
 
-The other hook is `useSetup`. It's guaranteed to be **non-render-causing**. It's philosophically similar to `React.useMemo` and runs the callback function only **once**. 
-
-```js
-import { create } from 'xoid'
-import { useSetup, useStore } from '@xoid/react'
-
-// in a React component
-const setup = useSetup(() => {
-  const alpha = create(5)
-  return { alpha }
-})
-// values returned by that can later be subscribed
-const state = useStore(setup.alpha)
-```
-
-`useSetup` has an optional second argument to respond to outer variables. In the following example, `props` are turned into a store called `deps`. As the component rerenders, new `props` objects are fed to this store.
+The other hook is `useSetup`. It's guaranteed to be **non-render-causing**. It's philosophically similar to `React.useMemo`. It runs the callback function only **once**. The difference from `React.useMemo` is that, the second argument is not a dependency array. Instead, it's a slot to **consume an outer (component scope) variable as an atom**.
 
 ```js
 import { subscribe } from 'xoid'
@@ -160,138 +152,29 @@ import { useSetup } from '@xoid/react'
 
 const App = (props: Props) => {
   const setup = useSetup((deps) => {
-    // `deps` has the type: Store<Props>
-    subscribe(deps.something, console.log)
+    // `deps` has the type: Atom<Props>
+    subscribe(select(deps, s => s.something), console.log)
+
+    const alpha = create(5)
+    return { alpha }
   }, props)
 }
 ```
-## Model API
-
-Until this point, the core API of `xoid` and **@xoid/react** are covered. There are also `model`, `arrayOf`, `objectOf`, `use` functions, which are part of the Model API. They can be used to associate certain actions with stores.
-
-```js
-import { model, use, Store } from 'xoid'
-
-const NumberModel = model((store: Store<number>) => ({ 
-  inc: () => store(s => s + 1),
-  dec: () => store(s => s - 1) 
-}))
-
-const $num = NumberModel(5)
-use($num).inc()
-$num() // 6
-```
-> Observe that `NumberModel` is a custom `create` function that creates "useable" stores.
-If you look at the type of `$num`, it will be displayed as `Store<number> & Useable<{inc: () => void, dec: () => void}>`.
-
-With `arrayOf`, you can create a custom create function that receives an array, and makes sure that every element of it is of the same model type. (there's also `objectOf`)
-
-```js
-import { model, arrayOf, use } from 'xoid'
-import { NumberModel } from './some-file'
-
-const NumberArrayModel = arrayOf(NumberModel)
-
-const $numArray = NumberArrayModel([1, 3, 5])
-Object.entries($numArray).forEach([key, $item] => use($item).inc())
-console.log($numArray()) // [2, 4, 6]
-```
-
-By combining `model`, `arrayOf`, and `objectOf`, much more advanced patterns than "nested reducers" concept in Redux are possible. Note that the same coding style can also be used for local component state.
-
-
-## Demonstration
-> Note that `model` is also exported as the default export, and other exports are keys of it.
-
-```js
-import x, { use, Store } from 'xoid'
-
-type TodoType = {
-  title: string
-  checked: boolean
-}
-
-const TodoModel = x((store: Store<TodoType>) => ({
-  toggle: () => store.checked((s) => !s),
-}))
-
-const TodoListModel = x.arrayOf(TodoModel, (store) => ({
-  add: (p: TodoType) => store((s) => [...s, p]),
-}))
-
-const StoreModel = x({
-  todos: TodoListModel
-})
-
-const store = StoreModel({
-  boardTitle: 'myTodos',
-  todos: [
-    { title: 'groceries', checked: true },
-    { title: 'world invasion', checked: false },
-  ]
-})
-
-use(store.todos).add({ title: 'finish up readme', checked: false }) // ✅
-use(store.todos[2]).toggle() // ✅
-
-// inside React
-const { title, checked } = useStore(store.todos[0])
-const { toggle } = use(store.todos[0])
-```
-
-> It's very cheap to create **xoid** stores. 
-> Absolutely **zero** traversal or deep copying occur while `create`, `arrayOf`, `objectOf`, `model` run.
-> You can easily store complex objects such as DOM elements inside **xoid** stores.
-> Association of the store nodes with "useable" actions only occurs once when a node is visited by the `use` function.
-
 
 ## More features
 
 ### Feature: Optics (lenses)
 
-Setting the second argument of `create` function as `true` means "mutable: true". This way, surgical changes won't be immutably propagate to root. Instead, the original object will be mutated.
+`lens` export either takes an atom, or just a plain object. It's similar to `select`, but surgical changes won't be immutably propagate to root. Instead, the original object will be mutated.
 ```js
-import { create } from 'xoid'
+import { lens } from 'xoid'
 
 const obj = { some: { value: 5 } }
-const objLens = create(obj, true)
-objLens.some.value(512)
+const someValueLens = lens(obj, (s) => s.some.value)
+someValueLens(512)
 console.log(obj) // { some: { value: 512 } }
 ```
-> Type of `objLens` would be: `MutableStore<{ some: { value: number } }>`. `MutableStore`s have the same properties with `Store`s. This is only a helper type for extra safety.
-
-### Feature: Using as an alternative to `React.useRef`
-
-In **xoid**, a mutable store can be used to grab refs. Another way to generate mutable stores is using zero arguments when creating stores.
-```js
-const ref = create<HTMLElement>()
-```
-> Type of `ref` would be: `MutableStore<HTMLElement | undefined>`
-
-```js
-import { create, ready, effect } from 'xoid'
-import { useSetup } from '@xoid/react'
-
-// inside React
-const setup = useSetup((ref) => {
-  const ref = create<HTMLDivElement>()
-  return { ref }
-})
-
-return <div ref={setup.ref} />
-```
-> `ready` is a helper function that's usually used with refs. It makes it possible to work with non-existent object addresses, that'll be satisfied later. 
-
-```js
-effect($color, ready(ref).style.color)
-
-// is roughly equivalent to
-
-effect($color, (color) => {
-  const element = ref()
-  if(element) element.style.color = color 
-})
-```
+> Type of `someValueLens` would be: `Lens<{ some: { value: number } }>`.
 
 ### Pattern: Finite state machines
 
@@ -299,39 +182,39 @@ No additional syntax is required for state machines. Just use the good old `crea
 
 ```js
 import { create } from 'xoid'
-import { useStore } from '@xoid/react'
+import { useAtom } from '@xoid/react'
 
 const createMachine = () => {
-  const red = { color: '#f00', onClick: () => store(green) }
-  const green = { color: '#0f0', onClick: () => store(red) }
-  const store = create(red)
-  return store
+  const red = { color: '#f00', onClick: () => atom(green) }
+  const green = { color: '#0f0', onClick: () => atom(red) }
+  const atom = create(red)
+  return atom
 }
 
 // in a React component
 const machine = useSetup(createMachine)
-const { color, onClick } = useStore(machine)
+const { color, onClick } = useAtom(machine)
 return <div style={{ color }} onClick={onClick} />
 ```
 
 ### Redux Devtools integration
 
-Just import `@xoid/devtools` and connect your store. It will send autogenerated action names to the Redux Devtools Extension.
+Just import `@xoid/devtools` and connect your atom. It will send autogenerated action names to the Redux Devtools Extension.
 
 ```js
-import { StoreModel, initialState } from './some-file'
+import { AtomModel, initialState } from './some-file'
 import { devtools } from '@xoid/devtools'
 
-const store = StoreModel(initialState)
-const disconnect = devtools(store, 'myStore') 
+const atom = AtomModel(initialState)
+const disconnect = devtools(atom, 'myAtom') 
 
-use(store.todos).add({ title: 'untitled' }) // "(*.todos).add"
+use(atom.todos).add({ title: 'untitled' }) // "(*.todos).add"
 
-use(store.todos[2]).toggle() // "(*.todos.2).toggle"
+use(atom.todos[2]).toggle() // "(*.todos.2).toggle"
 
-use(store).some.deep.action() // "*.some.deep.action"
+use(atom).some.deep.action() // "*.some.deep.action"
 
-store.todos([{ title: 'first todo' }]) // "Update ([timestamp])"
+atom.todos([{ title: 'first todo' }]) // "Update ([timestamp])"
 
 ```
 

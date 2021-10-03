@@ -2,24 +2,28 @@ export const META = Symbol()
 export const RECORD = Symbol()
 export const USEABLE = Symbol()
 
-const observable = Symbol()
-export type Observable<T> = {
-  [observable]: true
+const atom = Symbol()
+export type IsAtom = { [atom]: true }
+export type Atom<T> = {
+  [atom]: true
   (): T
-  (state: T): void
+  (state: Exclude<T, Function>): void
   (fn: (state: T) => T): void
 }
 
-export type IsObservable = { [observable]: true }
-
 export type GetState = {
-  <T>(store: Observable<T>): T
-  <T>(store: Observable<T | undefined>): T | undefined
+  <T>(store: Atom<T>): T
+  <T>(store: Atom<T | undefined>): T | undefined
 }
 export type Init<T> = T | ((get: GetState) => T)
-export type Listener<T> = (state: T) => unknown | ((state: T) => () => unknown)
-export type StateOf<T extends Observable<any>> = T extends Observable<infer P> ? P : never
+export type Listener<T> = (
+  value: T,
+  prevValue: T
+) => unknown | ((value: T, prevValue: T) => () => unknown)
+export type StateOf<T extends Atom<any>> = T extends Atom<infer P> ? P : never
 
+// @xoid/tree package also depends on the following shape of LiteMeta,
+// so don't mess with it unless there's a good reason
 type LiteMeta = { node: any; root: { notify: (value?: any) => void } }
 export const createTarget = (
   meta: LiteMeta,
@@ -30,9 +34,9 @@ export const createTarget = (
 ) => {
   return function (input?: any) {
     if (arguments.length === 0) return meta.node
-    const newValue = typeof input === 'function' ? input(meta.node) : input
-    if (meta.node === newValue) return
-    onSet(meta, newValue)
+    const nextValue = typeof input === 'function' ? input(meta.node) : input
+    if (meta.node === nextValue) return
+    onSet(meta, nextValue)
   }
 }
 
@@ -43,12 +47,12 @@ export const createRoot = () => {
     listeners.add(listener)
     return () => listeners.delete(listener)
   }
-  return { listeners, notify, subscribe }
+  return { notify, subscribe }
 }
 
-export const createSelector = (store: Observable<any>, init: Function) => {
+export const createSelector = (store: Atom<any>, init: Function) => {
   const unsubs = new Set<() => void>()
-  const getter = (store: Observable<any>) => {
+  const getter = (store: Atom<any>) => {
     unsubs.add(subscribe(store, updateState))
     return store()
   }
@@ -63,21 +67,28 @@ export const createSelector = (store: Observable<any>, init: Function) => {
 
 const createSubscribe =
   (effect: boolean) =>
-  <T extends Observable<any>>(store: T, fn: Listener<StateOf<T>>): (() => void) => {
-    let prevValue = store()
+  <T extends Atom<any>>(store: T, fn: Listener<StateOf<T>>): (() => void) => {
+    // cleanup + runCleanup
     let cleanup: unknown
     const runCleanup = () => {
       if (cleanup && typeof cleanup === 'function') cleanup()
       cleanup = undefined
     }
+    // Listener
+    let prevValue = store()
     const listener = () => {
-      runCleanup()
       const nextValue = store()
-      if (nextValue !== prevValue) cleanup = fn(nextValue)
-      prevValue = nextValue
+      if (nextValue !== prevValue) {
+        runCleanup()
+        cleanup = fn(nextValue, prevValue)
+        prevValue = nextValue
+      }
     }
-    if (effect) fn(store())
+    // If it's an effect, also collect the cleanup value at the first run
+    if (effect) cleanup = fn(prevValue, prevValue)
+    // Actually subscribe internally
     const unsub = (store as any)[META].root.subscribe(listener)
+    // Return unsub
     return () => {
       runCleanup()
       unsub()
