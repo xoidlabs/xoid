@@ -1,29 +1,44 @@
 import { META, RECORD, Atom } from '@xoid/engine'
 
-export function select<T extends unknown, U>(store: Atom<T>, fn: (state: T) => U): Atom<U>
-export function select<T extends unknown, U extends keyof T>(store: Atom<T>, fn: U): Atom<T[U]>
-export function select(store: any, selector: any) {
-  const xoid = function (input?: any) {
-    const isPluck = typeof selector === 'string'
-    if (isPluck) selector = (s: any) => s[selector]
-    if (arguments.length === 0) return selector(store())
+type Lens<T> = {
+  (): T
+  (value: T): void
+  (fn: (value: T) => T): void
+}
 
-    const newValue = typeof input === 'function' ? input(selector(store())) : input
-    if (selector(store()) === newValue) return
-    const proxy = addressProxy([])
-    const address = isPluck ? [selector] : selector(proxy)[RECORD]
-    const newState = setDeepValue(store(), address, newValue)
-    store(newState)
-  }
+/**
+ * Returns a mutable lens from an atom or a plain object
+ * @see [xoid.dev/docs/api/select](https://xoid.dev/docs/api/lens)
+ */
+
+export function lens<T extends unknown, U>(a: Atom<T>, fn: (state: T) => U): Lens<U>
+export function lens<T extends unknown, U extends keyof T>(atom: Atom<T>, fn: U): Lens<T[U]>
+export function lens<T extends object, U>(object: T, fn: (state: T) => U): Lens<U>
+export function lens<T extends object, U extends keyof T>(object: T, fn: U): Lens<T[U]>
+export function lens(object: any, selector: any) {
+  const isAtom = Boolean(object[META])
+  const atom = isAtom ? object : () => object
+  return createLens(atom, selector, true)
+}
+
+/**
+ * Focuses to a state partial of an atom. Returns another atom, that forwards changes to the original atom.
+ * @see [xoid.dev/docs/api/select](https://xoid.dev/docs/api/select)
+ */
+
+export function select<T extends unknown, U>(atom: Atom<T>, fn: (state: T) => U): Atom<U>
+export function select<T extends unknown, U extends keyof T>(atom: Atom<T>, fn: U): Atom<T[U]>
+export function select(atom: any, selector: any) {
+  const xoid = createLens(atom, selector)
   // @ts-ignore
-  Object.assign(xoid, { [META]: store[META] })
+  Object.assign(xoid, { [META]: atom[META] })
   return xoid as any
 }
 
 export const setDeepValue = <T extends Record<string, any>, K extends string[]>(
   obj: T,
   address: K,
-  nextValue: any
+  nextValue: unknown
 ): T => {
   const a = address.map((s) => s) // avoiding _spread polyfill
   const nextKey = a.shift()
@@ -32,6 +47,15 @@ export const setDeepValue = <T extends Record<string, any>, K extends string[]>(
     ? setDeepValue(obj[nextKey as string], a, nextValue)
     : nextValue
   return nextState
+}
+
+export const getDeepValue = <T extends Record<string, any>, K extends ReadonlyArray<string>>(
+  obj: T,
+  address: K
+): any => {
+  const a = [...address]
+  const next = a.shift()
+  return a.length ? getDeepValue(obj[next as string], a) : obj[next as string]
 }
 
 function addressProxy(address: string[]): any {
@@ -46,6 +70,27 @@ function addressProxy(address: string[]): any {
       },
     }
   )
+}
+
+const createLens = (atom: any, selector: any, isLens?: boolean) => {
+  return function (input?: any) {
+    const isPluck = typeof selector === 'string'
+    if (isPluck) selector = (s: any) => s[selector]
+    if (arguments.length === 0) return selector(atom())
+
+    const newValue = typeof input === 'function' ? input(selector(atom())) : input
+    if (selector(atom()) === newValue) return
+    const proxy = addressProxy([])
+    const address = (isPluck ? [selector] : selector(proxy)[RECORD]) as string[]
+    if (isLens) {
+      const addressWoLastKey = address.map((s) => s)
+      const lastKey = addressWoLastKey.pop() as string
+      getDeepValue(atom(), addressWoLastKey)[lastKey] = newValue
+      return
+    }
+    const newState = setDeepValue(atom(), address, newValue)
+    atom(newState)
+  }
 }
 
 const shallowClone = (obj: any) => {

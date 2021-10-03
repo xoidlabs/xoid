@@ -2,14 +2,14 @@ export declare const META: unique symbol;
 export declare const RECORD: unique symbol;
 export declare const USEABLE: unique symbol;
 declare const atom: unique symbol;
+export declare type IsAtom = {
+    [atom]: true;
+};
 export declare type Atom<T> = {
     [atom]: true;
     (): T;
     (state: Exclude<T, Function>): void;
     (fn: (state: T) => T): void;
-};
-export declare type IsAtom = {
-    [atom]: true;
 };
 export declare type GetState = {
     <T>(store: Atom<T>): T;

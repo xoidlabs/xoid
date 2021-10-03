@@ -1,6 +1,6 @@
 {
   "name": "@xoid/engine",
-  "version": "0.9.5",
+  "version": "0.9.9",
   "main": "./index.js",
   "types": "./index.d.ts",
   "sideEffects": false,
