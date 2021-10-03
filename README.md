@@ -56,9 +56,7 @@ yarn add xoid
 
 ## Quick Tutorial
 
-**xoid** only has 6 exports: `create`, `effect`, `subscribe`, `use`, `select` and `lens`.
-Its React integration **@xoid/react** only has 2 hooks: `useAtom`, `useSetup`.
-In this README, all of them will be covered.
+**xoid** only has 6 exports: `create`, `effect`, `subscribe`, `use`, `select` and `lens`. In the following section all of them, and the **@xoid/react** will be covered.
 
 ### Atom
 
