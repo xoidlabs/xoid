@@ -1,29 +1,26 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-var react = require('react');
-var xoid = require('xoid');
+import { select, subscribe, create } from 'xoid';
+export * from 'xoid';
+import { useReducer, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
-const useIsoLayoutEffect = typeof window === 'undefined' ? react.useEffect : react.useLayoutEffect;
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 const useConstant = (fn) => {
-    const ref = react.useRef();
+    const ref = useRef();
     if (!ref.current)
         ref.current = { c: fn() };
     return ref.current.c;
 };
 function useAtom(store, selector) {
-    const forceUpdate = react.useReducer((c) => c + 1, 0)[1];
-    const item = react.useMemo(() => {
-        return selector ? xoid.select(store, selector) : store;
+    const forceUpdate = useReducer((c) => c + 1, 0)[1];
+    const item = useMemo(() => {
+        return selector ? select(store, selector) : store;
     }, [store, selector]);
-    useIsoLayoutEffect(() => xoid.subscribe(item, forceUpdate), []);
+    useIsoLayoutEffect(() => subscribe(item, forceUpdate), []);
     return item();
 }
 function useSetup(model, props) {
     const setup = useConstant(() => {
-        const deps = xoid.create(props);
+        const deps = create(props);
         const fns = [];
         const onCleanup = (fn) => fns.push(fn);
         const main = model(deps, onCleanup);
@@ -36,5 +33,4 @@ function useSetup(model, props) {
     return setup.main;
 }
 
-exports.useAtom = useAtom;
-exports.useSetup = useSetup;
+export { useAtom, useSetup };

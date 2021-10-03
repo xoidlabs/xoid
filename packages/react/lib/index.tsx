@@ -1,7 +1,6 @@
 import { useReducer, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 // @ts-ignore
-import { create, select } from 'xoid'
-import { Atom, subscribe } from '@xoid/engine'
+import { Atom, subscribe, create, select } from 'xoid'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect

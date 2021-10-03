@@ -1,6 +1,6 @@
 import { META, RECORD, Atom } from '@xoid/engine'
 
-type Lens<T> = {
+export type Lens<T> = {
   (): T
   (value: T): void
   (fn: (value: T) => T): void

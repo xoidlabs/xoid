@@ -70,7 +70,15 @@ const createSubscribe = (effect) => (store, fn) => {
         unsub();
     };
 };
+/**
+ * Subscribes to an atom.
+ * @see [xoid.dev/docs/api/subscribe](https://xoid.dev/docs/api/subscribe)
+ */
 const subscribe = createSubscribe(false);
+/**
+ * Subscribes to an atom. Same to `subscribe`, except it runs the callback immediately.
+ * @see [xoid.dev/docs/api/effect](https://xoid.dev/docs/api/effect)
+ */
 const effect = createSubscribe(true);
 
 exports.META = META;

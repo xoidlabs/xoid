@@ -1,7 +1,8 @@
 {
-  "name": "@xoid/engine",
-  "version": "0.9.9",
+  "name": "@xoid/lite",
+  "version": "0.3.0",
   "main": "./index.js",
+  "module": "./esm/index.js",
   "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Simple and scalable state management for humanoids",
@@ -9,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/onurkerimov/xoid",
-    "directory": "./packages/engine"
+    "directory": "./packages/lite"
   },
   "license": "MIT",
   "keywords": [
@@ -24,8 +25,10 @@
     "store",
     "optics"
   ],
-  "scripts": {
-    "test": "jest --watch",
-    "build": "rollup --config"
+  "dependencies": {
+    "xoid": "0.9.8"
+  },
+  "peerDependencies": {
+    "react": "*"
   }
 }

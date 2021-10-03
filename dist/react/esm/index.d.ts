@@ -1,4 +1,4 @@
-import { Atom } from '@xoid/engine';
+import { Atom } from 'xoid';
 /**
  * Subscribes to an xoid atom inside a React function component.
  * @see [xoid.dev/docs/api-react/usestore](https://xoid.dev/docs/api-react/usestore)

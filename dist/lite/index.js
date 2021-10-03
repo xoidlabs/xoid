@@ -2,8 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var react = require('react');
 var xoid = require('xoid');
+var react = require('react');
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = typeof window === 'undefined' ? react.useEffect : react.useLayoutEffect;
@@ -36,5 +36,13 @@ function useSetup(model, props) {
     return setup.main;
 }
 
+Object.keys(xoid).forEach(function (k) {
+  if (k !== 'default') Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () {
+      return xoid[k];
+    }
+  });
+});
 exports.useAtom = useAtom;
 exports.useSetup = useSetup;

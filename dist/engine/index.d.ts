@@ -30,6 +30,14 @@ export declare const createRoot: () => {
     subscribe: (listener: () => void) => () => boolean;
 };
 export declare const createSelector: (store: Atom<any>, init: Function) => void;
+/**
+ * Subscribes to an atom.
+ * @see [xoid.dev/docs/api/subscribe](https://xoid.dev/docs/api/subscribe)
+ */
 export declare const subscribe: <T extends Atom<any>>(store: T, fn: Listener<StateOf<T>>) => (() => void);
+/**
+ * Subscribes to an atom. Same to `subscribe`, except it runs the callback immediately.
+ * @see [xoid.dev/docs/api/effect](https://xoid.dev/docs/api/effect)
+ */
 export declare const effect: <T extends Atom<any>>(store: T, fn: Listener<StateOf<T>>) => (() => void);
 export {};

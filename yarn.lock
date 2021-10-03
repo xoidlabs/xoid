@@ -799,6 +799,16 @@
     "@typescript-eslint/types" "4.31.2"
     eslint-visitor-keys "^2.0.0"
 
+"@xoid/model@>=0.9.5":
+  version "0.9.5"
+  resolved "https://registry.yarnpkg.com/@xoid/model/-/model-0.9.5.tgz#661fb9e9556d24fcdb39c20f9b7ed51a601792c6"
+  integrity sha512-h5p5Yozl1eeV5GgwkyHulA3mmat7hbsJDwvtG8vvvNF12MB5xO3oAC3tRqIBDYAiD8ICOB+Gdmba5UkMnfdVAg==
+
+"@xoid/ready@>=0.9.5":
+  version "0.9.5"
+  resolved "https://registry.yarnpkg.com/@xoid/ready/-/ready-0.9.5.tgz#2329222e1f8ffa98a2002028a875e02798d586f5"
+  integrity sha512-qM5CId4J254s2NCE3n23AvblqoyfPbk3yHlywvcnAIAPsR1LT401+tYWYU1/JFzunvRxzFF+nUvSG9a+Tb9/Qw==
+
 abab@^2.0.3:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.5.tgz#c0b678fb32d60fc1219c784d6a826fe385aeb79a"
@@ -5438,6 +5448,15 @@ xmlchars@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/xmlchars/-/xmlchars-2.2.0.tgz#060fe1bcb7f9c76fe2a17db86a9bc3ab894210cb"
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
+
+xoid@0.9.8:
+  version "0.9.5"
+  resolved "https://registry.yarnpkg.com/xoid/-/xoid-0.9.5.tgz#d4d675c7fcc9cd86113d1aa74be0db2a7fd07764"
+  integrity sha512-D1x2e1k/s8/8uZRzYDj7oi8+//Th/p8iS1d3iAz56hbajT1Z4szDErh5rheeFhWIvmD2NmfO7oTWf3dv7f/1lQ==
+  dependencies:
+    "@xoid/core" ">=0.9.5"
+    "@xoid/model" ">=0.9.5"
+    "@xoid/ready" ">=0.9.5"
 
 xtend@~2.1.1:
   version "2.1.2"

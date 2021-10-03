@@ -1,4 +1,5 @@
-import { USEABLE, createRoot, createTarget, createSelector, META, RECORD, subscribe as subscribe$1, effect as effect$1 } from '@xoid/engine';
+import { USEABLE, createRoot, createTarget, createSelector, META, RECORD } from '@xoid/engine';
+export { effect, subscribe } from '@xoid/engine';
 
 /**
  * Gets the "useable"s of an atom.
@@ -18,6 +19,11 @@ function create(init, useable) {
     return target;
 }
 
+function lens(object, selector) {
+    const isAtom = Boolean(object[META]);
+    const atom = isAtom ? object : () => object;
+    return createLens(atom, selector, true);
+}
 function select(atom, selector) {
     const xoid = createLens(atom, selector);
     // @ts-ignore
@@ -75,15 +81,4 @@ const shallowClone = (obj) => {
     return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
 };
 
-/**
- * Subscribes to an atom.
- * @see [xoid.dev/docs/api/subscribe](https://xoid.dev/docs/api/subscribe)
- */
-const subscribe = subscribe$1;
-/**
- * Subscribes to an atom. Same to `subscribe`, except it runs the callback immediately.
- * @see [xoid.dev/docs/api/effect](https://xoid.dev/docs/api/effect)
- */
-const effect = effect$1;
-
-export { create, effect, select, subscribe, use };
+export { create, lens, select, use };

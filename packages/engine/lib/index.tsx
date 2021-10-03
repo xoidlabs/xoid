@@ -95,5 +95,15 @@ const createSubscribe =
     }
   }
 
+/**
+ * Subscribes to an atom.
+ * @see [xoid.dev/docs/api/subscribe](https://xoid.dev/docs/api/subscribe)
+ */
+
 export const subscribe = createSubscribe(false)
+
+/**
+ * Subscribes to an atom. Same to `subscribe`, except it runs the callback immediately.
+ * @see [xoid.dev/docs/api/effect](https://xoid.dev/docs/api/effect)
+ */
 export const effect = createSubscribe(true)
