@@ -79,34 +79,34 @@ async function main() {
       }
     }
 
-    if(pkg.name === '@xoid/model' || pkg.name === '@xoid/ready') {
-      external.push('@xoid/core/utils')
-    }
+    // if(pkg.name === '@xoid/model' || pkg.name === '@xoid/ready') {
+    //   external.push('@xoid/core/utils')
+    // }
 
-    if(pkg.name === '@xoid/core') {
-      results.push({
-        input: path.join(basePath, 'lib/utils.tsx'),
-        output: [
-          {
-            file: path.join(outputPath, 'utils.js'),
-            format: 'cjs',
-          },
-          {
-            file: path.join(outputPath, 'esm/utils.js'),
-            format: 'esm',
-          },
-        ],
-        external,
-        plugins,
-      })
-      results.push({
-        input,
-        output,
-        external: ['@xoid/engine', './utils'],
-        plugins,
-      })
-      return
-    }
+    // if(pkg.name === '@xoid/core') {
+    //   results.push({
+    //     input: path.join(basePath, 'lib/utils.tsx'),
+    //     output: [
+    //       {
+    //         file: path.join(outputPath, 'utils.js'),
+    //         format: 'cjs',
+    //       },
+    //       {
+    //         file: path.join(outputPath, 'esm/utils.js'),
+    //         format: 'esm',
+    //       },
+    //     ],
+    //     external,
+    //     plugins,
+    //   })
+    //   results.push({
+    //     input,
+    //     output,
+    //     external: ['@xoid/engine', './utils'],
+    //     plugins,
+    //   })
+    //   return
+    // }
 
     results.push({
       input,

@@ -1,4 +1,4 @@
-import { create } from '../packages/core/lib'
+import { create } from '../packages/xoid/lib'
 import { debug } from '../packages/helpers/debug'
 
 it('creates a store with a primitive value', () => {

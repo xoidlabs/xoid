@@ -85,7 +85,7 @@ it('only runs when partial state changes in React', async () => {
   let renderCount = 0
 
   function Counter() {
-    const c2 = useAtom(store, (s) => s.count2)
+    const c2 = useAtom(store.count2)
     React.useEffect(use(store).inc, [])
     renderCount++
     return <div>count: {c2}</div>
@@ -215,7 +215,7 @@ it('ensures the correct subscriber is removed on unmount', async () => {
   }
 
   function Count() {
-    const c = useAtom(store, (s) => s.count)
+    const c = useAtom(store.count)
     return <div>count: {c}</div>
   }
 
@@ -251,12 +251,12 @@ it('ensures a subscriber is not mistakenly overwritten', async () => {
   const store = create({ count: 0 })
 
   function Count1() {
-    const c = useAtom(store, (s) => s.count)
+    const c = useAtom(store.count)
     return <div>count1: {c}</div>
   }
 
   function Count2() {
-    const c = useAtom(store, (s) => s.count)
+    const c = useAtom(store.count)
     return <div>count2: {c}</div>
   }
 

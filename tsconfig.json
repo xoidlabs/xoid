@@ -3,7 +3,6 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "@xoid/*/utils": ["./packages/*/lib/utils"],
       "@xoid/*": ["./packages/*/lib"],
     },
     "target": "es6",
