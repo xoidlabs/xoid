@@ -34,24 +34,28 @@ const Self = {
 }
 
 const Board = (props: { store: ReturnType<typeof BoardModel> }) => {
-  useStore(props.store.columns)
+  const $$columns = useSlice(props.store, 'columns')
+  // const $columns = useAtom(
+  //   useMemo(() => slice(select(props.store, selector)), [props.store, selector])
+  // )
   return (
     <Self.Container>
       <Self.Title>
-        <Editable>{props.store.title}</Editable>
+        <Editable>{select(props.store, 'title')}</Editable>
       </Self.Title>
       <Self.List>
-        {props.store.columns.map((store, key) => (
+        {$$columns.map((store, key) => (
           <Column key={key} store={store} />
         ))}
         <Self.Button
           onClick={() =>
-            use(props.store.columns).add({
+            use($$columns).add({
               id: Math.random(),
               title: 'undef',
               cards: [],
             })
-          }>
+          }
+        >
           Add a list...
         </Self.Button>
       </Self.List>

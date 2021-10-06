@@ -14,7 +14,7 @@
   </a>
 </p>
 
-**xoid** is a framework-agnostic state management library. **X** in its name denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed with emphasis on simplicity and scalability. It has extensive Typescript support.
+**xoid** (pronounced /ˈzoʊ.ɪd/) is a framework-agnostic state management library. **X** in its name denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed with an emphasis on simplicity. It has extensive Typescript support.
 
 **xoid** is lightweight (1.1 kB gzipped), but quite powerful. Its composed of building blocks for  advanced state managament patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself simple and approachable for newcomers. More features are explained below.
 
@@ -36,27 +36,18 @@ yarn add xoid
 
 - [Todos (Basic)](https://github.com/onurkerimov/xoid/blob/master/examples/todos-basic) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/todos-basic)
 
-- [Todos (Filtered)](https://github.com/onurkerimov/xoid/blob/master/examples/todos-filtered) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/todos-filtered)
-
 - [Celcius-Fahrenheit conversion](https://github.com/onurkerimov/xoid/blob/master/examples/celcius-fahrenheit) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/celcius-fahrenheit)
 
 - [Finite state stopwatch](https://github.com/onurkerimov/xoid/blob/master/examples/finite-state-stopwatch) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/finite-state-stopwatch)
 
 - [Transient update resize observer](https://github.com/onurkerimov/xoid/blob/master/examples/transient-update-resize-observer) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/transient-update-resize-observer)
 
-
 - [Trello clone](https://github.com/onurkerimov/xoid/blob/master/examples/trello) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat-square&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/trello)
 
 
-### Other packages
-
-- `@xoid/react` - **React** integration
-- `@xoid/devtools` - **Redux Devtools** integration
-- `@xoid/tree` - Experimental "tree of atoms" version, that selectors are not needed
-
 ## Quick Tutorial
 
-**xoid** only has 6 exports: `create`, `effect`, `subscribe`, `use`, `select` and `lens`. In the following section all of them, and the **@xoid/react** will be covered.
+**xoid** has only 6 exports: `create`, `effect`, `subscribe`, `use`, `select` and `lens`. This section will cover all of them, and the **@xoid/react**.
 
 ### Atom
 
@@ -125,7 +116,10 @@ For subscriptions, `subscribe` and `effect` are used. They are the same, except 
 ```js
 import { subscribe } from 'xoid'
 
-const unsub = subscribe(select(atom, s => s.alpha), console.log)
+const unsub = subscribe(
+  atom, 
+  (state, previousState) => { console.log(state, previousState) }
+)
 ```
 > To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
@@ -227,6 +221,12 @@ select(gamma, s => s.deep)(3000)  // "(gamma) Update ([timestamp])
 - No middleware is required for async/generator stuff
 - Global state and local component state in the same API
 
+## Other packages
+
+- `@xoid/react` - **React** integration
+- `@xoid/devtools` - **Redux Devtools** integration
+- `@xoid/utils` - Additional utilities
+- `@xoid/tree` - Experimental "tree of atoms" version
 
 ## Thanks
 Following awesome projects inspired **xoid** a lot.

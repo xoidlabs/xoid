@@ -1,6 +1,8 @@
 node_modules/
 coverage/
 dist/ts-out
+dist/lite
+packages/lite
 development/
 .backup/
 notes.md

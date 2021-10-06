@@ -1,23 +1,31 @@
 import React from 'react'
-import { create, ready, subscribe } from 'xoid'
+import { create, lens, effect } from 'xoid'
 import { useSetup } from '@xoid/react'
 
 const ResizeObserver = (window as any).ResizeObserver as any
 
 const ROSetup = (_: unknown, onCleanup: (fn: Function) => void) => {
   const ref = create<HTMLDivElement>()
-  const store = create({} as { width: number; height: number })
-  const observer = new ResizeObserver(([entry]) => store(entry.contentRect))
-  subscribe(ref, (element) => {
-    if(element) observer.observe(element)
-    return () => observer.disconnect(element)
-  })
-  onCleanup(() => observer.destroy())
-  subscribe(store, ({ width, height }) => ready(ref).innerHTML(`${width} x ${height}`))
+  const $rect = create({} as { width: number; height: number })
+
+  const observer = new ResizeObserver(([entry]) => $rect(entry.contentRect))
+  onCleanup(observer.destroy)
+
+  onCleanup(
+    effect(ref, (element) => {
+      if (!element) return
+      observer.observe(element)
+      const unsub = effect($rect, lens(element, 'innerHTML'))
+      return () => {
+        unsub()
+        observer.disconnect(element)
+      }
+    })
+  )
   return ref
 }
 
-export default () => {
+const App = () => {
   const ref = useSetup(ROSetup)
   console.log('this component renders only once!')
 
@@ -37,7 +45,10 @@ export default () => {
           background: 'rebeccapurple',
           color: 'white',
           fontSize: 25,
-        }} />
+        }}
+      />
     </>
   )
 }
+
+export default App

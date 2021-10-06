@@ -1,56 +1,53 @@
 import React from 'react'
-import x, { use, Store, StoreOf } from 'xoid'
-import { useStore } from '@xoid/react' 
+import { use, select, Atom } from 'xoid'
+import { decompose, model, arrayOf } from '@xoid/utils'
+import { useAtom } from '@xoid/react'
 
 type TodoType = {
   title: string
   checked: boolean
 }
 
-const TodoModel = x((store: Store<TodoType>) => ({
-  toggle: () => store.checked((s) => !s),
-  rename: (title: string) => store.title(title),
+const TodoModel = model<TodoType>((atom) => ({
+  toggle: () => select(atom, 'checked')((s) => !s),
 }))
 
-const TodoListModel = x.arrayOf(TodoModel, (store) => ({
-  add: (p: TodoType) => store((s) => [...s, p]),
+const StoreModel = arrayOf(TodoModel, (atom) => ({
+  add: (todo: TodoType) => atom((s) => [...s, todo]),
 }))
 
-const store = TodoListModel([
+const store = StoreModel([
   { title: 'groceries', checked: true },
   { title: 'world invasion', checked: false },
 ])
 
 export const Todos = () => {
-  const state = useStore(store)
+  const atoms = useAtom(store, decompose)
   const { add } = use(store)
   return (
     <>
-      {state.map((todo, key) => (
-        <Todo store={todo} key={key} />
+      {atoms.map((todoAtom, key) => (
+        <Todo atom={todoAtom} key={key} />
       ))}
-      <button onClick={() => add({ title: 'untitled', checked: false })}>
-        +
-      </button>
+      <button onClick={() => add({ title: 'unnamed', checked: false })}>+</button>
     </>
   )
 }
 
-const Todo = (props: { store: StoreOf<typeof TodoModel> }) => {
-  const { title, checked } = useStore(props.store)
-  const { toggle, rename } = use(props.store)
+const Todo = (props: { atom: Atom<TodoType> }) => {
+  const { title, checked } = useAtom(props.atom)
+  const { toggle } = use(props.atom)
   return (
     <div>
       <input type="checkbox" checked={checked} onChange={toggle} />
       <input
-        style={{
-          textDecoration: checked ? 'line-through' : 'none',
-        }}
+        style={{ textDecoration: checked ? 'line-through' : 'none' }}
         value={title}
-        onChange={(e) => rename(e.target.value)}
+        onChange={(e) => select(props.atom, 'title')(e.target.value)}
       />
     </div>
   )
 }
 
-export default () => <Todos />
+const App = () => <Todos />
+export default App

@@ -23,10 +23,10 @@ export const devtools = <T extends any>(store: Observable<T>, name?: string) => 
   }
 
   const dt = extension.connect({ name }) as any
-  (store as any)[META].root.devtoolsHelper = createDevtoolsHelper()
+  ;(store as any)[META].root.devtoolsHelper = createDevtoolsHelper()
   const channel = ((store as any)[META].root.devtoolsChannel = createRoot())
   let currentAction: any
-  //@ts-ignore
+  // @ts-ignore
   const unsub0 = channel.subscribe((state: any) => {
     if (!state && currentAction) {
       dt.send(currentAction, snapshot(store))
@@ -98,7 +98,7 @@ const createDevtoolsHelper = () => {
       get: (target, prop) => {
         if (prop === META) return target[META]
         if (!isEligible(target[prop])) return target[prop]
-        const newActionAddress = actionAddress.map(i => i)
+        const newActionAddress = actionAddress.map((i) => i)
         newActionAddress.push(prop as string)
         return getAddress(store, obj[prop], newActionAddress)
       },
@@ -111,7 +111,7 @@ const createDevtoolsHelper = () => {
 
         const action = { type: `${begin}.${actionAddress.map(nodot).join('.')}` }
         if (isAsync) {
-          //@ts-ignore
+          // @ts-ignore
           action.async = true
           let attemptTimes = calledTimesMap.get(target)
           if (!attemptTimes) {

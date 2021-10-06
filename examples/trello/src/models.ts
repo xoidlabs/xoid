@@ -1,4 +1,4 @@
-import { model, arrayOf, Store } from 'xoid'
+import { model, arrayOf } from '@xoid/utils'
 
 export interface BoardType {
   title: string

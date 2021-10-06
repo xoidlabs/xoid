@@ -14,7 +14,7 @@
   </a>
 </p>
 
-**xoid** is a framework-agnostic state management library. **X** in its name denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed with emphasis on simplicity and scalability. It has extensive Typescript support.
+**xoid** is a framework-agnostic state management library. **X** in its name denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed with an emphasis on simplicity. It has extensive Typescript support.
 
 **xoid** is lightweight (1.1 kB gzipped), but quite powerful. Its composed of building blocks for  advanced state managament patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself simple and approachable for newcomers. More features are explained below.
 
@@ -52,11 +52,11 @@ yarn add xoid
 
 - `@xoid/react` - **React** integration
 - `@xoid/devtools` - **Redux Devtools** integration
-- `@xoid/tree` - Experimental "tree of atoms" version, that selectors are not needed
+- `@xoid/tree` - Experimental "tree of atoms" version
 
 ## Quick Tutorial
 
-**xoid** only has 6 exports: `create`, `effect`, `subscribe`, `use`, `select` and `lens`. In the following section all of them, and the **@xoid/react** will be covered.
+**xoid** only has 6 exports: `create`, `effect`, `subscribe`, `use`, `select` and `lens`. This section will cover all of them, and the **@xoid/react**.
 
 ### Atom
 
@@ -72,7 +72,7 @@ atom(state => state + 1) // void (also set the value)
 atom() // 6
 ```
 
-With `use` function, own actions of an atom can be used.
+Atoms can have actions, and with `use` function they can be used.
 
 ```js
 import { create, use } from 'xoid'
@@ -84,6 +84,7 @@ const numberAtom = create(5, (atom) => ({
 
 use(numberAtom).increment()
 ```
+
 
 `select` function makes it easy to work with deep branches of state. **xoid** is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
 
@@ -101,6 +102,8 @@ deepBeta(s => s + 1)
 assert(atom() !== previousState) // ✅
 assert(atom().deep.beta === 6) // ✅
 ```
+
+> Type of `deepBeta` would be `Atom<number>`. It's a subscribable getter/setter object just like any other atom.
 
 ### Derived state
 
@@ -128,7 +131,7 @@ const unsub = subscribe(select(atom, s => s.alpha), console.log)
 
 ## React integration
 
-**@xoid/react** is based on two hooks. `useAtom` subscribes the component to the observable values. 
+**@xoid/react** is based on two hooks. `useAtom` subscribes the component to the atoms.
 
 ```js
 import { useAtom } from '@xoid/react'
@@ -137,7 +140,7 @@ import { useAtom } from '@xoid/react'
 const state = useAtom(atom, s => s.alpha)
 ```
 
-The other hook is `useSetup`. It's guaranteed to be **non-render-causing**. It's philosophically similar to `React.useMemo`. It runs the callback function only **once**. The difference from `React.useMemo` is that, the second argument is not a dependency array. Instead, it's a slot to **consume an outer variable as an atom**.
+The other hook is `useSetup`. It can be used for creating local component state. It runs its callback function only **once**. The difference from `React.useMemo` is that, the second argument is not a dependency array. Instead, it's a slot to **consume an outer variable as a reactive atom**.
 
 ```js
 import { subscribe, select } from 'xoid'
@@ -154,11 +157,13 @@ const App = (props: Props) => {
 }
 ```
 
+> `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
+
 ## More features
 
 ### Feature: Optics (lenses)
 
-`lens` export either takes an atom, or just a plain object. It's similar to `select`, but surgical changes won't be immutably propagate to root. Instead, the original object will be mutated.
+`lens` takes either an atom, or a plain object. It's similar to `select`, but surgical changes won't be immutably propagate to root. Instead, the original object will be mutated.
 ```js
 import { lens } from 'xoid'
 
@@ -201,7 +206,7 @@ import { use, select } from 'xoid'
 
 const alpha = NumberModel(5)
 const beta = NumberModel(8)
-const gamma = create({ deep: 1000})
+const gamma = create({ deep: 1000 })
 const disconnect = devtools({ alpha, beta, gamma }, 'myStore') 
 
 use(alpha).inc() // "(alpha).inc"

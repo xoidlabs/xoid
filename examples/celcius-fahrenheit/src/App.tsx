@@ -1,6 +1,6 @@
 import React from 'react'
 import { create } from 'xoid'
-import { useStore } from '@xoid/react'
+import { useAtom } from '@xoid/react'
 
 const celcius = create(20)
 const fahrenheit = create(68)
@@ -14,21 +14,13 @@ const setF = (num: number) => {
 }
 
 export default () => {
-  const C = useStore(celcius)
-  const F = useStore(fahrenheit)
+  const C = useAtom(celcius)
+  const F = useAtom(fahrenheit)
   return (
     <div>
-      <input
-        style={{ width: 50 }}
-        value={C}
-        onChange={(e) => setC(parseFloat(e.target.value))}
-      />
+      <input style={{ width: 50 }} value={C} onChange={(e) => setC(parseFloat(e.target.value))} />
       ˚C =
-      <input
-        style={{ width: 50 }}
-        value={F}
-        onChange={(e) => setF(parseFloat(e.target.value))}
-      />
+      <input style={{ width: 50 }} value={F} onChange={(e) => setF(parseFloat(e.target.value))} />
       ˚F
     </div>
   )

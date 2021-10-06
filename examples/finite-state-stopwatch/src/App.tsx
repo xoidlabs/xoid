@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { create } from 'xoid'
-import { useStore, useSetup } from '@xoid/react'
+import { useAtom, useSetup } from '@xoid/react'
 
 const TimerSetup = () => {
   const state = create(stopped)
@@ -38,8 +38,8 @@ const TimerSetup = () => {
 
 const Stopwatch = () => {
   const setup = useSetup(TimerSetup)
-  const time = useStore(setup.time)
-  const { playPauseButton, handlePlayPause, handleStop } = useStore(setup.state)
+  const time = useAtom(setup.time)
+  const { playPauseButton, handlePlayPause, handleStop } = useAtom(setup.state)
 
   return (
     <div>
@@ -50,4 +50,5 @@ const Stopwatch = () => {
   )
 }
 
-export default () => <Stopwatch />
+const App = () => <Stopwatch />
+export default App
