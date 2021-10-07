@@ -1,4 +1,5 @@
-
+This section is incomplete
+<!-- 
 ## Model API
 
 Until this point, the core API of `xoid` and **@xoid/react** are covered. There are also `model`, `arrayOf`, `objectOf`, `use` functions, which are part of the Model API. They can be used to associate certain actions with atoms.
@@ -110,4 +111,4 @@ effect($color, (color) => {
   const element = ref()
   if(element) element.style.color = color 
 })
-```
+``` -->

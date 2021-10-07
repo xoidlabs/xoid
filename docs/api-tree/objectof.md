@@ -3,7 +3,8 @@ id: objectof
 title: objectOf
 ---
 
-`import { objectOf } from 'xoid'`
+This section is incomplete
+<!-- `import { objectOf } from 'xoid'`
 
 It's similar to [`arrayOf`](arrayof). 
 ```js
@@ -27,4 +28,4 @@ Object.entries(numbers).forEach(([_key, num]) =>
   use(num).increment()
 )
 numbers() // { a: 2, b: 4, c: 6, d: 8 }
-```
+``` -->

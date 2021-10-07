@@ -3,7 +3,8 @@ id: arrayof
 title: arrayOf
 ---
 
-`import { arrayOf } from 'xoid'`
+This section is incomplete
+<!-- `import { arrayOf } from 'xoid'`
 
 Models are special **create** functions. `arrayOf` creates a special **create** function that receives an array as the initial state. It makes sure that each array element is of the same model type. Second argument can optionally be used to attach usables to the root itself.
 
@@ -25,4 +26,4 @@ use(numbers).add(7)
 Object.entries(numbers).forEach(([_key, num]) => use(num).increment())
 
 numbers() // [2, 4, 6, 8]
-```
+``` -->
