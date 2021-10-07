@@ -5,7 +5,7 @@
     "paths": {
       "@xoid/*": ["./packages/*/lib"],
     },
-    "target": "es6",
+    "target": "es5",
     "jsx": "react",
     "downlevelIteration": true,
     "strict": true,

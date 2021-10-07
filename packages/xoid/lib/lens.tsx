@@ -53,7 +53,7 @@ const getDeepValue = <T extends Record<string, any>, K extends ReadonlyArray<str
   obj: T,
   address: K
 ): any => {
-  const a = [...address]
+  const a = address.map((s) => s) // avoiding _spread polyfill
   const next = a.shift()
   return a.length ? getDeepValue(obj[next as string], a) : obj[next as string]
 }

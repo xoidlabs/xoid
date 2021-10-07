@@ -4,18 +4,18 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var engine = require('@xoid/engine');
 
-const createCell = (pm, key) => {
+var createCell = function (pm, key) {
     if (Object.prototype.hasOwnProperty.call(pm.cache, key))
         return pm.cache[key];
-    const root = pm.root;
-    const shape = pm.shape && (pm.shape[key] || pm.shape[engine.RECORD]);
-    const address = pm.address ? pm.address.map((s) => s) : [];
+    var root = pm.root;
+    var shape = pm.shape && (pm.shape[key] || pm.shape[engine.RECORD]);
+    var address = pm.address ? pm.address.map(function (s) { return s; }) : [];
     address.push(key);
-    const meta = {
+    var meta = {
         parentMeta: pm,
-        root,
-        key,
-        address,
+        root: root,
+        key: key,
+        address: address,
         get node() {
             return pm.node[key];
         },
@@ -24,23 +24,23 @@ const createCell = (pm, key) => {
                 pm.node[key] = value;
             }
             else {
-                const copy = shallowClone(pm.node);
+                var copy = shallowClone(pm.node);
                 copy[key] = value;
                 pm.node = copy;
             }
         },
         cache: {},
-        shape,
+        shape: shape,
     };
-    const target = engine.createTarget(meta, root.onSet);
-    const proxy = new Proxy(target, {
-        get(_, prop) {
+    var target = engine.createTarget(meta, root.onSet);
+    var proxy = new Proxy(target, {
+        get: function (_, prop) {
             if (prop === engine.META)
                 return meta;
             // start: prototype stuff
-            const node = meta.node;
+            var node = meta.node;
             if (prop === Symbol.toPrimitive)
-                return () => node;
+                return function () { return node; };
             if (!Object.prototype.hasOwnProperty.call(node, prop) &&
                 Array.isArray(node) &&
                 Object.prototype.hasOwnProperty.call(Array.prototype, prop)) {
@@ -49,18 +49,18 @@ const createCell = (pm, key) => {
             // end: prototype stuff
             return createCell(meta, prop);
         },
-        set() {
+        set: function () {
             return false;
         },
-        has(_, key) {
+        has: function (_, key) {
             return key in meta.node;
         },
-        ownKeys(t) {
-            let keys = Reflect.ownKeys(meta.node);
+        ownKeys: function (t) {
+            var keys = Reflect.ownKeys(meta.node);
             keys = keys.concat(Reflect.ownKeys(t));
             return Array.from(new Set(keys));
         },
-        getOwnPropertyDescriptor(t, k) {
+        getOwnPropertyDescriptor: function (t, k) {
             if (Reflect.ownKeys(t).includes(k))
                 return Reflect.getOwnPropertyDescriptor(t, k);
             return Reflect.getOwnPropertyDescriptor(meta.node, k);
@@ -69,41 +69,46 @@ const createCell = (pm, key) => {
     pm.cache[key] = proxy;
     return proxy;
 };
-const createInstance = (options = {}) => function (init, mutable) {
-    const { shape, onSet } = options;
-    const isFunction = typeof init === 'function';
-    if (!arguments.length)
-        mutable = true;
-    const root = engine.createRoot();
-    Object.assign(root, { mutable, onSet });
-    const store = createCell({
-        node: { value: init },
-        shape: { value: shape },
-        cache: {},
-        root,
-    }, 'value');
-    if (isFunction)
-        engine.createSelector(store, init);
-    return store;
+var createInstance = function (options) {
+    if (options === void 0) { options = {}; }
+    return function (init, mutable) {
+        var shape = options.shape, onSet = options.onSet;
+        var isFunction = typeof init === 'function';
+        if (!arguments.length)
+            mutable = true;
+        var root = engine.createRoot();
+        Object.assign(root, { mutable: mutable, onSet: onSet });
+        var store = createCell({
+            node: { value: init },
+            shape: { value: shape },
+            cache: {},
+            root: root,
+        }, 'value');
+        if (isFunction)
+            engine.createSelector(store, init);
+        return store;
+    };
 };
-const shallowClone = (obj) => Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
+var shallowClone = function (obj) {
+    return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
+};
 
 /**
  * Creates a store with the first argument as the initial state.
  * Configured for immutable updates by default. Mutable mode can be set by setting second argument to `true`.
  * @see [xoid.dev/docs/api/create](https://xoid.dev/docs/api/create)
  */
-const create = createInstance();
+var create = createInstance();
 /**
  * Subscribes to an observable.
  * @see [xoid.dev/docs/api/subscribe](https://xoid.dev/docs/api/subscribe)
  */
-const subscribe = engine.subscribe;
+var subscribe = engine.subscribe;
 /**
  * Subscribes to an observable. Same to `subscribe`, except it runs the callback immediately.
  * @see [xoid.dev/docs/api/effect](https://xoid.dev/docs/api/effect)
  */
-const effect = engine.effect;
+var effect = engine.effect;
 
 exports.create = create;
 exports.effect = effect;
