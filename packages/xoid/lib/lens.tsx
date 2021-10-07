@@ -35,7 +35,7 @@ export function select(atom: any, selector: any) {
   return xoid as any
 }
 
-export const setDeepValue = <T extends Record<string, any>, K extends string[]>(
+const setDeepValue = <T extends Record<string, any>, K extends string[]>(
   obj: T,
   address: K,
   nextValue: unknown
@@ -49,7 +49,7 @@ export const setDeepValue = <T extends Record<string, any>, K extends string[]>(
   return nextState
 }
 
-export const getDeepValue = <T extends Record<string, any>, K extends ReadonlyArray<string>>(
+const getDeepValue = <T extends Record<string, any>, K extends ReadonlyArray<string>>(
   obj: T,
   address: K
 ): any => {

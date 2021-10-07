@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/onurkerimov/xoid",
-    "directory": "./packages/react"
+    "directory": "./packages/xoid"
   },
   "license": "MIT",
   "keywords": [

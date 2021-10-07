@@ -1,5 +1,5 @@
 {
-  "name": "@xoid/core",
+  "name": "@xoid/tree",
   "version": "0.9.5",
   "main": "./index.js",
   "module": "./esm/index.js",
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/onurkerimov/xoid",
-    "directory": "./packages/core"
+    "directory": "./packages/tree"
   },
   "license": "MIT",
   "keywords": [

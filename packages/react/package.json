@@ -1,6 +1,6 @@
 {
   "name": "@xoid/react",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "main": "./index.js",
   "module": "./esm/index.js",
   "types": "./index.d.ts",

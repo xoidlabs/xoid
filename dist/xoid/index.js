@@ -22,6 +22,11 @@ function create(init, useable) {
     return target;
 }
 
+function lens(object, selector) {
+    const isAtom = Boolean(object[engine.META]);
+    const atom = isAtom ? object : () => object;
+    return createLens(atom, selector, true);
+}
 function select(atom, selector) {
     const xoid = createLens(atom, selector);
     // @ts-ignore
@@ -79,19 +84,19 @@ const shallowClone = (obj) => {
     return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
 };
 
-/**
- * Subscribes to an atom.
- * @see [xoid.dev/docs/api/subscribe](https://xoid.dev/docs/api/subscribe)
- */
-const subscribe = engine.subscribe;
-/**
- * Subscribes to an atom. Same to `subscribe`, except it runs the callback immediately.
- * @see [xoid.dev/docs/api/effect](https://xoid.dev/docs/api/effect)
- */
-const effect = engine.effect;
-
+Object.defineProperty(exports, 'effect', {
+  enumerable: true,
+  get: function () {
+    return engine.effect;
+  }
+});
+Object.defineProperty(exports, 'subscribe', {
+  enumerable: true,
+  get: function () {
+    return engine.subscribe;
+  }
+});
 exports.create = create;
-exports.effect = effect;
+exports.lens = lens;
 exports.select = select;
-exports.subscribe = subscribe;
 exports.use = use;

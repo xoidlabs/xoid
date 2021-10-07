@@ -3,6 +3,7 @@ import path from 'path';
 import typescript from 'rollup-plugin-typescript2';
 import workspacesRun from 'workspaces-run';
 import copy from 'rollup-plugin-copy';
+import dts from 'rollup-plugin-dts';
 
 async function main() {
   const copyTargets = []
@@ -39,7 +40,6 @@ async function main() {
     ];
     const basePath = path.relative(__dirname, pkg.dir)
     const outputPath = basePath.replace('packages/', 'dist/');
-    const typesPath = path.join('dist/ts-out', basePath, 'lib/*');
     let input = path.join(basePath, 'lib/index.tsx');
     let copyPath = path.join(basePath, 'copy');
     const output = []
@@ -58,15 +58,10 @@ async function main() {
     }
 
     if(main) {
-      if(pkg.name !== 'xoid') {
-        output.push({
-          file: path.join(outputPath, main),
-          format: 'cjs',
-        })
-      }
-      if(types) {
-        copyTargets.push({ src: typesPath, dest: outputPath })
-      }
+      output.push({
+        file: path.join(outputPath, main),
+        format: 'cjs',
+      })
     }
     
     if(module) {
@@ -74,39 +69,7 @@ async function main() {
         file: path.join(outputPath, module),
         format: 'esm',
       })
-      if(types) {
-        copyTargets.push({ src: typesPath, dest: path.join(outputPath, 'esm') })
-      }
     }
-
-    // if(pkg.name === '@xoid/model' || pkg.name === '@xoid/ready') {
-    //   external.push('@xoid/core/utils')
-    // }
-
-    // if(pkg.name === '@xoid/core') {
-    //   results.push({
-    //     input: path.join(basePath, 'lib/utils.tsx'),
-    //     output: [
-    //       {
-    //         file: path.join(outputPath, 'utils.js'),
-    //         format: 'cjs',
-    //       },
-    //       {
-    //         file: path.join(outputPath, 'esm/utils.js'),
-    //         format: 'esm',
-    //       },
-    //     ],
-    //     external,
-    //     plugins,
-    //   })
-    //   results.push({
-    //     input,
-    //     output,
-    //     external: ['@xoid/engine', './utils'],
-    //     plugins,
-    //   })
-    //   return
-    // }
 
     results.push({
       input,
@@ -114,6 +77,20 @@ async function main() {
       external,
       plugins,
     });
+
+    if(types) {
+      const typesInput = path.join('dist/ts-out', basePath, 'lib/index.d.ts');
+      const typesOutput = []
+      if(main) typesOutput.push({ file: path.join(outputPath, 'index.d.ts'), format: 'es' })
+      if(module) typesOutput.push({ file: path.join(outputPath, 'esm/index.d.ts'), format: 'es' })
+
+      results.push({
+        input: typesInput,
+        output: typesOutput,
+        external,
+        plugins: [dts()],
+      });
+    }
   });
   return results;
 }

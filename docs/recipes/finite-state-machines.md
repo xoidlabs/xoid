@@ -1,6 +1,6 @@
 ---
 id: finite-state-machines
-title: Finite State Machines
+title: Finite state machines
 ---
 
 In **xoid**, a wide range of FSMs can be expressed only by using only the `create` function.
