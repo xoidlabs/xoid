@@ -75,13 +75,13 @@ function addressProxy(address: string[]): any {
 const createLens = (atom: any, selector: any, isLens?: boolean) => {
   return function (input?: any) {
     const isPluck = typeof selector === 'string'
-    if (isPluck) selector = (s: any) => s[selector]
-    if (arguments.length === 0) return selector(atom())
+    const fn = isPluck ? (s: any) => s[selector] : selector
+    if (arguments.length === 0) return fn(atom())
 
-    const newValue = typeof input === 'function' ? input(selector(atom())) : input
-    if (selector(atom()) === newValue) return
+    const newValue = typeof input === 'function' ? input(fn(atom())) : input
+    if (fn(atom()) === newValue) return
     const proxy = addressProxy([])
-    const address = (isPluck ? [selector] : selector(proxy)[RECORD]) as string[]
+    const address = (isPluck ? [selector] : fn(proxy)[RECORD]) as string[]
     if (isLens) {
       const addressWoLastKey = address.map((s) => s)
       const lastKey = addressWoLastKey.pop() as string

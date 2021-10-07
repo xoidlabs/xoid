@@ -60,15 +60,14 @@ function addressProxy(address) {
 var createLens = function (atom, selector, isLens) {
     return function (input) {
         var isPluck = typeof selector === 'string';
-        if (isPluck)
-            selector = function (s) { return s[selector]; };
+        var fn = isPluck ? function (s) { return s[selector]; } : selector;
         if (arguments.length === 0)
-            return selector(atom());
-        var newValue = typeof input === 'function' ? input(selector(atom())) : input;
-        if (selector(atom()) === newValue)
+            return fn(atom());
+        var newValue = typeof input === 'function' ? input(fn(atom())) : input;
+        if (fn(atom()) === newValue)
             return;
         var proxy = addressProxy([]);
-        var address = (isPluck ? [selector] : selector(proxy)[RECORD]);
+        var address = (isPluck ? [selector] : fn(proxy)[RECORD]);
         if (isLens) {
             var addressWoLastKey = address.map(function (s) { return s; });
             var lastKey = addressWoLastKey.pop();
