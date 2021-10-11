@@ -3,6 +3,28 @@ id: async
 title: Async Actions
 ---
 
+## Async actions
+
+Async actions are defined the following way:
+```js
+const NumberModel = (payload: number) =>
+  create(payload, (atom) => {
+    const increment = () => atom(s => s + 1)
+    const incrementAsync = async () => {
+      await delay(2000)
+      increment()
+    }
+    return { increment, incrementAsync }
+  })
+
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+const $number = NumberModel(5)
+use($number).incrementAsync()
+```
+
 ## Common `fetch` as a model
 
 `fetch` can be abstracted away as a model:
@@ -17,13 +39,20 @@ export const RequestModel = (endpoint, init) =>
       loading: true,
       error: null,
     },
-    (store) => {
+    (atom) => {
       try {
         const response = await fetch(endpoint, init)
-        set(store.data, response.json())
-        set(store.loading, false)
+        atom({
+          data: response.json(),
+          loading: false,
+          error: null
+        })
       } catch (error) {
-        set(store.error, error)
+        atom({
+          data: null,
+          loading: false,
+          error
+        })
       }
     }
   )
@@ -31,14 +60,14 @@ export const RequestModel = (endpoint, init) =>
 
 ```js title="./Component.js"
 import { RequestModel } from './helpers'
-import { useLocal, useStore } from 'xoid'
+import { useSetup, useAtom } from '@xoid/react'
 
 // inside React
-const store = useLocal(() => RequestModel('/some-address'))
-const [{ data, error, loading }] = useStore(store)
+const atom = useSetup(() => RequestModel('/some-address'))
+const { data, error, loading } = useAtom(atom)
 ```
 
-Of course you could build the same functionality without **xoid**, by using `useState` and `useEffect`. However note that with **xoid**, `RequestModel` is framework agnostic and can be used outside React too:
+Note that with **xoid**, `RequestModel` is framework agnostic and can be used outside React too.
 
 ```js
 import { subscribe } from 'xoid'
@@ -48,59 +77,4 @@ subscribe(RequestModel('/some-address'), (value) => {
   const { data, error, loading } = value
   console.log({ data, error, loading })
 })
-```
-
-This also gives the ability to inform the React component transiently, without causing render:
-
-```js
-import { subscribe } from 'xoid'
-import { RequestModel } from './helpers'
-
-// inside React
-useEffect(
-  () =>
-    subscribe(RequestModel('/some-address'), (value) => {
-      const { data, error, loading } = value
-      console.log({ data, error, loading })
-    }),
-  []
-)
-```
-
-```js
-export const someRequestStore = create((set) => request1().then((response) => set(response)))
-[a] = useStore(someRequestStore)
-
-const someStaticListStore = create({}, (store) => {
-  read: async () => {
-    const val = await request1()
-    set(store, val)
-  }
-})
-
-const self = useLocal(() => {
-  return create({}, (store, { mount }) => {
-    mount(use(someStaticListStore).read)
-  })
-})
-[a] = useStore(someRequestStore)
-
-
-```
-
-## Async actions
-```js
-const NumberModel = (payload: number) =>
-  create(payload, (store) => {
-    const increment = () => set(store, (state) => state + 1)
-    const incrementAsync = async () => {
-      await delay(2000)
-      increment()
-    }
-    return { increment, incrementAsync }
-  })
-
-function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
 ```

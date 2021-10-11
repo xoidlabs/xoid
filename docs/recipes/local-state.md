@@ -207,33 +207,18 @@ In addition to all these, with xoid, you have the opportunity to
 ### Generalize common `useState` patterns
 
 ```js title="./helpers.ts"
-import { create, set } from 'xoid';
+import { create } from 'xoid';
 
-export const BooleanModel = (payload: boolean = false) =>
-  create(payload, (x) => [
-    () => set(x, true),
-    () => set(x, false),
-  ]);
+export const ToggleSetup = (payload: boolean = false) => {
+  const atom = create(payload)
+  return [atom, () => atom(s => !s)]
+}
 ```
 
 ```js title="./Component.tsx"
 import { BooleanModel } from './helpers';
-import { useLocal } from 'xoid';
+import { useSetup, useAtom } from '@xoid/react';
 
-// inside React
-const modalStore = useLocal(BooleanModel)
-const [isModalOpen, [openModal, closeModal]] = useStore(modalStore)
-// or 
-const [isModalOpen, [openModal, closeModal]] = useStore(useLocal(BooleanModel))
-```
-
-
-
-```js
-const RuntimeModel = () => {
-  const alpha = NumberModel(3)
-  const beta = NumberModel(4)
-  const sum = create(get => get(alpha) + get(beta))
-  return ({ alpha, beta, sum })
-}
+const [$isModalOpen, toggleModal] = useSetup(ToggleSetup)
+const isModalOpen = useAtom($isModalOpen)
 ```

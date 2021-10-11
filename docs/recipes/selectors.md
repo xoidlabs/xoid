@@ -28,5 +28,5 @@ const androidUsersLens = create((get) => {
   return androidUsers.map((id) => users[id])
 })
 
-get(androidUsersLens[0].name) // 'foo'
+select(androidUsersLens, s => s[0].name)() // 'foo'
 ```

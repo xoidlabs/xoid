@@ -61,7 +61,7 @@ const AppSetup = (deps: Store<Props>) => {
 
 const App = (props: Props) => {
   const self = useSetup(AppSetup, props)
-  useStore(self.store)
+  useAtom(self.store)
 
   // render,`this` replaced with `self`
   return (<div onClick={self.incrementAlpha}>{self.state.alpha}</div>)
@@ -71,15 +71,14 @@ After getting rid of the last usage of `this.setState`, we can get rid of the `R
 ```js
 const AppSetup = (deps: Store<Props>) => {
   const store = create({ alpha: 5 })
-  const incrementAlpha = () => store.alpha(s => s + 1)
+  const incrementAlpha = () => select(store, alpha)(s => s + 1)
   return { store, incrementAlpha }
 }
 
 const App = (props: Props) => {
   const self = useSetup(AppSetup, props)
-  const { alpha } = useStore(self.store)
+  const { alpha } = useAtom(self.store)
 
   return <div onClick={self.incrementAlpha}>{alpha}</div>
 }
 ```
-

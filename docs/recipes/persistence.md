@@ -1,4 +1,0 @@
----
-id: persistence
-title: Persistence
----

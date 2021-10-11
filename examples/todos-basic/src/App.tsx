@@ -8,7 +8,7 @@ type TodoType = {
   checked: boolean
 }
 
-const TodoModel = model<TodoType>((atom) => ({
+const TodoModel = model((atom: Atom<TodoType>) => ({
   toggle: () => select(atom, 'checked')((s) => !s),
 }))
 

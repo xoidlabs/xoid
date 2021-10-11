@@ -29,10 +29,10 @@ const store = create(
 Actions without explicit names can be preferred by returning an array of functions.
 
 ```js
-const storeWithActions = create(5, (store) => {
-  const increment = () => set(store, (state) => state + 1);
-  const decrement = () => set(store, (state) => state - 1);
+const atomWithActions = create(5, (atom) => {
+  const increment = () => atom((s) => s + 1);
+  const decrement = () => atom((s) => s - 1);
   return [increment, decrement];
 });
-const [inc, dec] = use(storeWithActions);
+const [inc, dec] = use(atomWithActions);
 ```

@@ -74,7 +74,8 @@ function addressProxy(address: string[]): any {
 
 const createLens = (atom: any, selector: any, isLens?: boolean) => {
   return function (input?: any) {
-    const isPluck = typeof selector === 'string'
+    const isPluck =
+      typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol'
     const fn = isPluck ? (s: any) => s[selector] : selector
     if (arguments.length === 0) return fn(atom())
 

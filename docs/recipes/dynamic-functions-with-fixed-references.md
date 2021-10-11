@@ -23,3 +23,42 @@ With **xoid**, it's simply:
 const funcFixed = useSetup((atom) => (...args) => atom()(...args), props.func)
 ```
 > `useSetup` can be used to return anything. In this case, it's used to return a function that internally calls `atom()`, thus it'll always use the latest version of the `props.func`.
+
+### A more concrete example
+
+Take the following react `useEffect` callback. A window event listener is attached and removed everytime when `props.number` changes.
+
+```js
+//inside React
+useEffect(() => {
+  const callback = () => console.log(props.number)
+  window.addEventListener('click', callback)
+  return () => window.removeEventListener('click', callback)
+}, [props.number])
+```
+
+Perhaps we want to attach the listener only once, and remove it only once when the component is unmounted. This could be achieved with React's manners, as the following.
+
+```js
+//inside React
+const numberRef = useRef(props.number)
+useEffect(() => (numberRef.current = props.number), [props.number])
+useEffect(() => {
+  const callback = () => console.log(numberRef.current)
+  window.addEventListener('click', callback)
+  return () => window.removeEventListener('click', callback)
+}, [])
+```
+
+> Instead of consuming `props.number` directly, The callback function now consumes `numberRef.current`, so it always has the most recent version of the `number` prop.
+
+With **xoid**, the equivalent optimization is simply the following:
+
+```js
+//inside React
+useSetup(($props, onCleanup) => {
+  const callback = () => console.log($props().number)
+  window.addEventListener('click', callback)
+  onCleanup(() => window.removeEventListener('click', callback))
+}, props)
+```
