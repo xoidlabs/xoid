@@ -59,7 +59,7 @@ function addressProxy(address) {
 }
 var createLens = function (atom, selector, isLens) {
     return function (input) {
-        var isPluck = typeof selector === 'string';
+        var isPluck = typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol';
         var fn = isPluck ? function (s) { return s[selector]; } : selector;
         if (arguments.length === 0)
             return fn(atom());
