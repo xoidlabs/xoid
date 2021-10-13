@@ -12,8 +12,9 @@ export type Atom<T> = {
 }
 
 export type GetState = {
-  <T>(store: Atom<T>): T
-  <T>(store: Atom<T | undefined>): T | undefined
+  <T>(atom: Atom<T>): T
+  <T, U>(atom: Atom<T>, selector: (state: T) => U): U
+  <T, U extends keyof T>(atom: Atom<T>, selector: U): T[U]
 }
 export type Init<T> = T | ((get: GetState) => T)
 export type Listener<T> = (
@@ -50,24 +51,41 @@ export const createRoot = () => {
   return { notify, subscribe }
 }
 
-export const createSelector = (store: Atom<any>, init: Function) => {
-  const unsubs = new Set<() => void>()
-  const getter = (store: Atom<any>) => {
-    unsubs.add(subscribe(store, updateState))
-    return store()
-  }
-  const updateState = () => {
+export const createCleanup = () => {
+  const unsubs = new Set<Function>()
+  const onCleanup = (fn: Function) => void unsubs.add(fn)
+  const cleanupAll = () => {
     unsubs.forEach((fn) => fn())
     unsubs.clear()
+  }
+  return { onCleanup, cleanupAll }
+}
+
+const createGetter =
+  (updateState: Listener<unknown>): GetState =>
+  (atom, selector) => {
+    const item = selector ? select(atom, selector) : atom
+    onCleanup(subscribe(item, updateState))
+    return item()
+  }
+
+export const createSelector = (atom: Atom<any>, init: Function) => {
+  const { onCleanup, cleanupAll } = createCleanup()
+  const getter = (atom: Atom<any>) => {
+    onCleanup(subscribe(atom, updateState))
+    return atom()
+  }
+  const updateState = () => {
+    cleanupAll()
     const result = init(getter)
-    store(result)
+    atom(result)
   }
   updateState()
 }
 
 const createSubscribe =
   (effect: boolean) =>
-  <T extends Atom<any>>(store: T, fn: Listener<StateOf<T>>): (() => void) => {
+  <T extends Atom<any>>(atom: T, fn: Listener<StateOf<T>>): (() => void) => {
     // cleanup + runCleanup
     let cleanup: unknown
     const runCleanup = () => {
@@ -75,9 +93,9 @@ const createSubscribe =
       cleanup = undefined
     }
     // Listener
-    let prevValue = store()
+    let prevValue = atom()
     const listener = () => {
-      const nextValue = store()
+      const nextValue = atom()
       if (nextValue !== prevValue) {
         runCleanup()
         cleanup = fn(nextValue, prevValue)
@@ -87,7 +105,7 @@ const createSubscribe =
     // If it's an effect, also collect the cleanup value at the first run
     if (effect) cleanup = fn(prevValue, prevValue)
     // Actually subscribe internally
-    const unsub = (store as any)[META].root.subscribe(listener)
+    const unsub = (atom as any)[META].root.subscribe(listener)
     // Return unsub
     return () => {
       runCleanup()
