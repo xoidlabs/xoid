@@ -1,31 +1,19 @@
 ---
-id: select
-title: select
+id: lens
+title: lens
 ---
 
-`import { select } from 'xoid'`
+`import { lens } from 'xoid'`
 
-`select` function makes it easy to work with deep branches of state. **xoid** is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
+`lens` is similar to `select`. 
 
+`lens` takes either an atom, or a plain object. It's similar to `select`, but surgical changes won't be immutably propagate to root. Instead, the original object will be mutated.
 ```js
-import { create, select } from 'xoid'
+import { lens } from 'xoid'
 
-const atom = create({ alpha: ['foo', 'bar'], deep: { beta: 5 } })
-const previousState = atom()
-
-// select and modify `.deep.beta` address
-const deepBeta = select(atom, s => s.deep.beta)
-deepBeta(s => s + 1)
-
-// root state is replaced with new immutable state
-assert(atom() !== previousState) // ✅
-assert(atom().deep.beta === 6) // ✅
+const obj = { some: { value: 5 } }
+const someValueLens = lens(obj, (s) => s.some.value)
+someValueLens(512)
+console.log(obj) // { some: { value: 512 } }
 ```
-
-`select` has another overload for "plucking" state partials.
-
-```js
-const $alpha = select(atom, 'alpha')
-// same as
-const $alpha = select(atom, s => s.alpha)
-```
+> Type of `someValueLens` would be: `Lens<{ some: { value: number } }>`.

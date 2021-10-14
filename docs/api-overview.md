@@ -10,7 +10,7 @@ Exports of `xoid` can be divided into 3 main sections.
 | Section | Exports           | Description |
 | - | - | - |
 | Core API | [`create`](api/create) , [`subscribe`](api/subscribe) , [`effect`](api/effect) | Most commonly used, lower-level exports |
-| Model API | [`model`](api/model) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof) , [`use`](api/use) | "Useables" for a flux-like experience |
+| Model API | [`model`](api/model) , [`arrayOf`](api/arrayof) , [`objectOf`](api/objectof) , [`use`](api/use) | "Usables" for a flux-like experience |
 | Helper(s) | [`ready`](api/ready) | A helper function that's usually used with refs |
 
 ### Other packages

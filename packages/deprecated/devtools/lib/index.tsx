@@ -1,4 +1,4 @@
-import { createRoot, META, Observable, subscribe } from '@xoid/engine'
+import { createNotifier, META, Observable, subscribe } from '@xoid/engine'
 
 const snapshot = <T extends any>(store: Observable<T>) => store()
 
@@ -24,7 +24,7 @@ export const devtools = <T extends any>(store: Observable<T>, name?: string) => 
 
   const dt = extension.connect({ name }) as any
   ;(store as any)[META].root.devtoolsHelper = createDevtoolsHelper()
-  const channel = ((store as any)[META].root.devtoolsChannel = createRoot())
+  const channel = ((store as any)[META].root.devtoolsChannel = createNotifier())
   let currentAction: any
   // @ts-ignore
   const unsub0 = channel.subscribe((state: any) => {

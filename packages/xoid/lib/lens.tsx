@@ -41,11 +41,13 @@ const setDeepValue = <T extends Record<string, any>, K extends string[]>(
   nextValue: unknown
 ): T => {
   const a = address.map((s) => s) // avoiding _spread polyfill
-  const nextKey = a.shift()
+  const nextKey = a.shift() as string
   const nextState = shallowClone(obj)
-  ;(nextState as any)[nextKey as string] = a.length
-    ? setDeepValue(obj[nextKey as string], a, nextValue)
-    : nextValue
+  if (a.length) nextValue = setDeepValue(obj[nextKey as string], a, nextValue)
+  if (Array.isArray(nextState) && parseInt(nextKey) >= nextState.length) {
+    nextState.length = parseInt(nextKey) - 1
+  }
+  ;(nextState as any)[nextKey as string] = nextValue
   return nextState
 }
 
@@ -73,16 +75,15 @@ function addressProxy(address: string[]): any {
 }
 
 const createLens = (atom: any, selector: any, isLens?: boolean) => {
-  return function (input?: any) {
-    const isPluck =
-      typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol'
-    const fn = isPluck ? (s: any) => s[selector] : selector
-    if (arguments.length === 0) return fn(atom())
+  const isPluck =
+    typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol'
+  const fn = isPluck ? (s: any) => s[selector] : selector
 
+  return function (input?: any) {
+    if (arguments.length === 0) return fn(atom())
     const newValue = typeof input === 'function' ? input(fn(atom())) : input
     if (fn(atom()) === newValue) return
-    const proxy = addressProxy([])
-    const address = (isPluck ? [selector] : fn(proxy)[RECORD]) as string[]
+    const address = (isPluck ? [selector] : fn(addressProxy([]))[RECORD]) as string[]
     if (isLens) {
       const addressWoLastKey = address.map((s) => s)
       const lastKey = addressWoLastKey.pop() as string

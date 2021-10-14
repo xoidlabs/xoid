@@ -9,7 +9,7 @@ A context provider causes its whole subtree to rerender. This can result in noti
 
 There's [a great article by Michel Weststrate](https://medium.com/@mweststrate/how-to-safely-use-react-context-b7e343eff076) on using Context efficiently. In summary, the article argues that "we should not store state directly in our context. Instead, we should use context as a dependency injection system". **xoid** can be used to do exactly that.
 
-Let's say that our shared state has the type of `{alpha: number, beta: number}`. Instead of feeding it directly as a context value, we can wrap it as an atom. We can create that atom only once, inside a `useSetup` hook.
+Let's say that our shared state must have the type `{alpha: number, beta: number}`. Instead of feeding it directly as a context value, we can make it an atom. We can create that atom only once, inside a `useSetup` hook.
 
 ```js title="./MyContext.ts"
 import { createContext } from 'react'

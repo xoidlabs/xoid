@@ -5,7 +5,7 @@ title: subscribe
 
 `import { subscribe } from 'xoid'`
 
-Subscribes to an **xoid** observable. Takes a listener function as the second argument. Returns an unsubscribe function.
+Subscribes to a **xoid** observable. Takes a listener function as the second argument. Returns an unsubscribe function.
 
 ```js
 import { create, subscribe } from 'xoid';

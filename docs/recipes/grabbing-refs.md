@@ -26,7 +26,7 @@ const setup = useSetup(() => {
 })
 return <div ref={setup.ref} />
 ```
-> This usage won't result in Typescript complaints. Since one of the overloads of an **xoid** atom is `(element: HTMLDivElement) => void`, which is compatible with `React.RefCallback`.
+> This usage won't result in Typescript complaints. Since one of the overloads of a **xoid** atom is `(element: HTMLDivElement) => void`, which is compatible with `React.RefCallback`.
 
 ### Grabbing other refs
 

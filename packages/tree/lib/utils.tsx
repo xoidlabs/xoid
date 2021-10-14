@@ -1,4 +1,4 @@
-import { createSelector, createRoot, createTarget, META, RECORD, Atom } from '@xoid/engine'
+import { createSelector, createNotifier, createTarget, META, RECORD, Atom } from '@xoid/engine'
 
 type Meta = {
   parentMeta?: Meta
@@ -7,7 +7,7 @@ type Meta = {
   key?: string
   address?: string[]
   shape?: any
-  root: ReturnType<typeof createRoot> & {
+  root: ReturnType<typeof createNotifier> & {
     mutable?: boolean
     onSet?: (meta: any, value: any) => void
   }
@@ -83,7 +83,7 @@ export const createInstance = (options: { shape?: any; onSet?: (value: any) => v
     const { shape, onSet } = options
     const isFunction = typeof init === 'function'
     if (!arguments.length) mutable = true
-    const root = createRoot()
+    const root = createNotifier()
     Object.assign(root, { mutable, onSet })
     const store = createCell(
       {
