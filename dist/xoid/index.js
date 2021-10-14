@@ -5,20 +5,20 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var engine = require('@xoid/engine');
 
 /**
- * Gets the "useable"s of an atom.
+ * Gets the "usable" of an atom.
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
-var use = function (atom) { return atom[engine.USEABLE]; };
-function create(init, useable) {
+var use = function (atom) { return atom[engine.USABLE]; };
+function create(init, usable) {
     var _a;
-    var meta = { root: engine.createRoot(), node: init };
+    var meta = { notifier: engine.createNotifier(), node: init };
     var target = engine.createTarget(meta);
     if (typeof init === 'function')
         engine.createSelector(target, init);
     Object.assign(target, (_a = {},
         _a[engine.META] = meta,
         // @ts-ignore
-        _a[engine.USEABLE] = useable && typeof useable === 'function' ? useable(target) : undefined,
+        _a[engine.USABLE] = usable && typeof usable === 'function' ? usable(target) : undefined,
         _a));
     return target;
 }
@@ -39,9 +39,12 @@ var setDeepValue = function (obj, address, nextValue) {
     var a = address.map(function (s) { return s; }); // avoiding _spread polyfill
     var nextKey = a.shift();
     var nextState = shallowClone(obj);
-    nextState[nextKey] = a.length
-        ? setDeepValue(obj[nextKey], a, nextValue)
-        : nextValue;
+    if (a.length)
+        nextValue = setDeepValue(obj[nextKey], a, nextValue);
+    if (Array.isArray(nextState) && parseInt(nextKey) >= nextState.length) {
+        nextState.length = parseInt(nextKey) - 1;
+    }
+    nextState[nextKey] = nextValue;
     return nextState;
 };
 var getDeepValue = function (obj, address) {
@@ -61,16 +64,15 @@ function addressProxy(address) {
     });
 }
 var createLens = function (atom, selector, isLens) {
+    var isPluck = typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol';
+    var fn = isPluck ? function (s) { return s[selector]; } : selector;
     return function (input) {
-        var isPluck = typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol';
-        var fn = isPluck ? function (s) { return s[selector]; } : selector;
         if (arguments.length === 0)
             return fn(atom());
         var newValue = typeof input === 'function' ? input(fn(atom())) : input;
         if (fn(atom()) === newValue)
             return;
-        var proxy = addressProxy([]);
-        var address = (isPluck ? [selector] : fn(proxy)[engine.RECORD]);
+        var address = (isPluck ? [selector] : fn(addressProxy([]))[engine.RECORD]);
         if (isLens) {
             var addressWoLastKey = address.map(function (s) { return s; });
             var lastKey = addressWoLastKey.pop();

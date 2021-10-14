@@ -4,11 +4,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var META = Symbol();
 var RECORD = Symbol();
-var USEABLE = Symbol();
+var USABLE = Symbol();
 var createTarget = function (meta, onSet) {
     if (onSet === void 0) { onSet = function (meta, value) {
         meta.node = value;
-        meta.root.notify();
+        meta.notifier.notify();
     }; }
     return function (input) {
         if (arguments.length === 0)
@@ -19,31 +19,55 @@ var createTarget = function (meta, onSet) {
         onSet(meta, nextValue);
     };
 };
-var createRoot = function () {
+var createNotifier = function () {
     var listeners = new Set();
     var notify = function (value) { return listeners.forEach(function (listener) { return listener(value); }); };
     var subscribe = function (listener) {
         listeners.add(listener);
         return function () { return listeners.delete(listener); };
     };
-    return { notify: notify, subscribe: subscribe };
+    return { listeners: listeners, notify: notify, subscribe: subscribe };
 };
-var createSelector = function (store, init) {
+var createCleanup = function () {
     var unsubs = new Set();
-    var getter = function (store) {
-        unsubs.add(subscribe(store, updateState));
-        return store();
-    };
-    var updateState = function () {
+    var onCleanup = function (fn) { return void unsubs.add(fn); };
+    var cleanupAll = function () {
         unsubs.forEach(function (fn) { return fn(); });
         unsubs.clear();
-        var result = init(getter);
-        store(result);
     };
+    return { onCleanup: onCleanup, cleanupAll: cleanupAll };
+};
+var parseSelector = function (selector) {
+    var isPluck = typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol';
+    return isPluck ? function (s) { return s[selector]; } : selector;
+};
+function createReadable(atom, selector) {
+    var _a;
+    if (!selector)
+        return atom;
+    var fn = parseSelector(selector);
+    return Object.assign((function () { return fn(atom()); }), (_a = {}, _a[META] = atom[META], _a));
+}
+var createGetState = function (updateState, onCleanup) {
+    // @ts-ignore
+    return function (atom, selector) {
+        var readable = createReadable(atom, selector);
+        onCleanup(subscribe(readable, updateState));
+        return readable();
+    };
+};
+var createSelector = function (atom, init) {
+    var _a = createCleanup(), onCleanup = _a.onCleanup, cleanupAll = _a.cleanupAll;
+    var updateState = function () {
+        cleanupAll();
+        var result = init(getter);
+        atom(result);
+    };
+    var getter = createGetState(updateState, onCleanup);
     updateState();
 };
 var createSubscribe = function (effect) {
-    return function (store, fn) {
+    return function (atom, fn) {
         // cleanup + runCleanup
         var cleanup;
         var runCleanup = function () {
@@ -52,9 +76,9 @@ var createSubscribe = function (effect) {
             cleanup = undefined;
         };
         // Listener
-        var prevValue = store();
+        var prevValue = atom();
         var listener = function () {
-            var nextValue = store();
+            var nextValue = atom();
             if (nextValue !== prevValue) {
                 runCleanup();
                 cleanup = fn(nextValue, prevValue);
@@ -65,7 +89,7 @@ var createSubscribe = function (effect) {
         if (effect)
             cleanup = fn(prevValue, prevValue);
         // Actually subscribe internally
-        var unsub = store[META].root.subscribe(listener);
+        var unsub = atom[META].notifier.subscribe(listener);
         // Return unsub
         return function () {
             runCleanup();
@@ -86,9 +110,13 @@ var effect = createSubscribe(true);
 
 exports.META = META;
 exports.RECORD = RECORD;
-exports.USEABLE = USEABLE;
-exports.createRoot = createRoot;
+exports.USABLE = USABLE;
+exports.createCleanup = createCleanup;
+exports.createGetState = createGetState;
+exports.createNotifier = createNotifier;
+exports.createReadable = createReadable;
 exports.createSelector = createSelector;
 exports.createTarget = createTarget;
 exports.effect = effect;
+exports.parseSelector = parseSelector;
 exports.subscribe = subscribe;
