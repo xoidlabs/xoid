@@ -2,7 +2,7 @@ import { useReducer, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 // @ts-ignore
 import { Atom, GetState, subscribe, create } from 'xoid'
 // @ts-ignore
-import { createCleanup, createGetState, createReadable, OnCleanup } from '@xoid/engine'
+import { createCleanup, createGetter, createReadable, OnCleanup } from '@xoid/engine'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
@@ -33,7 +33,7 @@ export function useAtom<T, U>(atom?: Atom<T>, selector?: keyof T | ((state: T) =
   const forceUpdate = useReducer((c) => c + 1, 0)[1]
   if (!arguments.length) {
     const onCleanup = useCleanup()
-    return createGetState(forceUpdate, onCleanup)
+    return createGetter(forceUpdate, onCleanup)
   }
   const readable = useMemo(() => createReadable(atom, selector), [atom, selector])
   useIsoLayoutEffect(() => subscribe(readable, forceUpdate), [])

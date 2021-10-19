@@ -38,9 +38,6 @@ var setDeepValue = function (obj, address, nextValue) {
     var nextState = shallowClone(obj);
     if (a.length)
         nextValue = setDeepValue(obj[nextKey], a, nextValue);
-    if (Array.isArray(nextState) && parseInt(nextKey) >= nextState.length) {
-        nextState.length = parseInt(nextKey) - 1;
-    }
     nextState[nextKey] = nextValue;
     return nextState;
 };
@@ -81,7 +78,9 @@ var createLens = function (atom, selector, isLens) {
     };
 };
 var shallowClone = function (obj) {
-    return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
+    return Array.isArray(obj)
+        ? obj.map(function (s) { return s; })
+        : Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
 };
 
 export { create, lens, select, use };

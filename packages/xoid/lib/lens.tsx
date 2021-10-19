@@ -44,9 +44,6 @@ const setDeepValue = <T extends Record<string, any>, K extends string[]>(
   const nextKey = a.shift() as string
   const nextState = shallowClone(obj)
   if (a.length) nextValue = setDeepValue(obj[nextKey as string], a, nextValue)
-  if (Array.isArray(nextState) && parseInt(nextKey) >= nextState.length) {
-    nextState.length = parseInt(nextKey) - 1
-  }
   ;(nextState as any)[nextKey as string] = nextValue
   return nextState
 }
@@ -96,5 +93,7 @@ const createLens = (atom: any, selector: any, isLens?: boolean) => {
 }
 
 const shallowClone = (obj: any) => {
-  return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))
+  return Array.isArray(obj)
+    ? obj.map((s) => s)
+    : Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))
 }

@@ -116,6 +116,7 @@ exports.createGetState = createGetState;
 exports.createNotifier = createNotifier;
 exports.createReadable = createReadable;
 exports.createSelector = createSelector;
+exports.createSubscribe = createSubscribe;
 exports.createTarget = createTarget;
 exports.effect = effect;
 exports.parseSelector = parseSelector;

@@ -39,6 +39,7 @@ declare function createReadable<T>(atom: Atom<T>): Atom<T>;
 declare function createReadable<T, U>(atom: Atom<T>, selector?: keyof T | ((state: T) => U)): Atom<U>;
 declare const createGetState: (updateState: Listener<unknown>, onCleanup: OnCleanup) => GetState;
 declare const createSelector: (atom: Atom<any>, init: Function) => void;
+declare const createSubscribe: (effect: boolean) => <T extends Atom<any>>(atom: T, fn: Listener<StateOf<T>>) => (() => void);
 /**
  * Subscribes to an atom.
  * @see [xoid.dev/docs/api/subscribe](https://xoid.dev/docs/api/subscribe)
@@ -50,4 +51,4 @@ declare const subscribe: <T extends Atom<any>>(atom: T, fn: Listener<StateOf<T>>
  */
 declare const effect: <T extends Atom<any>>(atom: T, fn: Listener<StateOf<T>>) => (() => void);
 
-export { Atom, GetState, Init, IsAtom, Listener, META, OnCleanup, RECORD, StateOf, USABLE, createCleanup, createGetState, createNotifier, createReadable, createSelector, createTarget, effect, parseSelector, subscribe };
+export { Atom, GetState, Init, IsAtom, Listener, META, OnCleanup, RECORD, StateOf, USABLE, createCleanup, createGetState, createNotifier, createReadable, createSelector, createSubscribe, createTarget, effect, parseSelector, subscribe };

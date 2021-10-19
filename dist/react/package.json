@@ -26,7 +26,8 @@
     "optics"
   ],
   "dependencies": {
-    "xoid": ">=0.9.10"
+    "xoid": ">=0.9.11",
+    "@xoid/engine": ">=0.9.11"
   },
   "peerDependencies": {
     "react": "*"

@@ -97,7 +97,7 @@ export const createSelector = (atom: Atom<any>, init: Function) => {
   updateState()
 }
 
-const createSubscribe =
+export const createSubscribe =
   (effect: boolean) =>
   <T extends Atom<any>>(atom: T, fn: Listener<StateOf<T>>): (() => void) => {
     // cleanup + runCleanup
