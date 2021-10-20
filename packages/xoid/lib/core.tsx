@@ -30,10 +30,7 @@ export function create<T, U = undefined>(init?: Init<T>, usable?: (atom: Atom<T>
   const meta = { notifier: createNotifier(), node: init }
   const target = createTarget(meta)
   if (typeof init === 'function') createSelector(target as unknown as Atom<T>, init as Function)
-  Object.assign(target, {
-    [META]: meta,
-    // @ts-ignore
-    [USABLE]: usable && typeof usable === 'function' ? usable(target) : undefined,
-  })
+  ;(target as any)[META] = meta
+  if (usable && typeof usable === 'function') (target as any)[USABLE] = usable(target as any)
   return target as any
 }

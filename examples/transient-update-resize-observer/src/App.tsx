@@ -1,8 +1,7 @@
 import React from 'react'
 import { create, lens, effect } from 'xoid'
 import { useSetup } from '@xoid/react'
-
-const ResizeObserver = (window as any).ResizeObserver as any
+import { ResizeObserver } from '@juggle/resize-observer'
 
 const ROSetup = (_: unknown, onCleanup: (fn: Function) => void) => {
   const ref = create<HTMLDivElement>()

@@ -40,7 +40,7 @@ const sum = create((get) => get(alpha) + get(beta));
 
 ## Grabbing refs
 
-With no arguments used, `create` function can be used to grab refs in a typesafe manner.
+With no arguments used, `create` function can be used to grab refs.
 
 ```js
 const $ref = create<HTMLElement>() // Atom<HTMLElement | undefined>
