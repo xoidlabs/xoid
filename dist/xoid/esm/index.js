@@ -7,16 +7,13 @@ export { effect, subscribe } from '@xoid/engine';
  */
 var use = function (atom) { return atom[USABLE]; };
 function create(init, usable) {
-    var _a;
     var meta = { notifier: createNotifier(), node: init };
     var target = createTarget(meta);
     if (typeof init === 'function')
         createSelector(target, init);
-    Object.assign(target, (_a = {},
-        _a[META] = meta,
-        // @ts-ignore
-        _a[USABLE] = usable && typeof usable === 'function' ? usable(target) : undefined,
-        _a));
+    target[META] = meta;
+    if (usable && typeof usable === 'function')
+        target[USABLE] = usable(target);
     return target;
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@xoid/react",
-  "version": "0.9.10",
+  "version": "0.9.13",
   "main": "./index.js",
   "module": "./esm/index.js",
   "types": "./index.d.ts",
@@ -25,11 +25,9 @@
     "store",
     "optics"
   ],
-  "dependencies": {
-    "xoid": ">=0.9.11",
-    "@xoid/engine": ">=0.9.11"
-  },
   "peerDependencies": {
-    "react": "*"
+    "react": "*",
+    "xoid": ">=0.9.12",
+    "@xoid/engine": ">=0.9.12"
   }
 }

@@ -10,16 +10,13 @@ var engine = require('@xoid/engine');
  */
 var use = function (atom) { return atom[engine.USABLE]; };
 function create(init, usable) {
-    var _a;
     var meta = { notifier: engine.createNotifier(), node: init };
     var target = engine.createTarget(meta);
     if (typeof init === 'function')
         engine.createSelector(target, init);
-    Object.assign(target, (_a = {},
-        _a[engine.META] = meta,
-        // @ts-ignore
-        _a[engine.USABLE] = usable && typeof usable === 'function' ? usable(target) : undefined,
-        _a));
+    target[engine.META] = meta;
+    if (usable && typeof usable === 'function')
+        target[engine.USABLE] = usable(target);
     return target;
 }
 
