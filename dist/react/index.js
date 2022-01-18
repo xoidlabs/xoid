@@ -25,7 +25,7 @@ function useAtom(atom, selector) {
     var forceUpdate = react.useReducer(function (c) { return c + 1; }, 0)[1];
     if (!arguments.length) {
         var onCleanup = useCleanup();
-        return engine.createGetter(forceUpdate, onCleanup);
+        return engine.createGetState(forceUpdate, onCleanup);
     }
     var readable = react.useMemo(function () { return engine.createReadable(atom, selector); }, [atom, selector]);
     useIsoLayoutEffect(function () { return xoid.subscribe(readable, forceUpdate); }, []);
