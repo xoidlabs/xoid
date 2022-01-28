@@ -3,7 +3,7 @@ id: grabbing-refs
 title: Grabbing refs
 ---
 
-The term "ref" here, is used in React's sense. With no arguments used, `create` function can be used to grab element refs *(or other refs, see below)* in a typesafe manner. 
+`create` function, with no arguments used, can be used to grab element refs (as in React's terminology) *(or other refs, see below)* in a typesafe manner. 
 
 ```js
 const $ref = create<HTMLElement>() // Atom<HTMLElement | undefined>
@@ -30,7 +30,7 @@ return <div ref={setup.ref} />
 
 ### Grabbing other refs
 
-The term "ref" doesn't need to stop at element refs. The same coding style, and thus the same concept can be used to grab events or other things.
+The term "ref" doesn't need to stop at DOM element references. The same coding style, and thus the same concept can be used to grab events or other things.
 
 ```js
 const $event = create<MouseEvent>() // Atom<MouseEvent | undefined>

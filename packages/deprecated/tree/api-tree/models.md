@@ -1,4 +1,5 @@
----
+This section is incomplete
+<!-- ---
 id: models
 title: Models
 ---
@@ -80,4 +81,4 @@ const { toggle } = use(store.todos[0])
 > Absolutely **zero** traversal or deep copying occur while `create`, `arrayOf`, `objectOf`, `model` run.
 > You can easily store complex objects such as DOM elements inside **xoid** stores.
 > Association of the store nodes with "usable" actions only occurs once when a node is visited by the `use` function.
-
+ -->
