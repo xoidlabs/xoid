@@ -792,25 +792,20 @@ html[data-theme="dark"] .Section p a {
 html[data-theme="dark"] {
   .HeaderHero {
     display: flex;
-    background: linear-gradient(-60deg, #4866a2 0%, #b9d1ff 50%, #4866a2 100%);
+    background: linear-gradient(-60deg, #332871 0%, #788fdd 50%, #7e65ab 100%);
   }
 }
 html[data-theme="light"] {
   .HeaderHero {
     display: flex;
-    background: linear-gradient(
-      -60deg,
-      #6499ff94 0%,
-      #6499ff22 50%,
-      #6499ff94 100%
-    );
+    background: linear-gradient(-60deg, #d3f9ff 0%, #673ab738 50%, #3f51b585 100%);
   }
 }
 
 .HeaderHero .titleContainer {
   display: flex;
   flex-flow: column nowrap;
-  margin: 25px auto;
+  margin: auto;
 }
 
 .HeaderHero .title {
@@ -818,7 +813,6 @@ html[data-theme="light"] {
   font-size: 85px;
   line-height: 1;
   margin-top: 0;
-  margin-bottom: 30px;
   font-weight: 100;
 }
 

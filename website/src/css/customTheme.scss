@@ -11,7 +11,8 @@
   --divider: #ececec;
   --tintColor: #f7f7f7;
   --rn-note-background: rgba(255, 229, 100, 0.25);
-  --ifm-font-size-base: 17px;
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.5;
   --ifm-spacing-horizontal: 16px;
   --ifm-navbar-item-padding-horizontal: 20px;
   --ifm-menu-link-padding-horizontal: 0;
@@ -361,8 +362,9 @@ html[data-theme="dark"] .avatar__name a {
   }
 
   .navbar__title {
-    font-weight: 600;
-    font-size: 18px;
+    font-weight: 500;
+    font-size: 25px;
+    transform: scaleX(0.9);
   }
 
   .navbar__brand:hover {
@@ -382,7 +384,7 @@ html[data-theme="dark"] .avatar__name a {
   }
 
   .navbar__logo {
-    height: 25px;
+    height: 29px;
     transition: transform 0.5s;
   }
 
@@ -1482,5 +1484,5 @@ h6 {
 }
 
 .navbar__title {
-  display: none;
+  font-family: 'Consolas', 'Courier New', monospace;
 }

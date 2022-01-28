@@ -16,7 +16,6 @@ const textContent = {
 - Computed values
 - Deeply nested states
 - Transient updates
-- Destructure state without losing reactivity
 - Same API for local and global state
 - Finite state machines
   `,
@@ -25,98 +24,78 @@ const textContent = {
 }
 
 const codeBlocks = [
-  {
-    text: `### Intuitive & Familiar API
+  {text: `### Simple primitives
+**xoid** is based on *atoms*. Atoms are standalone setter/getter objects that hold state. \`create\` function is used to create them.
 
-Provides a similar API to **Recoil**. 
-Except, in the second argument of \`create\` method, you can specify actions for your store. Also, you can create derived stores with computed values.
+It has a **Recoil**-inspired API for derived atoms. 
+
+  `,
+code: `import { create } from 'xoid'
+
+const atom = create(3)
+atom() // 3 (get the value)
+atom(5) // void (set the value to 5)
+atom((state) => state + 1) // void (also set the value)
+atom() // 6
+
+const derivedAtom = create(get => get(atom) * 2)
+`},
+  {
+    text: `### Actions
+
+With the second argument, you can specify actions for your atoms. \`use\` function is used to grab these actions.
 
 `,
-    code: `import { create, set } from 'xoid'
+    code: `import { create, use } from 'xoid'
 
-const numberActions = (store) => ({
-  increment: () => set(store, (s) => s + 1),
-  decrement: () => set(store, (s) => s - 1)
-})
-const alpha = create(3, numberActions)
-const beta = create(4, numberActions)
+const counterAtom = create(3, (atom) => ({
+  increment: () => atom((s) => s + 1),
+  incrementBy: (by) => atom((s) => s + by)
+}))
 
-// derived state
-const sum = create(get => get(alpha) + get(beta))
+use(counterAtom).incrementBy(5)
+setInterval(use(counterAtom).increment, 1000)
 `,
   },
   {
     text: `
-### React & Vanilla
+### React integration
 
+**xoid** has a minimal React integration. 
 No need for wrapping components into context providers. 
-Just import \`useStore\` and start using! You can also use \`use\` method to access the actions of a store, without causing rerenders. (it's not a hook)
+Just import \`useAtom\` and start using!
 
 `,
-    code: `import { useStore, use, subscribe } from 'xoid'
+    code: `import { create, subscribe, use } from 'xoid'
+import { useAtom } from '@xoid/react'
 
 // in a React component
-const [number, { increment, decrement }] = useStore(alpha)
-
-// use the actions only, without causing rerender
-const { increment, decrement } = use(alpha)
+const count = useAtom(counterAtom)
+const { increment } = use(counterAtom)
 
 // outside React
-const unsubscribe = subscribe(alpha, a => console.log(a))
-`,
-  },
-  {
-    text: `
-### No more selector functions!
-
-Every store is a *representation* of state, with the same tree structure as the state. 
-You can even subscribe to "primitives" like strings or numbers.
-
-`,
-    code: `import { create, useStore } from 'xoid'
-
-const store = create({ name: 'John', surname: 'Doe' })
-
-// in a React component
-const [name, setName] = useStore(store.name)
+const unsubscribe = subscribe(alpha, console.log)
 `,
   },
   {
     text: `
 ### No more hand-written reducers!
 
-With \`set\` method, you can surgically modify the parts in your state.
-This means that you can modify deeply nested values without having to write a lot of code, or without using tools like **immer** or **immutablejs**.
+**xoid** is based on immutable updates.
+You can "surgically" modify some subtree of the state by using \`select\` function, and changes will propagate to the root state.
 
 `,
-    code: `import { create, get, set } from 'xoid'
+    code: `import { create, select } from 'xoid'
 
-const store = create({ deeply: { nested: { foo: 5 } } })
-const foo = store.deeply.nested.foo
+const atom = create({ deeply: { nested: { foo: 5 } } })
+const fooAtom = select(atom, (s) => s.deeply.nested.foo)
 
-console.log(get(foo)) // 5
+const oldValue = atom()
+fooAtom(25) // set the value surgically into the store
+const newValue = atom()
 
-// set the value surgically into the store
-set(foo, 25)
-
-console.log(get(store)) // { deeply: { nested: { foo: 25 } } }
-`,
-  },
-  {
-    text: `
-### Nested Stores 
-You can store your application's data as deeply nested structures without worrying about UI performance. While using \`useStore\` hook, **xoid** never automatically subscribes to child stores.
-
-`,
-    code: `import { create, set } from 'xoid'
-
-const store = create({ title: 'hello', oftenUpdatingChildStore: create(0) })
-setInterval(() => set(store.oftenUpdatingChildStore, (count) => count + 1, 50)
-
-// In a React component
-const [state] = useStore(store)
-// a child store is subscribed, only if it's read
-console.log(state.oftenUpdatingChildStore)
+console.log(newValue) // { deeply: { nested: { foo: 25 } } }
+assert(oldValue !== newValue) // ✅
 `,
   },
   {
@@ -125,62 +104,16 @@ console.log(state.oftenUpdatingChildStore)
 No additional syntax is required to define and use finite state machines. Just use the second argument of the callback as the state transition function.
 
 `,
-    code: `import { create, useStore } from 'xoid'
+    code: `import { create } from 'xoid'
 
-const machine = create((get, set) => {
-  const red = { color: '#f00', onClick: () => set(green) }
-  const green = { color: '#0f0', onClick: () => set(red) }
-  return red
-})
+const red = { color: '#f00', onClick: () => machine(green) }
+const green = { color: '#0f0', onClick: () => machine(red) }
+const machine = create(red)
 
 // in a React component
-const [{ color, onClick }] = useStore(machine)
+const { color, onClick } = useAtom(machine)
 return <div style={{ color }} onClick={onClick}/>
 `,
-  },
-  {
-    text: `
-### Models 
-Perhaps, the most powerful feature of **xoid** is this one. Here's an example of easy state (de)serialization. (Your plain JSON data comes alive with your pre-defined actions in your model schemas) 
-
-Another benefit of using models are builtin \`add\` and \`remove\` actions. They are present in the actions by default if a store is created via \`arrayOf\` or \`objectOf\` helpers. These builtin actions have 100% consistent TypeScript types with your model schemas.
-
-`,
-    code: `import { create, arrayOf, get, set, use } from 'xoid'
-
-const EmployeeModel = (payload) => create(
-  { name: payload.name }, 
-  (store) => ({ greet: () => console.log(\`Hey \${get(store.name)}!\`) })
-)
-
-const CompanyModel = (payload) => create({
-  name: payload.name,
-  employees: arrayOf(EmloyeeModel, payload.employees),
-})
-
-const companyStore = CompanyModel({
-  name: 'my-awesome-company',
-  employees: [{ name: 'you' }, { name: 'me' }]
-})
-
-use(companyStore.employees[0]).greet() // Hey you!
-
-const myName = companyStore.employees[1].name
-console.log(get(myName)) // 'me'
-set(myName, 'my new name')
-console.log(get(myName)) // 'my new name'
-
-use(companyStore.employees).add({ name: 'third employee'})
-use(companyStore.employees[2]).greet() // Hey third employee!
-
-// remove by key, or by a filter function
-use(companyStore.employees).remove(2)
-use(companyStore.employees).remove(item => item.name === 'third employee')
-
-// if \`employees\` was an "objectOf(EmployeeModel)"
-use(companyStore.employees).add({ name: 'third employee'}, '0000')
-use(companyStore.employees).remove('0000')
-use(companyStore.employees).remove(item => item.name === 'third employee')`,
   },
 ]
 
@@ -280,8 +213,8 @@ function HeaderHero() {
         <div className="title">
           <img
             alt="xoid"
-            src={useBaseUrl('img/xoid-black.png')}
-            height="90px"
+            src={useBaseUrl('img/logo.svg')}
+            height="300px"
             style={{ margin: 'auto' }}
           />
         </div>
@@ -338,7 +271,7 @@ const Index = () => {
         {/* <script async defer src="https://buttons.github.io/buttons.js"></script> */}
       </Head>
       <HeaderHero />
-      <NativeApps />
+      {/* <NativeApps /> */}
       {codeBlocks.map((content, i) => (
         <NativeCode content={content} tint={!(i % 2)} />
       ))}

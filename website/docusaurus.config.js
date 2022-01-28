@@ -47,7 +47,7 @@ module.exports = {
     navbar: {
       title: 'xoid',
       logo: {
-        src: 'img/xoid-white.png',
+        src: 'img/logo-mini.svg',
         alt: 'xoid',
       },
       style: 'dark',
@@ -128,11 +128,11 @@ module.exports = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Docusaurus. Forked from reactnative.dev`,
     },
-    // algolia: {
-    //   apiKey: 'xxxx',
-    //   indexName: 'xxxx',
-    //   contextualSearch: true,
-    // },
+    algolia: {
+      apiKey: '65b07d8a6194b1b1cf824ac4547482bd',
+      indexName: 'xoid',
+      contextualSearch: true,
+    },
     // googleAnalytics: {
     //   trackingID: 'xxxx',
     // },
@@ -152,7 +152,7 @@ module.exports = {
       { property: 'og:url', content: 'https://xoid.dev/' },
       {
         property: 'og:image',
-        content: 'https://xoid.dev/img/logo-og.png',
+        content: 'https://xoid.dev/img/xoid-black.png',
       },
       { name: 'twitter:card', content: 'summary' },
       {
