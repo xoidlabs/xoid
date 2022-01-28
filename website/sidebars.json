@@ -1,0 +1,28 @@
+{
+  "docs": {
+    "Introduction": ["getting-started", "api-overview"],
+    "API Reference": [
+      "api/create",
+      "api/subscribe",
+      "api/effect",
+      "api/select",
+      "api/lens",
+      "api/use"
+    ],
+    "@xoid/react": [
+      "api-react/useatom",
+      "api-react/usesetup"
+    ],
+    "Recipes": [
+      "recipes/async",
+      "recipes/dynamic-functions-with-fixed-references",
+      "recipes/finite-state-machines",
+      "recipes/grabbing-refs",
+      "recipes/local-state",
+      "recipes/selectors",
+      "recipes/refactoring-react-classes",
+      "recipes/use-ful-patterns",
+      "recipes/using-context-correctly"
+    ]
+  }
+}
