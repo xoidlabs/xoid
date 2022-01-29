@@ -82,7 +82,7 @@ const unsubscribe = subscribe(alpha, console.log)
 ### No more hand-written reducers!
 
 **xoid** is based on immutable updates.
-You can "surgically" modify some subtree of the state by using \`select\` function, and changes will propagate to the root state.
+You can "surgically" modify a subtree of the state by using \`select\` function, and changes will propagate to the root.
 
 `,
     code: `import { create, select } from 'xoid'
@@ -215,7 +215,7 @@ function HeaderHero() {
             alt="xoid"
             src={useBaseUrl('img/logo.svg')}
             height="300px"
-            style={{ margin: 'auto' }}
+            style={{ margin: 'auto', boxShadow: '0px 2px 9px -3px #0000002e' }}
           />
         </div>
         <p className="tagline">

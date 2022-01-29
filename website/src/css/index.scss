@@ -792,13 +792,13 @@ html[data-theme="dark"] .Section p a {
 html[data-theme="dark"] {
   .HeaderHero {
     display: flex;
-    background: linear-gradient(-60deg, #332871 0%, #788fdd 50%, #7e65ab 100%);
+    background: linear-gradient(-60deg, #453a84 0%, #95adff 50%, #4ca0d2 100%);
   }
 }
 html[data-theme="light"] {
   .HeaderHero {
     display: flex;
-    background: linear-gradient(-60deg, #d3f9ff 0%, #673ab738 50%, #3f51b585 100%);
+    background: linear-gradient(-60deg, rgb(136, 194, 255) 0%, rgba(103, 58, 183, 0.22) 50%, rgba(63, 81, 181, 0.52) 100%);
   }
 }
 

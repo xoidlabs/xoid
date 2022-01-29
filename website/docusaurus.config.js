@@ -6,7 +6,7 @@ module.exports = {
   url: 'https://xoid.dev',
   baseUrl: '/',
   scripts: [],
-  favicon: 'img/favicon.ico',
+  favicon: 'img/logo-mini.svg',
   titleDelimiter: '·',
   onBrokenLinks: 'throw',
   presets: [
