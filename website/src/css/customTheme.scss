@@ -1,7 +1,7 @@
 @import "shared";
 
 :root {
-  --ifm-color-info: rgba(170, 155, 255, 0.42);
+  --ifm-color-info: rgba(170, 155, 255, 0.52);
   --ifm-color-primary: rgb(121, 182, 242);
   --brand: rgb(121, 182, 242);
   --dark: #232c3b;
@@ -11,7 +11,7 @@
   --subtle: #647899;
   --divider: #ececec;
   --tintColor: #f7f7f7;
-  --rn-note-background: #67b2ff55;
+  --rn-note-background: #67b2ff40;
   --ifm-font-size-base: 16px;
   --ifm-line-height-base: 1.5;
   --ifm-spacing-horizontal: 16px;
@@ -1514,4 +1514,18 @@ h6 {
 
 .navbar .react-toggle .react-toggle-track {
   background: #6b70be55;
+}
+
+html[data-theme="dark"] {
+  .menu--show {
+    background: var(--deepdark);
+  }
+}
+html[data-theme="dark"] .navbar-sidebar {
+  background: var(--deepdark);
+}
+
+.navbar-sidebar .navbar-sidebar__brand {
+  background: linear-gradient(-60deg,#0064cc85,#582ba7a1 50%,rgba(24, 34, 92, 0.8));
+  box-shadow: none;
 }
