@@ -152,12 +152,12 @@ module.exports = {
       { property: 'og:url', content: 'https://xoid.dev/' },
       {
         property: 'og:image',
-        content: 'https://xoid.dev/img/xoid-black.png',
+        content: 'https://xoid.dev/img/logo.png',
       },
       { name: 'twitter:card', content: 'summary' },
       {
         name: 'twitter:image',
-        content: 'https://xoid.dev/img/xoid-black.png',
+        content: 'https://xoid.dev/img/logo.png',
       },
     ],
   },
