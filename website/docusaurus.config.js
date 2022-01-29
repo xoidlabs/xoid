@@ -131,6 +131,7 @@ module.exports = {
     algolia: {
       apiKey: '65b07d8a6194b1b1cf824ac4547482bd',
       indexName: 'xoid',
+      appId: 'PU1TKKPFLJ',
       contextualSearch: true,
     },
     // googleAnalytics: {

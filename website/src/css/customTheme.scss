@@ -2,8 +2,10 @@
 
 :root {
   --ifm-color-info: rgba(170, 155, 255, 0.42);
-  --ifm-color-primary: rgb(150, 220, 255);
+  --docsearch-highlight-color: #8642ffba;
+  --ifm-color-primary: #8642ffba;
   --brand: rgb(150, 220, 255);
+  --ifm-navbar-link-hover-color: var(--brand);
   --dark: #232c3b;
   --deepdark: #202431;
   --light: #373940;
@@ -500,6 +502,10 @@ html[data-theme="dark"]  {
   }
 }
 
+.navbar__link:hover, .navbar__link--active {
+  color: var(--brand);
+}
+
 .navbar-sidebar {
   background: var(--divider);
 
@@ -665,7 +671,7 @@ div[class^="tableOfContents"] {
     margin-left: -16px;
     padding-left: 12px;
     color: var(--ifm-font-color-base);
-    border-left: 4px solid var(--brand);
+    border-left: 4px solid var(--ifm-color-primary);
 
     code {
       font-weight: 600;
