@@ -555,7 +555,7 @@ html[data-theme="dark"] {
   .NativeCode .column.last {
     width: 100%;
     padding: 0;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 
   .NativeCode .prism-code {
@@ -919,14 +919,14 @@ html[data-theme="light"] {
   }
 }
 
-@media only screen and (min-width: 961px) {
+@media only screen and (min-width: 961px) { 
   html[data-theme="light"] {
     .NativeCode .prism-code {
-      background: #fff linear-gradient(-60deg,#0064cc4a,#3e2ba74d 50%,rgba(24, 34, 92, 80%));
+      background: linear-gradient(290deg, rgba(25, 41, 80, 0.76), rgba(62, 43, 167, 0.3) 50%, rgb(25, 39, 80)) rgb(255, 255, 255);
     }
 
     .NativeCode.tint .prism-code {
-      background: #000 linear-gradient(-60deg,#0064cc4a,#3e2ba74d 50%,rgba(24, 34, 92, 80%));
+      background: linear-gradient(-60deg, rgba(0, 100, 204, 0.29), rgba(62, 43, 167, 0.3) 50%, rgb(32, 39, 76)) rgb(0, 0, 0)
     }
   }
 }
