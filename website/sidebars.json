@@ -1,18 +1,18 @@
 {
   "docs": {
     "Introduction": [
-      "getting-started"],
-    "API (Core)": [
+      "getting-started",
+      "quick-tutorial"
+    ],
+    "API": [
       "api/create",
       "api/subscribe",
       "api/effect",
-      "api/use"
-    ],
-    "API (Helpers)": [
+      "api/use",
       "api/select",
       "api/lens"
     ],
-    "React Integration": [
+    "React API": [
       "api-react/useatom",
       "api-react/usesetup"
     ],
