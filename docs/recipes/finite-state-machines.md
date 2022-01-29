@@ -6,7 +6,7 @@ title: Finite state machines
 In **xoid**, a wide range of FSMs can be expressed only by using only the `create` function.
 
 ```js
-const FsmModel = () => {
+const FsmSetup = () => {
   function melt() {
     store(liquid)
     console.log('I melted')
@@ -36,7 +36,7 @@ const FsmModel = () => {
 }
 
 const App = () => {
-  const fsm = useSetup(FsmModel)
+  const fsm = useSetup(FsmSetup)
   const { name, actions } = useStore(fsm)
   return (
     <div>
