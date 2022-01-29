@@ -6,9 +6,7 @@ Inside a React function component, in some cases which will be explained below, 
 
 ### Quick Example
 
-Let's take the following example:
-
-Inside a `React.useEffect`, a window event listener is attached and removed everytime when `props.number` changes.
+In this example, inside a `React.useEffect`, an event listener is attached and removed everytime when `props.number` changes.
 
 ```js
 //inside React
@@ -19,7 +17,7 @@ useEffect(() => {
 }, [props.number])
 ```
 
-Perhaps our requirements somehow led us to attaching the listener only once, and removing it only once when the component is unmounted. This could be achieved with React's manners, as the following.
+Let's assume that our requirements somehow led us to attach the listener only once, and remove it only once when the component is unmounted. This could be achieved with React's manners, as the following.
 
 ```js
 //inside React
@@ -45,13 +43,13 @@ useSetup(($props, onCleanup) => {
 }, props)
 ```
 
-So this example is heavy, because it also demonstrates replacing React's lifecycle methods (such as `useEffect`'s unmount using return value) with **xoid**. I wanted to start with this anyway, because it shows the potential of **xoid**.
+This example is, because it also demonstrates replacing React's lifecycle methods (such as `useEffect`'s unmount using return value) with **xoid**. I wanted to start with this anyway, because it shows the potential of **xoid**.
 
 ### Another Example
 
 Let's propose another problem, this time let's examine it in a more detailed way.
 
-Let's imagine that, inside a React component, we should initialize a class called `DragDropLibrary` **only once** as `new DragDropLibrary({ onDrop })`. Let's assume that this class cannot receive an updated version of `onDrop` callback, because it was not implemented by us, and we have no interest in modifying it. So, we want to perform dynamic "onDrop" actions, with the initial version of onDrop that's supplied.
+Let's imagine that, inside a React component, we're supposed to initialize a class called `DragDropLibrary` **only once** as `new DragDropLibrary({ onDrop })`. Let's assume that this class cannot receive an updated version of `onDrop` callback, because it was not implemented by us, and we have no interest in modifying it. So, we want to perform dynamic "onDrop" actions, with the initial version of `onDrop` that's supplied.
 
 Imagine that `props.func` is our dynamic function that changes in every render. We're going to use it as the source for different "onDrop" actions.
 
@@ -96,7 +94,7 @@ const onDrop = useLatestCallback(props.func)
 useMemo(() => new DragDropLibrary({ onDrop }),[])
 ```
 
-You may prefer React hooks, and may be OK with creating new hooks. The choice is yours. Just remember that **xoid** provides sensible fundamentals for local state management, and most cases you don't need custom hooks or helpers.
+It's OK to prefer React hooks. The choice is completely up to you. Just remember that **xoid** provides sensible fundamentals for local state management, and you'll need less custom hooks or helpers.
 
 ```js
 const onDrop = useSetup((atom) => atom()(), props.func)

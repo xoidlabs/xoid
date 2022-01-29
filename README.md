@@ -14,9 +14,9 @@
   </a>
 </p>
 
-**xoid** (pronounced /ˈzoʊ.ɪd/) is a framework-agnostic state management library. **X** in its name denotes inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed with an emphasis on simplicity. It has extensive Typescript support.
+**xoid** (pronounced /ˈzoʊ.ɪd/) is a framework-agnostic state management library. **X** in its name denotes its inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
 
-**xoid** is lightweight (1.1 kB gzipped), but quite powerful. Its composed of building blocks for  advanced state managament patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself simple and approachable for newcomers. More features are explained below.
+**xoid** is lightweight (1.2 kB gzipped), but quite powerful. Its composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below.
 
 
 To install, run the following command:
@@ -225,8 +225,6 @@ select(gamma, s => s.deep)(3000)  // "(gamma) Update ([timestamp])
 
 - `@xoid/react` - **React** integration
 - `@xoid/devtools` - **Redux Devtools** integration
-- `@xoid/utils` - Additional utilities
-- `@xoid/tree` - Experimental "tree of atoms" version
 
 ## Thanks
 Following awesome projects inspired **xoid** a lot.

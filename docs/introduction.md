@@ -21,20 +21,8 @@ Or if you're using <a href="https://classic.yarnpkg.com/en/docs/install/" target
 yarn add xoid
 ```
 
-## API Overview
+## Resources
 
-Next section provides a full API introduction. In the following sections, parts of the API are documented in the following order.
-
-Exports of `xoid` can be divided into 2 main sections.
-
-| Package | Exports           | Description |
-| - | - | - |
-| Core | [`create`](api/create) , [`subscribe`](api/subscribe) , [`effect`](api/effect) , [`use`](api/use) | Primary exports |
-| Helpers | [`select`](api/select) , [`lens`](api/lens) | Helpers (uses ES6 Proxy) |
-
-### Other packages
-
-| Package        | Exports           | Description |
-| - | - | - |
-| `@xoid/react`| [`useAtom`](api-react/useatom) , [`useSetup`](api-react/usesetup) | **React** integration |
-| `@xoid/devtools` | [`devtools`](./recipes/redux-devtools-integration) | **Redux Devtools** integration |
+- If you're new to **xoid**, we recommend starting with the [quick tutorial in the next section](quick-tutorial).
+- In [Examples](examples) section, you'll find examples to run on Codesandbox.
+- You can refer to [Recipes](./recipes/using-context-correctly) section for more advanced stuff.

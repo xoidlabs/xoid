@@ -1,6 +1,6 @@
 ---
 id: usesetup
-title: usesetup
+title: useSetup
 ---
 
 `import { useSetup } from '@xoid/react'`
