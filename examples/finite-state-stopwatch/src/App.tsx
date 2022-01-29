@@ -3,9 +3,9 @@ import { create } from 'xoid'
 import { useAtom, useSetup } from '@xoid/react'
 
 const TimerSetup = () => {
-  const state = create(stopped)
-  const time = create(0)
   let interval: ReturnType<typeof setTimeout>
+  const time = create(0)
+  const state = create(stopped)
 
   function stopped() {
     clearInterval(interval)
@@ -13,7 +13,7 @@ const TimerSetup = () => {
     return {
       playPauseButton: 'play',
       handlePlayPause: () => state(playing),
-      handleStop: () => {},
+      handleStop: () => state(stopped),
     }
   }
   function playing() {

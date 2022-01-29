@@ -16,8 +16,8 @@ const $num = NumberModel(5)
 use($num).inc()
 $num() // 6
 ```
-> Observe that `NumberModel` is a custom `create` function that creates "usable" atoms.
-If you look at the type of `$num`, it will be displayed as `Atom<number> & Usable<{inc: () => void, dec: () => void}>`.
+> Observe that `NumberModel` is a custom `create` function that creates "useable" atoms.
+If you look at the type of `$num`, it will be displayed as `Atom<number> & Useable<{inc: () => void, dec: () => void}>`.
 
 With `arrayOf`, you can create a custom create function that receives an array, and makes sure that every element of it is of the same model type. (there's also `objectOf`)
 
@@ -77,7 +77,7 @@ const { toggle } = use(atom.todos[0])
 > It's very cheap to create **xoid** atoms. 
 > Absolutely **zero** traversal or deep copying occur while `create`, `arrayOf`, `objectOf`, `model` run.
 > You can easily atom complex objects such as DOM elements inside **xoid** atoms.
-> Association of the atom nodes with "usable" actions only occurs once when a node is visited by the `use` function.
+> Association of the atom nodes with "useable" actions only occurs once when a node is visited by the `use` function.
 
 ### Feature: Using as an alternative to `React.useRef`
 

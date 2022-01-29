@@ -1,31 +1,31 @@
 import React from 'react'
-import { create, lens, effect } from 'xoid'
+import { create, effect } from 'xoid'
 import { useSetup } from '@xoid/react'
 import { ResizeObserver } from '@juggle/resize-observer'
 
-const ROSetup = (_: unknown, onCleanup: (fn: Function) => void) => {
-  const ref = create<HTMLDivElement>()
+const ResizeDisplaySetup = (_: unknown, onCleanup: (fn: () => void) => void) => {
+  const $ref = create<HTMLDivElement>()
   const $rect = create({} as { width: number; height: number })
+  const $xy = create((get) => `${get($rect).width} x ${get($rect).height}`)
 
   const observer = new ResizeObserver(([entry]) => $rect(entry.contentRect))
-  onCleanup(observer.destroy)
+  onCleanup(observer.disconnect)
 
-  onCleanup(
-    effect(ref, (element) => {
-      if (!element) return
-      observer.observe(element)
-      const unsub = effect($rect, lens(element, 'innerHTML'))
-      return () => {
-        unsub()
-        observer.disconnect(element)
-      }
-    })
-  )
-  return ref
+  const cleanup = effect($ref, (element) => {
+    if (!element) return
+    observer.observe(element)
+    const unsub = effect($xy, (xy) => (element.innerHTML = xy))
+    return () => {
+      unsub()
+      observer.unobserve(element)
+    }
+  })
+  onCleanup(cleanup)
+  return $ref
 }
 
 const App = () => {
-  const ref = useSetup(ROSetup)
+  const ref = useSetup(ResizeDisplaySetup)
   console.log('this component renders only once!')
 
   return (

@@ -6,7 +6,7 @@ title: arrayOf
 This section is incomplete
 <!-- `import { arrayOf } from 'xoid'`
 
-Models are special **create** functions. `arrayOf` creates a special **create** function that receives an array as the initial state. It makes sure that each array element is of the same model type. Second argument can optionally be used to attach usables to the root itself.
+Models are special **create** functions. `arrayOf` creates a special **create** function that receives an array as the initial state. It makes sure that each array element is of the same model type. Second argument can optionally be used to attach useables to the root itself.
 
 ```js
 import { model, arrayOf, use } from 'xoid';

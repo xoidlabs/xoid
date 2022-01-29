@@ -4,47 +4,47 @@ import { createInstance } from '@xoid/core/utils'
 
 export type StoreOf<T> = Store<ExtractLHS<T>> & ExtractRHS<T>
 
-const USABLE = Symbol('use')
+const USEABLE = Symbol('use')
 const fromShape = (shape: any) =>
   new Proxy(createInstance({ shape }), {
     get(_, prop) {
       if (shape[prop]) return shape[prop]
     },
   })
-const memoizedUsables = new WeakMap()
+const memoizedUseables = new WeakMap()
 
 type Merge<T extends any[], U extends any[]> = Array<T[number] & U[number]>
 
 // Fundamental types
-export type Usable<U> = { [USABLE]: U }
+export type Useable<U> = { [USEABLE]: U }
 export type Model<T, U = undefined> = {
-  <Q extends T>(state: Q, mutable?: boolean): Store<Q> & Usable<U>
-} & Shape<T, Usable<U>>
+  <Q extends T>(state: Q, mutable?: boolean): Store<Q> & Useable<U>
+} & Shape<T, Useable<U>>
 
 // Types for models and their returned stores
 export type ArrayStore<M extends Model<any, any>> = M extends Model<infer T, infer V>
-  ? Store<T[]> & Merge<Store<T>[], Usable<V>[]>
+  ? Store<T[]> & Merge<Store<T>[], Useable<V>[]>
   : never
 
 export type ObjectStore<M extends Model<any, any>> = M extends Model<infer T, infer V>
-  ? Store<Record<string, T>> & Record<string, Store<T> & Usable<V>>
+  ? Store<Record<string, T>> & Record<string, Store<T> & Useable<V>>
   : never
 
 export type ArrayModel<M extends Model<any, any>, U = undefined> = {
-  (state: Init<StateOf<ArrayStore<M>>>, mutable?: boolean): ArrayStore<M> & Usable<U>
-} & (M extends Model<infer T, infer V> ? Shape<T[], Usable<V>[] & Usable<U>> : never)
+  (state: Init<StateOf<ArrayStore<M>>>, mutable?: boolean): ArrayStore<M> & Useable<U>
+} & (M extends Model<infer T, infer V> ? Shape<T[], Useable<V>[] & Useable<U>> : never)
 
 export type ObjectModel<M extends Model<any, any>, U = undefined> = {
-  (state: Init<StateOf<ObjectStore<M>>>, mutable?: boolean): ObjectStore<M> & Usable<U>
+  (state: Init<StateOf<ObjectStore<M>>>, mutable?: boolean): ObjectStore<M> & Useable<U>
 } & (M extends Model<infer T, infer V>
-  ? Shape<Record<string, T>, Record<string, Usable<V>> & Usable<U>>
+  ? Shape<Record<string, T>, Record<string, Useable<V>> & Useable<U>>
   : never)
 
 export type ComposedModel<T, U = undefined> = {
-  <Q extends ExtractLHS<T>>(init: Init<Q>): Store<Q> & ExtractRHS<T> & Usable<U>
-} & Shape<ExtractLHS<T>, ExtractRHS<T> & Usable<U>>
+  <Q extends ExtractLHS<T>>(init: Init<Q>): Store<Q> & ExtractRHS<T> & Useable<U>
+} & Shape<ExtractLHS<T>, ExtractRHS<T> & Useable<U>>
 
-// For obtaining deep usables
+// For obtaining deep useables
 const SHAPE = Symbol('shape')
 type Shape<T, U> = { [SHAPE]: [T, U] }
 type ExtractLHS<T> = T extends Shape<infer P, any> ? P : TraverseLHS<T>
@@ -59,12 +59,12 @@ type TraverseRHS<T> = T extends object ? { [K in keyof T]: ExtractRHS<T[K]> } : 
  */
 
 export function model<T>(): Model<T, undefined>
-export function model<T, U>(usable?: (store: Store<T>) => U): Model<T, U>
-export function model<T, U>(shape: T, usable?: (store: Store<T>) => U): ComposedModel<T, U>
+export function model<T, U>(useable?: (store: Store<T>) => U): Model<T, U>
+export function model<T, U>(shape: T, useable?: (store: Store<T>) => U): ComposedModel<T, U>
 
-export function model(payload?: any, usable?: any) {
+export function model(payload?: any, useable?: any) {
   const isFunction = typeof payload === 'function'
-  const shape = { [USABLE]: isFunction ? payload : usable }
+  const shape = { [USEABLE]: isFunction ? payload : useable }
   if (!isFunction) Object.assign(shape, payload)
   return fromShape(shape)
 }
@@ -75,19 +75,19 @@ function wrapped(store: any, o: any) {
 }
 
 /**
- * Consumes "usables" of stores created via `model`, `arrayOf`, or `objectOf`.
+ * Consumes "useables" of stores created via `model`, `arrayOf`, or `objectOf`.
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
 
 // @ts-ignore
-export const use = <T extends any>(store: Usable<T>): T => {
-  const attempt = memoizedUsables.get(store)
+export const use = <T extends any>(store: Useable<T>): T => {
+  const attempt = memoizedUseables.get(store)
   if (attempt) return wrapped(store, attempt)
   const shape = (store as any)[META]?.shape
-  const usable = shape && shape[USABLE]
-  if (typeof usable === 'function') {
-    const u = usable(store)
-    memoizedUsables.set(store, u)
+  const useable = shape && shape[USEABLE]
+  if (typeof useable === 'function') {
+    const u = useable(store)
+    memoizedUseables.set(store, u)
     return wrapped(store, u)
   }
 }
@@ -100,8 +100,8 @@ export const use = <T extends any>(store: Usable<T>): T => {
 
 export const arrayOf = <M extends Model<any, any>, U = undefined>(
   model: M,
-  usable?: (store: ArrayStore<M>) => U
-): ArrayModel<M, U> => fromShape({ [USABLE]: usable, [RECORD]: model })
+  useable?: (store: ArrayStore<M>) => U
+): ArrayModel<M, U> => fromShape({ [USEABLE]: useable, [RECORD]: model })
 
 /**
  * Returns a store creator function that receives an object,
@@ -111,5 +111,5 @@ export const arrayOf = <M extends Model<any, any>, U = undefined>(
 
 export const objectOf = <M extends Model<any, any>, U = undefined>(
   model: M,
-  usable?: (store: ObjectStore<M>) => U
-): ObjectModel<M, U> => fromShape({ [USABLE]: usable, [RECORD]: model })
+  useable?: (store: ObjectStore<M>) => U
+): ObjectModel<M, U> => fromShape({ [USEABLE]: useable, [RECORD]: model })

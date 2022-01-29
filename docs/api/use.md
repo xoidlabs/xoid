@@ -5,7 +5,7 @@ title: use
 
 `import { use } from 'xoid'`
 
-`use` method grabs the "usables" of a store. Usables are defined by the second argument of `create` function.
+`use` method grabs the "useables" of a store. Useables are defined by the second argument of `create` function.
 
 ```js
 import { create, use } from 'xoid'

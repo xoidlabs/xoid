@@ -10,6 +10,7 @@ type TodoType = {
 
 const TodoModel = model((atom: Atom<TodoType>) => ({
   toggle: () => select(atom, 'checked')((s) => !s),
+  rename: select(props.atom, 'title'),
 }))
 
 const StoreModel = arrayOf(TodoModel, (atom) => ({
@@ -36,14 +37,14 @@ export const Todos = () => {
 
 const Todo = (props: { atom: Atom<TodoType> }) => {
   const { title, checked } = useAtom(props.atom)
-  const { toggle } = use(props.atom)
+  const { toggle, rename } = use(props.atom)
   return (
     <div>
       <input type="checkbox" checked={checked} onChange={toggle} />
       <input
         style={{ textDecoration: checked ? 'line-through' : 'none' }}
         value={title}
-        onChange={(e) => select(props.atom, 'title')(e.target.value)}
+        onChange={(e) => rename(e.target.value)}
       />
     </div>
   )

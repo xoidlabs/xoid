@@ -1,6 +1,6 @@
 export const META = Symbol()
 export const RECORD = Symbol()
-export const USABLE = Symbol()
+export const USEABLE = Symbol()
 
 // secrets
 const atom = Symbol()
