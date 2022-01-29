@@ -187,9 +187,10 @@ function Section({
   children,
   className,
   background = 'light',
+  style
 }) {
   const El = element
-  return <El className={`Section ${className} ${background}`}>{children}</El>
+  return <El className={`Section ${className} ${background}`} style={style}>{children}</El>
 }
 
 function TwoColumns({ columnOne, columnTwo, reverse }) {
@@ -207,7 +208,7 @@ function TwoColumns({ columnOne, columnTwo, reverse }) {
 
 function HeaderHero() {
   return (
-    <Section background="none" className="HeaderHero">
+    <Section background="none" className="HeaderHero" style={{paddingTop: 120}}>
       {/* <GitHubStarButton /> */}
       <div className="titleContainer">
         <div className="title">

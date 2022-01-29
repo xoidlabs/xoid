@@ -1,6 +1,7 @@
 @import "shared";
 
 .homepage {
+  margin-top: -60px;
   width: 100%;
   max-width: 100%;
 }
@@ -789,17 +790,10 @@ html[data-theme="dark"] .Section p a {
   }
 }
 
-html[data-theme="dark"] {
-  .HeaderHero {
-    display: flex;
-    background: linear-gradient(-60deg, #453a84 0%, #95adff 50%, #4ca0d2 100%);
-  }
-}
-html[data-theme="light"] {
-  .HeaderHero {
-    display: flex;
-    background: linear-gradient(-60deg, rgb(136, 194, 255) 0%, rgba(103, 58, 183, 0.22) 50%, rgba(63, 81, 181, 0.52) 100%);
-  }
+
+.HeaderHero {
+  display: flex;
+  background: linear-gradient(-60deg, #88c2ff 0%, rgb(227, 211, 255) 50%, rgba(145, 162, 255, 0.79) 100%);
 }
 
 .HeaderHero .titleContainer {
@@ -887,7 +881,7 @@ html[data-theme="light"] {
 }
 
 .prism-code {
-  background: #232c3b;
+  background: var(--deepdark);
   font-size: 15px;
 }
 

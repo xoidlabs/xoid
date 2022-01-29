@@ -17,14 +17,12 @@
       "api-react/usesetup"
     ],
     "Recipes": [
-      "recipes/async",
       "recipes/using-context-correctly",
-      "recipes/dynamic-functions-with-fixed-references",
-      "recipes/finite-state-machines",
-      "recipes/grabbing-refs",
-      "recipes/local-state",
-      "recipes/selectors",
       "recipes/refactoring-react-classes",
+      "recipes/dynamic-functions-with-fixed-references",
+      "recipes/grabbing-refs",
+      "recipes/redux-devtools-integration",
+      "recipes/finite-state-machines",
       "recipes/use-ful-patterns"
     ]
   }

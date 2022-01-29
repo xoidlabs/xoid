@@ -94,7 +94,7 @@ module.exports = {
             },
             {
               label: 'Recipes',
-              to: 'docs/recipes/async',
+              to: 'docs/recipes/using-context-correctly',
             },
           ],
         },

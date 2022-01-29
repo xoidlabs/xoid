@@ -1,8 +1,8 @@
 @import "shared";
 
 :root {
-  --ifm-color-primary: rgb(76, 139, 255);
-  --brand: rgb(76, 139, 255);
+  --ifm-color-primary: rgb(121, 182, 242);
+  --brand: rgb(121, 182, 242);
   --dark: #232c3b;
   --deepdark: #202631;
   --light: #373940;
@@ -350,11 +350,18 @@ html[data-theme="dark"] .avatar__name a {
 }
 
 /* Navbar */
+// .navbar {
+//   background: #1d115fa6;
+//   // background: linear-gradient(-60deg, #839dfdc7 0%, rgba(109, 78, 166, 0.61) 50%, rgba(63, 81, 181, 0.78) 100%);
+// }
+// html[data-theme="dark"] {
+//   .navbar {
+//     background: #1d115fa6;
+//   }
+// }
 
 .navbar {
-  &.navbar--dark {
-    background-color: var(--deepdark);
-  }
+  backdrop-filter: blur(12px);
 
   .navbar__inner {
     max-width: 1360px;
@@ -722,7 +729,7 @@ div[class^="tableOfContents"] {
 
 .footer {
   &.footer--dark {
-    --ifm-footer-background-color: var(--deepdark);
+    --ifm-footer-background-color: #242c3b;
   }
 
   .container {
@@ -1485,4 +1492,8 @@ h6 {
 
 .navbar__title {
   font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.navbar .react-toggle .react-toggle-track {
+  background: #6b70be55;
 }

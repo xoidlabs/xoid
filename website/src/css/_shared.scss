@@ -10,11 +10,11 @@
 }
 
 %link-style-dark {
-  background-color: rgba(119, 155, 255, 0.12);
-  border-bottom-color: rgba(97, 218, 251, 0.3);
+  background-color: rgba(119, 155, 255, 0.32);
+  border-bottom-color: rgba(97, 218, 251, 0.7);
 
   &:hover {
-    background-color: rgba(97, 218, 251, 0.4);
+    background-color: rgba(97, 188, 251, 0.4);
     border-bottom-color: var(--brand);
   }
 }
