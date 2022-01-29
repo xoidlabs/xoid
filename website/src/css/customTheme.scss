@@ -1,9 +1,9 @@
 @import "shared";
 
 :root {
-  --ifm-color-info: rgba(170, 155, 255, 0.52);
-  --ifm-color-primary: rgb(121, 182, 242);
-  --brand: rgb(121, 182, 242);
+  --ifm-color-info: rgba(170, 155, 255, 0.42);
+  --ifm-color-primary: rgb(150, 220, 255);
+  --brand: rgb(150, 220, 255);
   --dark: #232c3b;
   --deepdark: #202431;
   --light: #373940;
@@ -356,32 +356,26 @@ html[data-theme="dark"] .avatar__name a {
   margin-top: 0;
 }
 
-/* Navbar */
-// .navbar {
-//   background: #1d115fa6;
-//   // background: linear-gradient(-60deg, #839dfdc7 0%, rgba(109, 78, 166, 0.61) 50%, rgba(63, 81, 181, 0.78) 100%);
-// }
-// html[data-theme="dark"] {
-//   .navbar {
-//     background: #1d115fa6;
-//   }
-// }
-
 html[data-theme="dark"]  {
   .navbar .DocSearch-Button {
     background: #18064e7d;
   }
 }
 
+.navbar-sidebar, .navbar-sidebar__backdrop {
+  height: 100vh;
+}
+
 .navbar {
   background: transparent;
   padding: 0;
+  background: linear-gradient(-60deg,#0064cc85,#582ba7a1 50%, rgba(24, 34, 92, 0.8));
+  backdrop-filter: blur(12px);
+
   .navbar__inner {
     padding: calc(1rem * 0.5) 1rem;
     max-width: 1360px;
-    // margin: 0 auto;
-    background: linear-gradient(-60deg,#0064cc85,#582ba7a1 50%, rgba(24, 34, 92, 0.8));
-    backdrop-filter: blur(12px);
+    margin: 0 auto;
   }
 
   .navbar__title {
@@ -1513,7 +1507,7 @@ h6 {
 }
 
 .navbar .react-toggle .react-toggle-track {
-  background: #6b70be55;
+  background: #18064e7d;
 }
 
 html[data-theme="dark"] {
