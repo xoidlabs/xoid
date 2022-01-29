@@ -6,6 +6,12 @@
   max-width: 100%;
 }
 
+html[data-theme="dark"] {
+  .homepage {
+    background: var(--deepdark) linear-gradient(-60deg,#0064cc4a,#3e2ba74d 50%,rgba(24, 34, 92, 80%))
+  }
+}
+
 /* ActionButton */
 
 .ActionButton {
@@ -543,20 +549,19 @@
 
 @media screen and (min-width: 481px) and (max-width: 960px) {
   .NativeCode .TwoColumns {
-    grid-gap: 2rem;
+    grid-gap: 0.5rem;
   }
 
   .NativeCode .column.last {
     width: 100%;
     padding: 0;
-    background-color: var(--dark);
     overflow-y: scroll;
   }
 
   .NativeCode .prism-code {
     width: 30rem;
     margin: 0 auto;
-    padding: 1.25rem 0rem;
+    padding-bottom: 1.5rem;
   }
 }
 
@@ -631,7 +636,17 @@
 }
 
 .Section.tint {
-  background-color: #4e789c0d;
+  background-color: #11006209 ;
+  // background: #000 linear-gradient(-60deg,#0064cc4a,#3e2ba74d 50%,rgba(24, 34, 92, 80%));
+
+}
+
+html[data-theme="dark"] {
+  .Section.tint {
+    // background-color: #000 ;
+    background: #000 linear-gradient(-60deg,#0064cc4a,#3e2ba74d 50%,rgba(24, 34, 92, 80%));
+  
+  }
 }
 
 .Section.dark {
@@ -712,6 +727,12 @@ html[data-theme="dark"] .Section p a {
 
 .TwoColumns .column.last {
   grid-area: last;
+}
+
+html[data-theme="light"] {
+  .TwoColumns .column.last {
+    background: #000 linear-gradient(-60deg,#0064cc4a,#3e2ba74d 50%,rgba(24, 34, 92, 80%));
+  }
 }
 
 @media only screen and (min-width: 961px) {
@@ -885,11 +906,10 @@ html[data-theme="light"] {
   font-size: 15px;
 }
 
-html[data-theme="dark"] {
-  .NativeCode .prism-code {
-    background: transparent;
-  }
+.NativeCode .prism-code {
+  background: transparent;
 }
+
 
 @media only screen and (min-width: 961px) {
   html[data-theme="light"] {
@@ -902,11 +922,11 @@ html[data-theme="dark"] {
 @media only screen and (min-width: 961px) {
   html[data-theme="light"] {
     .NativeCode .prism-code {
-      background-color: #232c3b;
+      background: #fff linear-gradient(-60deg,#0064cc4a,#3e2ba74d 50%,rgba(24, 34, 92, 80%));
     }
 
     .NativeCode.tint .prism-code {
-      background-color: #202631;
+      background: #000 linear-gradient(-60deg,#0064cc4a,#3e2ba74d 50%,rgba(24, 34, 92, 80%));
     }
   }
 }

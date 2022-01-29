@@ -208,7 +208,7 @@ function TwoColumns({ columnOne, columnTwo, reverse }) {
 
 function HeaderHero() {
   return (
-    <Section background="none" className="HeaderHero" style={{paddingTop: 120}}>
+    <Section background="none" className="HeaderHero" style={{paddingTop: 110}}>
       {/* <GitHubStarButton /> */}
       <div className="titleContainer">
         <div className="title">
