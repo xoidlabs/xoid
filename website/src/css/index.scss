@@ -922,7 +922,7 @@ html[data-theme="light"] {
 @media only screen and (min-width: 961px) { 
   html[data-theme="light"] {
     .NativeCode .prism-code {
-      background: linear-gradient(290deg, rgba(25, 41, 80, 0.76), rgba(62, 43, 167, 0.3) 50%, rgb(25, 39, 80)) rgb(255, 255, 255);
+      background: rgb(41, 39, 85);
     }
 
     .NativeCode.tint .prism-code {
