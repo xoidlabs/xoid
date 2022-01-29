@@ -130,7 +130,7 @@ module.exports = {
     },
     algolia: {
       apiKey: '65b07d8a6194b1b1cf824ac4547482bd',
-      indexName: 'PU1TKKPFLJ',
+      indexName: 'xoid',
       contextualSearch: true,
     },
     // googleAnalytics: {
