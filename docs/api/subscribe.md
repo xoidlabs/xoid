@@ -11,7 +11,7 @@ Subscribes to a **xoid** observable. Takes a listener function as the second arg
 import { create, subscribe } from 'xoid';
 
 const store = create(0);
-setInterval(() => store((s) => s + 1), 1000);
+setInterval(() => store(s => s + 1), 1000);
 
 const unsubscribe = subscribe(store, (value) => {
   console.log('elapsed seconds: ', value);

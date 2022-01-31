@@ -1,7 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
+// @ts-ignore
 import { create, use, Atom } from 'xoid'
+// @ts-ignore
 import { useAtom } from '@xoid/react'
 
 const debug = (store: Atom<any, any>) => {
@@ -30,16 +32,6 @@ it('creates a store with a record', () => {
   expect(debug(store)).toMatchSnapshot()
 })
 
-it('normalizes nested stores', () => {
-  const store = create(create(5))
-  expect(debug(store)).toMatchSnapshot()
-})
-
-it('normalizes nested stores 2', () => {
-  const store = create(create({ a: create(5), b: create(7) }))
-  expect(debug(store)).toMatchSnapshot()
-})
-
 it('normalizes nested stores in a record', () => {
   const store = create({ alpha: create(3), beta: create(5) })
   expect(debug(store)).toMatchSnapshot()
@@ -58,6 +50,46 @@ it('uses the actions in vanilla', async () => {
   }))
   use(store).inc()
   expect(debug(store)).toMatchSnapshot()
+})
+
+it('can handle selectors', () => {
+  const store = create({ deeply: { nested: { number: 5 } } })
+
+  expect(use(store)).toBe(undefined)
+  expect(use(store, 'deeply')()).toStrictEqual({ nested: { number: 5 } })
+  expect(use(store, (s) => s.deeply)()).toStrictEqual({ nested: { number: 5 } })
+  expect(use(store, (s) => s.deeply.nested)()).toStrictEqual({ number: 5 })
+})
+
+it('can handle serial selectors', () => {
+  const store = create({ deeply: { nested: { number: 5 } } })
+  const storeDeeply = use(store, 'deeply')
+
+  expect(use(storeDeeply, (s) => s.nested)()).toStrictEqual({ number: 5 })
+})
+
+it('can handle updates via selectors', () => {
+  const store = create({ deeply: { nested: { number: 5 } } })
+  const storeDeeplyNestedNumber = use(store, (s) => s.deeply.nested.number)
+  const storeDeeply = use(store, 'deeply')
+
+  storeDeeply({ nested: { number: 25 } })
+  expect(storeDeeply()).toStrictEqual({ nested: { number: 25 } })
+
+  expect(store().deeply.nested.number).toStrictEqual(25)
+  expect(storeDeeplyNestedNumber()).toStrictEqual(25)
+})
+
+it('can handle updates via serial selectors', () => {
+  const store = create({ deeply: { nested: { number: 5 } } })
+  const storeDeeply = use(store, 'deeply')
+  const storeDeeplyNestedNumber = use(storeDeeply, (s) => s.nested.number)
+
+  storeDeeplyNestedNumber(25)
+  expect(storeDeeplyNestedNumber()).toStrictEqual(25)
+
+  expect(storeDeeply()).toStrictEqual({ nested: { number: 25 } })
+  expect(store().deeply.nested.number).toStrictEqual(25)
 })
 
 it('uses the actions in React', async () => {
@@ -131,42 +163,18 @@ it('can update the selector', async () => {
   }))
 
   function Component({ selector }: any) {
-    const [value] = useAtom(selector)
+    const value = useAtom(store, selector)
     return <div>{value}</div>
   }
 
-  const { findByText, rerender } = render(<Component selector={store.one} />)
+  const { findByText, rerender } = render(<Component selector={(s) => s.one} />)
   await findByText('one')
 
-  // rerender(<Component selector={store.two} />)
-  // await findByText('two')
+  rerender(<Component selector={(s) => s.two} />)
+  await findByText('two')
 })
 
-it('can get the store', () => {
-  const store = create({
-    value: 1,
-  })
-
-  expect(store().value).toBe(1)
-  expect(store.value()).toBe(1)
-})
-
-it('can set the store', () => {
-  const store = create({
-    value: 1,
-  })
-
-  store({ value: 2 })
-  expect(store.value()).toBe(2)
-  store({ value: 3 })
-  expect(store.value()).toBe(3)
-  store((state) => ({ value: state.value + 1 }))
-  expect(store.value()).toBe(4)
-  store.value((state) => state + 1)
-  expect(store.value()).toBe(5)
-})
-
-it('ensures parent components subscribe before children', async () => {
+it.only('ensures parent components subscribe before children', async () => {
   const store = create(() => ({
     children: {
       '1': { text: 'child 1' },
@@ -183,12 +191,13 @@ it('ensures parent components subscribe before children', async () => {
   }
 
   function Child({ id }: any) {
-    const [text] = useAtom(store.children[id].text)
+    console.log(id)
+    const text = useAtom(store, (s) => s.children[id].text)
     return <div>{text}</div>
   }
 
   function Parent() {
-    const [childStates] = useAtom(store.children)
+    const childStates = useAtom(store, (s) => s.children)
     return (
       <>
         <button onClick={changeState}>change state</button>
@@ -203,7 +212,7 @@ it('ensures parent components subscribe before children', async () => {
 
   fireEvent.click(getByText('change state'))
 
-  await findByText('child 3')
+  // await findByText('child 3')
 })
 
 // https://github.com/pmndrs/zustand/issues/84

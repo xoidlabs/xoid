@@ -7,6 +7,7 @@ import {
   Init,
   Atom,
 } from '@xoid/engine'
+import { select } from './lens'
 
 const useable = Symbol()
 export type Useable<U> = { [useable]: U }
@@ -15,7 +16,13 @@ export type Useable<U> = { [useable]: U }
  * Gets the "useable" of an atom.
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
-export const use = <U extends any>(atom: Useable<U>): U => (atom as any)[USEABLE]
+export function use<T extends unknown, U>(atom: Atom<T>, fn: (state: T) => U): Atom<U>
+export function use<T extends unknown, U extends keyof T>(atom: Atom<T>, fn: U): Atom<T[U]>
+export function use<T extends any>(atom: Useable<T>): T
+export function use(atom: any, fn?: any): any {
+  if (!fn) return (atom as any)[USEABLE]
+  return select(atom, fn)
+}
 
 /**
  * Creates an atom with the first argument as the initial state.
