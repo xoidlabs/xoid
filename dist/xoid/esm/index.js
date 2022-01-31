@@ -1,27 +1,6 @@
-import { USEABLE, createNotifier, createTarget, createSelector, META, RECORD } from '@xoid/engine';
+import { RECORD, META, USEABLE, createNotifier, createTarget, createSelector } from '@xoid/engine';
 export { effect, subscribe } from '@xoid/engine';
 
-/**
- * Gets the "useable" of an atom.
- * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
- */
-var use = function (atom) { return atom[USEABLE]; };
-function create(init, useable) {
-    var meta = { notifier: createNotifier(), node: init };
-    var target = createTarget(meta);
-    if (typeof init === 'function')
-        createSelector(target, init);
-    target[META] = meta;
-    if (useable && typeof useable === 'function')
-        target[USEABLE] = useable(target);
-    return target;
-}
-
-function lens(object, selector) {
-    var isAtom = Boolean(object[META]);
-    var atom = isAtom ? object : function () { return object; };
-    return createLens(atom, selector, true);
-}
 function select(atom, selector) {
     var _a;
     var xoid = createLens(atom, selector);
@@ -38,11 +17,6 @@ var setDeepValue = function (obj, address, nextValue) {
     nextState[nextKey] = nextValue;
     return nextState;
 };
-var getDeepValue = function (obj, address) {
-    var a = address.map(function (s) { return s; }); // avoiding _spread polyfill
-    var next = a.shift();
-    return a.length ? getDeepValue(obj[next], a) : obj[next];
-};
 function addressProxy(address) {
     return new Proxy({}, {
         get: function (_, prop) {
@@ -54,7 +28,7 @@ function addressProxy(address) {
         },
     });
 }
-var createLens = function (atom, selector, isLens) {
+var createLens = function (atom, selector) {
     var isPluck = typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol';
     var fn = isPluck ? function (s) { return s[selector]; } : selector;
     return function (input) {
@@ -64,12 +38,6 @@ var createLens = function (atom, selector, isLens) {
         if (fn(atom()) === newValue)
             return;
         var address = (isPluck ? [selector] : fn(addressProxy([]))[RECORD]);
-        if (isLens) {
-            var addressWoLastKey = address.map(function (s) { return s; });
-            var lastKey = addressWoLastKey.pop();
-            getDeepValue(atom(), addressWoLastKey)[lastKey] = newValue;
-            return;
-        }
         var newState = setDeepValue(atom(), address, newValue);
         atom(newState);
     };
@@ -80,4 +48,20 @@ var shallowClone = function (obj) {
         : Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
 };
 
-export { create, lens, select, use };
+function use(atom, fn) {
+    if (arguments.length === 1)
+        return atom[USEABLE];
+    return select(atom, fn);
+}
+function create(init, useable) {
+    var meta = { notifier: createNotifier(), node: init };
+    var target = createTarget(meta);
+    if (typeof init === 'function')
+        createSelector(target, init);
+    target[META] = meta;
+    if (useable && typeof useable === 'function')
+        target[USEABLE] = useable(target);
+    return target;
+}
+
+export { create, use };

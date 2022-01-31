@@ -16,7 +16,7 @@
 
 **xoid** (pronounced /ˈzoʊ.ɪd/) is a framework-agnostic state management library. **X** in its name denotes its inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
 
-**xoid** is lightweight (1.2 kB gzipped), but quite powerful. Its composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below.
+**xoid** is lightweight (1 kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below.
 
 
 To install, run the following command:
@@ -47,7 +47,7 @@ yarn add xoid
 
 ## Quick Tutorial
 
-**xoid** has only 6 exports: `create`, `effect`, `subscribe`, `use`, `select` and `lens`. This section will cover all of them, and the **@xoid/react**.
+**xoid** has only 4 exports: `create`, `effect`, `subscribe`, and `use`. This section will cover all of them, and the **@xoid/react**.
 
 ### Atom
 
@@ -77,24 +77,24 @@ use(numberAtom).increment()
 ```
 
 
-`select` function makes it easy to work with deep branches of state. **xoid** is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
+`use` function, when used with a second argument, acts as a selector. The selected node will be a subscribable getter/setter object like any other atom. **xoid** is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
 
 ```js
-import { create, select } from 'xoid'
+import { create, use } from 'xoid'
 
-const atom = create({ alpha: ['foo', 'bar'], deep: { beta: 5 } })
+const atom = create({ deeply: { nested: { alpha: 5 } } })
 const previousState = atom()
 
-// select and modify `.deep.beta` address
-const deepBeta = select(atom, s => s.deep.beta)
-deepBeta(s => s + 1)
+// select `.deeply.nested.alpha`
+const alpha = use(atom, s => s.deeply.nested.alpha)
+alpha(s => s + 1)
 
 // root state is replaced with new immutable state
 assert(atom() !== previousState) // ✅
-assert(atom().deep.beta === 6) // ✅
+assert(atom().deeply.nested.alpha === 6) // ✅
 ```
 
-> Type of `deepBeta` would be `Atom<number>`. It's a subscribable getter/setter object just like any other atom.
+> Type of `alpha` alpha be `Atom<number>`.
 
 ### Derived state
 
@@ -134,39 +134,29 @@ import { useAtom } from '@xoid/react'
 const state = useAtom(atom, s => s.alpha)
 ```
 
-The other hook is `useSetup`. It can be used for creating local component state. It runs its callback function only **once**. The difference from `React.useMemo` is that, the second argument is not a dependency array. Instead, it's a slot to **consume an outer variable as a reactive atom**.
+The other hook is `useSetup`. It can be used for creating local component state. It'll run its closure **only once**. If a second argument is supplied, it'll be used for communication between the closure (`useSetup` scope) and outside (React component scope).
 
 ```js
-import { subscribe, select } from 'xoid'
+import { subscribe, use } from 'xoid'
 import { useSetup } from '@xoid/react'
 
 const App = (props: Props) => {
-  const setup = useSetup((deps) => {
-    // `deps` has the type: Atom<Props>
-    subscribe(select(deps, s => s.something), console.log)
+  const setup = useSetup(($props) => {
+    // `$props` has the type: Atom<Props>
+    // this way, we can react to `props.something` as it changes
+    subscribe(use($props, s => s.something), console.log)
 
     const alpha = create(5)
     return { alpha }
   }, props)
+
+  ...
 }
 ```
 
 > `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
 
 ## More features
-
-### Feature: Optics (lenses)
-
-`lens` takes either an atom, or a plain object. It's similar to `select`, but surgical changes won't be immutably propagate to root. Instead, the original object will be mutated.
-```js
-import { lens } from 'xoid'
-
-const obj = { some: { value: 5 } }
-const someValueLens = lens(obj, (s) => s.some.value)
-someValueLens(512)
-console.log(obj) // { some: { value: 512 } }
-```
-> Type of `someValueLens` would be: `Lens<{ some: { value: number } }>`.
 
 ### Pattern: Finite state machines
 
@@ -189,14 +179,14 @@ const { color, onClick } = useAtom(machine)
 return <div style={{ color }} onClick={onClick} />
 ```
 
-### Redux Devtools integration (WIP)
+### Redux Devtools integration
 
 Import `@xoid/devtools` and connect your atom. It will send generated action names to the Redux Devtools Extension.
 
 ```js
 import { NumberModel } from './some-file'
 import { devtools } from '@xoid/devtools'
-import { use, select } from 'xoid'
+import { use, use } from 'xoid'
 
 const alpha = NumberModel(5)
 const beta = NumberModel(8)
@@ -205,7 +195,7 @@ const disconnect = devtools({ alpha, beta, gamma }, 'myStore')
 
 use(alpha).inc() // "(alpha).inc"
 use(beta).inc() // "(beta).inc"
-select(gamma, s => s.deep)(3000)  // "(gamma) Update ([timestamp])
+use(gamma, s => s.deep)(3000)  // "(gamma) Update ([timestamp])
 ```
 
 ## Why **xoid**?
@@ -216,8 +206,7 @@ select(gamma, s => s.deep)(3000)  // "(gamma) Update ([timestamp])
 - Extensive Typescript support
 - Easy to work with nested states
 - Computed values, transient updates
-- Can be used as an optics (lenses) library
-- Can also be used to express finite state machines
+- Can be used to express finite state machines
 - No middleware is required for async/generator stuff
 - Global state and local component state in the same API
 
@@ -232,5 +221,5 @@ Following awesome projects inspired **xoid** a lot.
 - [zustand](https://github.com/pmndrs/zustand)
 - [mobx-state-tree](https://github.com/mobxjs/mobx-state-tree)
 
-Thanks to [Anatoly](http://a-maslennikov.com/) for the icon [#24975](https://www.flaticon.com/free-icon/ruler_245975).
+Thanks to [Anatoly](http://a-maslennikov.com/) for the pencil&ruler icon [#24975](https://www.flaticon.com/free-icon/ruler_245975).
 
