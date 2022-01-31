@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a selector store 1`] = `
+Object {
+  "get": 8,
+  "getSerialized": "8",
+  "self": [Function],
+  "selfSerialized": undefined,
+  "use": undefined,
+}
+`;
+
+exports[`creates a store with a primitive value 1`] = `
+Object {
+  "get": 5,
+  "getSerialized": "5",
+  "self": [Function],
+  "selfSerialized": undefined,
+  "use": undefined,
+}
+`;
+
+exports[`creates a store with a record 1`] = `
+Object {
+  "get": Object {
+    "alpha": 3,
+    "beta": 5,
+  },
+  "getSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
+  "self": [Function],
+  "selfSerialized": undefined,
+  "use": undefined,
+}
+`;
+
+exports[`normalizes nested stores in a record 1`] = `
+Object {
+  "get": Object {
+    "alpha": [Function],
+    "beta": [Function],
+  },
+  "getSerialized": "{}",
+  "self": [Function],
+  "selfSerialized": undefined,
+  "use": undefined,
+}
+`;
+
+exports[`uses the actions in vanilla 1`] = `
+Object {
+  "get": Object {
+    "count": 1,
+  },
+  "getSerialized": "{\\"count\\":1}",
+  "self": [Function],
+  "selfSerialized": undefined,
+  "use": Object {
+    "inc": [Function],
+  },
+}
+`;

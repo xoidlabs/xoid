@@ -12,7 +12,8 @@
     "importHelpers": true,
     "isolatedModules": true,
     "declaration": true,
-    "declarationDir": "dist/ts-out"
+    "declarationDir": "dist/ts-out",
+    "esModuleInterop": true
   },
   "include": ["./packages"]
 }

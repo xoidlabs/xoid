@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create, use, Atom } from '../packages/xoid/lib'
-import { useAtom } from '../packages/react/lib'
+import { create, use, Atom } from 'xoid'
+import { useAtom } from '@xoid/react'
 
 const debug = (store: Atom<any, any>) => {
   return {
