@@ -8,7 +8,7 @@ Import `@xoid/devtools` and connect your atom. It will send generated action nam
 ```js
 import { NumberModel } from './some-file'
 import { devtools } from '@xoid/devtools'
-import { use, select } from 'xoid'
+import { create, use } from 'xoid'
 
 const alpha = NumberModel(5)
 const beta = NumberModel(8)
@@ -17,6 +17,6 @@ const disconnect = devtools({ alpha, beta, gamma }, 'myStore')
 
 use(alpha).inc() // "(alpha).inc"
 use(beta).inc() // "(beta).inc"
-select(gamma, s => s.deep)(3000)  // "(gamma) Update ([timestamp])
+use(gamma, s => s.deep)(3000)  // "(gamma) Update ([timestamp])
 ```
 
