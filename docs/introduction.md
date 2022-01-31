@@ -4,22 +4,78 @@ title: Getting Started
 ---
 
 > **xoid** is a scalable state management library with a small API surface.
-> While learning it takes 5 minutes, you can still manage great complexity with it.
+> While learning it takes ~5 minutes, you can still manage great complexity with it.
 
 
 ## Installation
 
-The **xoid** package lives in <a href="https://www.npmjs.com/get-npm" target="_blank">npm</a>. To install, run the following command:
+The **xoid** package lives in <a href="https://www.npmjs.com/get-npm" target="_blank">npm</a>. To install, you can run one of the the following commands:
 
-```shell
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  defaultValue="npm"
+  values={[
+    {label: 'npm', value: 'npm'},
+    {label: 'yarn', value: 'yarn'},
+    {label: 'deno', value: 'deno'},
+  ]}>
+  <TabItem value="npm">
+
+```bash
 npm install xoid
 ```
 
-Or if you're using <a href="https://classic.yarnpkg.com/en/docs/install/" target="_blank">yarn</a>:
+  </TabItem>
+  <TabItem value="yarn">
 
-```shell
+```bash
 yarn add xoid
 ```
+
+  </TabItem>
+  <TabItem value="deno">
+
+```js
+import { create } from 'https://unpkg.com/xoid/index.js'
+```
+
+  </TabItem>
+</Tabs>
+
+If you're using **xoid** with React, also install the **@xoid/react** package.
+
+<Tabs
+  defaultValue="npm"
+  values={[
+    {label: 'npm', value: 'npm'},
+    {label: 'yarn', value: 'yarn'},
+    {label: 'deno', value: 'deno'},
+  ]}>
+  <TabItem value="npm">
+
+```bash
+npm install xoid @xoid/react
+```
+
+  </TabItem>
+  <TabItem value="yarn">
+
+```bash
+yarn add xoid @xoid/react
+```
+
+  </TabItem>
+  <TabItem value="deno">
+
+```js
+import { create } from 'https://unpkg.com/xoid/index.js'
+import { useAtom } from 'https://unpkg.com/@xoid/react/index.js'
+```
+
+  </TabItem>
+</Tabs>
 
 ## Resources
 
