@@ -2,10 +2,8 @@ import { RECORD, META, USEABLE, createNotifier, createTarget, createSelector } f
 export { effect, subscribe } from '@xoid/engine';
 
 function select(atom, selector) {
-    var _a;
     var xoid = createLens(atom, selector);
-    // @ts-ignore
-    Object.assign(xoid, (_a = {}, _a[META] = atom[META], _a));
+    xoid[META] = atom[META];
     return xoid;
 }
 var setDeepValue = function (obj, address, nextValue) {

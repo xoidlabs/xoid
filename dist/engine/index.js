@@ -42,11 +42,12 @@ var parseSelector = function (selector) {
     return isPluck ? function (s) { return s[selector]; } : selector;
 };
 function createReadable(atom, selector) {
-    var _a;
     if (!selector)
         return atom;
     var fn = parseSelector(selector);
-    return Object.assign((function () { return fn(atom()); }), (_a = {}, _a[META] = atom[META], _a));
+    var ans = function () { return fn(atom()); };
+    ans[META] = atom[META];
+    return ans;
 }
 var createGetState = function (updateState, onCleanup) {
     // @ts-ignore

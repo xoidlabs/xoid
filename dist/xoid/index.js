@@ -5,10 +5,8 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var engine = require('@xoid/engine');
 
 function select(atom, selector) {
-    var _a;
     var xoid = createLens(atom, selector);
-    // @ts-ignore
-    Object.assign(xoid, (_a = {}, _a[engine.META] = atom[engine.META], _a));
+    xoid[engine.META] = atom[engine.META];
     return xoid;
 }
 var setDeepValue = function (obj, address, nextValue) {

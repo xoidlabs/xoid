@@ -7,7 +7,7 @@ import {
   Init,
   Atom,
 } from '@xoid/engine'
-import { select } from './lens'
+import { select } from './select'
 
 const useable = Symbol()
 export type Useable<U> = { [useable]: U }

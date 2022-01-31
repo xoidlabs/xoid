@@ -2,9 +2,8 @@ import { META, RECORD } from '@xoid/engine'
 
 export function select(atom: any, selector: any) {
   const xoid = createLens(atom, selector)
-  // @ts-ignore
-  Object.assign(xoid, { [META]: atom[META] })
-  return xoid as any
+  ;(xoid as any)[META] = atom[META]
+  return xoid
 }
 
 const setDeepValue = <T extends Record<string, any>, K extends string[]>(

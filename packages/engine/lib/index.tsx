@@ -74,7 +74,9 @@ export function createReadable<T, U>(
 ): Atom<U> | Atom<T> {
   if (!selector) return atom
   const fn = parseSelector(selector)
-  return Object.assign((() => fn(atom())) as AtomInternal, { [META]: (atom as AtomInternal)[META] })
+  const ans = () => fn(atom())
+  ;(ans as AtomInternal)[META] = (atom as AtomInternal)[META]
+  return ans as any
 }
 
 export const createGetState =
