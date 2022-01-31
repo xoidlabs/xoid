@@ -8,9 +8,7 @@
       "api/create",
       "api/subscribe",
       "api/effect",
-      "api/use",
-      "api/select",
-      "api/lens"
+      "api/use"
     ],
     "React API": [
       "api-react/useatom",

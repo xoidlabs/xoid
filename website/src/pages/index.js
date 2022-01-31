@@ -81,14 +81,17 @@ const unsubscribe = subscribe(alpha, console.log)
     text: `
 ### No more hand-written reducers!
 
-**xoid** is based on immutable updates.
-You can "surgically" modify a subtree of the state by using \`select\` function, and changes will propagate to the root.
+\`use\` function, when used with a second argument, acts as a selector. 
+The selected node will be a subscribable getter/setter object like any other atom. 
+xoid is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
+
+
 
 `,
-    code: `import { create, select } from 'xoid'
+    code: `import { create, use } from 'xoid'
 
 const atom = create({ deeply: { nested: { foo: 5 } } })
-const fooAtom = select(atom, (s) => s.deeply.nested.foo)
+const fooAtom = use(atom, (s) => s.deeply.nested.foo)
 
 const oldValue = atom()
 fooAtom(25) // set the value surgically into the store

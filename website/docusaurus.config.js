@@ -40,6 +40,7 @@ module.exports = {
   ],
   plugins: ['docusaurus-plugin-sass', './sitePlugin'],
   themeConfig: {
+    sidebarCollapsible: false,
     prism: {
       defaultLanguage: 'jsx',
       theme: require('./core/PrismTheme'),
