@@ -5,11 +5,11 @@ title: Quick Tutorial
 
 > You can skip this part if you've already read the Github README.
 
-**xoid** has only 6 exports: `create`, `effect`, `subscribe`, `use`, `select` and `lens`. This tutorial will cover all of them, and the **@xoid/react**.
+**xoid** has only 4 exports: `create`, `effect`, `subscribe`, and `use`. This section will cover all of them, and the **@xoid/react**.
 
 ### Atom
 
-**xoid** is based on atoms. Atoms are standalone setter/getter objects that hold state. `create` function is used to create them.
+Atoms are standalone setter/getter objects that hold state. `create` function is used to create them.
 
 ```js
 import { create } from 'xoid'
@@ -35,24 +35,24 @@ use(numberAtom).increment()
 ```
 
 
-`select` function makes it easy to work with deep branches of state. **xoid** is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
+`use` function, when used with a second argument, acts as a selector. The selected node will be a subscribable getter/setter object like any other atom. **xoid** is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
 
 ```js
-import { create, select } from 'xoid'
+import { create, use } from 'xoid'
 
-const atom = create({ alpha: ['foo', 'bar'], deep: { beta: 5 } })
+const atom = create({ deeply: { nested: { alpha: 5 } } })
 const previousState = atom()
 
-// select and modify `.deep.beta` address
-const deepBeta = select(atom, s => s.deep.beta)
-deepBeta(s => s + 1)
+// select `.deeply.nested.alpha`
+const alpha = use(atom, s => s.deeply.nested.alpha)
+alpha(s => s + 1)
 
 // root state is replaced with new immutable state
 assert(atom() !== previousState) // ✅
-assert(atom().deep.beta === 6) // ✅
+assert(atom().deeply.nested.alpha === 6) // ✅
 ```
 
-> Type of `deepBeta` would be `Atom<number>`. It's a subscribable getter/setter object just like any other atom.
+> Type of `alpha` alpha be `Atom<number>`.
 
 ### Derived state
 
@@ -79,9 +79,7 @@ const unsub = subscribe(
   (state, previousState) => { console.log(state, previousState) }
 )
 ```
-:::info Hint
-To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
-:::
+> To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
 ## React integration
 
@@ -94,39 +92,29 @@ import { useAtom } from '@xoid/react'
 const state = useAtom(atom, s => s.alpha)
 ```
 
-The other hook is `useSetup`. It can be used for creating local component state. It runs its callback function only **once**. The difference from `React.useMemo` is that, the second argument is not a dependency array. Instead, it's a slot to **consume an outer variable as a reactive atom**.
+The other hook is `useSetup`. It can be used for creating local component state. It'll run its closure **only once**. If a second argument is supplied, it'll be used for communication between the closure (`useSetup` scope) and outside (React component scope).
 
 ```js
-import { subscribe, select } from 'xoid'
+import { subscribe, use } from 'xoid'
 import { useSetup } from '@xoid/react'
 
 const App = (props: Props) => {
-  const setup = useSetup((deps) => {
-    // `deps` has the type: Atom<Props>
-    subscribe(select(deps, s => s.something), console.log)
+  const setup = useSetup(($props) => {
+    // `$props` has the type: Atom<Props>
+    // this way, we can react to `props.something` as it changes
+    subscribe(use($props, s => s.something), console.log)
 
     const alpha = create(5)
     return { alpha }
   }, props)
+
+  ...
 }
 ```
 
 > `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
 
 ## More features
-
-### Feature: Optics (lenses)
-
-`lens` takes either an atom, or a plain object. It's similar to `select`, but surgical changes won't be immutably propagate to root. Instead, the original object will be mutated.
-```js
-import { lens } from 'xoid'
-
-const obj = { some: { value: 5 } }
-const someValueLens = lens(obj, (s) => s.some.value)
-someValueLens(512)
-console.log(obj) // { some: { value: 512 } }
-```
-> Type of `someValueLens` would be: `Lens<{ some: { value: number } }>`.
 
 ### Pattern: Finite state machines
 

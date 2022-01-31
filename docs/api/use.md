@@ -7,9 +7,9 @@ title: use
 
 `use` function does one of two things: 
 - Grab "useables" of an atom
-- Grab subtrees of an atom (Use them as sub-atoms)
+- Use a subtree of an atom as a sub-atom
 
-When used without the second argument, it grabs the "useables" of an atom. Note that useables are defined by the second argument of `create` function.
+When used without the second argument, it grabs the "useables" of an atom. Useables are defined by the second argument of `create` function.
 
 ```js
 import { create, use } from 'xoid'
@@ -23,10 +23,10 @@ use(numberAtom).increment()
 ```
 
 :::info Tip
-For an enhanced developer experience, `@xoid/devtools` package can be used.
+For an enhanced debugging experience, `@xoid/devtools` package can be used.
 :::
 
-Using with a second argument means "selector" mode. This will select a subtree of the atom. The selected node will be gettable, settable and subscribable like any other atom. **xoid** is based on immutable updates, so if you "surgically" set state of a subtree atom, changes will propagate to the root.
+Using with a second argument means "selector" mode. This will select a subtree of the atom. The selected node will be a subscribable getter/setter object like any other atom. **xoid** is based on immutable updates, so if you "surgically" set state of a subtree atom, changes will propagate to the root.
 
 ```js
 import { create, use } from 'xoid'
@@ -34,7 +34,7 @@ import { create, use } from 'xoid'
 const atom = create({ deeply: { nested: { alpha: 5 } } })
 const previousState = atom()
 
-// select and modify `.deep.beta` address
+// select `.deeply.nested.alpha`
 const alpha = use(atom, s => s.deeply.nested.alpha)
 alpha(s => s + 1)
 

@@ -20,13 +20,13 @@ const numberStore = useSetup(() => create(5))
 It also has a second argument to **consume an outer variable as a reactive atom**.
 
 ```js
-import { subscribe, select } from 'xoid'
+import { subscribe, use } from 'xoid'
 import { useSetup } from '@xoid/react'
 
 const App = (props: Props) => {
   const setup = useSetup((deps) => {
     // `deps` has the type: Atom<Props>
-    subscribe(select(deps, s => s.something), console.log)
+    subscribe(use(deps, s => s.something), console.log)
 
     const alpha = create(5)
     return { alpha }

@@ -4,7 +4,7 @@ title: Getting Started
 ---
 
 > **xoid** is a scalable state management library with a small API surface.
-> While learning it takes ~10 mins, you can still manage great complexity with it.
+> While learning it takes 5 minutes, you can still manage great complexity with it.
 
 
 ## Installation

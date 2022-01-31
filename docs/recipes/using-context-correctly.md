@@ -7,7 +7,7 @@ Using React context for rarely-occuring changes such as theme providers, or inte
 
 A context provider causes its whole subtree to rerender. This can result in noticable slowdowns. Even Redux has used React Context in v6, then reverted it in v7 due to [some recurring complaints](https://github.com/reduxjs/react-redux/issues/1164). This was also mentioned in [The History and Implementation of React-Redux by Mark Erikson](https://blog.isquaredsoftware.com/2018/11/react-redux-history-implementation/#v7-0).
 
-There's [a great article by Michel Weststrate](https://medium.com/@mweststrate/how-to-safely-use-react-context-b7e343eff076) on using Context efficiently. In summary, the article argues that **"we should not store state directly in our context. Instead, we should use context as a dependency injection system"**. **xoid** can be used to do exactly that.
+There's [an article by Michel Weststrate](https://medium.com/@mweststrate/how-to-safely-use-react-context-b7e343eff076) on using Context efficiently. In summary, the article argues that **"we should not store state directly in our context. Instead, we should use context as a dependency injection system"**. **xoid** can be used to do exactly that.
 
 Let's say, we're going to share a state with the following interface: `{alpha: number, beta: number}`. Instead of feeding it directly as a context value, we can make it an atom. We can create that atom only once, inside a `useSetup` hook.
 
@@ -31,6 +31,7 @@ export const App = () => {
 
 ```js title="./MyComponent.tsx"
 import { useContext } from 'react'
+import { use } from 'xoid'
 import { useAtom } from '@xoid/react'
 import { MyContext } from './MyContext'
 
@@ -41,7 +42,7 @@ export const MyComponent = () => {
   return (
     <div>
       alpha: {state.alpha}, beta: {state.beta}
-      <button onClick={() => select(atom, 'alpha')(s => s + 1)}>increment alpha</button>
+      <button onClick={() => use(atom, 'alpha')(s => s + 1)}>increment alpha</button>
     </div>
   )
 }

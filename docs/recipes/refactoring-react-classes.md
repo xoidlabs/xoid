@@ -74,7 +74,7 @@ After getting rid of `this.setState` usages, we can get rid of the `Runtime` cla
 ```js
 const AppSetup = ($props: Atom<Props>) => {
   const $state = create({ alpha: 5 })
-  const incrementAlpha = () => select($state, 'alpha')((s) => s + 1)
+  const incrementAlpha = () => use($state, 'alpha')((s) => s + 1)
   return { $state, incrementAlpha }
 }
 

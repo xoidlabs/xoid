@@ -20,7 +20,7 @@ export function use<T extends unknown, U>(atom: Atom<T>, fn: (state: T) => U): A
 export function use<T extends unknown, U extends keyof T>(atom: Atom<T>, fn: U): Atom<T[U]>
 export function use<T extends any>(atom: Useable<T>): T
 export function use(atom: any, fn?: any): any {
-  if (!fn) return (atom as any)[USEABLE]
+  if (arguments.length === 1) return (atom as any)[USEABLE]
   return select(atom, fn)
 }
 
