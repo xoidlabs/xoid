@@ -1,19 +1,19 @@
-import { USABLE, createNotifier, createTarget, createSelector, META, RECORD } from '@xoid/engine';
+import { USEABLE, createNotifier, createTarget, createSelector, META, RECORD } from '@xoid/engine';
 export { effect, subscribe } from '@xoid/engine';
 
 /**
- * Gets the "usable" of an atom.
+ * Gets the "useable" of an atom.
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
-var use = function (atom) { return atom[USABLE]; };
-function create(init, usable) {
+var use = function (atom) { return atom[USEABLE]; };
+function create(init, useable) {
     var meta = { notifier: createNotifier(), node: init };
     var target = createTarget(meta);
     if (typeof init === 'function')
         createSelector(target, init);
     target[META] = meta;
-    if (usable && typeof usable === 'function')
-        target[USABLE] = usable(target);
+    if (useable && typeof useable === 'function')
+        target[USEABLE] = useable(target);
     return target;
 }
 

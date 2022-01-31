@@ -4,7 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var META = Symbol();
 var RECORD = Symbol();
-var USABLE = Symbol();
+var USEABLE = Symbol();
 var createTarget = function (meta, onSet) {
     if (onSet === void 0) { onSet = function (meta, value) {
         meta.node = value;
@@ -110,7 +110,7 @@ var effect = createSubscribe(true);
 
 exports.META = META;
 exports.RECORD = RECORD;
-exports.USABLE = USABLE;
+exports.USEABLE = USEABLE;
 exports.createCleanup = createCleanup;
 exports.createGetState = createGetState;
 exports.createNotifier = createNotifier;

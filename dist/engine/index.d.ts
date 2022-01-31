@@ -1,6 +1,6 @@
 declare const META: unique symbol;
 declare const RECORD: unique symbol;
-declare const USABLE: unique symbol;
+declare const USEABLE: unique symbol;
 declare const atom: unique symbol;
 declare type IsAtom = {
     [atom]: true;
@@ -51,4 +51,4 @@ declare const subscribe: <T extends Atom<any>>(atom: T, fn: Listener<StateOf<T>>
  */
 declare const effect: <T extends Atom<any>>(atom: T, fn: Listener<StateOf<T>>) => (() => void);
 
-export { Atom, GetState, Init, IsAtom, Listener, META, OnCleanup, RECORD, StateOf, USABLE, createCleanup, createGetState, createNotifier, createReadable, createSelector, createSubscribe, createTarget, effect, parseSelector, subscribe };
+export { Atom, GetState, Init, IsAtom, Listener, META, OnCleanup, RECORD, StateOf, USEABLE, createCleanup, createGetState, createNotifier, createReadable, createSelector, createSubscribe, createTarget, effect, parseSelector, subscribe };

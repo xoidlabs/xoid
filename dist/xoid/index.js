@@ -5,18 +5,18 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var engine = require('@xoid/engine');
 
 /**
- * Gets the "usable" of an atom.
+ * Gets the "useable" of an atom.
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
-var use = function (atom) { return atom[engine.USABLE]; };
-function create(init, usable) {
+var use = function (atom) { return atom[engine.USEABLE]; };
+function create(init, useable) {
     var meta = { notifier: engine.createNotifier(), node: init };
     var target = engine.createTarget(meta);
     if (typeof init === 'function')
         engine.createSelector(target, init);
     target[engine.META] = meta;
-    if (usable && typeof usable === 'function')
-        target[engine.USABLE] = usable(target);
+    if (useable && typeof useable === 'function')
+        target[engine.USEABLE] = useable(target);
     return target;
 }
 
