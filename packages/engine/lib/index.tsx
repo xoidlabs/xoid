@@ -5,8 +5,7 @@ export const USEABLE = Symbol()
 // secrets
 const atom = Symbol()
 export type IsAtom = { [atom]: true }
-type AtomInternal = any
-type MetaInternal = { node: any; notifier: ReturnType<typeof createNotifier> }
+type $A = any
 
 // globals
 export type Atom<T> = {
@@ -25,18 +24,12 @@ export type GetState = {
   <T, U extends keyof T>(atom: Atom<T>, selector: U): T[U]
 }
 
-export const createTarget = (
-  meta: MetaInternal,
-  onSet = (meta: MetaInternal, value: any) => {
-    meta.node = value
-    meta.notifier.notify()
-  }
-) => {
-  return function (input?: unknown) {
-    if (arguments.length === 0) return meta.node
-    const nextValue = typeof input === 'function' ? input(meta.node) : input
-    if (meta.node === nextValue) return
-    onSet(meta, nextValue)
+export const createTarget = (get: Function, set: Function) => {
+  return function (x?: unknown) {
+    if (arguments.length === 0) return get()
+    const nextValue = typeof x === 'function' ? x(get()) : x
+    if (get() === nextValue) return
+    set(nextValue)
   }
 }
 
@@ -51,19 +44,22 @@ export const createNotifier = () => {
 }
 
 export const createCleanup = () => {
-  const unsubs = new Set<Function>()
-  const onCleanup = (fn: Function) => void unsubs.add(fn)
+  const fns = new Set<Function>()
+  const onCleanup = (fn: Function) => void fns.add(fn)
   const cleanupAll = () => {
-    unsubs.forEach((fn) => fn())
-    unsubs.clear()
+    fns.forEach((fn) => fn())
+    fns.clear()
   }
   return { onCleanup, cleanupAll }
 }
 
-export const parseSelector = <T, U>(selector: keyof T | ((state: T) => U)): Function => {
+export const parseSelector = <T, U>(
+  selector: keyof T | ((state: T) => U)
+): { isPluck: boolean; fn: Function } => {
   const isPluck =
     typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol'
-  return isPluck ? (s: T) => s[selector] : (selector as (state: T) => U)
+  const fn = isPluck ? (s: T) => s[selector] : (selector as (state: T) => U)
+  return { isPluck, fn }
 }
 
 export function createReadable<T>(atom: Atom<T>): Atom<T>
@@ -73,9 +69,9 @@ export function createReadable<T, U>(
   selector?: keyof T | ((state: T) => U)
 ): Atom<U> | Atom<T> {
   if (!selector) return atom
-  const fn = parseSelector(selector)
+  const { fn } = parseSelector(selector)
   const ans = () => fn(atom())
-  ;(ans as AtomInternal)[META] = (atom as AtomInternal)[META]
+  ;(ans as $A)[META] = (atom as $A)[META]
   return ans as any
 }
 

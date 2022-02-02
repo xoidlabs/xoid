@@ -174,7 +174,7 @@ it('can update the selector', async () => {
   await findByText('two')
 })
 
-it.only('ensures parent components subscribe before children', async () => {
+it.skip('ensures parent components subscribe before children', async () => {
   const store = create(() => ({
     children: {
       '1': { text: 'child 1' },

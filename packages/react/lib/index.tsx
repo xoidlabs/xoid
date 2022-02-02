@@ -36,7 +36,7 @@ export function useAtom<T, U>(atom?: Atom<T>, selector?: keyof T | ((state: T) =
     return createGetState(forceUpdate, onCleanup)
   }
   const readable = useMemo(() => createReadable(atom, selector), [atom, selector])
-  useIsoLayoutEffect(() => subscribe(readable, forceUpdate), [])
+  useIsoLayoutEffect(() => subscribe(readable, forceUpdate), [readable])
   return readable()
   /* eslint-enable react-hooks/rules-of-hooks*/
 }
@@ -45,12 +45,12 @@ export function useAtom<T, U>(atom?: Atom<T>, selector?: keyof T | ((state: T) =
  * Can be used to create local state inside React components. Similar to `React.useMemo`.
  * @see [xoid.dev/docs/api-react/usesetup](https://xoid.dev/docs/api-react/usesetup)
  */
-export function useSetup<T>(model: (deps: Atom<undefined>, onCleanup: OnCleanup) => T): T
-export function useSetup<T, P>(model: (deps: Atom<P>, onCleanup: OnCleanup) => T, props: P): T
-export function useSetup(model: (deps: any, onCleanup: any) => any, props?: any): any {
+export function useSetup<T>(setupFn: (deps: Atom<undefined>, onCleanup: OnCleanup) => T): T
+export function useSetup<T, P>(setupFn: (deps: Atom<P>, onCleanup: OnCleanup) => T, props: P): T
+export function useSetup(setupFn: (deps: any, onCleanup: any) => any, props?: any): any {
   const deps = useConstant(() => create(props))
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useIsoLayoutEffect(() => deps(props), [props])
+  useIsoLayoutEffect(() => deps(props), [props]) // ?
   const onCleanup = useCleanup()
-  return useConstant(() => model(deps, onCleanup))
+  return useConstant(() => setupFn(deps, onCleanup))
 }

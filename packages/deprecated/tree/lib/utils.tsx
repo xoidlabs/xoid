@@ -81,7 +81,6 @@ export const createCell = (pm: Meta, key: string) => {
 export const createInstance = (options: { shape?: any; onSet?: (value: any) => void } = {}): any =>
   function (init?: any, mutable?: any) {
     const { shape, onSet } = options
-    const isFunction = typeof init === 'function'
     if (!arguments.length) mutable = true
     const root = createNotifier()
     Object.assign(root, { mutable, onSet })
@@ -94,7 +93,7 @@ export const createInstance = (options: { shape?: any; onSet?: (value: any) => v
       },
       'value'
     )
-    if (isFunction) createSelector(store, init)
+    if (typeof init === 'function') createSelector(store, init)
     return store
   }
 
@@ -102,3 +101,18 @@ const shallowClone = (obj: any) =>
   Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))
 
 export const debug = (store: Atom<any>): Meta => (store as any)[META]
+
+// export const createTarget = (
+//   meta: MetaInternal,
+//   onSet = (meta: MetaInternal, value: any) => {
+//     meta.node = value
+//     meta.notifier.notify()
+//   }
+// ) => {
+//   return function (input?: unknown) {
+//     if (arguments.length === 0) return meta.node
+//     const nextValue = typeof input === 'function' ? input(meta.node) : input
+//     if (meta.node === nextValue) return
+//     onSet(meta, nextValue)
+//   }
+// }

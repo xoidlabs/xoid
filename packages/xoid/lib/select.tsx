@@ -1,9 +1,9 @@
-import { META, RECORD } from '@xoid/engine'
+import { createTarget, META, parseSelector, RECORD } from '@xoid/engine'
 
-export function select(atom: any, selector: any) {
-  const xoid = createLens(atom, selector)
-  ;(xoid as any)[META] = atom[META]
-  return xoid
+const shallowClone = (obj: any) => {
+  return Array.isArray(obj)
+    ? obj.map((s) => s) // avoid _spread polyfill
+    : Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))
 }
 
 const setDeepValue = <T extends Record<string, any>, K extends string[]>(
@@ -11,7 +11,7 @@ const setDeepValue = <T extends Record<string, any>, K extends string[]>(
   address: K,
   nextValue: unknown
 ): T => {
-  const a = address.map((s) => s) // avoiding _spread polyfill
+  const a = address.map((s) => s) // avoid _spread polyfill
   const nextKey = a.shift() as string
   const nextState = shallowClone(obj)
   if (a.length) nextValue = setDeepValue(obj[nextKey as string], a, nextValue)
@@ -25,7 +25,7 @@ function addressProxy(address: string[]): any {
     {
       get: (_, prop) => {
         if (prop === RECORD) return address
-        const newAddress = address.map((s) => s) // avoiding _spread polyfill
+        const newAddress = address.map((s) => s) // avoid _spread polyfill
         newAddress.push(prop as string)
         return addressProxy(newAddress)
       },
@@ -33,23 +33,17 @@ function addressProxy(address: string[]): any {
   )
 }
 
-const createLens = (atom: any, selector: any) => {
-  const isPluck =
-    typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol'
-  const fn = isPluck ? (s: any) => s[selector] : selector
+export const select = (atom: any, selector: any) => {
+  const { isPluck, fn } = parseSelector(selector)
+  const address = (isPluck ? [selector] : fn(addressProxy([]))[RECORD]) as string[]
 
-  return function (input?: any) {
-    if (arguments.length === 0) return fn(atom())
-    const newValue = typeof input === 'function' ? input(fn(atom())) : input
-    if (fn(atom()) === newValue) return
-    const address = (isPluck ? [selector] : fn(addressProxy([]))[RECORD]) as string[]
-    const newState = setDeepValue(atom(), address, newValue)
-    atom(newState)
-  }
-}
-
-const shallowClone = (obj: any) => {
-  return Array.isArray(obj)
-    ? obj.map((s) => s)
-    : Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))
+  const target = createTarget(
+    () => fn(atom()),
+    (value: any) => {
+      const newState = setDeepValue(atom(), address, value)
+      atom(newState)
+    }
+  )
+  ;(target as any)[META] = atom[META]
+  return target
 }

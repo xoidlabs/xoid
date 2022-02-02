@@ -5,10 +5,6 @@ declare const atom: unique symbol;
 declare type IsAtom = {
     [atom]: true;
 };
-declare type MetaInternal = {
-    node: any;
-    notifier: ReturnType<typeof createNotifier>;
-};
 declare type Atom<T> = {
     [atom]: true;
     (): T;
@@ -24,7 +20,7 @@ declare type GetState = {
     <T, U>(atom: Atom<T>, selector: (state: T) => U): U;
     <T, U extends keyof T>(atom: Atom<T>, selector: U): T[U];
 };
-declare const createTarget: (meta: MetaInternal, onSet?: (meta: MetaInternal, value: any) => void) => (input?: unknown) => any;
+declare const createTarget: (get: Function, set: Function) => (x?: unknown) => any;
 declare const createNotifier: () => {
     listeners: Set<(value?: unknown) => void>;
     notify: (value?: unknown) => void;
@@ -34,7 +30,10 @@ declare const createCleanup: () => {
     onCleanup: (fn: Function) => undefined;
     cleanupAll: () => void;
 };
-declare const parseSelector: <T, U>(selector: keyof T | ((state: T) => U)) => Function;
+declare const parseSelector: <T, U>(selector: keyof T | ((state: T) => U)) => {
+    isPluck: boolean;
+    fn: Function;
+};
 declare function createReadable<T>(atom: Atom<T>): Atom<T>;
 declare function createReadable<T, U>(atom: Atom<T>, selector?: keyof T | ((state: T) => U)): Atom<U>;
 declare const createGetState: (updateState: Listener<unknown>, onCleanup: OnCleanup) => GetState;

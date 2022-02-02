@@ -24,16 +24,16 @@ function useAtom(atom, selector) {
         return createGetState(forceUpdate, onCleanup);
     }
     var readable = useMemo(function () { return createReadable(atom, selector); }, [atom, selector]);
-    useIsoLayoutEffect(function () { return subscribe(readable, forceUpdate); }, []);
+    useIsoLayoutEffect(function () { return subscribe(readable, forceUpdate); }, [readable]);
     return readable();
     /* eslint-enable react-hooks/rules-of-hooks*/
 }
-function useSetup(model, props) {
+function useSetup(setupFn, props) {
     var deps = useConstant(function () { return create(props); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useIsoLayoutEffect(function () { return deps(props); }, [props]);
+    useIsoLayoutEffect(function () { return deps(props); }, [props]); // ?
     var onCleanup = useCleanup();
-    return useConstant(function () { return model(deps, onCleanup); });
+    return useConstant(function () { return setupFn(deps, onCleanup); });
 }
 
 export { useAtom, useSetup };

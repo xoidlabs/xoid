@@ -5,18 +5,14 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var META = Symbol();
 var RECORD = Symbol();
 var USEABLE = Symbol();
-var createTarget = function (meta, onSet) {
-    if (onSet === void 0) { onSet = function (meta, value) {
-        meta.node = value;
-        meta.notifier.notify();
-    }; }
-    return function (input) {
+var createTarget = function (get, set) {
+    return function (x) {
         if (arguments.length === 0)
-            return meta.node;
-        var nextValue = typeof input === 'function' ? input(meta.node) : input;
-        if (meta.node === nextValue)
+            return get();
+        var nextValue = typeof x === 'function' ? x(get()) : x;
+        if (get() === nextValue)
             return;
-        onSet(meta, nextValue);
+        set(nextValue);
     };
 };
 var createNotifier = function () {
@@ -29,22 +25,23 @@ var createNotifier = function () {
     return { listeners: listeners, notify: notify, subscribe: subscribe };
 };
 var createCleanup = function () {
-    var unsubs = new Set();
-    var onCleanup = function (fn) { return void unsubs.add(fn); };
+    var fns = new Set();
+    var onCleanup = function (fn) { return void fns.add(fn); };
     var cleanupAll = function () {
-        unsubs.forEach(function (fn) { return fn(); });
-        unsubs.clear();
+        fns.forEach(function (fn) { return fn(); });
+        fns.clear();
     };
     return { onCleanup: onCleanup, cleanupAll: cleanupAll };
 };
 var parseSelector = function (selector) {
     var isPluck = typeof selector === 'string' || typeof selector === 'number' || typeof selector === 'symbol';
-    return isPluck ? function (s) { return s[selector]; } : selector;
+    var fn = isPluck ? function (s) { return s[selector]; } : selector;
+    return { isPluck: isPluck, fn: fn };
 };
 function createReadable(atom, selector) {
     if (!selector)
         return atom;
-    var fn = parseSelector(selector);
+    var fn = parseSelector(selector).fn;
     var ans = function () { return fn(atom()); };
     ans[META] = atom[META];
     return ans;

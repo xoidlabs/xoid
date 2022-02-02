@@ -13,7 +13,7 @@ declare function useAtom<T, U extends keyof T>(atom: Atom<T>, selector: U): T[U]
  * Can be used to create local state inside React components. Similar to `React.useMemo`.
  * @see [xoid.dev/docs/api-react/usesetup](https://xoid.dev/docs/api-react/usesetup)
  */
-declare function useSetup<T>(model: (deps: Atom<undefined>, onCleanup: OnCleanup) => T): T;
-declare function useSetup<T, P>(model: (deps: Atom<P>, onCleanup: OnCleanup) => T, props: P): T;
+declare function useSetup<T>(setupFn: (deps: Atom<undefined>, onCleanup: OnCleanup) => T): T;
+declare function useSetup<T, P>(setupFn: (deps: Atom<P>, onCleanup: OnCleanup) => T, props: P): T;
 
 export { useAtom, useSetup };

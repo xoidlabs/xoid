@@ -35,9 +35,15 @@ export function create<T>(init: Init<T>): Atom<T>
 export function create<T, U>(init: Init<T>, useable?: (atom: Atom<T>) => U): Atom<T> & Useable<U>
 export function create<T, U = undefined>(init?: Init<T>, useable?: (atom: Atom<T>) => U): Atom<T> {
   const meta = { notifier: createNotifier(), node: init }
-  const target = createTarget(meta)
-  if (typeof init === 'function') createSelector(target as unknown as Atom<T>, init as Function)
+  const target = createTarget(
+    () => meta.node,
+    (value: T) => {
+      meta.node = value
+      meta.notifier.notify()
+    }
+  ) as Atom<T>
+  if (typeof init === 'function') createSelector(target, init)
   ;(target as any)[META] = meta
-  if (useable && typeof useable === 'function') (target as any)[USEABLE] = useable(target as any)
-  return target as any
+  if (useable && typeof useable === 'function') (target as any)[USEABLE] = useable(target)
+  return target
 }
