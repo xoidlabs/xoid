@@ -814,7 +814,21 @@ html[data-theme="light"] {
 
 .HeaderHero {
   display: flex;
-  background: linear-gradient(-60deg, #88c2ff 0%, rgb(227, 211, 255) 50%, rgba(145, 162, 255, 0.79) 100%);
+  background: linear-gradient(-60deg, #88c2ff 0%, #ede2ff 50%, rgba(145, 162, 255, 0.69) 100%);
+}
+
+.HeaderHero svg {
+  color: #4f2eb3;
+}
+
+html[data-theme="dark"] {
+  .HeaderHero {
+    background: linear-gradient(-60deg, #6627ca 0%, #cb9fff 100%)
+  }
+
+  .HeaderHero svg {
+    color: #ffffff;
+  }
 }
 
 .HeaderHero .titleContainer {
@@ -837,8 +851,14 @@ html[data-theme="light"] {
   color: var(--dark);
   line-height: 1.3;
   font-weight: 400;
-  max-width: 640px;
+  max-width: 600px;
   margin: 20px;
+}
+
+html[data-theme="dark"] {
+  .HeaderHero .tagline {
+    color: #ffffff;
+  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -869,18 +889,24 @@ html[data-theme="light"] {
 
 .ActionButton.primary {
   color: var(--dark);
-  background-color: #ffffffcc;
+  background-color: #ffffff;
   border-radius: 25px;
-}
-
-.ActionButton.primary:hover {
-  color: black;
-  background-color: white;
 }
 
 .ActionButton.secondary {
   color: var(--dark);
   background: none;
+}
+
+html[data-theme="dark"] {
+  .ActionButton.primary {
+    color: #ffffff;
+    background-color: #392b8f;
+  }
+  
+  .ActionButton.secondary {
+    color: #ffffff;
+  }
 }
 
 .ActionButton.secondary::after {

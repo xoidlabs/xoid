@@ -371,7 +371,7 @@ html[data-theme="dark"]  {
 .navbar {
   background: transparent;
   padding: 0;
-  background: linear-gradient(-60deg,#0064cc85,#582ba7a1 50%, rgba(24, 34, 92, 0.8));
+  background: linear-gradient(-60deg,rgba(0,100,204,.521569),rgba(88,43,167,.631373) 50%,rgba(24,34,92,.8)); // linear-gradient(-60deg,#1f1e35aa,#582ba7a1 50%, rgba(24, 34, 92, 0.8));
   backdrop-filter: blur(12px);
 
   .navbar__inner {

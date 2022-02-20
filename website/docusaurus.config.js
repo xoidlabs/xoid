@@ -6,7 +6,7 @@ module.exports = {
   url: 'https://xoid.dev',
   baseUrl: '/',
   scripts: [],
-  favicon: 'img/logo-mini.svg',
+  favicon: 'img/favicon.ico',
   titleDelimiter: '·',
   onBrokenLinks: 'throw',
   presets: [
@@ -127,7 +127,8 @@ module.exports = {
         //   ]
         // }
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Docusaurus. Forked from reactnative.dev`,
+      copyright: `Copyright © ${new Date().getFullYear()} Docusaurus. Thanks to <a href="http://a-maslennikov.com/">Anatoly</a> for the <a href="https://www.flaticon.com/free-icon/ruler_245975">icon</a>.
+      `,
     },
     algolia: {
       apiKey: '65b07d8a6194b1b1cf824ac4547482bd',

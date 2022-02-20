@@ -16,12 +16,16 @@
     ],
     "Recipes": [
       "recipes/using-context-correctly",
-      "recipes/refactoring-react-classes",
+      "recipes/nested-state",
       "recipes/dynamic-functions-with-fixed-references",
-      "recipes/grabbing-refs",
+      "recipes/using-reducers",
+      "recipes/redux-interop",
       "recipes/redux-devtools-integration",
+      "recipes/refactoring-react-classes",
+      "recipes/grabbing-refs",
       "recipes/finite-state-machines",
-      "recipes/use-ful-patterns"
+      "recipes/use-ful-patterns",
+      "recipes/persist-localstorage"
     ]
   }
 }
