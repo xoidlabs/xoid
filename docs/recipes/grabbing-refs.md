@@ -30,7 +30,7 @@ return <div ref={setup.ref} />
 
 ### Grabbing other refs
 
-If you think about it, the same coding style can be used to grab events or other things. It might not be wrong to call these "event refs", and other, too.
+The same coding style can be used to grab events or other things. 
 
 ```js
 const $event = create<MouseEvent>() // Atom<MouseEvent | undefined>

@@ -32,7 +32,7 @@ useEffect(() => {
 }, [])
 ```
 
-Let's articulate what just happened here. The `useEffect` is converted run only once during the component lifecycle, so it has zero dependencies. Above that `useEffect`, to get the most recent version of the `number` prop each the callback runs, there's a mechanism with two hooks: a `useRef` to hold the value and a `useEffect` to keep it up to date. This mechanism, the `useEffect` & `useRef` pair is an unspoken, and somewhat common React pattern.
+Let's articulate what just happened here. The `useEffect` is converted run only once during the component lifecycle, so it has zero dependencies. Above that `useEffect`, to get the most recent version of the `number` prop each time the callback runs, a mechanism was built using two hooks: a `useRef` to hold the value and a `useEffect` to keep it up to date. This mechanism, the `useEffect` & `useRef` pair is an unspoken, and somewhat common React pattern.
 
 With **xoid**, the equivalent optimization is simply the following:
 

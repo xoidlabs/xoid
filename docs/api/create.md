@@ -5,7 +5,7 @@ title: create
 
 `import { create } from 'xoid'`
 
-`create` is used to create atoms. Atoms are standalone setter/getter objects that hold state. `create` function is used to create them.
+`create` is used to create atoms. Atoms are standalone setter/getter objects that hold state. 
 
 ```js
 import { create } from 'xoid'
@@ -30,7 +30,7 @@ const numberAtom = create(5, (atom) => ({
 use(numberAtom).increment()
 ```
 
-## Deriving state from other atoms
+## Derived state
 
 By providing a function as the first argument, a derived atom can be created.
 
@@ -42,14 +42,12 @@ const sum = create((get) => get(alpha) + get(beta));
 
 ## Deriving state from other sources (Advanced)
 
-With an additional feature of `get` function above, you can derive the atom's state from non-atoms. This can be a Redux store, an RxJS observable, or anything that implements getState & subscribe pair. Here is an atom that derives its state from a redux store.
+With an additional feature of `get` function above, you can get the state from non-atoms. This can be a Redux store, an RxJS observable, or anything that implements getState & subscribe pair. Here is an atom that derives its state from a Redux store.
 
 ```js
 import store from './reduxStore'
 
-const derivedAtom = create(
-  (get) => get(store.getState, store.subscribe)
-)
+const derivedAtom = create((get) => get(store.getState, store.subscribe))
 ```
 
 ## Grabbing refs
@@ -62,7 +60,7 @@ const $ref = create<HTMLElement>() // Atom<HTMLElement | undefined>
 $ref(document.body)
 ```
 
-### Enhanced atoms (Advanced)
+## Enhanced atoms (Advanced)
 
 An enhanced atom is an atom with different "setter" behavior. Optional third argument of `create` is called an *enhancer*. It's used for returning a function to be used instead of the default setter function. Most people using **xoid** will not need to write enhancers. 
 

@@ -5,12 +5,13 @@ title: Using reducers
 
 **xoid** doesn't need reducers, but if you prefer to use them, or if you're moving away from Redux, but want to reuse your existing reducers, you can easily do that with **xoid**. 
 
-The following **xoid** model can be used to run reducers.
+The following **xoid** model can be used to setup a Redux-like behavior in an atom.
 
 ```js
 const StoreModel = (reducer, state) =>
   create(state, (atom) => (action) => atom((s) => reducer(s, action)))
 ```
+> In the second argument, a **dispatch** function is built.
 
 Let's take this simple reducer:
 
@@ -42,7 +43,7 @@ const dispatch = use(store)
 dispatch({ type: types.increase, by: 1 })
 ```
 
-Connecting existing reducers to **xoid** can be beneficial especially if you're planning to gradually refactor your reducers. The above reducer can be simplified into to the following:
+Connecting existing reducers to **xoid** can be beneficial, especially if you're planning to gradually refactor your reducers. The above reducer can be simplified into to the following:
 
 ```js
 const CounterModel = (state) => create(state, (atom) => {
@@ -56,4 +57,4 @@ const CounterModel = (state) => create(state, (atom) => {
 
 To see another demonstration with a more dramatic refactor, you can check [Working with nested state](nested-state)
 
-Related: [Using xoid in an existing Redux App](redux-interop)
+Related: [Using in an existing Redux App](redux-interop)

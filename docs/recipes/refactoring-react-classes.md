@@ -3,8 +3,6 @@ id: refactoring-react-classes
 title: Refactoring React classes
 ---
 
-### Refactoring React class components
-
 **xoid** can provide a scaffolding system for refactoring React class components into function components. During refactoring, intermediate version of the component keeps working. 
 
 Let's imagine that the following class component is going to be refactored:

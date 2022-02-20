@@ -46,37 +46,6 @@ import { create } from 'https://unpkg.com/xoid/index.js'
 
 If you're using **xoid** with React, also install the **@xoid/react** package.
 
-<Tabs
-  defaultValue="npm"
-  values={[
-    {label: 'npm', value: 'npm'},
-    {label: 'yarn', value: 'yarn'},
-    {label: 'deno', value: 'deno'},
-  ]}>
-  <TabItem value="npm">
-
-```bash
-npm install xoid @xoid/react
-```
-
-  </TabItem>
-  <TabItem value="yarn">
-
-```bash
-yarn add xoid @xoid/react
-```
-
-  </TabItem>
-  <TabItem value="deno">
-
-```js
-import { create } from 'https://unpkg.com/xoid/index.js'
-import { useAtom } from 'https://unpkg.com/@xoid/react/index.js'
-```
-
-  </TabItem>
-</Tabs>
-
 ## Resources
 
 - If you're new to **xoid**, we recommend starting with the [quick tutorial in the next section](quick-tutorial).
