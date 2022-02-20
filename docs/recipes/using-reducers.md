@@ -3,7 +3,7 @@ id: using-reducers
 title: Using reducers
 ---
 
-**xoid** doesn't need reducers, but if you like reducers, or if you're moving away from Redux, but want to reuse your existing reducers, you can easily do all that with **xoid**. 
+**xoid** doesn't need reducers, but if you prefer to use them, or if you're moving away from Redux, but want to reuse your existing reducers, you can easily do that with **xoid**. 
 
 The following **xoid** model can be used to run reducers.
 
