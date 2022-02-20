@@ -21,7 +21,7 @@ const useCleanup = () => {
 }
 
 /**
- * Subscribes to an xoid atom inside a React function component.
+ * Subscribes to a xoid atom inside a React function component.
  * @see [xoid.dev/docs/api-react/useatom](https://xoid.dev/docs/api-react/useatom)
  */
 export function useAtom(): GetState
@@ -50,7 +50,7 @@ export function useSetup<T, P>(setupFn: (deps: Atom<P>, onCleanup: OnCleanup) =>
 export function useSetup(setupFn: (deps: any, onCleanup: any) => any, props?: any): any {
   const deps = useConstant(() => create(props))
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useIsoLayoutEffect(() => deps(props), [props]) // ?
+  useIsoLayoutEffect(() => deps(props), [props])
   const onCleanup = useCleanup()
   return useConstant(() => setupFn(deps, onCleanup))
 }

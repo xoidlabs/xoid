@@ -2,7 +2,7 @@ import { GetState, Atom } from 'xoid';
 import { OnCleanup } from '@xoid/engine';
 
 /**
- * Subscribes to an xoid atom inside a React function component.
+ * Subscribes to a xoid atom inside a React function component.
  * @see [xoid.dev/docs/api-react/useatom](https://xoid.dev/docs/api-react/useatom)
  */
 declare function useAtom(): GetState;

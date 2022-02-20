@@ -11,6 +11,7 @@ import { select } from './select'
 
 const useable = Symbol()
 export type Useable<U> = { [useable]: U }
+export type Middleware<T = unknown> = (prev: { set: (value: T) => void }) => (value: T) => void
 
 /**
  * Gets the "useable" of an atom.
@@ -32,15 +33,25 @@ export function use(atom: any, fn?: any): any {
 
 export function create<T>(): Atom<T | undefined>
 export function create<T>(init: Init<T>): Atom<T>
-export function create<T, U>(init: Init<T>, useable?: (atom: Atom<T>) => U): Atom<T> & Useable<U>
-export function create<T, U = undefined>(init?: Init<T>, useable?: (atom: Atom<T>) => U): Atom<T> {
+export function create<T>(init: Init<T>, useable?: null, middleware?: Middleware<T>): Atom<T>
+export function create<T, U>(
+  init: Init<T>,
+  useable?: (atom: Atom<T>) => U,
+  middleware?: Middleware<T>
+): Atom<T> & Useable<U>
+export function create<T, U = undefined>(
+  init?: Init<T>,
+  useable?: ((atom: Atom<T>) => U) | null,
+  middleware?: Middleware<T>
+): Atom<T> {
   const meta = { notifier: createNotifier(), node: init }
+  const defaultSetter = (value: T) => {
+    meta.node = value
+    meta.notifier.notify()
+  }
   const target = createTarget(
     () => meta.node,
-    (value: T) => {
-      meta.node = value
-      meta.notifier.notify()
-    }
+    middleware ? middleware({ set: defaultSetter }) : defaultSetter
   ) as Atom<T>
   if (typeof init === 'function') createSelector(target, init)
   ;(target as any)[META] = meta

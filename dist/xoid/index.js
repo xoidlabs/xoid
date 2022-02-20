@@ -4,20 +4,20 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var engine = require('@xoid/engine');
 
-var shallowClone = function (obj) {
+var clone = function (obj) {
     return Array.isArray(obj)
         ? obj.map(function (s) { return s; }) // avoid _spread polyfill
         : Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
 };
-var setDeepValue = function (obj, address, nextValue) {
-    var a = address.map(function (s) { return s; }); // avoid _spread polyfill
-    var nextKey = a.shift();
-    var nextState = shallowClone(obj);
-    if (a.length)
-        nextValue = setDeepValue(obj[nextKey], a, nextValue);
-    nextState[nextKey] = nextValue;
-    return nextState;
-};
+function set(obj, path, value) {
+    if (!path.length)
+        return value;
+    var rest = path.map(function (a) { return a; });
+    var key = rest.shift();
+    var ans = clone(obj);
+    ans[key] = set(obj[key], rest, value);
+    return ans;
+}
 function addressProxy(address) {
     return new Proxy({}, {
         get: function (_, prop) {
@@ -32,10 +32,7 @@ function addressProxy(address) {
 var select = function (atom, selector) {
     var _a = engine.parseSelector(selector), isPluck = _a.isPluck, fn = _a.fn;
     var address = (isPluck ? [selector] : fn(addressProxy([]))[engine.RECORD]);
-    var target = engine.createTarget(function () { return fn(atom()); }, function (value) {
-        var newState = setDeepValue(atom(), address, value);
-        atom(newState);
-    });
+    var target = engine.createTarget(function () { return fn(atom()); }, function (value) { return atom(function (state) { return set(state, address, value); }); });
     target[engine.META] = atom[engine.META];
     return target;
 };
@@ -45,12 +42,13 @@ function use(atom, fn) {
         return atom[engine.USEABLE];
     return select(atom, fn);
 }
-function create(init, useable) {
+function create(init, useable, middleware) {
     var meta = { notifier: engine.createNotifier(), node: init };
-    var target = engine.createTarget(function () { return meta.node; }, function (value) {
+    var defaultSetter = function (value) {
         meta.node = value;
         meta.notifier.notify();
-    });
+    };
+    var target = engine.createTarget(function () { return meta.node; }, middleware ? middleware({ set: defaultSetter }) : defaultSetter);
     if (typeof init === 'function')
         engine.createSelector(target, init);
     target[engine.META] = meta;

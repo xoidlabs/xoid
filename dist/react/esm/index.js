@@ -31,7 +31,7 @@ function useAtom(atom, selector) {
 function useSetup(setupFn, props) {
     var deps = useConstant(function () { return create(props); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useIsoLayoutEffect(function () { return deps(props); }, [props]); // ?
+    useIsoLayoutEffect(function () { return deps(props); }, [props]);
     var onCleanup = useCleanup();
     return useConstant(function () { return setupFn(deps, onCleanup); });
 }
