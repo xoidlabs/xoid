@@ -1,4 +1,4 @@
-import { parseSelector, RECORD, createTarget, META, USEABLE, createNotifier, createSelector } from '@xoid/engine';
+import { parseSelector, createTarget, RECORD, META, USEABLE, createNotifier, createSelector } from '@xoid/engine';
 export { effect, subscribe } from '@xoid/engine';
 
 var clone = function (obj) {
@@ -28,27 +28,36 @@ function addressProxy(address) {
 }
 var select = function (atom, selector) {
     var _a = parseSelector(selector), isPluck = _a.isPluck, fn = _a.fn;
-    var address = (isPluck ? [selector] : fn(addressProxy([]))[RECORD]);
-    var target = createTarget(function () { return fn(atom()); }, function (value) { return atom(function (state) { return set(state, address, value); }); });
+    var address;
+    var target = createTarget(function () { return fn(atom()); }, function (value) {
+        return atom(function (state) {
+            if (!address)
+                address = (isPluck ? [selector] : fn(addressProxy([]))[RECORD]);
+            return set(state, address, value);
+        });
+    });
     target[META] = atom[META];
     return target;
 };
 
 function use(atom, fn) {
-    if (arguments.length === 1)
-        return atom[USEABLE];
+    if (arguments.length === 1) {
+        var u = atom[USEABLE];
+        var dh = atom[META].devtoolsHelper;
+        return dh ? dh(atom, u) : u;
+    }
     return select(atom, fn);
 }
-function create(init, useable, middleware) {
+function create(init, useable, enhancer) {
     var meta = { notifier: createNotifier(), node: init };
-    var defaultSetter = function (value) {
+    var setter = function (value) {
         meta.node = value;
         meta.notifier.notify();
     };
-    var target = createTarget(function () { return meta.node; }, middleware ? middleware({ set: defaultSetter }) : defaultSetter);
+    var target = createTarget(function () { return meta.node; }, enhancer ? enhancer(setter) : setter);
+    target[META] = meta;
     if (typeof init === 'function')
         createSelector(target, init);
-    target[META] = meta;
     if (useable && typeof useable === 'function')
         target[USEABLE] = useable(target);
     return target;

@@ -18,7 +18,8 @@ declare type OnCleanup = (fn: () => void) => void;
 declare type GetState = {
     <T>(atom: Atom<T>): T;
     <T, U>(atom: Atom<T>, selector: (state: T) => U): U;
-    <T, U extends keyof T>(atom: Atom<T>, selector: U): T[U];
+    <T, U extends keyof T>(atom: Atom<T>, key: U): T[U];
+    <T>(getState: () => T, subscribe: (fn: (value: T) => void) => () => void): T;
 };
 declare const createTarget: (get: Function, set: Function) => (x?: unknown) => any;
 declare const createNotifier: () => {

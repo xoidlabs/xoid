@@ -29,11 +29,11 @@ function useAtom(atom, selector) {
     /* eslint-enable react-hooks/rules-of-hooks*/
 }
 function useSetup(setupFn, props) {
-    var deps = useConstant(function () { return create(props); });
+    var $deps = useConstant(function () { return create(function () { return props; }); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useIsoLayoutEffect(function () { return deps(props); }, [props]);
+    useIsoLayoutEffect(function () { return $deps(function () { return props; }); }, [props]);
     var onCleanup = useCleanup();
-    return useConstant(function () { return setupFn(deps, onCleanup); });
+    return useConstant(function () { return setupFn($deps, onCleanup); });
 }
 
 export { useAtom, useSetup };

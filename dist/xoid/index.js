@@ -31,27 +31,36 @@ function addressProxy(address) {
 }
 var select = function (atom, selector) {
     var _a = engine.parseSelector(selector), isPluck = _a.isPluck, fn = _a.fn;
-    var address = (isPluck ? [selector] : fn(addressProxy([]))[engine.RECORD]);
-    var target = engine.createTarget(function () { return fn(atom()); }, function (value) { return atom(function (state) { return set(state, address, value); }); });
+    var address;
+    var target = engine.createTarget(function () { return fn(atom()); }, function (value) {
+        return atom(function (state) {
+            if (!address)
+                address = (isPluck ? [selector] : fn(addressProxy([]))[engine.RECORD]);
+            return set(state, address, value);
+        });
+    });
     target[engine.META] = atom[engine.META];
     return target;
 };
 
 function use(atom, fn) {
-    if (arguments.length === 1)
-        return atom[engine.USEABLE];
+    if (arguments.length === 1) {
+        var u = atom[engine.USEABLE];
+        var dh = atom[engine.META].devtoolsHelper;
+        return dh ? dh(atom, u) : u;
+    }
     return select(atom, fn);
 }
-function create(init, useable, middleware) {
+function create(init, useable, enhancer) {
     var meta = { notifier: engine.createNotifier(), node: init };
-    var defaultSetter = function (value) {
+    var setter = function (value) {
         meta.node = value;
         meta.notifier.notify();
     };
-    var target = engine.createTarget(function () { return meta.node; }, middleware ? middleware({ set: defaultSetter }) : defaultSetter);
+    var target = engine.createTarget(function () { return meta.node; }, enhancer ? enhancer(setter) : setter);
+    target[engine.META] = meta;
     if (typeof init === 'function')
         engine.createSelector(target, init);
-    target[engine.META] = meta;
     if (useable && typeof useable === 'function')
         target[engine.USEABLE] = useable(target);
     return target;

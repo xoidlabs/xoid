@@ -39,7 +39,7 @@ var parseSelector = function (selector) {
     return { isPluck: isPluck, fn: fn };
 };
 function createReadable(atom, selector) {
-    if (!selector)
+    if (typeof selector === 'undefined')
         return atom;
     var fn = parseSelector(selector).fn;
     var ans = function () { return fn(atom()); };
@@ -48,8 +48,13 @@ function createReadable(atom, selector) {
 }
 var createGetState = function (updateState, onCleanup) {
     // @ts-ignore
-    return function (atom, selector) {
-        var readable = createReadable(atom, selector);
+    return function (atom, selectorOrSubscribe) {
+        if (!atom[META]) {
+            // if not a xoid atom, treat as external subscription
+            onCleanup(selectorOrSubscribe(updateState));
+            return atom();
+        }
+        var readable = createReadable(atom, selectorOrSubscribe);
         onCleanup(subscribe(readable, updateState));
         return readable();
     };
@@ -59,7 +64,11 @@ var createSelector = function (atom, init) {
     var updateState = function () {
         cleanupAll();
         var result = init(getter);
-        atom(result);
+        if (atom() === result)
+            return;
+        var meta = atom[META];
+        meta.node = result;
+        meta.notifier.notify();
     };
     var getter = createGetState(updateState, onCleanup);
     updateState();

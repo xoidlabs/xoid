@@ -34,7 +34,7 @@ var snapshot = function (store) { return store(); };
 /**
  * Integration for [Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension).
  */
-var devtools = function (store, name) {
+var devtools = function (atom, name) {
     // borrowed heavily from https://github.com/pmndrs/valtio/blob/main/src/utils/devtools.ts
     var extension;
     try {
@@ -50,30 +50,30 @@ var devtools = function (store, name) {
         return function () { return void 0; };
     }
     var dt = extension.connect({ name: name });
-    store[engine.META].root.devtoolsHelper = createDevtoolsHelper();
-    var channel = (store[engine.META].root.devtoolsChannel = engine.createNotifier());
+    atom[engine.META].devtoolsHelper = createDevtoolsHelper();
+    var channel = (atom[engine.META].devtoolsChannel = engine.createNotifier());
     var currentAction;
     // @ts-ignore
     var unsub0 = channel.subscribe(function (state) {
         if (!state && currentAction) {
-            dt.send(currentAction, snapshot(store));
+            dt.send(currentAction, snapshot(atom));
         }
         currentAction = state;
         if (state && state.async) {
             var modifier = state.end ? ' (end)' : '';
-            dt.send(__assign(__assign({}, state), { type: state.type + modifier }), snapshot(store));
+            dt.send(__assign(__assign({}, state), { type: state.type + modifier }), snapshot(atom));
             currentAction = undefined;
         }
     });
     var isTimeTraveling = false;
-    var unsub1 = engine.subscribe(store, function () {
+    var unsub1 = engine.subscribe(atom, function () {
         if (isTimeTraveling) {
             isTimeTraveling = false;
         }
         else {
             var now = window.performance.now().toFixed(2);
             var action = currentAction && !currentAction.async ? currentAction : "Update (" + now + ")";
-            dt.send(action, snapshot(store));
+            dt.send(action, snapshot(atom));
             currentAction = undefined;
         }
     });
@@ -86,10 +86,10 @@ var devtools = function (store, name) {
                 isTimeTraveling = true;
             }
             var nextValue = JSON.parse(message.state);
-            store(nextValue);
+            atom(nextValue);
         }
         else if (((_c = message.payload) === null || _c === void 0 ? void 0 : _c.type) === 'COMMIT') {
-            dt.init(snapshot(store));
+            dt.init(snapshot(atom));
         }
         else if (((_d = message.payload) === null || _d === void 0 ? void 0 : _d.type) === 'IMPORT_STATE') {
             var actions_1 = (_e = message.payload.nextLiftedState) === null || _e === void 0 ? void 0 : _e.actionsById;
@@ -98,15 +98,15 @@ var devtools = function (store, name) {
             computedStates.forEach(function (_a, index) {
                 var state = _a.state;
                 var action = actions_1[index] || "Update - " + new Date().toLocaleString();
-                store(state);
+                atom(state);
                 if (index === 0)
-                    dt.init(snapshot(store));
+                    dt.init(snapshot(atom));
                 else
-                    dt.send(action, snapshot(store));
+                    dt.send(action, snapshot(atom));
             });
         }
     });
-    dt.init(snapshot(store));
+    dt.init(snapshot(atom));
     return function () {
         unsub0();
         unsub1();
@@ -119,6 +119,7 @@ function isEligible(o) {
 }
 var createDevtoolsHelper = function () {
     var getAddress = function (store, obj, actionAddress) {
+        if (actionAddress === void 0) { actionAddress = []; }
         if (!isEligible(obj))
             return obj;
         return new Proxy(obj, {
@@ -132,12 +133,15 @@ var createDevtoolsHelper = function () {
                 return getAddress(store, obj[prop], newActionAddress);
             },
             apply: function (target, thisArg, args) {
-                if (target[engine.META] || !store[engine.META].root.devtoolsChannel)
+                var _a, _b;
+                if (target[engine.META] || !store[engine.META].devtoolsChannel)
                     return Reflect.apply(target, thisArg, args);
-                var storeAddress = store[engine.META].address.slice(1).map(shorten);
-                var begin = storeAddress.length ? "(*." + storeAddress.join('.') + ")" : '*';
+                var storeAddress = (_b = (_a = store[engine.META]) === null || _a === void 0 ? void 0 : _a.address) === null || _b === void 0 ? void 0 : _b.slice(1).map(shorten);
+                var begin = (storeAddress === null || storeAddress === void 0 ? void 0 : storeAddress.length) ? "(*." + storeAddress.join('.') + ")" : '*';
                 var isAsync = Object.prototype.toString.call(target) === '[object AsyncFunction]';
-                var action = { type: begin + "." + actionAddress.map(nodot).join('.') };
+                var action = {
+                    type: begin + "." + actionAddress.map(nodot).join('.'),
+                };
                 if (isAsync) {
                     // @ts-ignore
                     action.async = true;
@@ -149,12 +153,12 @@ var createDevtoolsHelper = function () {
                     attemptTimes.i++;
                     action.type = action.type + ' #' + attemptTimes.i;
                 }
-                store[engine.META].root.devtoolsChannel.notify(__assign(__assign({}, action), { args: args }));
+                store[engine.META].devtoolsChannel.notify(__assign(__assign({}, action), { args: args }));
                 var result = Reflect.apply(target, thisArg, args);
                 if (isAsync)
-                    result.then(function () { return store[engine.META].root.devtoolsChannel.notify(__assign(__assign({}, action), { end: true })); });
+                    result.then(function () { return store[engine.META].devtoolsChannel.notify(__assign(__assign({}, action), { end: true })); });
                 else
-                    store[engine.META].root.devtoolsChannel.notify(undefined);
+                    store[engine.META].devtoolsChannel.notify(undefined);
                 return result;
             },
         });
