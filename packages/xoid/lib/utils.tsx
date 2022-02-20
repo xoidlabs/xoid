@@ -33,11 +33,15 @@ function addressProxy(address: string[]): any {
 
 export const select = (atom: Atom<unknown>, selector: any) => {
   const { isPluck, fn } = parseSelector(selector)
-  const address = (isPluck ? [selector] : fn(addressProxy([]))[RECORD]) as string[]
+  let address: any
 
   const target = createTarget(
     () => fn(atom()),
-    (value: unknown) => atom((state: unknown) => set(state, address, value))
+    (value: unknown) =>
+      atom((state: unknown) => {
+        if (!address) address = (isPluck ? [selector] : fn(addressProxy([]))[RECORD]) as string[]
+        return set(state, address, value)
+      })
   )
   ;(target as $A)[META] = (atom as $A)[META]
   return target

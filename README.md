@@ -4,13 +4,13 @@
 
 <p align="center">
   <a href="https://bundlephobia.com/result?p=xoid" >
-    <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=293140&colorB=d3f9ff">
+    <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=4f2eb3&colorB=cb9fff">
   </a>
   <a href="https://www.npmjs.com/package/xoid">
-    <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&colorA=293140&colorB=d3f9ff">
+    <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=cb9fff">
   </a>
   <a href="https://www.npmjs.com/package/xoid">
-    <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=293140&colorB=d3f9ff"/>
+    <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=4f2eb3&colorB=cb9fff"/>
   </a>
 </p>
 
@@ -183,21 +183,33 @@ return <div style={{ color }} onClick={onClick} />
 
 ### Redux Devtools integration
 
-Import `@xoid/devtools` and connect your atom. It will send generated action names to the Redux Devtools Extension.
+Import `@xoid/devtools` and connect your atom. It will send action names to the Redux Devtools Extension.
 
 ```js
-import { NumberModel } from './some-file'
 import { devtools } from '@xoid/devtools'
-import { use, use } from 'xoid'
+import { create, use } from 'xoid'
 
-const alpha = NumberModel(5)
-const beta = NumberModel(8)
-const gamma = create({ deep: 1000 })
-const disconnect = devtools({ alpha, beta, gamma }, 'myStore') 
+const atom = create(
+  { alpha: 5 }, 
+  (atom) => {
+    const $alpha = use(atom, s => s.alpha)
+    return {
+      inc: () => $alpha(s => s + 1),
+      resetState: () => atom({ alpha: 5 })
+      deeply: {
+        nested: {
+          action: () => $alpha(5)
+        }
+      } 
+    }
+  }
+)
+const disconnect = devtools(atom, 'myAtom') // second argument specifies the instance name
 
-use(alpha).inc() // "(alpha).inc"
-use(beta).inc() // "(beta).inc"
-use(gamma, s => s.deep)(3000)  // "(gamma) Update ([timestamp])
+const { deeply, incrementAlpha } = use(atom) // can work with destructuring
+incrementAlpha() // "*.incrementAlpha"
+deeply.nested.action() // "*.deeply.nested.action"
+use(atom, s => s.alpha)(25)  // "* Update ([timestamp])
 ```
 
 ## Why **xoid**?

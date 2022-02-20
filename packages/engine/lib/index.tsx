@@ -21,7 +21,8 @@ export type OnCleanup = (fn: () => void) => void
 export type GetState = {
   <T>(atom: Atom<T>): T
   <T, U>(atom: Atom<T>, selector: (state: T) => U): U
-  <T, U extends keyof T>(atom: Atom<T>, selector: U): T[U]
+  <T, U extends keyof T>(atom: Atom<T>, key: U): T[U]
+  <T>(getState: () => T, subscribe: (fn: (value: T) => void) => () => void): T
 }
 
 export const createTarget = (get: Function, set: Function) => {
@@ -68,7 +69,7 @@ export function createReadable<T, U>(
   atom: Atom<T>,
   selector?: keyof T | ((state: T) => U)
 ): Atom<U> | Atom<T> {
-  if (!selector) return atom
+  if (typeof selector === 'undefined') return atom
   const { fn } = parseSelector(selector)
   const ans = () => fn(atom())
   ;(ans as $A)[META] = (atom as $A)[META]
@@ -78,8 +79,13 @@ export function createReadable<T, U>(
 export const createGetState =
   (updateState: Listener<unknown>, onCleanup: OnCleanup): GetState =>
   // @ts-ignore
-  <T, U>(atom: Atom<T>, selector: keyof T | ((state: T) => U)): any => {
-    const readable = createReadable(atom, selector)
+  (atom, selectorOrSubscribe) => {
+    if (!(atom as $A)[META]) {
+      // if not a xoid atom, treat as external subscription
+      onCleanup(selectorOrSubscribe(updateState))
+      return atom()
+    }
+    const readable = createReadable(atom, selectorOrSubscribe)
     onCleanup(subscribe(readable, updateState))
     return readable()
   }
@@ -89,7 +95,10 @@ export const createSelector = (atom: Atom<any>, init: Function) => {
   const updateState = () => {
     cleanupAll()
     const result = init(getter)
-    atom(result)
+    if (atom() === result) return
+    const meta = (atom as any)[META]
+    meta.node = result
+    meta.notifier.notify()
   }
   const getter = createGetState(updateState, onCleanup)
   updateState()

@@ -24,15 +24,11 @@ const atom = create(
     }
   }
 )
-const disconnect = devtools(atom, 'myAtom') 
-
-use(atom).incrementAlpha() // "*.incrementAlpha"
+const disconnect = devtools(atom, 'myAtom') // second argument specifies the instance name
 
 const { deeply, incrementAlpha } = use(atom) // can work with destructuring
-
 incrementAlpha() // "*.incrementAlpha"
 deeply.nested.action() // "*.deeply.nested.action"
-
-use(atom, 'alpha')(25)  // "* Update ([timestamp])
+use(atom, s => s.alpha)(25)  // "* Update ([timestamp])
 ```
 

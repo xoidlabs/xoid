@@ -48,9 +48,9 @@ export function useAtom<T, U>(atom?: Atom<T>, selector?: keyof T | ((state: T) =
 export function useSetup<T>(setupFn: (deps: Atom<undefined>, onCleanup: OnCleanup) => T): T
 export function useSetup<T, P>(setupFn: (deps: Atom<P>, onCleanup: OnCleanup) => T, props: P): T
 export function useSetup(setupFn: (deps: any, onCleanup: any) => any, props?: any): any {
-  const deps = useConstant(() => create(props))
+  const $deps = useConstant(() => create(() => props))
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useIsoLayoutEffect(() => deps(props), [props])
+  useIsoLayoutEffect(() => $deps(() => props), [props])
   const onCleanup = useCleanup()
-  return useConstant(() => setupFn(deps, onCleanup))
+  return useConstant(() => setupFn($deps, onCleanup))
 }

@@ -5,7 +5,7 @@ const snapshot = <T extends any>(store: Atom<T>) => store()
 /**
  * Integration for [Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension).
  */
-export const devtools = <T extends any>(store: Atom<T>, name?: string) => {
+export const devtools = <T extends any>(atom: Atom<T>, name?: string) => {
   // borrowed heavily from https://github.com/pmndrs/valtio/blob/main/src/utils/devtools.ts
   let extension: any
   try {
@@ -23,30 +23,30 @@ export const devtools = <T extends any>(store: Atom<T>, name?: string) => {
   }
 
   const dt = extension.connect({ name }) as any
-  ;(store as any)[META].root.devtoolsHelper = createDevtoolsHelper()
-  const channel = ((store as any)[META].root.devtoolsChannel = createNotifier())
+  ;(atom as any)[META].devtoolsHelper = createDevtoolsHelper()
+  const channel = ((atom as any)[META].devtoolsChannel = createNotifier())
   let currentAction: any
   // @ts-ignore
   const unsub0 = channel.subscribe((state: any) => {
     if (!state && currentAction) {
-      dt.send(currentAction, snapshot(store))
+      dt.send(currentAction, snapshot(atom))
     }
     currentAction = state
     if (state && state.async) {
       const modifier = state.end ? ' (end)' : ''
-      dt.send({ ...state, type: state.type + modifier }, snapshot(store))
+      dt.send({ ...state, type: state.type + modifier }, snapshot(atom))
       currentAction = undefined
     }
   })
 
   let isTimeTraveling = false
-  const unsub1 = subscribe(store, () => {
+  const unsub1 = subscribe(atom, () => {
     if (isTimeTraveling) {
       isTimeTraveling = false
     } else {
       const now = window.performance.now().toFixed(2)
       const action = currentAction && !currentAction.async ? currentAction : `Update (${now})`
-      dt.send(action, snapshot(store))
+      dt.send(action, snapshot(atom))
       currentAction = undefined
     }
   })
@@ -57,9 +57,9 @@ export const devtools = <T extends any>(store: Atom<T>, name?: string) => {
         isTimeTraveling = true
       }
       const nextValue = JSON.parse(message.state)
-      store(nextValue)
+      atom(nextValue)
     } else if (message.payload?.type === 'COMMIT') {
-      dt.init(snapshot(store))
+      dt.init(snapshot(atom))
     } else if (message.payload?.type === 'IMPORT_STATE') {
       const actions = message.payload.nextLiftedState?.actionsById
       const computedStates = message.payload.nextLiftedState?.computedStates || []
@@ -68,13 +68,13 @@ export const devtools = <T extends any>(store: Atom<T>, name?: string) => {
 
       computedStates.forEach(({ state }: { state: any }, index: number) => {
         const action = actions[index] || `Update - ${new Date().toLocaleString()}`
-        store(state)
-        if (index === 0) dt.init(snapshot(store))
-        else dt.send(action, snapshot(store))
+        atom(state)
+        if (index === 0) dt.init(snapshot(atom))
+        else dt.send(action, snapshot(atom))
       })
     }
   })
-  dt.init(snapshot(store))
+  dt.init(snapshot(atom))
   return () => {
     unsub0()
     unsub1()
@@ -91,7 +91,7 @@ function isEligible(o: any) {
   )
 }
 const createDevtoolsHelper = () => {
-  const getAddress = (store: any, obj: any, actionAddress: string[]): any => {
+  const getAddress = (store: any, obj: any, actionAddress: string[] = []): any => {
     if (!isEligible(obj)) return obj
 
     return new Proxy(obj, {
@@ -103,13 +103,15 @@ const createDevtoolsHelper = () => {
         return getAddress(store, obj[prop], newActionAddress)
       },
       apply(target, thisArg, args) {
-        if (target[META] || !store[META].root.devtoolsChannel)
+        if (target[META] || !store[META].devtoolsChannel)
           return Reflect.apply(target, thisArg, args)
-        const storeAddress = store[META].address.slice(1).map(shorten)
-        const begin = storeAddress.length ? `(*.${storeAddress.join('.')})` : '*'
+        const storeAddress = store[META]?.address?.slice(1).map(shorten)
+        const begin = storeAddress?.length ? `(*.${storeAddress.join('.')})` : '*'
         const isAsync = Object.prototype.toString.call(target) === '[object AsyncFunction]'
 
-        const action = { type: `${begin}.${actionAddress.map(nodot).join('.')}` }
+        const action = {
+          type: `${begin}.${actionAddress.map(nodot).join('.')}`,
+        }
         if (isAsync) {
           // @ts-ignore
           action.async = true
@@ -121,11 +123,10 @@ const createDevtoolsHelper = () => {
           attemptTimes.i++
           action.type = action.type + ' #' + attemptTimes.i
         }
-        store[META].root.devtoolsChannel.notify({ ...action, args })
+        store[META].devtoolsChannel.notify({ ...action, args })
         const result = Reflect.apply(target, thisArg, args)
-        if (isAsync)
-          result.then(() => store[META].root.devtoolsChannel.notify({ ...action, end: true }))
-        else store[META].root.devtoolsChannel.notify(undefined)
+        if (isAsync) result.then(() => store[META].devtoolsChannel.notify({ ...action, end: true }))
+        else store[META].devtoolsChannel.notify(undefined)
 
         return result
       },
