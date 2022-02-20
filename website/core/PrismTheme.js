@@ -52,7 +52,7 @@ var theme = {
     {
       types: ['important', 'variable', 'deleted'],
       style: {
-        color: '#cb4b16' /* orange */,
+        color: '#fac863' /* orange */,
       },
     },
     {
