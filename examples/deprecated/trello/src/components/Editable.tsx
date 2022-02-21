@@ -14,16 +14,17 @@ export default (props: { children: Observable<string> }) => {
       contentEditable={isEditable}
       suppressContentEditableWarning={isEditable}
       onClick={() => {
-        setEditable(true);
+        setEditable(true)
         setTimeout(() => {
-          ref.current?.focus();
-        });
+          ref.current?.focus()
+        })
       }}
       onFocus={() => ref.current && selectAllText(ref.current)}
       onBlur={() => {
         setTitle(ref.current?.textContent || title)
         setEditable(false)
-      }}>
+      }}
+    >
       {title}
     </div>
   )
@@ -45,16 +46,17 @@ const xxx = (props: { children: Observable<string> }) => {
     <div
       ref={ref}
       onClick={() => {
-        $isEditable(true);
+        $isEditable(true)
         setTimeout(() => {
-          ref()?.focus();
-        });
+          ref()?.focus()
+        })
       }}
       onFocus={() => ref() && selectAllText(ref())}
       onBlur={() => {
         $title(ready(ref).textContent() || title)
         $isEditable(false)
-      }}>
+      }}
+    >
       {title}
     </div>
   )

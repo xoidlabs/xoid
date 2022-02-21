@@ -1,7 +1,8 @@
 import React, { useRef } from 'react'
 import styled from '@emotion/styled'
-import { use, useStore } from 'xoid'
-import { ColumnModel } from '../models'
+import { use } from 'xoid'
+import { useSlice } from '@xoid/react'
+import { ColumnAtom } from '../models'
 import Card from './Card'
 import Editable from './Editable'
 
@@ -30,8 +31,8 @@ const Self = {
   `,
 }
 
-const Column = function (props: { store: ReturnType<typeof ColumnModel> }) {
-  useStore(props.store.cards)
+const Column = function (props: { atom: ColumnAtom }) {
+  const $$cards = useSlice(props.atom, 'cards')
 
   const ref = useRef<HTMLDivElement>(null)
   const scrollToBottom = () => {
@@ -41,7 +42,7 @@ const Column = function (props: { store: ReturnType<typeof ColumnModel> }) {
     }
   }
   const onClick = () => {
-    use(props.store.cards).add({
+    use(props.atom.cards).add({
       id: Math.random(),
       title: 'untitled',
     })
@@ -50,15 +51,11 @@ const Column = function (props: { store: ReturnType<typeof ColumnModel> }) {
   return (
     <Self.Container>
       <Self.Title>
-        <Editable>{props.store.title}</Editable>
+        <Editable>{props.atom.title}</Editable>
       </Self.Title>
       <Self.List ref={ref}>
-        {props.store.cards.map((store, key) => (
-          <Card
-            key={key}
-            store={store}
-            removeCard={() => use(props.store.cards).remove(key)}
-          />
+        {props.atom.cards.map((atom, key) => (
+          <Card key={key} atom={atom} removeCard={() => use(props.atom.cards).remove(key)} />
         ))}
       </Self.List>
       <Self.Button onClick={onClick}>Add a card...</Self.Button>

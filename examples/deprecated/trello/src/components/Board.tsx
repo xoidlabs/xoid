@@ -1,7 +1,8 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import { use, useStore } from 'xoid'
-import { BoardModel } from '../models'
+import { use } from 'xoid'
+import { useSlice } from '@xoid/react'
+import { BoardAtom } from '../models'
 import Column from './Column'
 import Editable from './Editable'
 
@@ -33,23 +34,22 @@ const Self = {
   `,
 }
 
-const Board = (props: { store: ReturnType<typeof BoardModel> }) => {
-  const $$columns = useSlice(props.store, 'columns')
-  // const $columns = useAtom(
-  //   useMemo(() => slice(select(props.store, selector)), [props.store, selector])
-  // )
+const Board = (props: { atom: BoardAtom }) => {
+  const { atom } = props
+  const $$columns = useSlice(atom, 'columns')
+
   return (
     <Self.Container>
       <Self.Title>
-        <Editable>{select(props.store, 'title')}</Editable>
+        <Editable>{use(props.atom, 'title')}</Editable>
       </Self.Title>
       <Self.List>
-        {$$columns.map((store, key) => (
-          <Column key={key} store={store} />
+        {$$columns.map(($item, key) => (
+          <Column key={key} atom={$item} />
         ))}
         <Self.Button
           onClick={() =>
-            use($$columns).add({
+            use(atom).addColumn({
               id: Math.random(),
               title: 'undef',
               cards: [],

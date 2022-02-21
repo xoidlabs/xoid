@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { use } from "xoid";
-import useItems from './useItems'
+import useItems from "./useItems";
 import Counter from "./Counter";
 
 export default function App() {
-  const [items, { add, getActions }] = useItems({
-    items: [],
+  const [value, onChange] = useState([]);
+  const { add, getActions } = useItems({
+    value,
+    onChange,
     getInitialState: (id) => ({ id, count: 0 }),
     getActions: (atom) => {
       const $count = use(atom, (s) => s.count);
@@ -15,13 +17,11 @@ export default function App() {
       };
     }
   });
-  const { value, onChange } = props
-  const atom = useSetup(CustomModel, [value, onChange])
-  
+
   return (
     <>
       <button onClick={add}>add counter</button>
-      {items.map(({ id, count }) => {
+      {value.map(({ id, count }) => {
         const { increment, reset } = getActions(id);
         return (
           <Counter
