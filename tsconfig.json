@@ -15,5 +15,5 @@
     "declarationDir": "dist/ts-out",
     "esModuleInterop": true
   },
-  "include": ["./packages"]
+  "include": ["packages", "tests"]
 }

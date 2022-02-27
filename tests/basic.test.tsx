@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 // @ts-ignore
-import { create, use, Atom } from 'xoid'
+import { create, use, subscribe, Atom } from 'xoid'
 // @ts-ignore
 import { useAtom } from '@xoid/react'
 
@@ -37,59 +37,12 @@ it('normalizes nested stores in a record', () => {
   expect(debug(store)).toMatchSnapshot()
 })
 
-it('creates a selector store', () => {
-  const a = create(3)
-  const b = create(5)
-  const store = create((get) => get(a) + get(b))
-  expect(debug(store)).toMatchSnapshot()
-})
-
 it('uses the actions in vanilla', async () => {
   const store = create({ count: 0 }, (store) => ({
     inc: () => store((state) => ({ count: state.count + 1 })),
   }))
   use(store).inc()
   expect(debug(store)).toMatchSnapshot()
-})
-
-it('can handle selectors', () => {
-  const store = create({ deeply: { nested: { number: 5 } } })
-
-  expect(use(store)).toBe(undefined)
-  expect(use(store, 'deeply')()).toStrictEqual({ nested: { number: 5 } })
-  expect(use(store, (s) => s.deeply)()).toStrictEqual({ nested: { number: 5 } })
-  expect(use(store, (s) => s.deeply.nested)()).toStrictEqual({ number: 5 })
-})
-
-it('can handle serial selectors', () => {
-  const store = create({ deeply: { nested: { number: 5 } } })
-  const storeDeeply = use(store, 'deeply')
-
-  expect(use(storeDeeply, (s) => s.nested)()).toStrictEqual({ number: 5 })
-})
-
-it('can handle updates via selectors', () => {
-  const store = create({ deeply: { nested: { number: 5 } } })
-  const storeDeeplyNestedNumber = use(store, (s) => s.deeply.nested.number)
-  const storeDeeply = use(store, 'deeply')
-
-  storeDeeply({ nested: { number: 25 } })
-  expect(storeDeeply()).toStrictEqual({ nested: { number: 25 } })
-
-  expect(store().deeply.nested.number).toStrictEqual(25)
-  expect(storeDeeplyNestedNumber()).toStrictEqual(25)
-})
-
-it('can handle updates via serial selectors', () => {
-  const store = create({ deeply: { nested: { number: 5 } } })
-  const storeDeeply = use(store, 'deeply')
-  const storeDeeplyNestedNumber = use(storeDeeply, (s) => s.nested.number)
-
-  storeDeeplyNestedNumber(25)
-  expect(storeDeeplyNestedNumber()).toStrictEqual(25)
-
-  expect(storeDeeply()).toStrictEqual({ nested: { number: 25 } })
-  expect(store().deeply.nested.number).toStrictEqual(25)
 })
 
 it('uses the actions in React', async () => {
