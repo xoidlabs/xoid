@@ -52,8 +52,6 @@ assert(atom() !== previousState) // ✅
 assert(atom().deeply.nested.alpha === 6) // ✅
 ```
 
-> Type of `alpha` alpha be `Atom<number>`.
-
 ### Derived state
 
 Atoms can be derived from other atoms. This API was heavily inspired by **Recoil**.
@@ -83,7 +81,7 @@ const unsub = subscribe(
 
 ## React integration
 
-**@xoid/react** is based on two hooks. `useAtom` subscribes the component to the atoms.
+**@xoid/react** is based on two hooks. `useAtom` subscribes the component to an atom. If a second argument is supplied, it'll be used as a selector function.
 
 ```js
 import { useAtom } from '@xoid/react'
@@ -114,25 +112,4 @@ const App = (props: Props) => {
 
 > `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
 
-## More features
-
-### Pattern: Finite state machines
-
-No additional syntax is required for state machines. Just use the good old `create` function.
-
-```js
-import { create } from 'xoid'
-import { useAtom } from '@xoid/react'
-
-const createMachine = () => {
-  const red = { color: '#f00', onClick: () => atom(green) }
-  const green = { color: '#0f0', onClick: () => atom(red) }
-  const atom = create(red)
-  return atom
-}
-
-// in a React component
-const machine = useSetup(createMachine)
-const { color, onClick } = useAtom(machine)
-return <div style={{ color }} onClick={onClick} />
-```
+This is a
