@@ -3,8 +3,8 @@
 :root {
   --ifm-color-info: rgba(170, 155, 255, 0.42);
   --docsearch-highlight-color: #8642ffba;
-  --ifm-color-primary: #8642ffba;
-  --brand: rgb(150, 220, 255);
+  --ifm-color-primary: rgb(121, 182, 242);
+  --brand: rgb(161, 195, 255);
   --ifm-navbar-link-hover-color: var(--brand);
   --dark: #232c3b;
   --deepdark: #202431;
@@ -748,8 +748,9 @@ div[class^="tableOfContents"] {
 /* Footer */
 
 .footer {
+  box-shadow: inset 0 2px 0px -1px rgba(255, 255, 255, 0.08);
   background: var(--deepdark);
-  background: var(--deepdark) linear-gradient(-60deg,#0064cc4a,#3e2ba74d 50%,rgba(24, 34, 92, 80%));
+  background: #151515 linear-gradient(60deg, rgba(63, 43, 167, 0.3) 50%, #18225c);
   .container {
     max-width: 700px;
   }
