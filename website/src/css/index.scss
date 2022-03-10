@@ -839,7 +839,7 @@ html[data-theme="light"] {
   color: #ffffff;
   line-height: 1.3;
   font-weight: 400;
-  max-width: 600px;
+  max-width: 500px;
   margin: 20px;
 }
 
@@ -882,7 +882,8 @@ html[data-theme="light"] {
 html[data-theme="dark"] {
   .ActionButton.primary {
     color: #ffffff;
-    background-color: #392b8f;
+    background-color: #ffffff1a;
+    border: 1px solid #ffffff2e;
   }
 }
 
@@ -960,21 +961,16 @@ html[data-theme="light"] {
       flex-flow: row wrap;
       align-items: center;
       justify-content: center;
+      cursor: default;
     }
     li {
       list-style-type: none;
-      background: rgb(211, 226, 255);
-      // color: black;
+      background: #ffffff14;
+      border: 1px solid #ffffff2e;
       margin: 5px;
       padding: 3px 14px;
       display: inline-block;
       border-radius: 40px;
-    }
-  }
-
-  html[data-theme="dark"] {
-    .FeatureSection li {
-      background: #4f689b;
     }
   }
 }
@@ -990,3 +986,6 @@ html[data-theme="light"] {
     margin: 0 4px;
   }
 }
+
+::-moz-selection { background: #6627ca; }
+::selection { background: #6627ca; }

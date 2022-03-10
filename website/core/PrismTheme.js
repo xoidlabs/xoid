@@ -15,7 +15,7 @@ var theme = {
     {
       types: ['attr-name', 'comment', 'prolog', 'doctype', 'cdata'],
       style: {
-        color: '#93a1a1',
+        color: '#939ca1d1',
       },
     },
 

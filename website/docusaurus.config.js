@@ -1,6 +1,6 @@
 module.exports = {
   title: 'xoid',
-  tagline: 'Scalable state-management library for React and vanilla',
+  tagline: 'Framework-agnostic state management designed for simplicity and scalability',
   organizationName: 'xoid',
   projectName: 'xoid-website',
   url: 'https://xoid.dev',
@@ -46,9 +46,9 @@ module.exports = {
       theme: require('./core/PrismTheme'),
     },
     navbar: {
-      title: 'xoid',
+      title: '',
       logo: {
-        src: 'img/logo-mini.svg',
+        src: 'img/logo-navbar.svg',
         alt: 'xoid',
       },
       style: 'dark',
@@ -145,12 +145,12 @@ module.exports = {
     metadatas: [
       {
         name: 'description',
-        content: 'Scalable state-management library for React and vanilla',
+        content: 'Framework-agnostic state management designed for simplicity and scalability',
       },
       { property: 'og:title', content: 'xoid' },
       {
         property: 'og:description',
-        content: 'Scalable state-management library for React and vanilla',
+        content: 'Framework-agnostic state management designed for simplicity and scalability',
       },
       { property: 'og:url', content: 'https://xoid.dev/' },
       {
