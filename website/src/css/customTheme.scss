@@ -69,7 +69,7 @@ html[data-theme="dark"] {
   align-self: center;
 
   h1[class^="docTitle"] {
-    font-size: 2.8rem;
+    font-size: 2.5rem;
   }
 }
 
@@ -331,7 +331,6 @@ div[class*="docItemWrapper"] .row .col {
 }
 
 /* Sidebars */
-
 html[data-theme="dark"] {
   @extend %scrollbar-style-dark;
 }
@@ -407,8 +406,6 @@ html[data-theme="dark"]  {
 
   .navbar__logo {
     height: 29px;
-    transition: transform 0.5s;
-    opacity: 0.8;
   }
 
   .react-toggle {

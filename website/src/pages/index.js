@@ -12,14 +12,13 @@ const textContent = {
 - Small bundle size
 - Zero configuration
 - Framework-agnostic
-- Extensive Typescript support
 - Computed values
 - Async actions
-- Deeply nested state
 - Transient updates
-- Devtools
-- Same API for local and global state
+- Local & global state
 - Finite state machines
+- Extensive Typescript support
+- Devtools
   `,
   right: `
     `,
