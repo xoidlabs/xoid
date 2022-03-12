@@ -875,7 +875,7 @@ html[data-theme="dark"] {
   font-weight: 400;
   text-decoration: none !important;
   border-bottom: none;
-  transition: all 0.2s ease-out;
+  transition: border 0.4s;
 }
 
 .ActionButton.secondary {
@@ -888,7 +888,7 @@ html[data-theme="dark"] {
   border-radius: 35px;
   border: 8px solid #ffffff44;
   &:hover {
-    border-color: white;
+    border-color: #fffa;
   }
 }
 
@@ -978,6 +978,11 @@ html[data-theme="light"] {
       padding: 3px 14px;
       display: inline-block;
       border-radius: 40px;
+      transition: border 400ms;
+      &:hover {
+        color: #fff;
+        border-color: #fff9;
+      }
     }
   }
 }
