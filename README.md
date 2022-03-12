@@ -1,5 +1,7 @@
 <p align="center">
-  <img width="560" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-full.svg" />
+  <a href="https://xoid.dev">
+    <img width="560" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-full.svg" />
+  </a>
 </p> 
 
 <p align="center">
