@@ -1,6 +1,6 @@
 module.exports = {
   title: 'xoid',
-  tagline: 'Framework-agnostic state management designed for simplicity and scalability',
+  tagline: 'Framework-agnostic state management library designed for simplicity and scalability',
   organizationName: 'xoid',
   projectName: 'xoid-website',
   url: 'https://xoid.dev',
@@ -145,12 +145,12 @@ module.exports = {
     metadatas: [
       {
         name: 'description',
-        content: 'Framework-agnostic state management designed for simplicity and scalability',
+        content: 'Framework-agnostic state management library designed for simplicity and scalability',
       },
       { property: 'og:title', content: 'xoid' },
       {
         property: 'og:description',
-        content: 'Framework-agnostic state management designed for simplicity and scalability',
+        content: 'Framework-agnostic state management library designed for simplicity and scalability',
       },
       { property: 'og:url', content: 'https://xoid.dev/' },
       {

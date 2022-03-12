@@ -229,7 +229,7 @@ function HeaderHero() {
         </div> */}
         </div>
         <p className="tagline">
-            Framework-agnostic state management designed for simplicity and scalability
+            Framework-agnostic state management library designed for simplicity and scalability
         </p>
         <div className="buttons">
           <HomeCallToAction />
