@@ -932,11 +932,11 @@ html[data-theme="light"] {
 @media only screen and (min-width: 961px) { 
   html[data-theme="light"] {
     .NativeCode .prism-code {
-      background: #242d59;
+      background: rgb(30, 32, 67);
+      box-shadow: inset 0 2px 0px -1px rgba(255, 255, 255, 0.08);
     }
-
     .NativeCode.tint .prism-code {
-      background: linear-gradient(-60deg, rgba(0, 100, 204, 0.29), rgba(62, 43, 167, 0.3) 50%, rgb(32, 39, 76)) rgb(0, 0, 0)
+      background: #0e1336;
     }
   }
 }
@@ -971,10 +971,10 @@ html[data-theme="light"] {
     }
     li {
       list-style-type: none;
-      background: #ffffff14;
-      border: 1px solid #ffffff2e;
+      background: #ffffff10;
+      border: 6px solid #ffffff2e;
       margin: 5px;
-      color: white;
+      color: #fffd;
       padding: 3px 14px;
       display: inline-block;
       border-radius: 40px;
@@ -996,3 +996,7 @@ html[data-theme="light"] {
 
 ::-moz-selection { background: #6627ca; }
 ::selection { background: #6627ca; }
+
+.react-toggle .react-toggle-thumb {
+  box-shadow: none !important;
+}
