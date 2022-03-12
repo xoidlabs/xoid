@@ -27,11 +27,6 @@ html[data-theme="dark"] {
   &.primary {
     color: var(--dark);
     background-color: var(--brand);
-
-    &:hover {
-      color: black;
-      background-color: white;
-    }
   }
 
   &.secondary {
@@ -498,6 +493,14 @@ html[data-theme="dark"] {
 
 .NativeApps {
   overflow: hidden;
+  background: linear-gradient(-60deg, rgb(102, 39, 202) 0%, rgb(172, 99, 255) 100%);
+
+}
+
+html[data-theme="dark"] {
+  .NativeApps {
+    background: #151515 linear-gradient(60deg, rgba(63, 43, 167, 0.3) 50%, #18225c);
+  }
 }
 
 @media only screen and (max-width: 960px) {
@@ -811,7 +814,13 @@ html[data-theme="light"] {
 
 .HeaderHero {
   display: flex;
-  background: linear-gradient(-60deg, #6627ca 0%, #cb9fff 100%)
+  background: linear-gradient(-60deg, #6627ca 0%, #ac63ff 100%)
+}
+
+html[data-theme="dark"] {
+  .HeaderHero {
+    background: #7f00ff29;
+  }
 }
 
 .HeaderHero svg {
@@ -869,23 +878,20 @@ html[data-theme="light"] {
   transition: all 0.2s ease-out;
 }
 
-.ActionButton.primary {
-  color: var(--dark);
-  background-color: #ffffff;
-  border-radius: 25px;
-}
-
 .ActionButton.secondary {
   color: #ffffff;
 }
 
-html[data-theme="dark"] {
-  .ActionButton.primary {
-    color: #ffffff;
-    background-color: #ffffff1a;
-    border: 1px solid #ffffff2e;
+.ActionButton.primary {
+  color: #ffffff;
+  background-color: transparent;
+  border-radius: 35px;
+  border: 8px solid #ffffff44;
+  &:hover {
+    border-color: white;
   }
 }
+
 
 .ActionButton.secondary::after {
   content: "›";
@@ -968,6 +974,7 @@ html[data-theme="light"] {
       background: #ffffff14;
       border: 1px solid #ffffff2e;
       margin: 5px;
+      color: white;
       padding: 3px 14px;
       display: inline-block;
       border-radius: 40px;

@@ -358,6 +358,9 @@ html[data-theme="dark"]  {
   .navbar .DocSearch-Button {
     background: #18064e7d;
   }
+  .navbar {
+    background: linear-gradient(-60deg, rgba(38, 46, 144, 0.69), rgba(88, 43, 167, 0.631373) 50%, rgba(24, 34, 92, 0.8));
+  }
 }
 
 .navbar-sidebar, .navbar-sidebar__backdrop {
@@ -367,7 +370,7 @@ html[data-theme="dark"]  {
 .navbar {
   background: transparent;
   padding: 0;
-  background: linear-gradient(-60deg,rgba(0,100,204,.521569),rgba(88,43,167,.631373) 50%,rgba(24,34,92,.8)); // linear-gradient(-60deg,#1f1e35aa,#582ba7a1 50%, rgba(24, 34, 92, 0.8));
+  background: linear-gradient(-60deg, rgba(51, 58, 150, 0.71), rgba(88, 43, 167, 0.77) 50%, rgba(24, 34, 92, 0.8));
   backdrop-filter: blur(12px);
 
   .navbar__inner {
