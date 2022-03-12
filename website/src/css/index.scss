@@ -999,8 +999,12 @@ html[data-theme="light"] {
   }
 }
 
-::-moz-selection { background: #6627ca; }
-::selection { background: #6627ca; }
+::-moz-selection { background: rgba(100, 57, 255, 0.25); }
+::selection { background: rgba(100, 57, 255, 0.25); }
+html[data-theme="dark"] {
+  ::-moz-selection { background: #6627cabb; }
+  ::selection { background: #6627cabb; }
+}
 
 .react-toggle .react-toggle-thumb {
   box-shadow: none !important;

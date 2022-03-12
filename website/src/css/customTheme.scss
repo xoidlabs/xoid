@@ -3,8 +3,8 @@
 :root {
   --ifm-color-info: rgba(170, 155, 255, 0.42);
   --docsearch-highlight-color: #8642ffba;
-  --ifm-color-primary: rgb(121, 182, 242);
-  --brand: rgb(161, 195, 255);
+  --ifm-color-primary: rgba(106, 103, 255, 1);
+  --brand: rgba(106, 103, 255, 1);
   --ifm-navbar-link-hover-color: var(--brand);
   --dark: #232c3b;
   --deepdark: #202431;
@@ -13,7 +13,7 @@
   --subtle: #647899;
   --divider: #ececec;
   --tintColor: #f7f7f7;
-  --rn-note-background: #67b2ff40;
+  --rn-note-background: rgba(106, 103, 255, 0.25);
   --ifm-font-size-base: 16px;
   --ifm-line-height-base: 1.5;
   --ifm-spacing-horizontal: 16px;
@@ -502,8 +502,18 @@ html[data-theme="dark"]  {
   }
 }
 
+
 .navbar__link:hover, .navbar__link--active {
   color: var(--brand);
+}
+
+html[data-theme="light"] {
+  .navbar__link:hover, .navbar__link--active {
+    color: white;
+  }
+  .navbar .navbar__link--active:after {
+    background: white;
+  }
 }
 
 .navbar-sidebar {

@@ -52,7 +52,7 @@ var theme = {
     {
       types: ['important', 'variable', 'deleted'],
       style: {
-        color: '#fac863' /* orange */,
+        color: 'rgb(252, 146, 158)' /* reddish */,
       },
     },
     {
@@ -77,7 +77,7 @@ var theme = {
     {
       types: ['attr-name', 'keyword'],
       style: {
-        color: '#c5a5c5',
+        color: '#b390d1',
       },
     },
     {

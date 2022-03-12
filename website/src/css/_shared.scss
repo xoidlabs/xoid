@@ -1,21 +1,20 @@
 %link-style {
   display: initial;
   color: var(--ifm-font-color-base);
-  background-color: rgba(24, 105, 255, 0.12);
-  border-bottom: 1px solid var(--ifm-hr-border-color);
+  background-color: rgba(106, 103, 255, 0.15);
+  border-bottom: 1px solid rgba(106, 103, 255, 0.8);
 
   &:hover {
-    background-color: rgba(187, 239, 253, 0.6);
+    background-color: rgba(106, 103, 255, 0.22);
   }
 }
 
 %link-style-dark {
-  background-color: rgba(100, 150, 255, 0.25);
-  border-bottom-color: rgb(100, 150, 255);
+  background-color: rgba(106, 103, 255, 0.25);
+  border-bottom-color: var(--brand);
 
   &:hover {
-    background-color: rgba(100, 150, 255, 0.45);
-    border-bottom-color: var(--brand);
+    background-color: rgba(106, 103, 255, 0.4);
   }
 }
 
