@@ -21,8 +21,7 @@
     "redux",
     "recoil",
     "atom",
-    "store",
-    "optics"
+    "store"
   ],
   "scripts": {
     "test": "jest --watch",

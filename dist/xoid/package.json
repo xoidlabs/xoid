@@ -22,8 +22,7 @@
     "redux",
     "recoil",
     "atom",
-    "store",
-    "optics"
+    "store"
   ],
   "dependencies": {
     "@xoid/engine": ">=0.9.12"

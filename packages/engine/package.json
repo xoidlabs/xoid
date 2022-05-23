@@ -21,11 +21,6 @@
     "redux",
     "recoil",
     "atom",
-    "store",
-    "optics"
-  ],
-  "scripts": {
-    "test": "jest --watch",
-    "build": "rollup --config"
-  }
+    "store"
+  ]
 }
