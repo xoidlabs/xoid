@@ -1,4 +1,4 @@
-import { parseSelector, createTarget, RECORD, META, USEABLE, createNotifier, createSelector } from '@xoid/engine';
+import { parseSelector, createTarget, RECORD, META, USABLE, createNotifier, createSelector } from '@xoid/engine';
 export { effect, subscribe } from '@xoid/engine';
 
 var clone = function (obj) {
@@ -42,13 +42,13 @@ var select = function (atom, selector) {
 
 function use(atom, fn) {
     if (arguments.length === 1) {
-        var u = atom[USEABLE];
+        var u = atom[USABLE];
         var dh = atom[META].devtoolsHelper;
         return dh ? dh(atom, u) : u;
     }
     return select(atom, fn);
 }
-function create(init, useable, enhancer) {
+function create(init, usable, enhancer) {
     var meta = { notifier: createNotifier(), node: init };
     var setter = function (value) {
         meta.node = value;
@@ -58,8 +58,8 @@ function create(init, useable, enhancer) {
     target[META] = meta;
     if (typeof init === 'function')
         createSelector(target, init);
-    if (useable && typeof useable === 'function')
-        target[USEABLE] = useable(target);
+    if (usable && typeof usable === 'function')
+        target[USABLE] = usable(target);
     return target;
 }
 

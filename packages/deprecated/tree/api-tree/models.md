@@ -18,9 +18,9 @@ const $num = NumberModel(5)
 use($num).inc()
 $num() // 6
 ```
-> Observe that `NumberModel` is a custom `create` function that creates "useable" stores.
+> Observe that `NumberModel` is a custom `create` function that creates "usable" stores.
 
-If you look at the type of `$num`, it will be displayed as `Store<number> & Useable<{inc: () => void, dec: () => void}>`.
+If you look at the type of `$num`, it will be displayed as `Store<number> & Usable<{inc: () => void, dec: () => void}>`.
 
 With `arrayOf`, you can create a custom create function that receives an array, and makes sure that every element of it is of the same model type. (there's also `objectOf`)
 
@@ -80,5 +80,5 @@ const { toggle } = use(store.todos[0])
 > It's very cheap to create **xoid** stores. 
 > Absolutely **zero** traversal or deep copying occur while `create`, `arrayOf`, `objectOf`, `model` run.
 > You can easily store complex objects such as DOM elements inside **xoid** stores.
-> Association of the store nodes with "useable" actions only occurs once when a node is visited by the `use` function.
+> Association of the store nodes with "usable" actions only occurs once when a node is visited by the `use` function.
  -->

@@ -4,7 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var META = Symbol();
 var RECORD = Symbol();
-var USEABLE = Symbol();
+var USABLE = Symbol();
 var createTarget = function (get, set) {
     return function (x) {
         if (arguments.length === 0)
@@ -117,7 +117,7 @@ var effect = createSubscribe(true);
 
 exports.META = META;
 exports.RECORD = RECORD;
-exports.USEABLE = USEABLE;
+exports.USABLE = USABLE;
 exports.createCleanup = createCleanup;
 exports.createGetState = createGetState;
 exports.createNotifier = createNotifier;

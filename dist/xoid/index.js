@@ -45,13 +45,13 @@ var select = function (atom, selector) {
 
 function use(atom, fn) {
     if (arguments.length === 1) {
-        var u = atom[engine.USEABLE];
+        var u = atom[engine.USABLE];
         var dh = atom[engine.META].devtoolsHelper;
         return dh ? dh(atom, u) : u;
     }
     return select(atom, fn);
 }
-function create(init, useable, enhancer) {
+function create(init, usable, enhancer) {
     var meta = { notifier: engine.createNotifier(), node: init };
     var setter = function (value) {
         meta.node = value;
@@ -61,8 +61,8 @@ function create(init, useable, enhancer) {
     target[engine.META] = meta;
     if (typeof init === 'function')
         engine.createSelector(target, init);
-    if (useable && typeof useable === 'function')
-        target[engine.USEABLE] = useable(target);
+    if (usable && typeof usable === 'function')
+        target[engine.USABLE] = usable(target);
     return target;
 }
 

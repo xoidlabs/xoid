@@ -6,10 +6,10 @@ title: use
 `import { use } from 'xoid'`
 
 `use` function does one of two things: 
-- Grab "useables" of an atom
+- Grab "usables" of an atom
 - Use a subtree of an atom as a sub-atom
 
-When used without the second argument, it grabs the "useables" of an atom. Useables are defined by the second argument of `create` function.
+When used without the second argument, it grabs the "usables" of an atom. Usables are defined by the second argument of `create` function.
 
 ```js
 import { create, use } from 'xoid'
