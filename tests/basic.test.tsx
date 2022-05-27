@@ -1,18 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-// @ts-ignore
-import { create, use, subscribe, Atom } from 'xoid'
-// @ts-ignore
+import { create, use, Atom, StateOf } from 'xoid'
 import { useAtom } from '@xoid/react'
 
-const debug = (atom: Atom<any, any>) => {
+const debug = <T,>(atom: Atom<T>) => {
   return {
     self: atom,
     selfSerialized: JSON.stringify(atom),
     get: atom(),
     getSerialized: JSON.stringify(atom()),
-    use: use(atom),
+    use: use(atom as any),
   }
 }
 
@@ -94,8 +92,8 @@ it('can batch updates', async () => {
 
   function Counter() {
     const { count } = useAtom(atom)
-    const { inc } = use(atom)
     React.useEffect(() => {
+      const { inc } = use(atom)
       ReactDOM.unstable_batchedUpdates(() => {
         inc()
         inc()
@@ -115,20 +113,24 @@ it('can update the selector', async () => {
     two: 'two',
   }))
 
+  type State = StateOf<typeof atom>
+
   function Component({ selector }: any) {
     const value = useAtom(atom, selector)
     return <div>{value}</div>
   }
 
-  const { findByText, rerender } = render(<Component selector={(s) => s.one} />)
+  const { findByText, rerender } = render(<Component selector={(s: State) => s.one} />)
   await findByText('one')
 
-  rerender(<Component selector={(s) => s.two} />)
+  rerender(<Component selector={(s: State) => s.two} />)
   await findByText('two')
 })
 
-it.skip('ensures parent components subscribe before children', async () => {
-  const atom = create(() => ({
+it.only('ensures parent components subscribe before children', async () => {
+  type State = { children: Record<string, { text: string }> }
+
+  const atom = create<State>(() => ({
     children: {
       '1': { text: 'child 1' },
       '2': { text: 'child 2' },
@@ -143,8 +145,7 @@ it.skip('ensures parent components subscribe before children', async () => {
     })
   }
 
-  function Child({ id }: any) {
-    console.log(id)
+  function Child({ id }: { id: string }) {
     const text = useAtom(atom, (s) => s.children[id].text)
     return <div>{text}</div>
   }
@@ -154,7 +155,7 @@ it.skip('ensures parent components subscribe before children', async () => {
     return (
       <>
         <button onClick={changeState}>change state</button>
-        {Object.keys(childStates).map((id: any) => (
+        {Object.keys(childStates).map((id) => (
           <Child id={id} key={id} />
         ))}
       </>
@@ -163,9 +164,12 @@ it.skip('ensures parent components subscribe before children', async () => {
 
   const { getByText, findByText } = render(<Parent />)
 
+  await findByText('child 1')
+  await findByText('child 2')
+
   fireEvent.click(getByText('change state'))
 
-  // await findByText('child 3')
+  await findByText('child 3')
 })
 
 // https://github.com/pmndrs/zustand/issues/84

@@ -1,4 +1,4 @@
-export type { Init, Atom, Listener, StateOf } from '@xoid/engine'
+export type { Init, Atom, Listener, StateOf, GetState } from '@xoid/engine'
 export type { Usable, Enhancer } from './core'
 
 export { subscribe, effect } from '@xoid/engine'

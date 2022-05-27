@@ -1,13 +1,13 @@
 // @ts-ignore
 import { create, use, subscribe, Atom } from 'xoid'
 
-const debug = (store: Atom<any, any>) => {
+const debug = (store: Atom<any>) => {
   return {
     self: store,
     selfSerialized: JSON.stringify(store),
     get: store(),
     getSerialized: JSON.stringify(store()),
-    use: use(store),
+    use: use(store as any),
   }
 }
 

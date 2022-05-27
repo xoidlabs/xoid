@@ -90,20 +90,6 @@ export const createGetState =
     return readable()
   }
 
-export const createSelector = (atom: Atom<any>, init: Function) => {
-  const { onCleanup, cleanupAll } = createCleanup()
-  const updateState = () => {
-    cleanupAll()
-    const result = init(getter)
-    if (atom() === result) return
-    const meta = (atom as any)[META]
-    meta.node = result
-    meta.notifier.notify()
-  }
-  const getter = createGetState(updateState, onCleanup)
-  updateState()
-}
-
 export const createSubscribe =
   (effect: boolean) =>
   <T extends Atom<any>>(atom: T, fn: Listener<StateOf<T>>): (() => void) => {

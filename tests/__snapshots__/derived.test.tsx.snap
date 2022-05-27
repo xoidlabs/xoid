@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a derived atom from multiple atoms 1`] = `
+Object {
+  "get": 8,
+  "getSerialized": "8",
+  "self": [Function],
+  "selfSerialized": undefined,
+  "use": undefined,
+}
+`;
+
+exports[`creates a derived atom using the same atom 1`] = `
+Object {
+  "get": 8,
+  "getSerialized": "8",
+  "self": [Function],
+  "selfSerialized": undefined,
+  "use": undefined,
+}
+`;
+
+exports[`creates a derived atom using the same atom using selectors 1`] = `
+Object {
+  "get": 8,
+  "getSerialized": "8",
+  "self": [Function],
+  "selfSerialized": undefined,
+  "use": undefined,
+}
+`;

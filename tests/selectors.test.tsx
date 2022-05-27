@@ -1,13 +1,14 @@
 // @ts-ignore
-import { create, use, Atom } from 'xoid'
+import { create, use } from 'xoid'
 
 it('can handle selectors', () => {
-  const store = create({ deeply: { nested: { number: 5 } } })
+  const atom = create({ deeply: { nested: { number: 5 } } })
 
-  expect(use(store)).toBe(undefined)
-  expect(use(store, 'deeply')()).toStrictEqual({ nested: { number: 5 } })
-  expect(use(store, (s) => s.deeply)()).toStrictEqual({ nested: { number: 5 } })
-  expect(use(store, (s) => s.deeply.nested)()).toStrictEqual({ number: 5 })
+  // @ts-ignore
+  expect(use(atom)).toBe(undefined)
+  expect(use(atom, 'deeply')()).toStrictEqual({ nested: { number: 5 } })
+  expect(use(atom, (s) => s.deeply)()).toStrictEqual({ nested: { number: 5 } })
+  expect(use(atom, (s) => s.deeply.nested)()).toStrictEqual({ number: 5 })
 })
 
 it('can handle serial selectors', () => {
@@ -17,7 +18,8 @@ it('can handle serial selectors', () => {
   expect(use(storeDeeply, (s) => s.nested)()).toStrictEqual({ number: 5 })
 })
 
-it('can memoize selectors', () => {
+// I decided not to add this feature.
+it.skip('can memoize selectors', () => {
   const atom = create({ deep: { value: 5 } })
   const $deep = use(atom, 'deep')
   expect(use($deep, 'value') === use(atom, (s) => s.deep.value)).toBe(true)

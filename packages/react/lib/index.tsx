@@ -35,7 +35,7 @@ export function useAtom<T, U>(atom?: Atom<T>, selector?: keyof T | ((state: T) =
     const onCleanup = useCleanup()
     return createGetState(forceUpdate, onCleanup)
   }
-  const readable = useMemo(() => createReadable(atom, selector), [atom, selector])
+  const readable = useMemo(() => createReadable(atom as Atom<T>, selector), [atom, selector])
   useIsoLayoutEffect(() => subscribe(readable, forceUpdate), [readable])
   return readable()
   /* eslint-enable react-hooks/rules-of-hooks*/

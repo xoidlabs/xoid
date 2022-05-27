@@ -1,6 +1,7 @@
 import {
   createNotifier,
-  createSelector,
+  createGetState,
+  createCleanup,
   createTarget,
   META,
   USABLE,
@@ -8,6 +9,7 @@ import {
   Atom,
 } from '@xoid/engine'
 import { select } from './utils'
+import type { GetState } from '@xoid/engine'
 
 const usable = Symbol()
 export type Usable<U> = { [usable]: U }
@@ -50,13 +52,41 @@ export function create<T, U = undefined>(
   enhancer?: Enhancer<T>
 ): Atom<T> {
   const meta = { notifier: createNotifier(), node: init }
+  let isValid = true
+  let evaluate: Function // only populated when it's a selector
   const setter = (value: T) => {
     meta.node = value
     meta.notifier.notify()
   }
-  const target = createTarget(() => meta.node, enhancer ? enhancer(setter) : setter) as Atom<T>
+  const target = createTarget(
+    () => {
+      if (!isValid) evaluate()
+      return meta.node
+    },
+    enhancer ? enhancer(setter) : setter
+  ) as Atom<T>
   ;(target as any)[META] = meta
-  if (typeof init === 'function') createSelector(target, init)
+
+  // if it's maybe a selector
+  if (typeof init === 'function') {
+    isValid = false
+    const { onCleanup, cleanupAll } = createCleanup()
+    evaluate = () => {
+      cleanupAll()
+      const result = (init as (get: GetState) => T)(getter)
+      meta.node = result
+      isValid = true
+      if (target() === result) return
+      meta.notifier.notify()
+    }
+    const invalidate = () => {
+      // invalidations shouldn't directly cause re-evaluation if there are no listeners.
+      if (meta.notifier.listeners.size) {
+        evaluate()
+      } else isValid = false
+    }
+    const getter = createGetState(invalidate, onCleanup)
+  }
   if (usable && typeof usable === 'function') (target as any)[USABLE] = usable(target)
   return target
 }
