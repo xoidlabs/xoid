@@ -2,12 +2,13 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+var shim = require('use-sync-external-store/shim');
 var react = require('react');
 var xoid = require('xoid');
 var engine = require('@xoid/engine');
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
-var useIsoLayoutEffect = typeof window === 'undefined' ? react.useEffect : react.useLayoutEffect;
+var useIsoLayoutEffect = window === undefined ? react.useEffect : react.useLayoutEffect;
 var useConstant = function (fn) {
     var ref = react.useRef();
     if (!ref.current)
@@ -21,19 +22,14 @@ var useCleanup = function () {
     return onCleanup;
 };
 function useAtom(atom, selector) {
-    /* eslint-disable react-hooks/rules-of-hooks*/
-    var forceUpdate = react.useReducer(function (c) { return c + 1; }, 0)[1];
-    if (!arguments.length) {
-        var onCleanup = useCleanup();
-        return engine.createGetState(forceUpdate, onCleanup);
-    }
     var readable = react.useMemo(function () { return engine.createReadable(atom, selector); }, [atom, selector]);
-    useIsoLayoutEffect(function () { return xoid.subscribe(readable, forceUpdate); }, [readable]);
-    return readable();
-    /* eslint-enable react-hooks/rules-of-hooks*/
+    var result = shim.useSyncExternalStore(readable[engine.META].notifier.subscribe, readable, readable);
+    react.useDebugValue(result);
+    return result;
 }
 function useSetup(setupFn, props) {
     var $deps = useConstant(function () { return xoid.create(function () { return props; }); });
+    // Don't refactor line 51, because it needs to be strictly `() => props`
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useIsoLayoutEffect(function () { return $deps(function () { return props; }); }, [props]);
     var onCleanup = useCleanup();

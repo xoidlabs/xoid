@@ -1,5 +1,7 @@
 <p align="center">
-  <img width="310" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo.svg" />
+  <a href="https://xoid.dev">
+    <img width="560" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-full.svg" />
+  </a>
 </p> 
 
 <p align="center">
@@ -12,11 +14,20 @@
   <a href="https://www.npmjs.com/package/xoid">
     <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=4f2eb3&colorB=4f2eb3"/>
   </a>
+  <a href="https://xoid.dev">
+    <img alt="Netlify" src="https://img.shields.io/netlify/681a364c-45a3-40cf-815d-cd62b15d1f96?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
+  </a>
+  <a href="https://www.npmjs.com/package/xoid">
+    <img alt="License" src="https://img.shields.io/github/license/onurkerimov/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
+  </a>
+<!--   <a href="https://bundlephobia.com/result?p=xoid" >
+    <img alt="Build" src="https://img.shields.io/github/workflow/status/onurkerimov/xoid/Lint?style=flat&colorA=4f2eb3&colorB=4f2eb3">
+  </a> -->
 </p>
 
 **xoid** (pronounced /ˈzoʊ.ɪd/) is a framework-agnostic state management library. **X** in its name denotes its inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
 
-**xoid** is lightweight (1 kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below.
+**xoid** is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below.
 
 
 To install, run the following command:
@@ -96,8 +107,6 @@ assert(atom() !== previousState) // ✅
 assert(atom().deeply.nested.alpha === 6) // ✅
 ```
 
-> Type of `alpha` alpha be `Atom<number>`.
-
 ### Derived state
 
 Atoms can be derived from other atoms. This API was heavily inspired by **Recoil**.
@@ -127,7 +136,7 @@ const unsub = subscribe(
 
 ## React integration
 
-**@xoid/react** is based on two hooks. `useAtom` subscribes the component to the atoms.
+**@xoid/react** is based on two hooks. `useAtom` subscribes the component to an atom. If a second argument is supplied, it'll be used as a selector function.
 
 ```js
 import { useAtom } from '@xoid/react'

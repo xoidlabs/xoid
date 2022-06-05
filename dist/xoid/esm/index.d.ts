@@ -1,5 +1,5 @@
 import { Atom, Init } from '@xoid/engine';
-export { Atom, Init, Listener, StateOf, effect, subscribe } from '@xoid/engine';
+export { Atom, GetState, Init, Listener, StateOf, effect, subscribe } from '@xoid/engine';
 
 declare const usable: unique symbol;
 declare type Usable<U> = {

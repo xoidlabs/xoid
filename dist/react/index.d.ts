@@ -1,11 +1,10 @@
-import { GetState, Atom } from 'xoid';
+import { Atom } from 'xoid';
 import { OnCleanup } from '@xoid/engine';
 
 /**
  * Subscribes to a xoid atom inside a React function component.
  * @see [xoid.dev/docs/api-react/useatom](https://xoid.dev/docs/api-react/useatom)
  */
-declare function useAtom(): GetState;
 declare function useAtom<T>(atom: Atom<T>): T;
 declare function useAtom<T, U>(atom: Atom<T>, selector: (state: T) => U): U;
 declare function useAtom<T, U extends keyof T>(atom: Atom<T>, selector: U): T[U];

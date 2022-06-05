@@ -60,7 +60,7 @@ export function create<T, U = undefined>(
   }
 
   const setValue = createSetValue(getValue, meta, enhancer)
-  const target = createTarget(getValue, setValue)
+  const target = createTarget(getValue, setValue) as Atom<T>
   ;(target as any)[META] = meta
 
   // If the state initializer is a function, use lazily evaluate that function when the

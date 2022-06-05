@@ -6,13 +6,8 @@ var META = Symbol();
 var RECORD = Symbol();
 var USABLE = Symbol();
 var createTarget = function (get, set) {
-    return function (x) {
-        if (arguments.length === 0)
-            return get();
-        var nextValue = typeof x === 'function' ? x(get()) : x;
-        if (get() === nextValue)
-            return;
-        set(nextValue);
+    return function xoid(x) {
+        return arguments.length === 0 ? get() : set(x);
     };
 };
 var createNotifier = function () {
@@ -58,20 +53,6 @@ var createGetState = function (updateState, onCleanup) {
         onCleanup(subscribe(readable, updateState));
         return readable();
     };
-};
-var createSelector = function (atom, init) {
-    var _a = createCleanup(), onCleanup = _a.onCleanup, cleanupAll = _a.cleanupAll;
-    var updateState = function () {
-        cleanupAll();
-        var result = init(getter);
-        if (atom() === result)
-            return;
-        var meta = atom[META];
-        meta.node = result;
-        meta.notifier.notify();
-    };
-    var getter = createGetState(updateState, onCleanup);
-    updateState();
 };
 var createSubscribe = function (effect) {
     return function (atom, fn) {
@@ -122,7 +103,6 @@ exports.createCleanup = createCleanup;
 exports.createGetState = createGetState;
 exports.createNotifier = createNotifier;
 exports.createReadable = createReadable;
-exports.createSelector = createSelector;
 exports.createSubscribe = createSubscribe;
 exports.createTarget = createTarget;
 exports.effect = effect;

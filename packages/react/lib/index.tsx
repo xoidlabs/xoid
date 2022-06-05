@@ -1,8 +1,7 @@
-// @ts-ignore
-import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector'
-import { useEffect, useLayoutEffect, useRef, useDebugValue } from 'react'
+import { useSyncExternalStore } from 'use-sync-external-store/shim'
+import { useEffect, useLayoutEffect, useRef, useMemo, useDebugValue } from 'react'
 import { Atom, create } from 'xoid'
-import { createCleanup, META, OnCleanup } from '@xoid/engine'
+import { createCleanup, createReadable, META, OnCleanup } from '@xoid/engine'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
@@ -27,12 +26,12 @@ const useCleanup = () => {
 export function useAtom<T>(atom: Atom<T>): T
 export function useAtom<T, U>(atom: Atom<T>, selector: (state: T) => U): U
 export function useAtom<T, U extends keyof T>(atom: Atom<T>, selector: U): T[U]
-export function useAtom<T, U>(atom?: Atom<T>, selector?: keyof T | ((state: T) => U)): any {
-  const result = useSyncExternalStoreWithSelector(
-    (atom as any)[META].notifier.subscribe,
-    atom,
-    atom,
-    selector || ((s: T) => s)
+export function useAtom<T, U>(atom: Atom<T>, selector?: keyof T | ((state: T) => U)): any {
+  const readable = useMemo(() => createReadable(atom as Atom<T>, selector), [atom, selector])
+  const result = useSyncExternalStore(
+    (readable as any)[META].notifier.subscribe,
+    readable,
+    readable
   )
   useDebugValue(result)
   return result

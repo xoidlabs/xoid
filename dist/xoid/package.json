@@ -1,6 +1,6 @@
 {
   "name": "xoid",
-  "version": "0.9.15",
+  "version": "0.9.25",
   "main": "./index.js",
   "module": "./esm/index.js",
   "types": "./index.d.ts",
@@ -25,6 +25,6 @@
     "store"
   ],
   "dependencies": {
-    "@xoid/engine": ">=0.9.12"
+    "@xoid/engine": ">=0.9.25"
   }
 }
