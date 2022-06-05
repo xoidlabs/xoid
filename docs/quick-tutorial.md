@@ -112,4 +112,6 @@ const App = (props: Props) => {
 
 > `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
 
-This is a
+---
+
+This is all you need to know to start using **xoid**. In the following sections, you'll find more detailed explanation of the API.
