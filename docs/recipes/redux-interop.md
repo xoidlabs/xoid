@@ -23,10 +23,10 @@ const someExistingReducer = (state, action) => {
 This will forward subscriptions and state modifications directly to the Redux store
 
 ```js
-const ReduxMediator = (store, actionType, createUseables) => create(
+const ReduxMediator = (store, actionType, createUsables) => create(
   // make it derived (explained below)
   (get) => get(store.getState, store.subscribe), 
-  createUseables,
+  createUsables,
   // make it enhanced (explained below)
   () => (payload) => store.dispatch({ type: actionType, payload })
 )

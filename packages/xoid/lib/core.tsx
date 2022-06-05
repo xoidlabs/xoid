@@ -1,29 +1,31 @@
 import {
   createNotifier,
-  createSelector,
+  createGetState,
+  createCleanup,
   createTarget,
   META,
-  USEABLE,
+  USABLE,
   Init,
   Atom,
 } from '@xoid/engine'
-import { select } from './utils'
+import { select, createSetValue } from './utils'
+import type { GetState } from '@xoid/engine'
 
-const useable = Symbol()
-export type Useable<U> = { [useable]: U }
+const usable = Symbol()
+export type Usable<U> = { [usable]: U }
 export type Enhancer<T = unknown> = (defaultSetter: (value: T) => void) => (value: T) => void
 
 /**
- * Gets the "useable" of an atom.
+ * Gets the "usable" of an atom.
  * When used with the second argument, it selects a partial atom.
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
 export function use<T extends unknown, U>(atom: Atom<T>, fn: (state: T) => U): Atom<U>
 export function use<T extends unknown, U extends keyof T>(atom: Atom<T>, fn: U): Atom<T[U]>
-export function use<T extends any>(atom: Useable<T>): T
+export function use<T extends any>(atom: Usable<T>): T
 export function use(atom: any, fn?: any): any {
   if (arguments.length === 1) {
-    const u = (atom as any)[USEABLE]
+    const u = (atom as any)[USABLE]
     const dh = (atom as any)[META].devtoolsHelper
     return dh ? dh(atom, u) : u
   }
@@ -32,31 +34,61 @@ export function use(atom: any, fn?: any): any {
 
 /**
  * Creates an atom with the first argument as the initial state.
- * Second argument can be used too attach "useable"s to the atom.
+ * Second argument can be used too attach "usable"s to the atom.
  * @see [xoid.dev/docs/api/create](https://xoid.dev/docs/api/create)
  */
 
 export function create<T>(): Atom<T | undefined>
 export function create<T>(init: Init<T>): Atom<T>
-export function create<T>(init: Init<T>, useable?: null, enhancer?: Enhancer<T>): Atom<T>
+export function create<T>(init: Init<T>, usable?: null, enhancer?: Enhancer<T>): Atom<T>
 export function create<T, U>(
   init: Init<T>,
-  useable?: (atom: Atom<T>) => U,
+  usable?: (atom: Atom<T>) => U,
   enhancer?: Enhancer<T>
-): Atom<T> & Useable<U>
+): Atom<T> & Usable<U>
 export function create<T, U = undefined>(
   init?: Init<T>,
-  useable?: ((atom: Atom<T>) => U) | null,
+  usable?: ((atom: Atom<T>) => U) | null,
   enhancer?: Enhancer<T>
 ): Atom<T> {
   const meta = { notifier: createNotifier(), node: init }
-  const setter = (value: T) => {
-    meta.node = value
-    meta.notifier.notify()
+  let isValid = true
+  let evaluate: Function // only populated when it's a selector
+  const getValue = () => {
+    if (!isValid) evaluate()
+    return meta.node
   }
-  const target = createTarget(() => meta.node, enhancer ? enhancer(setter) : setter) as Atom<T>
+
+  const setValue = createSetValue(getValue, meta, enhancer)
+  const target = createTarget(getValue, setValue) as Atom<T>
   ;(target as any)[META] = meta
-  if (typeof init === 'function') createSelector(target, init)
-  if (useable && typeof useable === 'function') (target as any)[USEABLE] = useable(target)
+
+  // If the state initializer is a function, use lazily evaluate that function when the
+  // state is being read.
+  if (typeof init === 'function') {
+    // Start with invalid (not-yet-evaluated) state
+    isValid = false
+    const { onCleanup, cleanupAll } = createCleanup()
+
+    const getter = createGetState(() => {
+      // This is where an invalidation signal dispatches. If there are listeners,
+      // invalidations cause re-evaluation without setting `isValid` to `false`.
+      if (meta.notifier.listeners.size) evaluate()
+      // If there are no listeners on the other hand, they set `isValid` to `false`.
+      // This way, if a subscriber is attached the next time, or the state value is read,
+      // `createTarget` will call `evaluate`.
+      else isValid = false
+    }, onCleanup)
+
+    evaluate = () => {
+      cleanupAll()
+      const result = (init as (get: GetState) => T)(getter)
+      isValid = true
+      if (target() === result) return
+      meta.node = result
+      meta.notifier.notify()
+    }
+  }
+  if (usable && typeof usable === 'function') (target as any)[USABLE] = usable(target)
   return target
 }

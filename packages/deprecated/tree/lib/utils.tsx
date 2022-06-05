@@ -1,4 +1,4 @@
-import { createSelector, createNotifier, createTarget, META, RECORD, Atom } from '@xoid/engine'
+import { createTarget, createNotifier, META, RECORD, Atom } from '@xoid/engine'
 
 type Meta = {
   parentMeta?: Meta
@@ -7,18 +7,16 @@ type Meta = {
   key?: string
   address?: string[]
   shape?: any
-  root: ReturnType<typeof createNotifier> & {
-    mutable?: boolean
-    onSet?: (meta: any, value: any) => void
-  }
+  root: ReturnType<typeof createNotifier>
 }
 
 export const createCell = (pm: Meta, key: string) => {
+  // `pm` stands for `parentMeta`
   if (Object.prototype.hasOwnProperty.call(pm.cache, key)) return pm.cache[key]
   const root = pm.root
   const shape = pm.shape && (pm.shape[key] || pm.shape[RECORD])
   const address = pm.address ? pm.address.map((s) => s) : ([] as string[])
-  address.push(key)
+
   const meta = {
     parentMeta: pm,
     root,
@@ -28,19 +26,18 @@ export const createCell = (pm: Meta, key: string) => {
       return pm.node[key]
     },
     set node(value) {
-      if (root.mutable) {
-        pm.node[key] = value
-      } else {
-        const copy = shallowClone(pm.node)
-        copy[key] = value
-        pm.node = copy
-      }
+      const copy = shallowClone(pm.node)
+      copy[key] = value
+      pm.node = copy
     },
     cache: {},
     shape,
   } as Meta
 
-  const target = createTarget(meta, root.onSet)
+  const target = createTarget(
+    () => meta.node,
+    (value: any) => void (meta.node = value)
+  )
   const proxy: any = new Proxy(target, {
     get(_, prop: string | symbol) {
       if (prop === META) return meta
@@ -78,12 +75,10 @@ export const createCell = (pm: Meta, key: string) => {
   return proxy
 }
 
-export const createInstance = (options: { shape?: any; onSet?: (value: any) => void } = {}): any =>
-  function (init?: any, mutable?: any) {
-    const { shape, onSet } = options
-    if (!arguments.length) mutable = true
+export const createInstance = (options: { shape?: any } = {}): any =>
+  function (init?: any) {
+    const { shape } = options
     const root = createNotifier()
-    Object.assign(root, { mutable, onSet })
     const store = createCell(
       {
         node: { value: init },
@@ -93,7 +88,6 @@ export const createInstance = (options: { shape?: any; onSet?: (value: any) => v
       },
       'value'
     )
-    if (typeof init === 'function') createSelector(store, init)
     return store
   }
 
@@ -101,18 +95,3 @@ const shallowClone = (obj: any) =>
   Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))
 
 export const debug = (store: Atom<any>): Meta => (store as any)[META]
-
-// export const createTarget = (
-//   meta: MetaInternal,
-//   onSet = (meta: MetaInternal, value: any) => {
-//     meta.node = value
-//     meta.notifier.notify()
-//   }
-// ) => {
-//   return function (input?: unknown) {
-//     if (arguments.length === 0) return meta.node
-//     const nextValue = typeof input === 'function' ? input(meta.node) : input
-//     if (meta.node === nextValue) return
-//     onSet(meta, nextValue)
-//   }
-// }

@@ -1,11 +1,11 @@
 {
   "name": "xoid",
-  "version": "0.9.15",
+  "version": "0.9.27",
   "main": "./index.js",
   "module": "./esm/index.js",
   "types": "./index.d.ts",
   "sideEffects": false,
-  "description": "Simple and scalable state management for humanoids",
+  "description": "Framework-agnostic state management library designed for simplicity and scalability",
   "homepage": "https://xoid.dev",
   "repository": {
     "type": "git",
@@ -22,10 +22,9 @@
     "redux",
     "recoil",
     "atom",
-    "store",
-    "optics"
+    "store"
   ],
   "dependencies": {
-    "@xoid/engine": ">=0.9.12"
+    "@xoid/engine": ">=0.9.25"
   }
 }

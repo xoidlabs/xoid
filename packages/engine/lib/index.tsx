@@ -1,6 +1,6 @@
 export const META = Symbol()
 export const RECORD = Symbol()
-export const USEABLE = Symbol()
+export const USABLE = Symbol()
 
 // secrets
 const atom = Symbol()
@@ -15,22 +15,19 @@ export type Atom<T> = {
   (fn: (state: T) => T): void
 }
 export type Init<T> = T | ((get: GetState) => T)
-export type Listener<T> = (value: T, prevValue: T) => unknown | (() => unknown)
+export type Listener<T = unknown> = (value: T, prevValue: T) => unknown | (() => unknown)
 export type StateOf<T extends Atom<any>> = T extends Atom<infer P> ? P : never
 export type OnCleanup = (fn: () => void) => void
 export type GetState = {
   <T>(atom: Atom<T>): T
   <T, U>(atom: Atom<T>, selector: (state: T) => U): U
   <T, U extends keyof T>(atom: Atom<T>, key: U): T[U]
-  <T>(getState: () => T, subscribe: (fn: (value: T) => void) => () => void): T
+  <T>(getState: () => T, subscribe: (fn: (value: any) => void) => () => void): T
 }
 
 export const createTarget = (get: Function, set: Function) => {
-  return function (x?: unknown) {
-    if (arguments.length === 0) return get()
-    const nextValue = typeof x === 'function' ? x(get()) : x
-    if (get() === nextValue) return
-    set(nextValue)
+  return function xoid(x?: unknown) {
+    return arguments.length === 0 ? get() : set(x)
   }
 }
 
@@ -89,20 +86,6 @@ export const createGetState =
     onCleanup(subscribe(readable, updateState))
     return readable()
   }
-
-export const createSelector = (atom: Atom<any>, init: Function) => {
-  const { onCleanup, cleanupAll } = createCleanup()
-  const updateState = () => {
-    cleanupAll()
-    const result = init(getter)
-    if (atom() === result) return
-    const meta = (atom as any)[META]
-    meta.node = result
-    meta.notifier.notify()
-  }
-  const getter = createGetState(updateState, onCleanup)
-  updateState()
-}
 
 export const createSubscribe =
   (effect: boolean) =>

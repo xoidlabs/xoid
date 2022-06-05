@@ -1,16 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`creates a selector store 1`] = `
-Object {
-  "get": 8,
-  "getSerialized": "8",
-  "self": [Function],
-  "selfSerialized": undefined,
-  "use": undefined,
-}
-`;
-
-exports[`creates a store with a primitive value 1`] = `
+exports[`creates a atom with a primitive value 1`] = `
 Object {
   "get": 5,
   "getSerialized": "5",
@@ -20,7 +10,7 @@ Object {
 }
 `;
 
-exports[`creates a store with a record 1`] = `
+exports[`creates a atom with a record 1`] = `
 Object {
   "get": Object {
     "alpha": 3,
@@ -33,7 +23,7 @@ Object {
 }
 `;
 
-exports[`normalizes nested stores in a record 1`] = `
+exports[`normalizes nested atoms in a record 1`] = `
 Object {
   "get": Object {
     "alpha": [Function],

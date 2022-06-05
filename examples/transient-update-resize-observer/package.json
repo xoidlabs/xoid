@@ -9,8 +9,8 @@
     "react-dom": "17.0.0",
     "react-scripts": "3.4.3",
     "@juggle/resize-observer": "^3.3.1",
-    "xoid": "^0.9.15",
-    "@xoid/react": "^0.9.15"
+    "xoid": "^0.9.25",
+    "@xoid/react": "^0.9.25"
   },
   "devDependencies": {
     "typescript": "3.8.3"

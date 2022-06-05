@@ -1,5 +1,7 @@
 <p align="center">
-  <img width="310" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo.svg" />
+  <a href="https://xoid.dev">
+    <img width="560" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-full.svg" />
+  </a>
 </p> 
 
 <p align="center">
@@ -12,6 +14,15 @@
   <a href="https://www.npmjs.com/package/xoid">
     <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=4f2eb3&colorB=4f2eb3"/>
   </a>
+  <a href="https://xoid.dev">
+    <img alt="Netlify" src="https://img.shields.io/netlify/681a364c-45a3-40cf-815d-cd62b15d1f96?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
+  </a>
+  <a href="https://www.npmjs.com/package/xoid">
+    <img alt="License" src="https://img.shields.io/github/license/onurkerimov/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
+  </a>
+<!--   <a href="https://bundlephobia.com/result?p=xoid" >
+    <img alt="Build" src="https://img.shields.io/github/workflow/status/onurkerimov/xoid/Lint?style=flat&colorA=4f2eb3&colorB=4f2eb3">
+  </a> -->
 </p>
 
 **xoid** (pronounced /ˈzoʊ.ɪd/) is a framework-agnostic state management library. **X** in its name denotes its inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
