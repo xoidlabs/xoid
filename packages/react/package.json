@@ -26,7 +26,8 @@
   ],
   "dependencies": {
     "xoid": ">=0.9.12",
-    "@xoid/engine": ">=0.9.12"
+    "@xoid/engine": ">=0.9.12",
+    "use-sync-external-store": "^1.1.0"
   },
   "peerDependencies": {
     "react": "*"

@@ -26,11 +26,8 @@ export type GetState = {
 }
 
 export const createTarget = (get: Function, set: Function) => {
-  return function (x?: unknown) {
-    if (arguments.length === 0) return get()
-    const nextValue = typeof x === 'function' ? x(get()) : x
-    if (get() === nextValue) return
-    set(nextValue)
+  return function xoid(x?: unknown) {
+    return arguments.length === 0 ? get() : set(x)
   }
 }
 

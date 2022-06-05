@@ -1,7 +1,7 @@
 // @ts-ignore
 import { create, use } from 'xoid'
 
-it('can handle selectors', () => {
+it('can get state via selectors', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
 
   // @ts-ignore
@@ -12,39 +12,52 @@ it('can handle selectors', () => {
 })
 
 it('can handle serial selectors', () => {
-  const store = create({ deeply: { nested: { number: 5 } } })
-  const storeDeeply = use(store, 'deeply')
+  const atom = create({ deeply: { nested: { number: 5 } } })
+  const atomDeeply = use(atom, 'deeply')
 
-  expect(use(storeDeeply, (s) => s.nested)()).toStrictEqual({ number: 5 })
+  expect(use(atomDeeply, (s) => s.nested)()).toStrictEqual({ number: 5 })
 })
 
-// I decided not to add this feature.
-it.skip('can memoize selectors', () => {
+it('can memoize selectors', () => {
   const atom = create({ deep: { value: 5 } })
   const $deep = use(atom, 'deep')
   expect(use($deep, 'value') === use(atom, (s) => s.deep.value)).toBe(true)
 })
 
 it('can handle updates via selectors', () => {
-  const store = create({ deeply: { nested: { number: 5 } } })
-  const storeDeeplyNestedNumber = use(store, (s) => s.deeply.nested.number)
-  const storeDeeply = use(store, 'deeply')
+  const atom = create({ deeply: { nested: { number: 5 } } })
+  const atomDeeplyNestedNumber = use(atom, (s) => s.deeply.nested.number)
+  const atomDeeply = use(atom, 'deeply')
 
-  storeDeeply({ nested: { number: 25 } })
-  expect(storeDeeply()).toStrictEqual({ nested: { number: 25 } })
+  atomDeeply({ nested: { number: 25 } })
 
-  expect(store().deeply.nested.number).toStrictEqual(25)
-  expect(storeDeeplyNestedNumber()).toStrictEqual(25)
+  expect(atomDeeply()).toStrictEqual({ nested: { number: 25 } })
+  expect(atom()).toStrictEqual({ deeply: { nested: { number: 25 } } })
+  expect(atom().deeply.nested.number).toStrictEqual(25)
+  expect(atomDeeplyNestedNumber()).toStrictEqual(25)
+})
+
+it('can handle updates via selectors 2', () => {
+  const atom = create({ deeply: { nested: { number: 5 } } })
+  const atomDeeply = use(atom, 'deeply')
+  const atomDeeplyNestedNumber = use(atom, (s) => s.deeply.nested.number)
+
+  atomDeeplyNestedNumber(25)
+
+  expect(atomDeeply()).toStrictEqual({ nested: { number: 25 } })
+  expect(atom()).toStrictEqual({ deeply: { nested: { number: 25 } } })
+  expect(atom().deeply.nested.number).toStrictEqual(25)
+  expect(atomDeeplyNestedNumber()).toStrictEqual(25)
 })
 
 it('can handle updates via serial selectors', () => {
-  const store = create({ deeply: { nested: { number: 5 } } })
-  const storeDeeply = use(store, 'deeply')
-  const storeDeeplyNestedNumber = use(storeDeeply, (s) => s.nested.number)
+  const atom = create({ deeply: { nested: { number: 5 } } })
+  const atomDeeply = use(atom, 'deeply')
+  const atomDeeplyNestedNumber = use(atomDeeply, (s) => s.nested.number)
 
-  storeDeeplyNestedNumber(25)
-  expect(storeDeeplyNestedNumber()).toStrictEqual(25)
+  atomDeeplyNestedNumber(25)
+  expect(atomDeeplyNestedNumber()).toStrictEqual(25)
 
-  expect(storeDeeply()).toStrictEqual({ nested: { number: 25 } })
-  expect(store().deeply.nested.number).toStrictEqual(25)
+  expect(atomDeeply()).toStrictEqual({ nested: { number: 25 } })
+  expect(atom().deeply.nested.number).toStrictEqual(25)
 })

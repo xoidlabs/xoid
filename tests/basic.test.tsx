@@ -127,7 +127,7 @@ it('can update the selector', async () => {
   await findByText('two')
 })
 
-it.only('ensures parent components subscribe before children', async () => {
+it('ensures parent components subscribe before children', async () => {
   type State = { children: Record<string, { text: string }> }
 
   const atom = create<State>(() => ({

@@ -8,7 +8,7 @@ import {
   Init,
   Atom,
 } from '@xoid/engine'
-import { select } from './utils'
+import { select, createSetValue } from './utils'
 import type { GetState } from '@xoid/engine'
 
 const usable = Symbol()
@@ -54,23 +54,32 @@ export function create<T, U = undefined>(
   const meta = { notifier: createNotifier(), node: init }
   let isValid = true
   let evaluate: Function // only populated when it's a selector
-  const setter = (value: T) => {
-    meta.node = value
-    meta.notifier.notify()
+  const getValue = () => {
+    if (!isValid) evaluate()
+    return meta.node
   }
-  const target = createTarget(
-    () => {
-      if (!isValid) evaluate()
-      return meta.node
-    },
-    enhancer ? enhancer(setter) : setter
-  ) as Atom<T>
+
+  const setValue = createSetValue(getValue, meta, enhancer)
+  const target = createTarget(getValue, setValue)
   ;(target as any)[META] = meta
 
-  // if it's maybe a selector
+  // If the state initializer is a function, use lazily evaluate that function when the
+  // state is being read.
   if (typeof init === 'function') {
+    // Start with invalid (not-yet-evaluated) state
     isValid = false
     const { onCleanup, cleanupAll } = createCleanup()
+
+    const getter = createGetState(() => {
+      // This is where an invalidation signal dispatches. If there are listeners,
+      // invalidations cause re-evaluation without setting `isValid` to `false`.
+      if (meta.notifier.listeners.size) evaluate()
+      // If there are no listeners on the other hand, they set `isValid` to `false`.
+      // This way, if a subscriber is attached the next time, or the state value is read,
+      // `createTarget` will call `evaluate`.
+      else isValid = false
+    }, onCleanup)
+
     evaluate = () => {
       cleanupAll()
       const result = (init as (get: GetState) => T)(getter)
@@ -79,13 +88,6 @@ export function create<T, U = undefined>(
       if (target() === result) return
       meta.notifier.notify()
     }
-    const invalidate = () => {
-      // invalidations shouldn't directly cause re-evaluation if there are no listeners.
-      if (meta.notifier.listeners.size) {
-        evaluate()
-      } else isValid = false
-    }
-    const getter = createGetState(invalidate, onCleanup)
   }
   if (usable && typeof usable === 'function') (target as any)[USABLE] = usable(target)
   return target
