@@ -4,6 +4,7 @@ import typescript from 'rollup-plugin-typescript2';
 import workspacesRun from 'workspaces-run';
 import copy from 'rollup-plugin-copy';
 import dts from 'rollup-plugin-dts';
+import { terser } from 'rollup-plugin-terser'
 
 async function main() {
   const copyTargets = []
@@ -11,6 +12,7 @@ async function main() {
     typescript({
       useTsconfigDeclarationDir: true,
     }),
+    terser(),
     copy({ targets: copyTargets })
   ];
 

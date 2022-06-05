@@ -9,8 +9,8 @@
     "react-dom": "16.8.3",
     "react-scripts": "2.1.8",
     "use-methods": "0.4.5",
-    "xoid": "^0.9.15",
-    "@xoid/react": "^0.9.15"
+    "xoid": "^0.9.25",
+    "@xoid/react": "^0.9.25"
   },
   "devDependencies": {
     "typescript": "3.3.3"
