@@ -15,14 +15,14 @@ export type Atom<T> = {
   (fn: (state: T) => T): void
 }
 export type Init<T> = T | ((get: GetState) => T)
-export type Listener<T> = (value: T, prevValue: T) => unknown | (() => unknown)
+export type Listener<T = unknown> = (value: T, prevValue: T) => unknown | (() => unknown)
 export type StateOf<T extends Atom<any>> = T extends Atom<infer P> ? P : never
 export type OnCleanup = (fn: () => void) => void
 export type GetState = {
   <T>(atom: Atom<T>): T
   <T, U>(atom: Atom<T>, selector: (state: T) => U): U
   <T, U extends keyof T>(atom: Atom<T>, key: U): T[U]
-  <T>(getState: () => T, subscribe: (fn: (value: T) => void) => () => void): T
+  <T>(getState: () => T, subscribe: (fn: (value: any) => void) => () => void): T
 }
 
 export const createTarget = (get: Function, set: Function) => {
