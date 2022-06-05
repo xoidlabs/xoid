@@ -83,9 +83,9 @@ export function create<T, U = undefined>(
     evaluate = () => {
       cleanupAll()
       const result = (init as (get: GetState) => T)(getter)
-      meta.node = result
       isValid = true
       if (target() === result) return
+      meta.node = result
       meta.notifier.notify()
     }
   }
