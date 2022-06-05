@@ -61,3 +61,28 @@ it('can handle updates via serial selectors', () => {
   expect(atomDeeply()).toStrictEqual({ nested: { number: 25 } })
   expect(atom().deeply.nested.number).toStrictEqual(25)
 })
+
+it('can use previous values', () => {
+  const atom = create({ deeply: { nested: { number: 5 } } })
+  const atomDeeply = use(atom, 'deeply')
+  const atomDeeplyNestedNumber = use(atom, (s) => s.deeply.nested.number)
+
+  atomDeeplyNestedNumber((s) => s + 1)
+
+  expect(atomDeeply()).toStrictEqual({ nested: { number: 6 } })
+  expect(atom()).toStrictEqual({ deeply: { nested: { number: 6 } } })
+  expect(atom().deeply.nested.number).toStrictEqual(6)
+  expect(atomDeeplyNestedNumber()).toStrictEqual(6)
+})
+
+it('can use previous values via serial selectors', () => {
+  const atom = create({ deeply: { nested: { number: 5 } } })
+  const atomDeeply = use(atom, 'deeply')
+  const atomDeeplyNestedNumber = use(atomDeeply, (s) => s.nested.number)
+
+  atomDeeplyNestedNumber((s) => s + 1)
+  expect(atomDeeplyNestedNumber()).toStrictEqual(6)
+
+  expect(atomDeeply()).toStrictEqual({ nested: { number: 6 } })
+  expect(atom().deeply.nested.number).toStrictEqual(6)
+})

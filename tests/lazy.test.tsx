@@ -26,7 +26,7 @@ it('lazily evaluates a state initializer function', () => {
   expect(fn).toBeCalledTimes(1)
 })
 
-it.only('lazily evaluates a state initializer function 2', () => {
+it('lazily evaluates a state initializer function 2', () => {
   const fn = jest.fn()
   const atom = create(() => {
     fn()
@@ -34,5 +34,21 @@ it.only('lazily evaluates a state initializer function 2', () => {
   })
   expect(fn).not.toBeCalled()
   subscribe(atom, console.log)
+  expect(fn).toBeCalledTimes(1)
+})
+
+it.only('lazily evaluate only when a sub atom is read/written', () => {
+  const fn = jest.fn()
+
+  const atom = create(() => {
+    fn()
+    return { deep: { value: 5 } }
+  })
+  expect(fn).not.toBeCalled()
+
+  const subAtom = use(atom, (s) => s.deep.value)
+  expect(fn).not.toBeCalled()
+
+  subAtom(25)
   expect(fn).toBeCalledTimes(1)
 })

@@ -82,7 +82,11 @@ export const select = <T extends any>(atom: Atom<T>, selector: any) => {
     meta,
     // Following line should call `meta.node`, not `getValue()`
     // Because `getValue` might give the value of a derived atom.
-    (setter: any) => (value: T) => setter(setIn(meta.node, path, value))
+    (setter: any) => (value: T) => {
+      // internally call the source atom, in case if it's a lazily evaluated one
+      atom()
+      setter(setIn(meta.node, path, value))
+    }
   )
   const target = createTarget(getValue, setValue) as $Atom
   // Meta should be passed as is, and never should be copied. Because

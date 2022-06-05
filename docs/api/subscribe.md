@@ -29,9 +29,3 @@ const unsubscribe = subscribe(store, (value) => {
 });
 ```
 > Calling the returned `unsubscribe` function will also conduct the latest cleanup, if there's one.
-
-It will throw an error when it's applied to non-observable values:
-
-```js
-subscribe({}); // throws
-```
