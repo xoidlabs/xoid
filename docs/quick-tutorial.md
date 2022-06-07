@@ -35,7 +35,7 @@ use(numberAtom).increment()
 ```
 
 
-`use` function, when used with a second argument, acts as a selector. The selected node will be a subscribable getter/setter object like any other atom. **xoid** is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
+`use` function can act as a selector when it's used with a second argument. **xoid** is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
 
 ```js
 import { create, use } from 'xoid'

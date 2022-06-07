@@ -1,6 +1,6 @@
 {
   "name": "@xoid/react",
-  "version": "0.9.25",
+  "version": "0.9.28",
   "main": "./index.js",
   "module": "./esm/index.js",
   "types": "./index.d.ts",
@@ -25,8 +25,8 @@
     "store"
   ],
   "dependencies": {
-    "xoid": ">=0.9.25",
-    "@xoid/engine": ">=0.9.25",
+    "xoid": ">=0.9.28",
+    "@xoid/engine": ">=0.9.28",
     "use-sync-external-store": "^1.1.0"
   },
   "peerDependencies": {

@@ -1,43 +1,30 @@
 import React from 'react'
-import { use, select, Atom } from 'xoid'
-import { decompose, model, arrayOf } from '@xoid/utils'
+import { create, use } from 'xoid'
 import { useAtom } from '@xoid/react'
 
-type TodoType = {
-  title: string
-  checked: boolean
-}
+type TodoType = { title: string; checked: boolean }
+type TodoActions = { toggle: () => void; rename: (name: string) => void }
 
-const TodoModel = model((atom: Atom<TodoType>) => ({
-  toggle: () => select(atom, 'checked')((s) => !s),
-  rename: select(props.atom, 'title'),
-}))
+const $todos = create(
+  [
+    { title: 'groceries', checked: true },
+    { title: 'world invasion', checked: false },
+  ],
+  (atom) => ({
+    add: (todo: TodoType) => atom((s) => [...s, todo]),
+    getItem: (index: number) => {
+      const $todo = use(atom, index)
+      return {
+        toggle: () => use($todo, 'checked')((s) => !s),
+        rename: use($todo, 'title'),
+      }
+    },
+  })
+)
 
-const StoreModel = arrayOf(TodoModel, (atom) => ({
-  add: (todo: TodoType) => atom((s) => [...s, todo]),
-}))
-
-const store = StoreModel([
-  { title: 'groceries', checked: true },
-  { title: 'world invasion', checked: false },
-])
-
-export const Todos = () => {
-  const atoms = useAtom(store, decompose)
-  const { add } = use(store)
-  return (
-    <>
-      {atoms.map((todoAtom, key) => (
-        <Todo atom={todoAtom} key={key} />
-      ))}
-      <button onClick={() => add({ title: 'unnamed', checked: false })}>+</button>
-    </>
-  )
-}
-
-const Todo = (props: { atom: Atom<TodoType> }) => {
-  const { title, checked } = useAtom(props.atom)
-  const { toggle, rename } = use(props.atom)
+const Todo = (props: { data: TodoType; actions: TodoActions }) => {
+  const { title, checked } = props.data
+  const { toggle, rename } = props.actions
   return (
     <div>
       <input type="checkbox" checked={checked} onChange={toggle} />
@@ -47,6 +34,19 @@ const Todo = (props: { atom: Atom<TodoType> }) => {
         onChange={(e) => rename(e.target.value)}
       />
     </div>
+  )
+}
+
+export const Todos = () => {
+  const todos = useAtom($todos)
+  const { add, getItem } = use($todos)
+  return (
+    <>
+      {todos.map((data, id) => (
+        <Todo data={data} actions={getItem(id)} key={id} />
+      ))}
+      <button onClick={() => add({ title: 'unnamed', checked: false })}>+</button>
+    </>
   )
 }
 

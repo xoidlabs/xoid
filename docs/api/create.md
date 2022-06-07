@@ -32,22 +32,28 @@ use(numberAtom).increment()
 
 ## Derived state
 
-By providing a function as the first argument, a derived atom can be created.
+By providing a state initializer function, a derived atom can be created.
 
 ```js
 import { alpha, beta } from './some-file'
 
-const sum = create((get) => get(alpha) + get(beta));
+const sum = create((get) => get(alpha) + get(beta))
 ```
 
-## Deriving state from other sources (Advanced)
+## Lazy evaluation
 
-With an additional feature of `get` function above, you can get the state from non-atoms. This can be a Redux store, an RxJS observable, or anything that implements getState & subscribe pair. Here is an atom that derives its state from a Redux store.
+State initializer functions are lazily evaluated. This means that they don't run unless an atom's state is being read or subscribed. **xoid** can be used as a dependency injection mechanism like in the following example:
 
 ```js
-import store from './reduxStore'
+import { expensiveComputation } from './some-file'
 
-const derivedAtom = create((get) => get(store.getState, store.subscribe))
+const $dep1 = create(() => expensiveComputation(5))
+const $dep2 = create(() => expensiveComputation(8))
+const $total = create((get) => get($dep1) + get($dep2))
+// none of the state initializer functions are evaluated until this point
+
+const value = $total()
+// all of them are evaluated
 ```
 
 ## Grabbing refs
@@ -58,6 +64,16 @@ With no arguments used, `create` function can be used to grab refs.
 const $ref = create<HTMLElement>() // Atom<HTMLElement | undefined>
 
 $ref(document.body)
+```
+
+## Deriving state from external sources (Advanced)
+
+With an additional feature of `get` function above, you can get the state from non-atoms. This can be a Redux store, an RxJS observable, or anything that implements getState & subscribe pair. Here is an atom that derives its state from a Redux store.
+
+```js
+import store from './reduxStore'
+
+const derivedAtom = create((get) => get(store.getState, store.subscribe))
 ```
 
 ## Enhanced atoms (Advanced)
