@@ -1,12 +1,10 @@
 {
-  "name": "xoid-trello-example",
+  "name": "xoid-todos-filtered-example",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
-    "@emotion/react": "11.1.4",
-    "@emotion/styled": "11.0.0",
     "react": "17.0.0",
     "react-dom": "17.0.0",
     "react-scripts": "3.4.3",
