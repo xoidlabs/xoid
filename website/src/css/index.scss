@@ -491,6 +491,18 @@ html[data-theme="dark"] {
 
 /* Native Apps */
 
+.Embed {
+  overflow: hidden;
+  background: linear-gradient(-60deg, rgb(102, 39, 202) 0%, rgb(172, 99, 255) 100%);
+
+}
+
+html[data-theme="dark"] {
+  .Embed {
+    background: #151515 linear-gradient(60deg, rgba(63, 43, 167, 0.3) 50%, #18225c);
+  }
+}
+
 .NativeApps {
   overflow: hidden;
   background: linear-gradient(-60deg, rgb(102, 39, 202) 0%, rgb(172, 99, 255) 100%);

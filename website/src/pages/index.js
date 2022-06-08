@@ -212,7 +212,7 @@ function TwoColumns({ columnOne, columnTwo, reverse }) {
 
 function HeaderHero() {
   return (
-    <Section background="none" className="HeaderHero" style={{paddingTop: 110}}>
+    <Section background="none" className="HeaderHero" style={{paddingTop: 100}}>
       {/* <GitHubStarButton /> */}
       <div className="titleContainer">
         <div className="title">
@@ -282,6 +282,22 @@ const Index = () => {
       {codeBlocks.map((content, i) => (
         <NativeCode content={content} tint={!(i % 2)} />
       ))}
+      <Section background="none" className="Embed" style={{ display: 'flex', justifyContent: 'center', padding: 25 }}>
+        <iframe
+          src="https://codesandbox.io/embed/competent-carson-j2tfqm?fontsize=12&hidenavigation=1&theme=dark"
+          style={{
+            width: "100%",
+            maxWidth: 1080,
+            height: 500,
+            border: 0,
+            borderRadius: 4,
+            overflow: "hidden"
+          }}
+          title="competent-carson-j2tfqm"
+          allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+          sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+        />
+      </Section>
       <NativeApps />
     </Layout>
   )
