@@ -504,16 +504,9 @@ html[data-theme="dark"] {
 }
 
 .NativeApps {
-  overflow: hidden;
-  background: linear-gradient(-60deg, rgb(102, 39, 202) 0%, rgb(172, 99, 255) 100%);
-
+  background: #151515 linear-gradient(60deg, rgba(63, 43, 167, 0.3) 50%, #18225c);
 }
 
-html[data-theme="dark"] {
-  .NativeApps {
-    background: #151515 linear-gradient(60deg, rgba(63, 43, 167, 0.3) 50%, #18225c);
-  }
-}
 
 @media only screen and (max-width: 960px) {
   .NativeApps .column.last {
@@ -982,14 +975,15 @@ html[data-theme="light"] {
   }
   li {
     list-style-type: none;
-    background: #ffffff10;
-    border: 6px solid #ffffff2e;
-    margin: 5px;
-    color: #fffd;
-    padding: 3px 14px;
+    background: black;
+    border: 2px solid rgb(255 255 255 / 68%);
+    margin: 6px;
+    color: rgb(255 255 255);
+    padding: 7px 18px;
     display: inline-block;
     border-radius: 40px;
     transition: border 400ms;
+    font-size: 17px;
     &:hover {
       color: #fff;
       border-color: #fff9;
