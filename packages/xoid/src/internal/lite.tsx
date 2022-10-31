@@ -1,13 +1,12 @@
-import type { Listener, Callback } from '../types'
-// This module is self contained, only refers to `./types`.
-// it doesn't have the following features: selectors, useables, `focus` and `pass` methods.
+// This module is self contained. It doesn't have the following features:
+// selectors, useables, `focus` and `pass` methods.
 
 export type LiteAtom<T> = {
   value: T
   set(state: T): void
   update(fn: (state: T) => T): void
-  subscribe(fn: Listener<T>): () => void
-  watch(fn: Listener<T>): () => void
+  subscribe(fn: (value: T, previousValue: T) => void): () => void
+  watch(fn: (value: T, previousValue: T) => void): () => void
 }
 
 export type Internal<T> = {
@@ -20,11 +19,9 @@ export type Internal<T> = {
   usable?: any
 }
 
-export const INTERNAL = Symbol()
-
 export const createEvent = () => {
-  const fns = new Set<Callback>()
-  const add = (fn: Callback) => {
+  const fns = new Set<Function>()
+  const add = (fn: Function) => {
     fns.add(fn)
   }
   const fire = () => {

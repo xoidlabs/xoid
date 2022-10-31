@@ -1,5 +1,7 @@
-import { createBaseApi, createEvent, createInternal, Internal, INTERNAL } from './lite'
-import { Atom, GetState, Listener, Callback } from '../types'
+import { createBaseApi, createEvent, createInternal, Internal } from './lite'
+import { Atom, GetState } from '../types'
+
+export const INTERNAL = Symbol()
 
 export const shallowCopy = (obj: unknown) =>
   Array.isArray(obj)
@@ -24,7 +26,7 @@ export function setIn<T>(obj: T, path: string[], value: any): T {
 }
 
 export const createGetState =
-  (updateState: Listener<unknown>, add: (fn: Callback) => void): GetState =>
+  (updateState: Function, add: (fn: Function) => void): GetState =>
   // @ts-ignore
   (read, sub) => {
     if (sub) {

@@ -1,16 +1,17 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create, use, Atom, StateOf } from 'xoid'
+import { create, use, Atom, Value } from 'xoid'
 import { useAtom } from '@xoid/react'
 
 const debug = <T,>(atom: Atom<T>) => {
   return {
     self: atom,
     selfSerialized: JSON.stringify(atom),
-    get: atom(),
-    getSerialized: JSON.stringify(atom()),
-    use: use(atom as any),
+    get: atom.value,
+    getSerialized: JSON.stringify(atom.value),
+    // @ts-expect-error
+    use: use(atom),
   }
 }
 
@@ -113,7 +114,7 @@ it('can update the selector', async () => {
     two: 'two',
   }))
 
-  type State = StateOf<typeof atom>
+  type State = Value<typeof atom>
 
   function Component({ selector }: any) {
     const value = useAtom(atom, selector)

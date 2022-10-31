@@ -12,20 +12,26 @@ async function main() {
     typescript({
       useTsconfigDeclarationDir: true,
     }),
-    terser(),
+    // terser(),
     copy({ targets: copyTargets })
   ];
 
   const results = [];
   const packages = [];
 
-  console.log('Found following packages:')
   await workspacesRun({ cwd: __dirname, orderByDeps: true }, async (pkg) => {
     if (!pkg.config.private) {
-      console.log('- ', pkg.name)
       packages.push(pkg);
     }
   });
+
+  if (!process.env.TARGET) {
+    console.log('Found following packages:')
+    packages.forEach((pkg) => console.log('- ', pkg.name))
+  } else {
+    packages = packages.filter((pkg) => pkg.name === process.env.TARGET)
+    if (!packages.length) throw new Error(`No package with name "${process.env.TARGET}". `)
+  }
 
   packages.forEach((pkg) => {
     const {
@@ -81,16 +87,11 @@ async function main() {
     });
 
     if(types) {
-      const typesInput = path.join('dist/ts-out', basePath, 'src/index.d.ts');
-      const typesOutput = []
-      if(main) typesOutput.push({ file: path.join(outputPath, 'index.d.ts'), format: 'es' })
-      if(module) typesOutput.push({ file: path.join(outputPath, 'esm/index.d.ts'), format: 'es' })
-
       results.push({
-        input: typesInput,
-        output: typesOutput,
+        input: path.join('dist/ts-out', basePath, 'src/index.d.ts'),
+        output: { file: path.join(outputPath, 'index.d.ts'), format: 'es' },
         external,
-        plugins: [dts()],
+        plugins: [dts({})],
       });
     }
   });

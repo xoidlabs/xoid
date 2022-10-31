@@ -3,8 +3,8 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "xoid": ["./packages/xoid/lib"],
-      "@xoid/*": ["./packages/*/lib"],
+      "xoid": ["./packages/xoid/src"],
+      "@xoid/*": ["./packages/*/src"],
     },
     "target": "es5",
     "jsx": "react",
@@ -16,5 +16,5 @@
     "declarationDir": "dist/ts-out",
     "esModuleInterop": true
   },
-  "include": ["packages", "tests"]
+  "include": ["packages", "tests", "examples"]
 }

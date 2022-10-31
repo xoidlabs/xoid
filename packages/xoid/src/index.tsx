@@ -1,6 +1,6 @@
 import type { Atom, Stream, Init, GetState, Usable } from './types'
-import { createSelector, createApi } from './internal/utils'
-import { createEvent, createInternal, INTERNAL } from './internal/lite'
+import { createSelector, createApi, INTERNAL } from './internal/utils'
+import { createEvent, createInternal } from './internal/lite'
 
 export * from './types'
 
@@ -26,8 +26,6 @@ export function create<T, U = undefined>(init?: Init<T>, getUsable?: (atom: Atom
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
 export const use = <T extends any>(atom: Usable<T>): T => (atom as any)[INTERNAL].usable
-
-// For plugins and stuff
-use.symbol = INTERNAL
-use.createEvent = createEvent
-use.devtools = <T,>(value: T): T => value
+;(use as any).symbol = INTERNAL
+;(use as any).createEvent = createEvent
+;(use as any).devtools = <T,>(value: T): T => value
