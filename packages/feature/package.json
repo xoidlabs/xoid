@@ -1,16 +1,16 @@
 {
-  "name": "xoid",
-  "version": "0.9.28",
+  "name": "@xoid/feature",
+  "version": "0.0.2",
   "main": "./index.js",
-  "module": "./index.esm.js",
+  "module": "./esm/index.js",
   "types": "./index.d.ts",
   "sideEffects": false,
-  "description": "Framework-agnostic state management library designed for simplicity and scalability",
+  "description": "A dependency injection mechanism to compose JavaScript classes",
   "homepage": "https://xoid.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/onurkerimov/xoid",
-    "directory": "./packages/xoid"
+    "directory": "./packages/feature"
   },
   "license": "MIT",
   "keywords": [
@@ -23,8 +23,5 @@
     "recoil",
     "atom",
     "store"
-  ],
-  "dependencies": {
-    "@xoid/engine": ">=0.9.28"
-  }
+  ]
 }

@@ -42,7 +42,7 @@ async function main() {
     ];
     const basePath = path.relative(__dirname, pkg.dir)
     const outputPath = basePath.replace('packages/', 'dist/');
-    let input = path.join(basePath, 'lib/index.tsx');
+    let input = path.join(basePath, 'src/index.tsx');
     let copyPath = path.join(basePath, 'copy');
     const output = []
 
@@ -81,7 +81,7 @@ async function main() {
     });
 
     if(types) {
-      const typesInput = path.join('dist/ts-out', basePath, 'lib/index.d.ts');
+      const typesInput = path.join('dist/ts-out', basePath, 'src/index.d.ts');
       const typesOutput = []
       if(main) typesOutput.push({ file: path.join(outputPath, 'index.d.ts'), format: 'es' })
       if(module) typesOutput.push({ file: path.join(outputPath, 'esm/index.d.ts'), format: 'es' })
