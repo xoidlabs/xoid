@@ -2,7 +2,7 @@
   "name": "xoid",
   "version": "0.9.28",
   "main": "./index.js",
-  "module": "./esm/index.js",
+  "module": "./index.esm.js",
   "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",

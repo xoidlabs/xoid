@@ -2,7 +2,7 @@
   "name": "@xoid/devtools",
   "version": "0.2.0",
   "main": "./index.js",
-  "module": "./esm/index.js",
+  "module": "./index.esm.js",
   "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",

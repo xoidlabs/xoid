@@ -2,7 +2,7 @@
   "name": "@xoid/feature",
   "version": "0.0.2",
   "main": "./index.js",
-  "module": "./esm/index.js",
+  "module": "./index.esm.js",
   "types": "./index.d.ts",
   "sideEffects": false,
   "description": "A dependency injection mechanism to compose JavaScript classes",
