@@ -1,6 +1,16 @@
 import { useAtom, useSetup } from '@xoid/react'
 export { slice } from './slice'
 
+export type Pair<T> = { value: T; onChange: (value: T) => void }
+
+export type ComponentType = keyof JSX.IntrinsicElements | React.JSXElementConstructor<any>
+
+export type PropsOf<T> = T extends ComponentType
+  ? React.ComponentProps<T>
+  : T extends (...args: any) => any
+  ? Parameters<T>[0]
+  : never
+
 /**
  * Can be used to consume a **value-onChange pair** as an atom inside React components.
  *

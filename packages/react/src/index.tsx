@@ -1,19 +1,9 @@
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
-import React, { useEffect, useLayoutEffect, useRef, useDebugValue } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useDebugValue, Context } from 'react'
 import { Atom, Usable, create, use as _use } from 'xoid'
 
-export type Pair<T> = { value: T; onChange: (value: T) => void }
-
-export type ComponentType = keyof JSX.IntrinsicElements | React.JSXElementConstructor<any>
-
-export type PropsOf<T> = T extends ComponentType
-  ? React.ComponentProps<T>
-  : T extends (...args: any) => any
-  ? Parameters<T>[0]
-  : never
-
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
-export const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
+const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
 
 const useConstant = <T extends any>(fn: () => T): T => {
   const ref = useRef<{ c: T }>()
@@ -21,27 +11,38 @@ const useConstant = <T extends any>(fn: () => T): T => {
   return ref.current.c
 }
 
-const useReactAdapter = () => {
+export type ReactAdapter = {
+  read: <T>(context: Context<T>) => T
+  mount: (fn: Function) => void
+  unmount: (fn: Function) => void
+}
+
+// The only experimental feature of this package is the `read` function in the following React adapter.
+// It relies on React fiber internals that might change in the future. A good thing is that the same
+// interface is used by a popular module like `react-relay`, and it's is even mimicked in `preact/compat`.
+// https://github.com/preactjs/preact/blob/cef315a681aaaef67200564d9a33bd007422665b/compat/src/render.js#L230
+const reactInternals = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
+const useReactAdapter = (): ReactAdapter => {
   const result = useConstant(() => {
-    const mount = (_use as any).createEvent()
-    const unmount = (_use as any).createEvent()
+    const m = (_use as any).createEvent()
+    const u = (_use as any).createEvent()
     return {
-      mount,
-      unmount,
+      m,
+      u,
       adapter: {
-        mount: mount.add,
-        unmount: unmount.add,
+        read: <T,>(context: Context<T>): T =>
+          reactInternals.ReactCurrentDispatcher.current.readContext(context),
+        mount: m.add,
+        unmount: u.add,
       },
     }
   })
   useIsoLayoutEffect(() => {
-    result.mount.fire()
-    return result.unmount.fire
+    result.m.fire()
+    return result.u.fire
   }, [])
   return result.adapter
 }
-
-export type ReactAdapter = ReturnType<typeof useReactAdapter>
 
 /**
  * Subscribes to an atom inside a React function component.
@@ -55,7 +56,8 @@ export function useAtom<T>(atom: () => Atom<T>): T
 export function useAtom<T, U>(atom: Atom<T> & Usable<U>, use: true): [T, U]
 export function useAtom<T, U>(atom: () => Atom<T> & Usable<U>, use: true): [T, U]
 export function useAtom<T, U>(maybeAtom: Atom<T> | (() => Atom<T>), use?: boolean): [T, U] | T {
-  const atom = useConstant(() => (typeof maybeAtom === 'function' ? maybeAtom() : maybeAtom))
+  const atom =
+    useConstant(() => typeof maybeAtom === 'function' && maybeAtom()) || (maybeAtom as Atom<T>)
   const value = useSyncExternalStore(
     atom.subscribe,
     () => atom.value,

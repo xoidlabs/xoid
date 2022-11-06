@@ -4,7 +4,7 @@
     "baseUrl": ".",
     "paths": {
       "xoid": ["./packages/xoid/src"],
-      "@xoid/*": ["./packages/*/src"],
+      "@xoid/*": ["./packages/*/src"]
     },
     "target": "es5",
     "jsx": "react",

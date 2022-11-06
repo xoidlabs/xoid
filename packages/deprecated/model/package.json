@@ -21,8 +21,11 @@
     "react",
     "redux",
     "recoil",
+    "xoid",
     "atom",
-    "store"
+    "store",
+    "stream",
+    "observable"
   ],
   "devDependencies": {
   },

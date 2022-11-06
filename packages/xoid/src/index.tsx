@@ -11,8 +11,12 @@ export * from './types'
  */
 export function create<T>(): Stream<T>
 export function create<T>(init: Init<T>): Atom<T>
+export function create<T>(init: Init<T>, getUsable: null): Atom<T>
 export function create<T, U>(init: Init<T>, getUsable?: (atom: Atom<T>) => U): Atom<T> & Usable<U>
-export function create<T, U = undefined>(init?: Init<T>, getUsable?: (atom: Atom<T>) => U) {
+export function create<T, U = undefined>(
+  init?: Init<T>,
+  getUsable?: null | ((atom: Atom<T>) => U)
+) {
   const isFunction = typeof init === 'function'
   const internal = createInternal((isFunction ? undefined : init) as T)
   if (isFunction) internal.get = createSelector(internal, init as (get: GetState) => T)
@@ -25,7 +29,8 @@ export function create<T, U = undefined>(init?: Init<T>, getUsable?: (atom: Atom
  * Gets the "usables" of an atom.
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
-export const use = <T extends any>(atom: Usable<T>): T => (atom as any)[INTERNAL].usable
+export const use = <T extends any>(atom: Usable<T>): T =>
+  (use as any).devtools((atom as any)[INTERNAL].usable, atom)
 ;(use as any).symbol = INTERNAL
 ;(use as any).createEvent = createEvent
 ;(use as any).devtools = <T,>(value: T): T => value

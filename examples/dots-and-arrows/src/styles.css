@@ -1,0 +1,22 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  height: 100vh;
+}
+
+.Dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: red;
+  position: absolute;
+  top: -10px;
+  left: -10px;
+}
+
+.Arrow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}

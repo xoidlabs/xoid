@@ -26,14 +26,16 @@ export function setIn<T>(obj: T, path: string[], value: any): T {
 }
 
 export const createGetState =
-  (updateState: Function, add: (fn: Function) => void): GetState =>
+  (updateState: () => void, add: (fn: Function) => void): GetState =>
   // @ts-ignore
   (read, sub) => {
     if (sub) {
       add(sub(updateState))
       return read()
     }
+    // @ts-ignore
     add(read.subscribe(updateState))
+    // @ts-ignore
     return read.value
   }
 
@@ -64,7 +66,7 @@ export const createSelector = <T,>(internal: Internal<T>, init: (get: GetState) 
   }
 }
 
-const createPathProxy = (path: string[]): any =>
+const createPathProxy = (path: string[], nullish?: boolean): any =>
   new Proxy(
     {},
     {
@@ -77,7 +79,7 @@ const createPathProxy = (path: string[]): any =>
     }
   )
 
-export const pathProxy = createPathProxy([])
+const pathProxy = createPathProxy([])
 
 export const getPath = <T extends (...args: any) => any>(fn: T): string[] => fn(pathProxy)[INTERNAL]
 
@@ -110,7 +112,7 @@ export const createFocus =
   }
 
 export const createStream =
-  <T,>(internal: Internal<T>): Atom<T>['pass'] =>
+  <T,>(internal: Internal<T>): Atom<T>['map'] =>
   // @ts-ignore
   (selector: any, truthy: any) => {
     let prevValue: any
@@ -118,7 +120,7 @@ export const createStream =
     const { get, set, listeners, subscribe } = createInternal()
     const getResult = () => {
       const result = selector(internal.get(), prevValue)
-      if (!(truthy && result === undefined)) {
+      if (!(truthy && !result)) {
         set(result)
         prevValue = result
       }
@@ -149,7 +151,8 @@ export const createApi = <T,>(
 ) => {
   const nextAtom = createBaseApi(nextInternal) as unknown as Atom<T>
   nextAtom.focus = createFocus(internal, relativePath)
-  nextAtom.pass = createStream(internal)
+  nextAtom.map = createStream(internal)
+  // nextAtom.filter = (fn) => nextAtom.map((a, b) => fn(a, b) && a, true)
   ;(nextAtom as any)[INTERNAL] = internal
   return nextAtom
 }

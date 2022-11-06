@@ -1,14 +1,5 @@
-import { create, use, subscribe, Atom } from 'xoid'
-
-const debug = <T,>(atom: Atom<T>) => {
-  return {
-    self: atom,
-    selfSerialized: JSON.stringify(atom),
-    get: atom(),
-    getSerialized: JSON.stringify(atom()),
-    use: use(atom as any),
-  }
-}
+import { create } from 'xoid'
+import { debug } from './testHelpers'
 
 const consoleError = console.error
 afterEach(() => {
@@ -33,7 +24,7 @@ it('lazily evaluates a state initializer function 2', () => {
     return 5
   })
   expect(fn).not.toBeCalled()
-  subscribe(atom, console.log)
+  atom.subscribe(console.log)
   expect(fn).toBeCalledTimes(1)
 })
 
@@ -46,9 +37,9 @@ it('lazily evaluate only when a sub atom is read/written', () => {
   })
   expect(fn).not.toBeCalled()
 
-  const subAtom = use(atom, (s) => s.deep.value)
+  const subAtom = atom.focus((s) => s.deep.value)
   expect(fn).not.toBeCalled()
 
-  subAtom(25)
+  subAtom.set(25)
   expect(fn).toBeCalledTimes(1)
 })

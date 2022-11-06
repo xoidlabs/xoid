@@ -1,5 +1,5 @@
 // This module is self contained. It doesn't have the following features:
-// selectors, useables, `focus` and `pass` methods.
+// selectors, useables, `focus` and `map` methods.
 
 export type LiteAtom<T> = {
   value: T
@@ -46,20 +46,16 @@ const effectize = <T,>(fn: (next: T, prev: T) => any, getter: () => T, watch = f
   }
 }
 
-export const createInternal = <T,>(value: T, evaluate?: any): Internal<T> => {
+export const createInternal = <T,>(value: T): Internal<T> => {
   const listeners = new Set<() => void>()
   return {
     listeners,
-    get: () => {
-      evaluate?.()
-      return value as T
-    },
+    get: () => value as T,
     set: (nextValue: T) => {
       value = nextValue
       listeners.forEach((listener) => listener())
     },
     subscribe: (listener: () => void) => {
-      evaluate?.()
       listeners.add(listener)
       return () => void listeners.delete(listener)
     },
@@ -68,15 +64,17 @@ export const createInternal = <T,>(value: T, evaluate?: any): Internal<T> => {
 
 export const createBaseApi = <T,>(internal: Internal<T>) => {
   const { get, set, subscribe } = internal
+  // Don't delete recurring api destructures from the following code.
+  // It lets enhancing atoms work.
   const api: LiteAtom<T> = {
     get value() {
       return get()
     },
     set value(item) {
-      set(item)
+      api.set(item)
     },
     set: (value: any) => set(value),
-    update: (fn: any) => set(fn(get())),
+    update: (fn: any) => api.set(fn(get())),
     subscribe: (item) => subscribe(effectize(item, get)),
     watch: (item) => subscribe(effectize(item, get, true)),
   }

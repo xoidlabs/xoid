@@ -1,5 +1,5 @@
 {
-  "name": "xoid",
+  "name": "@xoid/legacy",
   "version": "0.9.28",
   "main": "./index.js",
   "module": "./index.esm.js",
@@ -21,8 +21,11 @@
     "react",
     "redux",
     "recoil",
+    "xoid",
     "atom",
-    "store"
+    "store",
+    "stream",
+    "observable"
   ],
   "dependencies": {
     "@xoid/engine": ">=0.9.28"

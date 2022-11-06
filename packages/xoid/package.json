@@ -21,10 +21,10 @@
     "react",
     "redux",
     "recoil",
+    "xoid",
     "atom",
-    "store"
-  ],
-  "dependencies": {
-    "@xoid/engine": ">=0.9.28"
-  }
+    "store",
+    "stream",
+    "observable"
+  ]
 }

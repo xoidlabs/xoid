@@ -1,0 +1,181 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a atom with a primitive value 1`] = `
+Object {
+  "get": 5,
+  "getSerialized": "5",
+  "self": Object {
+    "focus": [Function],
+    "pass": [Function],
+    "set": [Function],
+    "subscribe": [Function],
+    "update": [Function],
+    "value": 5,
+    "watch": [Function],
+    Symbol(): Object {
+      "get": [Function],
+      "listeners": Set {},
+      "set": [Function],
+      "subscribe": [Function],
+      "usable": undefined,
+    },
+  },
+  "selfSerialized": "{\\"value\\":5}",
+  "use": undefined,
+}
+`;
+
+exports[`creates a atom with a record 1`] = `
+Object {
+  "get": Object {
+    "alpha": 3,
+    "beta": 5,
+  },
+  "getSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
+  "self": Object {
+    "focus": [Function],
+    "pass": [Function],
+    "set": [Function],
+    "subscribe": [Function],
+    "update": [Function],
+    "value": Object {
+      "alpha": 3,
+      "beta": 5,
+    },
+    "watch": [Function],
+    Symbol(): Object {
+      "get": [Function],
+      "listeners": Set {},
+      "set": [Function],
+      "subscribe": [Function],
+      "usable": undefined,
+    },
+  },
+  "selfSerialized": "{\\"value\\":{\\"alpha\\":3,\\"beta\\":5}}",
+  "use": undefined,
+}
+`;
+
+exports[`normalizes nested atoms in a record 1`] = `
+Object {
+  "get": Object {
+    "alpha": Object {
+      "focus": [Function],
+      "pass": [Function],
+      "set": [Function],
+      "subscribe": [Function],
+      "update": [Function],
+      "value": 3,
+      "watch": [Function],
+      Symbol(): Object {
+        "get": [Function],
+        "listeners": Set {},
+        "set": [Function],
+        "subscribe": [Function],
+        "usable": undefined,
+      },
+    },
+    "beta": Object {
+      "focus": [Function],
+      "pass": [Function],
+      "set": [Function],
+      "subscribe": [Function],
+      "update": [Function],
+      "value": 5,
+      "watch": [Function],
+      Symbol(): Object {
+        "get": [Function],
+        "listeners": Set {},
+        "set": [Function],
+        "subscribe": [Function],
+        "usable": undefined,
+      },
+    },
+  },
+  "getSerialized": "{\\"alpha\\":{\\"value\\":3},\\"beta\\":{\\"value\\":5}}",
+  "self": Object {
+    "focus": [Function],
+    "pass": [Function],
+    "set": [Function],
+    "subscribe": [Function],
+    "update": [Function],
+    "value": Object {
+      "alpha": Object {
+        "focus": [Function],
+        "pass": [Function],
+        "set": [Function],
+        "subscribe": [Function],
+        "update": [Function],
+        "value": 3,
+        "watch": [Function],
+        Symbol(): Object {
+          "get": [Function],
+          "listeners": Set {},
+          "set": [Function],
+          "subscribe": [Function],
+          "usable": undefined,
+        },
+      },
+      "beta": Object {
+        "focus": [Function],
+        "pass": [Function],
+        "set": [Function],
+        "subscribe": [Function],
+        "update": [Function],
+        "value": 5,
+        "watch": [Function],
+        Symbol(): Object {
+          "get": [Function],
+          "listeners": Set {},
+          "set": [Function],
+          "subscribe": [Function],
+          "usable": undefined,
+        },
+      },
+    },
+    "watch": [Function],
+    Symbol(): Object {
+      "get": [Function],
+      "listeners": Set {},
+      "set": [Function],
+      "subscribe": [Function],
+      "usable": undefined,
+    },
+  },
+  "selfSerialized": "{\\"value\\":{\\"alpha\\":{\\"value\\":3},\\"beta\\":{\\"value\\":5}}}",
+  "use": undefined,
+}
+`;
+
+exports[`uses the actions in vanilla 1`] = `
+Object {
+  "get": Object {
+    "count": 1,
+  },
+  "getSerialized": "{\\"count\\":1}",
+  "self": Object {
+    "focus": [Function],
+    "pass": [Function],
+    "set": [Function],
+    "subscribe": [Function],
+    "update": [Function],
+    "value": Object {
+      "count": 1,
+    },
+    "watch": [Function],
+    Symbol(): Object {
+      "get": [Function],
+      "listeners": Set {},
+      "set": [Function],
+      "subscribe": [Function],
+      "usable": Object {
+        "inc": [Function],
+      },
+    },
+  },
+  "selfSerialized": "{\\"value\\":{\\"count\\":1}}",
+  "use": Object {
+    "inc": [Function],
+  },
+}
+`;
