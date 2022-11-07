@@ -39,7 +39,7 @@ import { MyContext } from './MyContext'
 
 export const MyComponent = () => {
   const atom = useContext(MyContext)
-  const { alpha, beta } = useAtom()
+  const { alpha, beta } = useAtom(atom)
 
   return (
     <div>

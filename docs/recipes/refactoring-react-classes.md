@@ -26,7 +26,7 @@ Here's a basic React-like class component runtime prepared with **xoid**.
 ```js
 import { create, Atom } from 'xoid'
 
-class Runtime {
+class Runtime<Props, State> {
   $props: Atom<Props>;
   $state!: Atom<State>;
   constructor($props: Atom<Props>) {
@@ -38,9 +38,6 @@ class Runtime {
   get state() {
     return this.$state.value;
   }
-  set state(s) {
-    this.$state = create(s)
-  }
   setState(partial: Partial<State>) {
     this.$state.update((s) => ({ ...s, ...partial }));
   }
@@ -48,11 +45,11 @@ class Runtime {
 ```
 We can then easily evolve into the following, working structure without too much refactor:
 ```js
-class AppRuntime extends Runtime<> {
-  state = { alpha: 5 }
+class AppRuntime extends Runtime<{}, { alpha: number }> {
+  $state = create({ alpha: 5 });
   incrementAlpha = () => {
-    this.setState({ alpha: this.state.alpha + 1 })
-  }
+    this.setState({ alpha: this.state.alpha + 1 });
+  };
 }
 
 const App = (props: Props) => {
