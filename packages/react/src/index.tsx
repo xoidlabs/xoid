@@ -17,7 +17,7 @@ export type ReactAdapter = {
   unmount: (fn: Function) => void
 }
 
-// The only experimental feature of this package is the `read` function in the following React adapter.
+// The only experimental feature of this package is the `read` method in the following React adapter.
 // It relies on React fiber internals that might change in the future. A good thing is that the same
 // interface is used by a popular module like `react-relay`, and it's is even mimicked in `preact/compat`.
 // https://github.com/preactjs/preact/blob/cef315a681aaaef67200564d9a33bd007422665b/compat/src/render.js#L230

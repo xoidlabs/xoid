@@ -9,7 +9,8 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "packages/incubator/*"
     ]
   },
   "scripts": {

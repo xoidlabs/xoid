@@ -4,85 +4,83 @@ import { create, use } from 'xoid'
 it('can get state via selectors', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
 
-  // @ts-ignore
-  expect(use(atom)).toBe(undefined)
-  expect(use(atom, 'deeply')()).toStrictEqual({ nested: { number: 5 } })
-  expect(use(atom, (s) => s.deeply)()).toStrictEqual({ nested: { number: 5 } })
-  expect(use(atom, (s) => s.deeply.nested)()).toStrictEqual({ number: 5 })
+  expect(atom.focus('deeply').value).toStrictEqual({ nested: { number: 5 } })
+  expect(atom.focus((s) => s.deeply).value).toStrictEqual({ nested: { number: 5 } })
+  expect(atom.focus((s) => s.deeply.nested).value).toStrictEqual({ number: 5 })
 })
 
 it('can handle serial selectors', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
-  const atomDeeply = use(atom, 'deeply')
+  const atomDeeply = atom.focus('deeply')
 
-  expect(use(atomDeeply, (s) => s.nested)()).toStrictEqual({ number: 5 })
+  expect(atomDeeply.focus((s) => s.nested).value).toStrictEqual({ number: 5 })
 })
 
 it('can memoize selectors', () => {
   const atom = create({ deep: { value: 5 } })
-  const $deep = use(atom, 'deep')
-  expect(use($deep, 'value') === use(atom, (s) => s.deep.value)).toBe(true)
+  const $deep = atom.focus('deep')
+  expect($deep.focus('value') === atom.focus((s) => s.deep.value)).toBe(true)
 })
 
 it('can handle updates via selectors', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
-  const atomDeeplyNestedNumber = use(atom, (s) => s.deeply.nested.number)
-  const atomDeeply = use(atom, 'deeply')
+  const atomDeeplyNestedNumber = atom.focus((s) => s.deeply.nested.number)
+  const atomDeeply = atom.focus('deeply')
 
-  atomDeeply({ nested: { number: 25 } })
+  atomDeeply.set({ nested: { number: 25 } })
 
-  expect(atomDeeply()).toStrictEqual({ nested: { number: 25 } })
-  expect(atom()).toStrictEqual({ deeply: { nested: { number: 25 } } })
-  expect(atom().deeply.nested.number).toStrictEqual(25)
-  expect(atomDeeplyNestedNumber()).toStrictEqual(25)
+  expect(atomDeeply.value).toStrictEqual({ nested: { number: 25 } })
+  expect(atom.value).toStrictEqual({ deeply: { nested: { number: 25 } } })
+  expect(atom.value.deeply.nested.number).toStrictEqual(25)
+  expect(atomDeeplyNestedNumber.value).toStrictEqual(25)
 })
 
 it('can handle updates via selectors 2', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
-  const atomDeeply = use(atom, 'deeply')
-  const atomDeeplyNestedNumber = use(atom, (s) => s.deeply.nested.number)
+  const atomDeeply = atom.focus('deeply')
+  const atomDeeplyNestedNumber = atom.focus((s) => s.deeply.nested.number)
 
-  atomDeeplyNestedNumber(25)
+  atomDeeplyNestedNumber.set(25)
 
-  expect(atomDeeply()).toStrictEqual({ nested: { number: 25 } })
-  expect(atom()).toStrictEqual({ deeply: { nested: { number: 25 } } })
-  expect(atom().deeply.nested.number).toStrictEqual(25)
-  expect(atomDeeplyNestedNumber()).toStrictEqual(25)
+  expect(atomDeeply.value).toStrictEqual({ nested: { number: 25 } })
+  expect(atom.value).toStrictEqual({ deeply: { nested: { number: 25 } } })
+  expect(atom.value.deeply.nested.number).toStrictEqual(25)
+  expect(atomDeeplyNestedNumber.value).toStrictEqual(25)
 })
 
 it('can handle updates via serial selectors', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
-  const atomDeeply = use(atom, 'deeply')
-  const atomDeeplyNestedNumber = use(atomDeeply, (s) => s.nested.number)
+  const atomDeeply = atom.focus('deeply')
+  const atomDeeplyNestedNumber = atomDeeply.focus((s) => s.nested.number)
 
-  atomDeeplyNestedNumber(25)
-  expect(atomDeeplyNestedNumber()).toStrictEqual(25)
+  atomDeeplyNestedNumber.set(25)
+  expect(atomDeeplyNestedNumber.value).toStrictEqual(25)
 
-  expect(atomDeeply()).toStrictEqual({ nested: { number: 25 } })
-  expect(atom().deeply.nested.number).toStrictEqual(25)
+  expect(atomDeeply.value).toStrictEqual({ nested: { number: 25 } })
+  expect(atom.value.deeply.nested.number).toStrictEqual(25)
 })
 
 it('can use previous values', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
-  const atomDeeply = use(atom, 'deeply')
-  const atomDeeplyNestedNumber = use(atom, (s) => s.deeply.nested.number)
+  const atomDeeply = atom.focus('deeply')
+  const atomDeeplyNestedNumber = atom.focus((s) => s.deeply.nested.number)
 
-  atomDeeplyNestedNumber((s) => s + 1)
+  atomDeeplyNestedNumber.update((s) => s + 1)
 
-  expect(atomDeeply()).toStrictEqual({ nested: { number: 6 } })
-  expect(atom()).toStrictEqual({ deeply: { nested: { number: 6 } } })
-  expect(atom().deeply.nested.number).toStrictEqual(6)
-  expect(atomDeeplyNestedNumber()).toStrictEqual(6)
+  expect(atomDeeply.value).toStrictEqual({ nested: { number: 6 } })
+  expect(atom.value).toStrictEqual({ deeply: { nested: { number: 6 } } })
+  expect(atom.value.deeply.nested.number).toStrictEqual(6)
+  expect(atomDeeplyNestedNumber.value).toStrictEqual(6)
 })
 
 it('can use previous values via serial selectors', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
-  const atomDeeply = use(atom, 'deeply')
-  const atomDeeplyNestedNumber = use(atomDeeply, (s) => s.nested.number)
+  const atomDeeply = atom.focus('deeply')
+  const atomDeeplyNestedNumber = atomDeeply.focus((s) => s.nested.number)
 
-  atomDeeplyNestedNumber((s) => s + 1)
-  expect(atomDeeplyNestedNumber()).toStrictEqual(6)
+  atomDeeplyNestedNumber.update((s) => s + 1)
+  expect(atomDeeplyNestedNumber.value).toStrictEqual(6)
 
-  expect(atomDeeply()).toStrictEqual({ nested: { number: 6 } })
-  expect(atom().deeply.nested.number).toStrictEqual(6)
+  expect(atomDeeply.value).toStrictEqual({ nested: { number: 6 } })
+  expect(atom.value.deeply.nested.number).toStrictEqual(6)
 })
