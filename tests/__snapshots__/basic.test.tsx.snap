@@ -6,7 +6,7 @@ Object {
   "getSerialized": "5",
   "self": Object {
     "focus": [Function],
-    "pass": [Function],
+    "map": [Function],
     "set": [Function],
     "subscribe": [Function],
     "update": [Function],
@@ -34,7 +34,7 @@ Object {
   "getSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
   "self": Object {
     "focus": [Function],
-    "pass": [Function],
+    "map": [Function],
     "set": [Function],
     "subscribe": [Function],
     "update": [Function],
@@ -61,7 +61,7 @@ Object {
   "get": Object {
     "alpha": Object {
       "focus": [Function],
-      "pass": [Function],
+      "map": [Function],
       "set": [Function],
       "subscribe": [Function],
       "update": [Function],
@@ -77,7 +77,7 @@ Object {
     },
     "beta": Object {
       "focus": [Function],
-      "pass": [Function],
+      "map": [Function],
       "set": [Function],
       "subscribe": [Function],
       "update": [Function],
@@ -95,14 +95,14 @@ Object {
   "getSerialized": "{\\"alpha\\":{\\"value\\":3},\\"beta\\":{\\"value\\":5}}",
   "self": Object {
     "focus": [Function],
-    "pass": [Function],
+    "map": [Function],
     "set": [Function],
     "subscribe": [Function],
     "update": [Function],
     "value": Object {
       "alpha": Object {
         "focus": [Function],
-        "pass": [Function],
+        "map": [Function],
         "set": [Function],
         "subscribe": [Function],
         "update": [Function],
@@ -118,7 +118,7 @@ Object {
       },
       "beta": Object {
         "focus": [Function],
-        "pass": [Function],
+        "map": [Function],
         "set": [Function],
         "subscribe": [Function],
         "update": [Function],
@@ -155,7 +155,7 @@ Object {
   "getSerialized": "{\\"count\\":1}",
   "self": Object {
     "focus": [Function],
-    "pass": [Function],
+    "map": [Function],
     "set": [Function],
     "subscribe": [Function],
     "update": [Function],

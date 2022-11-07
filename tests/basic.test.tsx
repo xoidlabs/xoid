@@ -118,7 +118,7 @@ it('can update the selector', async () => {
   await findByText('two')
 })
 
-it.only('ensures parent components subscribe before children', async () => {
+it('ensures parent components subscribe before children', async () => {
   type State = {
     children: { [key: string]: { text: string } }
   }
