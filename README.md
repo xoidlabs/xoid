@@ -27,7 +27,7 @@
 
 **xoid** is a framework-agnostic state management library. **X** (though it's read as Z) in its name signifies its inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
 
-**xoid** is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below.
+**xoid** is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 
 To install, run the following command:
@@ -81,7 +81,7 @@ atom.update(state => state + 1)
 console.log(atom.value) // 6
 ```
 
-Atoms can have actions, and with `use` function they can be used.
+Atoms can have actions, and with `.use` method they can be used.
 
 ```js
 import { create, use } from 'xoid'
@@ -117,12 +117,18 @@ assert(atom().deeply.nested.alpha === 6) // ✅
 Atoms can be derived from other atoms. This API was heavily inspired by **Recoil**.
 
 ```js
-import { create } from 'xoid'
-
 const alpha = create(3)
 const beta = create(5)
 // derived atom
 const sum = create((get) => get(alpha) + get(beta))
+```
+
+Alternatively, `.map` method can be used to quickly derive the state from a single atom.
+
+```js
+const alpha = create(3)
+// derived atom
+const doubleAlpha = alpha.map((s) => s * 2)
 ```
 
 ### Subscriptions
@@ -147,7 +153,7 @@ import { useAtom } from '@xoid/react'
 const state = useAtom(atom)
 ```
 
-The other hook is `useSetup`. It can be used for creating local component state. It'll run its closure **only once**. If a second argument is supplied, it'll be used for communication between the closure (`useSetup` scope) and outside (React component scope).
+The other hook is `useSetup`. It can be used for creating local component state. It'll run its callback **only once**. If a second argument is supplied, it'll be used for communication between the closure (`useSetup` scope) and outside (React component scope).
 
 ```js
 import { useSetup } from '@xoid/react'
@@ -167,6 +173,8 @@ const App = (props: Props) => {
 ```
 
 > `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
+
+Here, this is enough knowledge to start using **xoid**! You can refer to the [documentation website](https://xoid.dev) for more.
 
 ## More features
 

@@ -79,17 +79,15 @@ export function useSetup(fn: ($props: any, adapter: any) => any, props?: any): a
   // Calling hooks conditionally wouldn't be an issue here, because we rely on just
   // the Function.length and Arguments.length, which will remain static.
   const api = fn.length > 1 ? useReactAdapter() : undefined
+  let result
   if (arguments.length > 1) {
-    const [$props, result] = useConstant(() => {
-      const $props = create(() => props)
-      const result = fn($props, api)
-      return [$props, result] as const
-    })
+    const $props = useConstant(() => create(() => props))
     useIsoLayoutEffect(() => ($props as Atom<any>).set(props), [props])
-    return result
+    result = useConstant(() => fn($props, api))
   } else {
-    const result = useConstant(() => fn(undefined, api))
-    return result
+    result = useConstant(() => fn(undefined, api))
   }
+  useDebugValue(result)
+  return result
   /* eslint-enable react-hooks/rules-of-hooks */
 }

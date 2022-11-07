@@ -3,10 +3,10 @@ id: grabbing-refs
 title: Grabbing refs
 ---
 
-`create` function, with no arguments used, can be used to grab element refs (as in React's terminology) in a typesafe manner. 
+A **xoid** atom can be used to grab element refs (as in React's terminology) in a typesafe manner. 
 
 ```js
-const $ref = create<HTMLElement>() // Atom<HTMLElement | undefined>
+const $ref = create<HTMLElement>() // Stream<HTMLElement>
 
 $ref(document.body)
 ```
@@ -17,23 +17,21 @@ It's completely safe to feed **xoid** atoms as refs to React components as `ref`
 import { create } from 'xoid'
 import { useSetup } from '@xoid/react'
 // inside React
-const setup = useSetup(() => {
-  const ref = create<HTMLDivElement>()
-  subscribe(ref, (element) => {
-    if(element) console.log(element)
-  })
-  return {ref}
+const { ref } = useSetup(() => {
+  const $ref = create<HTMLDivElement>()
+  subscribe($ref, (element) => console.log(element))
+  return { $ref }
 })
-return <div ref={setup.ref} />
+return <div ref={$ref.set} />
 ```
-> This usage won't result in Typescript complaints. Since one of the overloads of a **xoid** atom is `(element: HTMLDivElement) => void`, it's compatible with `React.RefCallback`.
+> This usage won't result in Typescript complaints. **xoid**'s `set` method in this example, would be compatible with `React.RefCallback`.
 
-### Grabbing other refs
-
-The same coding style can be used to grab events or other things. 
+### Grabbing events
 
 ```js
-const $event = create<MouseEvent>() // Atom<MouseEvent | undefined>
+import { create } from 'xoid'
+
+const $event = create<MouseEvent>() // Stream<MouseEvent>
 window.addEventListener('mousemove', $event)
 
 // subscribe to the event later
@@ -41,4 +39,3 @@ subscribe($event, console.log)
 // or use it to fork the event into multiple listeners
 subscribe($event, console.warn)
 ```
-

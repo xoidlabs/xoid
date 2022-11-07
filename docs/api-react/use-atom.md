@@ -15,10 +15,9 @@ const numberAtom = create(5);
 const personAtom = create({ name: 'John', surname: 'Doe' });
 
 // in a React component
-const name = useAtom(personAtom, state => state.name);
-// same as
-const name = useAtom(personAtom, 'name');
-
-// without selector function
 const num = useAtom(numberAtom);
+
+// in a React component
+const name = useAtom(personAtom.focus('name'));
 ```
+

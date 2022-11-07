@@ -70,7 +70,7 @@ What if I told you, with **xoid**, it's simply:
 
 ```js
 // inside React
-const onDrop = useSetup((atom) => (...args) => atom()(...args), props.func)
+const onDrop = useSetup((atom) => (...args) => atom.value(...args), props.func)
 ```
 
 Inside the `useSetup` callback, `atom()` simply means "latest version of the dependency". `ref.current` as a "latest version" has a more indirect feeling, and requires more code to set up.

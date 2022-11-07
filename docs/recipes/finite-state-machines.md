@@ -3,27 +3,27 @@ id: finite-state-machines
 title: Finite state machines
 ---
 
-In **xoid**, a wide range of FSMs can be expressed only by using only the `create` function.
+With **xoid**, a wide range of finite state machines can be expressed.
 
 ```js
-const FsmSetup = () => {
+const createMachine = () => {
   function melt() {
-    store(liquid)
+    machine.set(liquid)
     console.log('I melted')
   }
 
   function freeze() {
-    store(solid)
+    machine.set(solid)
     console.log('I freezed')
   }
 
   function condense() {
-    store(liquid)
+    machine.set(liquid)
     console.log('I condensed')
   }
 
   function vaporize() {
-    store(gas)
+    machine.set(gas)
     console.log('I vaporized')
   }
 
@@ -31,13 +31,12 @@ const FsmSetup = () => {
   const liquid = { name: "water", actions: { freeze, vaporize } };
   const gas = { name: "vapor", actions: { condense } };
 
-  const store = create(solid)
+  const machine = create(solid)
   return store;
 }
 
 const App = () => {
-  const fsm = useSetup(FsmSetup)
-  const { name, actions } = useStore(fsm)
+  const { name, actions } = useStore(createMachine)
   return (
     <div>
       {name}
