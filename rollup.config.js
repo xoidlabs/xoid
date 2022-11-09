@@ -46,9 +46,12 @@ async function main() {
       ...Object.keys(dependencies || []),
       ...Object.keys(peerDependencies || [])
     ];
+
+    const maybeDevtools = (str) => pkg.name == '@xoid/devtools' ? str.replace('index', 'devtools') : str
+
     const basePath = path.relative(__dirname, pkg.dir)
     const outputPath = basePath.replace('packages/', 'dist/');
-    let input = path.join(basePath, 'src/index.tsx');
+    let input = path.join(basePath, maybeDevtools('src/index.tsx'));
     let copyPath = path.join(basePath, 'copy');
     const output = []
 
@@ -67,14 +70,14 @@ async function main() {
 
     if(main) {
       output.push({
-        file: path.join(outputPath, main),
+        file: path.join(outputPath, maybeDevtools(main)),
         format: 'cjs',
       })
     }
     
     if(module) {
       output.push({
-        file: path.join(outputPath, module),
+        file: path.join(outputPath, maybeDevtools(module)),
         format: 'esm',
       })
     }
@@ -88,7 +91,7 @@ async function main() {
 
     if(types) {
       results.push({
-        input: path.join('dist/ts-out', basePath, 'src/index.d.ts'),
+        input: path.join('dist/ts-out', basePath, maybeDevtools('src/index.d.ts')),
         output: { file: path.join(outputPath, 'index.d.ts'), format: 'es' },
         external,
         plugins: [dts({})],
