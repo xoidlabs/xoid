@@ -1,46 +1,40 @@
 # @xoid/feature
 
-**@xoid/feature** is a runtime for initializing multiple JavaScript classes. It provides a type-safe dependency injection mechanism for the classes that refer to each other's instance variables. It especially improves the developer experience for TypeScript users, by reducing the types and the runtime code that needs to be written (demonstrated below). It can be used as a plugin system, and it provides a neat pattern for modularity and tree-shakable plugins.
+**@xoid/feature** is a tiny plugin system oriented in JavaScript classes. It provides a type-safe dependency injection mechanism for the classes that refer to each other's instance variables. It especially improves the developer experience for TypeScript users, by reducing the types and the runtime code that needs to be written (demonstrated below). It provides a neat pattern for tree-shakable plugins.
 
-It has 3 exports: `Feature`, `composeFeatures` and `prefill`.
+It has 2 exports: `Feature` and `compose` .
 
 Classes that extend from `Feature`, has the following properties by default:
   - There's no need for `.constructor`.
   - `.from` can be used to share data between sibling instances. (dependency injection part)
-  - `.main` will run when all the instances are ready.
   - `.options` can be used anywhere.
-  - If `defaultOptions` if provided, `.options` will be merged onto that.
+  - `.getOptions` can be used to merge external options onto the default options.
+  - `.main` will run when all the instances are ready.
 
 Example:
 
 ```js
-import { Feature, composeFeatures } from '@xoid/feature'
+import { Feature, compose } from '@xoid/feature'
 
-class Alpha extends Feature({
-  defaultOptions: { alpha: 3 },
-  options: {} as { alpha?: number },
-}) {
+class Alpha extends Feature<{ alpha?: number }> {
+  options = this.getOptions({ alpha: 3 })
   alpha = this.options.alpha
 }
 
-class Beta extends Feature({
-  options: {} as { beta: number },
-}) {
+class Beta extends Feature<{ beta: number }> {
   beta = this.options.beta
   main() {
     console.log('alpha:', this.from(Alpha).alpha)
   }
 }
 
-class Gamma extends Feature({ 
-  options: {} as { message: string }
-}) {
+class Gamma extends Feature<{ message: string }> {
   getSum() {
     return `${this.options.message}${this.from(Alpha).alpha + this.from(Beta).beta}`
   }
 }
 
-const init = composeFeatures([Alpha, Beta, Gamma], (from) => from(Gamma).getSum())
+const init = compose([Alpha, Beta, Gamma], (from) => from(Gamma).getSum())
 
 const result = init({ beta: 2, message: 'The answer is: ' })
 
@@ -52,23 +46,6 @@ Console output:
 ```
 alpha: 3
 The answer is: 5
-```
-
-If we'd like to prefill `Beta`'s options, we could use `prefill`:
-
-```js
-import { prefill } from '@xoid/feature'
-
-const init = composeFeatures(
-  [
-    Alpha, 
-    prefill(Beta, (from) => ({ beta: from(Alpha).alpha })), 
-    Gamma
-  ],
-  (from) => from(Gamma).getSum()
-)
-
-const result = init({ message: 'The answer is: ' }) // doesn't expect `beta: number` anymore.
 ```
 
 Without `@xoid/feature`, the same functionality would require:
@@ -126,8 +103,8 @@ const result = init({ beta: 2, message: 'foo' })
 console.log(result)
 ```
 
-## Best practice: Isolation
-This practice would be unnecessary for most people, but it can be useful if you are a library-author who wants to build a tree-shakable library with a lot of composable classes.
+## Tree-shaking methodology
+This feature is useful if you are a library-author who wants to build a tree-shakable library with a lot of composable classes.
 
 Create the following file:
 
@@ -146,18 +123,17 @@ Modify the following lines in existing files:
 import { Feature } from '@xoid/feature'
 import { id } from './ids/Alpha'
 
-export default class Alpha extends Feature({
-+ id,
-  defaultOptions: { alpha: 3 },
-  options: {} as { alpha?: number },
-}) {
+export default class Alpha extends Feature<{ alpha?: number }> {
++ id = id 
+  options = this.getOptions({ alpha: 3 })
   alpha = this.options.alpha
 }
 ```
+
  `<root>/Beta.tsx`
 ```diff
-+ import * as Alpha from './ids/Alpha'
 - import Alpha from './Alpha'
++ import * as Alpha from './ids/Alpha'
 
 class Beta extends Feature() {
   main() {
@@ -168,10 +144,10 @@ class Beta extends Feature() {
 
 ## Augmentation technique
 
-Second argument of `composeFeatures` is a callback function, and the second argument of this callback function is `types`. `types` should not be used in the runtime, it should only be used for type-safety purposes. `types` aggregates all the instance variables and members of the classes that are composed. If there are multiple variables with the same name, their interfaces will be merged. In the following example, `draggableProps` variable is used multiple times, and its merged interface is being fed to the implementation of `useDraggable`
+There's a neat type-safety helper built-in to `@xoid/feature`. The callback argument of `compose` has a second agrument called `types`. `types` should not be used in the runtime, it only serves as a type aggregator. `types` merges the types of all the classes that are composed. In the following example, `draggableProps` key is used multiple times in different features, so that each feature "augments" the same interface. Finally `types` is fed as a parameter type to `useDraggable`
 
 ```js
-import { Feature, composeFeatures } from '@xoid/feature'
+import { Feature, compose } from '@xoid/feature'
 
 class DragHelper extends Feature() {
   draggableProps!: {
@@ -186,7 +162,7 @@ class DropHelper extends Feature() {
   }
 }
 
-const createDraggable = composeFeatures(
+const createDraggable = compose(
   [DragHelper, DropHelper], 
   (from, types) => {
     const useDraggable = (props: typeof types.draggableProps) => {

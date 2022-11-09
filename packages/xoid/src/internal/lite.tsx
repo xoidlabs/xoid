@@ -15,6 +15,7 @@ export type Internal<T> = {
   listeners: Set<() => void>
   subscribe: (listener: () => void) => () => void
   evaluate?: () => void
+  debugValue?: string
   cache?: any
   usable?: any
 }
@@ -31,28 +32,30 @@ export const createEvent = () => {
   return { add, fire }
 }
 
-const effectize = <T,>(fn: (next: T, prev: T) => any, getter: () => T, watch = false) => {
+const effectize = <T,>(fn: (state: T, prevState: T) => any, getter: () => T, watch = false) => {
   const event = createEvent()
-  let previous = getter()
-  if (watch) fn(previous, previous)
+  let prevState = getter()
+  if (watch) fn(prevState, prevState)
   return () => {
     event.fire()
-    const next = getter()
-    if (next !== previous) {
-      const result = fn(next, previous)
+    const state = getter()
+    if (state !== prevState) {
+      const result = fn(state, prevState)
       if (typeof result === 'function') event.add(result)
     }
-    previous = next
+    prevState = state
   }
 }
 
-export const createInternal = <T,>(value: T): Internal<T> => {
+export const createInternal = <T,>(value: T, send?: () => void): Internal<T> => {
   const listeners = new Set<() => void>()
   return {
     listeners,
     get: () => value as T,
     set: (nextValue: T) => {
+      if (value === nextValue) return
       value = nextValue
+      send?.()
       listeners.forEach((listener) => listener())
     },
     subscribe: (listener: () => void) => {

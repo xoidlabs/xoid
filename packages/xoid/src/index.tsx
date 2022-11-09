@@ -18,10 +18,18 @@ export function create<T, U = undefined>(
   getUsable?: null | ((atom: Atom<T>) => U)
 ) {
   const isFunction = typeof init === 'function'
-  const internal = createInternal((isFunction ? undefined : init) as T)
+  const initialValue = (isFunction ? undefined : init) as T
+  const internal = createInternal(initialValue, (() => (use as any).devtools.send(atom)) as any)
   if (isFunction) internal.get = createSelector(internal, init as (get: GetState) => T)
   const atom = createApi(internal)
-  ;(atom as any)[INTERNAL].usable = getUsable?.(atom)
+  internal.usable = getUsable?.(atom)
+  // devtools support
+  Object.defineProperty(atom, 'debugValue', {
+    set(debugValue: string) {
+      internal.debugValue = debugValue
+      ;(use as any).devtools.init(atom, initialValue, isFunction)
+    },
+  })
   return atom
 }
 
@@ -30,7 +38,11 @@ export function create<T, U = undefined>(
  * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/api/use)
  */
 export const use = <T extends any>(atom: Usable<T>): T =>
-  (use as any).devtools((atom as any)[INTERNAL].usable, atom)
+  (use as any).devtools.wrap((atom as any)[INTERNAL].usable, atom)
 ;(use as any).symbol = INTERNAL
 ;(use as any).createEvent = createEvent
-;(use as any).devtools = <T,>(value: T): T => value
+;(use as any).devtools = {
+  init: <T,>(_atom: T) => void 0,
+  send: <T,>(_atom: T) => void 0,
+  wrap: <T,>(value: T): T => value,
+}

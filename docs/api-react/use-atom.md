@@ -1,5 +1,5 @@
 ---
-id: useatom
+id: use-atom
 title: useAtom
 ---
 

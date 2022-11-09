@@ -5,7 +5,7 @@
   "module": "./index.esm.js",
   "types": "./index.d.ts",
   "sideEffects": false,
-  "description": "A dependency injection mechanism to compose JavaScript classes",
+  "description": "A plugin system to compose JavaScript classes",
   "homepage": "https://xoid.dev",
   "repository": {
     "type": "git",

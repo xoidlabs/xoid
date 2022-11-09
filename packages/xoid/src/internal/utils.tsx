@@ -44,9 +44,7 @@ export const createSelector = <T,>(internal: Internal<T>, init: (get: GetState) 
   const { add, fire } = createEvent()
 
   let isPending = true
-  // TODO: When "ended", make sure to cleanupAll
   const getter = createGetState(() => {
-    // We're here when an invalidation signal dispatches.
     if (listeners.size) evaluate()
     else isPending = true
   }, add)

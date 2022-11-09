@@ -6,6 +6,8 @@ title: Quick Tutorial
 > You can skip this part if you've already read the Github README.
 
 
+## Quick Tutorial
+
 **xoid** has only 2 exports: `create` and `use`. This section will cover them, and the **@xoid/react**.
 
 ### Atom
@@ -22,7 +24,7 @@ atom.update(state => state + 1)
 console.log(atom.value) // 6
 ```
 
-Atoms can have actions, and with `use` function they can be used.
+Atoms can have actions, and with `.use` method they can be used.
 
 ```js
 import { create, use } from 'xoid'
@@ -52,18 +54,30 @@ alpha.set(s => s + 1)
 assert(atom() !== previousState) // ✅
 assert(atom().deeply.nested.alpha === 6) // ✅
 ```
+> Alternatively 
 
 ### Derived state
 
 Atoms can be derived from other atoms. This API was heavily inspired by **Recoil**.
 
 ```js
-import { create } from 'xoid'
-
 const alpha = create(3)
 const beta = create(5)
 // derived atom
 const sum = create((get) => get(alpha) + get(beta))
+```
+
+Alternatively, `.map` method can be used to quickly derive the state from a single atom.
+
+```js
+const alpha = create(3)
+// derived atom
+const doubleAlpha = alpha.map((state) => state * 2)
+```
+
+`.map` method has a second argument to filter out falsy values.
+```js
+const oddNumbersOnly = alpha.map((state) => state % 2 && state)
 ```
 
 ### Subscriptions
@@ -77,7 +91,7 @@ const unsub = atom.subscribe(
 ```
 > To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
-## React integration
+### React integration
 
 **@xoid/react** is based on two hooks. `useAtom` subscribes the component to an atom. If a second argument is supplied, it'll be used as a selector function.
 
@@ -88,7 +102,7 @@ import { useAtom } from '@xoid/react'
 const state = useAtom(atom)
 ```
 
-The other hook is `useSetup`. It can be used for creating local component state. It'll run its closure **only once**. If a second argument is supplied, it'll be used for communication between the closure (`useSetup` scope) and outside (React component scope).
+The other hook is `useSetup`. It can be used for creating local component state. It'll run its callback **only once**. If a second argument is supplied, it'll be used for communication between the closure (`useSetup` scope) and outside (React component scope).
 
 ```js
 import { useSetup } from '@xoid/react'
@@ -108,6 +122,7 @@ const App = (props: Props) => {
 ```
 
 > `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
+
 
 ---
 

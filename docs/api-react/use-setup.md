@@ -1,5 +1,5 @@
 ---
-id: usesetup
+id: use-setup
 title: useSetup
 ---
 
