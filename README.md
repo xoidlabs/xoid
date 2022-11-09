@@ -25,7 +25,7 @@
   </a> -->
 </p>
 
-**xoid** is a framework-agnostic state management library. **X** (though it's read as Z) in its name signifies its inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
+**xoid** is a framework-agnostic state management library. **X** (though it's read as Z) in its name signifies the inspiration it draws from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
 
 **xoid** is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
@@ -110,6 +110,7 @@ alpha.set(s => s + 1)
 assert(atom() !== previousState) // ✅
 assert(atom().deeply.nested.alpha === 6) // ✅
 ```
+> Alternatively 
 
 ### Derived state
 
@@ -141,7 +142,7 @@ const unsub = atom.subscribe(
 ```
 > To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
-## React integration
+### React integration
 
 **@xoid/react** is based on two hooks. `useAtom` subscribes the component to an atom. If a second argument is supplied, it'll be used as a selector function.
 
@@ -247,7 +248,7 @@ atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
 - `@xoid/react` - **React** integration
 - `@xoid/devtools` - **Redux Devtools** integration
 - `@xoid/lite` - Lighter version with less features intended for library authors
-- `@xoid/feature` - A dependency injection mechanism for JavaScript classes
+- `@xoid/feature` - A typesafe plugin system oriented in ES6 classes
 
 ## Thanks
 Following awesome projects inspired **xoid** a lot.
