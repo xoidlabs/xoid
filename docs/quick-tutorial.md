@@ -5,9 +5,6 @@ title: Quick Tutorial
 
 > You can skip this part if you've already read the Github README.
 
-
-## Quick Tutorial
-
 **xoid** has only 2 exports: `create` and `use`. This section will cover them, and the **@xoid/react**.
 
 ### Atom

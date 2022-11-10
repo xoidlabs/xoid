@@ -18,7 +18,7 @@ console.log($atom.value)
 //  25
 ```
 
-## Lazy evalutation in derived atoms
+## Lazy evaluation in derived atoms
 
 A derived atom can be created by using the callback argument of a state initializer function.
 
