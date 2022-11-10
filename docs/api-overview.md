@@ -3,7 +3,7 @@ id: api-overview
 title: API Overview
 ---
 
-**xoid** consists of 2 exports: `create`, which is used to create atoms, and `use` which is used to get "usables" of an atom if there are any.
+**xoid** consists of 2 exports: `create`, which is used to create atoms, and `use` which is used to get "usables" of an atom.
 
 Atoms have the following methods:
 

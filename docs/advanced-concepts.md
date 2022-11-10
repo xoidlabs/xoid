@@ -3,7 +3,7 @@ id: advanced-concepts
 title: Advanced concepts
 ---
 
-## Deriving state from external sources (Advanced)
+## Deriving state from external sources
 
 With an additional feature of `get` function above, you can get the state from non-atoms. This can be a Redux store, an RxJS observable, or anything that implements getState & subscribe pair. Here is an atom that derives its state from a Redux store.
 
@@ -13,7 +13,7 @@ import store from './reduxStore'
 const derivedAtom = create((get) => get(store.getState, store.subscribe))
 ```
 
-## Enhanced atoms (Advanced)
+## Enhanced atoms
 
 An enhanced atom is an atom with one or more swapped methods. The most common use case is swapping the default `.set` method of an atom like the following. This technique can be used to create "pass through atoms", that act as a mediators. Most people using **xoid** will not need to write enhanced atoms. 
 
@@ -29,7 +29,7 @@ $thru.update(s => s + 1) // modifications to `$mediator` will be directly forwar
 ```
 > Swapping `.set` also affects `.update`, because it uses `.set` internally. This is an intentional feature.
 
-## Streams (Advanced)
+## Streams
 
 With no arguments used, `create` function produces a special atom called a `Stream`.
 
