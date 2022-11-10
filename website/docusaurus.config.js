@@ -90,10 +90,6 @@ module.exports = {
               to: 'docs/getting-started',
             },
             {
-              label: 'API',
-              to: 'docs/api/create',
-            },
-            {
               label: 'Recipes',
               to: 'docs/recipes/using-context-correctly',
             },
