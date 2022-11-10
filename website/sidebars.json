@@ -2,21 +2,19 @@
   "docs": {
     "Introduction": [
       "getting-started",
-      "quick-tutorial"
-    ],
-    "API": [
-      "api/create",
-      "api/subscribe",
-      "api/effect",
-      "api/use"
+      "quick-tutorial",
+      "api-overview",
+      "advanced-concepts",
+      "performance-optimizations"
     ],
     "React API": [
-      "api-react/useatom",
-      "api-react/usesetup"
+      "api-react/use-atom",
+      "api-react/use-setup"
     ],
     "Recipes": [
       "recipes/using-context-correctly",
       "recipes/nested-state",
+      "recipes/creating-react-custom-hooks",
       "recipes/dynamic-functions-with-fixed-references",
       "recipes/using-reducers",
       "recipes/redux-interop",
@@ -24,7 +22,6 @@
       "recipes/refactoring-react-classes",
       "recipes/grabbing-refs",
       "recipes/finite-state-machines",
-      "recipes/use-ful-patterns",
       "recipes/persist-localstorage"
     ]
   }

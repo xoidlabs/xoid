@@ -26,7 +26,7 @@ const textContent = {
 
 const codeBlocks = [
   {text: `### Simple primitives
-**xoid** is based on *atoms*. Atoms are standalone setter/getter objects that hold state. \`create\` function is used to create them.
+**xoid** is based on *atoms*. Atoms are holders of state. \`create\` function is used to create them.
 
 It has a **Recoil**-inspired API for derived atoms. 
 
@@ -34,10 +34,10 @@ It has a **Recoil**-inspired API for derived atoms.
 code: `import { create } from 'xoid'
 
 const atom = create(3)
-atom() // 3 (get the value)
-atom(5) // void (set the value to 5)
-atom((state) => state + 1) // void (also set the value)
-atom() // 6
+console.log(atom.value) // 3
+atom.set(5)
+atom.update(state => state + 1)
+console.log(atom.value) // 6
 
 const derivedAtom = create(get => get(atom) * 2)
 `},
@@ -50,8 +50,8 @@ With the second argument, you can specify actions for your atoms. \`use\` functi
     code: `import { create, use } from 'xoid'
 
 const counterAtom = create(3, (atom) => ({
-  increment: () => atom((s) => s + 1),
-  incrementBy: (by) => atom((s) => s + by)
+  increment: () => atom.update((s) => s + 1),
+  incrementBy: (by) => atom.update((s) => s + by)
 }))
 
 use(counterAtom).incrementBy(5)
@@ -67,7 +67,7 @@ No need for wrapping components into context providers.
 Just import \`useAtom\` and start using!
 
 `,
-    code: `import { create, subscribe, use } from 'xoid'
+    code: `import { create, use } from 'xoid'
 import { useAtom } from '@xoid/react'
 
 // in a React component
@@ -75,31 +75,27 @@ const count = useAtom(counterAtom)
 const { increment } = use(counterAtom)
 
 // outside React
-const unsubscribe = subscribe(alpha, console.log)
+const unsubscribe = alpha.subscribe(console.log)
 `,
   },
   {
     text: `
 ### No more hand-written reducers!
 
-\`use\` function, when used with a second argument, acts as a selector. 
-The selected node will be a subscribable getter/setter object like any other atom. 
-xoid is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
-
-
-
+There's the \`.focus\` method, which can be used as a selector/lens. 
+**xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 `,
-    code: `import { create, use } from 'xoid'
+    code: `import { create } from 'xoid'
 
-const atom = create({ deeply: { nested: { foo: 5 } } })
-const fooAtom = use(atom, (s) => s.deeply.nested.foo)
+const atom = create({ deeply: { nested: { alpha: 5 } } })
+const previousValue = atom.value
 
-const oldValue = atom()
-fooAtom(25) // set the value surgically into the store
-const newValue = atom()
+// select \`.deeply.nested.alpha\`
+const alpha = atom.focus(s => s.deeply.nested.alpha)
+alpha.set(s => s + 1)
 
-console.log(newValue) // { deeply: { nested: { foo: 25 } } }
-assert(oldValue !== newValue) // ✅
+// root state is replaced with new immutable state
+assert(atom.value !== previousValue) // ✅
 `,
   },
   {
@@ -110,8 +106,8 @@ No additional syntax is required to define and use finite state machines. Just u
 `,
     code: `import { create } from 'xoid'
 
-const red = { color: '#f00', onClick: () => machine(green) }
-const green = { color: '#0f0', onClick: () => machine(red) }
+const red = { color: '#f00', onClick: () => machine.set(green) }
+const green = { color: '#0f0', onClick: () => machine.set(red) }
 const machine = create(red)
 
 // in a React component
