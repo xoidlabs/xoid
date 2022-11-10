@@ -21,4 +21,4 @@ export type Atom<T> = {
 }
 ```
 
-Everything about these methods are described in the [quick tutorial section](../quick-tutorial). In the next sections, some advanced features of atoms will be described.
+Everything about these methods are described in the [quick tutorial section](./quick-tutorial). In the next sections, some advanced features of atoms will be described.
