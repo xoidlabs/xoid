@@ -1,31 +1,30 @@
 import React from 'react'
-import { create, effect } from 'xoid'
-import { useSetup } from '@xoid/react'
+import { create } from 'xoid'
+import { ReactAdapter, useSetup } from '@xoid/react'
 import { ResizeObserver } from '@juggle/resize-observer'
 
-const ResizeDisplaySetup = (_: unknown, onCleanup: (fn: () => void) => void) => {
-  const $ref = create<HTMLDivElement>()
-  const $rect = create({} as { width: number; height: number })
-  const $xy = create((get) => `${get($rect).width} x ${get($rect).height}`)
+const ResizeObserverSetup = (_: unknown, adapter: ReactAdapter) => {
+  const $element = create<HTMLDivElement>()
+  const $rect = create<{ width: number; height: number }>()
+  const $xy = $rect.map((rect) => `${rect.width} x ${rect.height}`)
 
-  const observer = new ResizeObserver(([entry]) => $rect(entry.contentRect))
-  onCleanup(observer.disconnect)
+  const observer = new ResizeObserver(([entry]) => $rect.set(entry.contentRect))
 
-  const cleanup = effect($ref, (element) => {
-    if (!element) return
+  const unsub = $element.subscribe((element) => {
     observer.observe(element)
-    const unsub = effect($xy, (xy) => (element.innerHTML = xy))
+    const unsub = $xy.subscribe((xy) => (element.innerHTML = xy))
     return () => {
       unsub()
       observer.unobserve(element)
     }
   })
-  onCleanup(cleanup)
-  return $ref
+
+  adapter.unmount(unsub)
+  return $element.set
 }
 
 const App = () => {
-  const ref = useSetup(ResizeDisplaySetup)
+  const ref = useSetup(ResizeObserverSetup)
   console.log('this component renders only once!')
 
   return (

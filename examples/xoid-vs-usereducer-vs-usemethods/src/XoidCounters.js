@@ -32,16 +32,16 @@ const initialState = {
 const CountersModel = ({ counters, nextId }) =>
   create(counters, (atom) => {
     const getCount = (id) => {
-      const index = atom().findIndex((counter) => counter.id === id);
-      return use(atom, (s) => s[index].count);
+      const index = atom.value.findIndex((counter) => counter.id === id);
+      return atom.focus((s) => s[index].count);
     };
 
     return {
       addCounter: () => {
-        use(atom, (s) => s[nextId])({ id: nextId, count: 0 });
+        atom.focus((s) => s[nextId]).set({ id: nextId, count: 0 });
         nextId++;
       },
-      incrementCounter: (id) => getCount(id)((s) => s + 1),
-      resetCounter: (id) => getCount(id)(0)
+      incrementCounter: (id) => getCount(id).update((s) => s + 1),
+      resetCounter: (id) => getCount(id).set(0)
     };
   });

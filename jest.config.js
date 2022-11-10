@@ -1,3 +1,6 @@
+const pathsToModuleNameMapper = require('./scripts/paths-to-module-name-mapper')
+const { compilerOptions } = require(`${process.cwd()}/tsconfig.json`);
+
 module.exports = {
   "rootDir": ".",
   "transform": {"\\.tsx?$": ['ts-jest']}, 
@@ -6,10 +9,9 @@ module.exports = {
     "dist",
     "tree"
   ],
-  "moduleNameMapper": {
-    "^@xoid(.*)": "<rootDir>/packages$1/lib",
-    "xoid": "<rootDir>/packages/xoid/lib",
-  },
+  "moduleNameMapper": pathsToModuleNameMapper(compilerOptions.paths || {}, {
+      prefix: '<rootDir>/',
+    }),
   "testRegex": "test.(js|ts|tsx)$",
   "coverageDirectory": "./coverage/",
   "collectCoverage": false,

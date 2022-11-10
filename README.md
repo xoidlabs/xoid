@@ -25,9 +25,9 @@
   </a> -->
 </p>
 
-**xoid** (pronounced /ˈzoʊ.ɪd/) is a framework-agnostic state management library. **X** in its name denotes its inspiration from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
+**xoid** is a framework-agnostic state management library. **X** (though it's read as Z) in its name signifies the inspiration it draws from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
 
-**xoid** is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below.
+**xoid** is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 
 To install, run the following command:
@@ -53,6 +53,8 @@ yarn add xoid
 
 - [Finite state stopwatch](https://github.com/onurkerimov/xoid/blob/master/examples/finite-state-stopwatch) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/finite-state-stopwatch)
 
+- [Dots and arrows](https://githubbox.com/onurkerimov/xoid/tree/master/examples/dots-and-arrows) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/dots-and-arrows)
+
 - [Transient update resize observer](https://github.com/onurkerimov/xoid/blob/master/examples/transient-update-resize-observer) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/transient-update-resize-observer)
 
 - [xoid vs useReducer vs useMethods](https://githubbox.com/onurkerimov/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods)
@@ -62,51 +64,51 @@ yarn add xoid
 
 ## Quick Tutorial
 
-**xoid** has only 4 exports: `create`, `effect`, `subscribe`, and `use`. This section will cover all of them, and the **@xoid/react**.
+**xoid** has only 2 exports: `create` and `use`. This section will cover them, and the **@xoid/react**.
 
 ### Atom
 
-Atoms are standalone setter/getter objects that hold state. `create` function is used to create them.
+Atoms are holders of state. `create` function is used to create them.
 
 ```js
 import { create } from 'xoid'
 
 const atom = create(3)
-atom() // 3 (get the value)
-atom(5) // void (set the value to 5)
-atom(state => state + 1) // void (also set the value)
-atom() // 6
+console.log(atom.value) // 3
+atom.set(5)
+atom.update(state => state + 1)
+console.log(atom.value) // 6
 ```
 
-Atoms can have actions, and with `use` function they can be used.
+Atoms can have actions, and with `.use` method they can be used.
 
 ```js
 import { create, use } from 'xoid'
 
 const numberAtom = create(5, (atom) => ({
-  increment: () => atom(s => s + 1),
-  decrement: () => atom(s => s - 1)
+  increment: () => atom.update(s => s + 1),
+  decrement: () => atom.update(s => s - 1)
 }))
 
 use(numberAtom).increment()
 ```
 
 
-`use` function can act as a selector when it's used with a second argument. **xoid** is based on immutable updates, so if you "surgically" set state of a selected branch, changes will propagate to the root.
+There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
 ```js
-import { create, use } from 'xoid'
+import { create } from 'xoid'
 
 const atom = create({ deeply: { nested: { alpha: 5 } } })
-const previousState = atom()
+const previousValue = atom.value
 
 // select `.deeply.nested.alpha`
-const alpha = use(atom, s => s.deeply.nested.alpha)
-alpha(s => s + 1)
+const alpha = atom.focus(s => s.deeply.nested.alpha)
+alpha.set(s => s + 1)
 
 // root state is replaced with new immutable state
-assert(atom() !== previousState) // ✅
-assert(atom().deeply.nested.alpha === 6) // ✅
+assert(atom.value !== previousValue) // ✅
+assert(atom.value.deeply.nested.alpha === 6) // ✅
 ```
 
 ### Derived state
@@ -114,29 +116,32 @@ assert(atom().deeply.nested.alpha === 6) // ✅
 Atoms can be derived from other atoms. This API was heavily inspired by **Recoil**.
 
 ```js
-import { create } from 'xoid'
-
 const alpha = create(3)
 const beta = create(5)
 // derived atom
 const sum = create((get) => get(alpha) + get(beta))
 ```
 
-### Subscriptions
-
-For subscriptions, `subscribe` and `effect` are used. They are the same, except `effect` runs the callback immediately, while `subscribe` waits for the first update after subscription.
+Alternatively, `.map` method can be used to quickly derive the state from a single atom.
 
 ```js
-import { subscribe } from 'xoid'
+const alpha = create(3)
+// derived atom
+const doubleAlpha = alpha.map((s) => s * 2)
+```
 
-const unsub = subscribe(
-  atom, 
+### Subscriptions
+
+For subscriptions, `subscribe` and `watch` are used. They are the same, except `watch` runs the callback immediately, while `subscribe` waits for the first update after subscription.
+
+```js
+const unsub = atom.subscribe(
   (state, previousState) => { console.log(state, previousState) }
 )
 ```
 > To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
-## React integration
+### React integration
 
 **@xoid/react** is based on two hooks. `useAtom` subscribes the component to an atom. If a second argument is supplied, it'll be used as a selector function.
 
@@ -144,20 +149,19 @@ const unsub = subscribe(
 import { useAtom } from '@xoid/react'
 
 // in a React component
-const state = useAtom(atom, s => s.alpha)
+const state = useAtom(atom)
 ```
 
-The other hook is `useSetup`. It can be used for creating local component state. It'll run its closure **only once**. If a second argument is supplied, it'll be used for communication between the closure (`useSetup` scope) and outside (React component scope).
+The other hook is `useSetup`. It can be used for creating local component state. It'll run its callback **only once**. If a second argument is supplied, it'll be used for communication between the closure (`useSetup` scope) and outside (React component scope).
 
 ```js
-import { subscribe, use } from 'xoid'
 import { useSetup } from '@xoid/react'
 
 const App = (props: Props) => {
   const setup = useSetup(($props) => {
     // `$props` has the type: Atom<Props>
     // this way, we can react to `props.something` as it changes
-    subscribe(use($props, s => s.something), console.log)
+    $props.focus(s => s.something).subscribe(console.log)
 
     const alpha = create(5)
     return { alpha }
@@ -168,6 +172,8 @@ const App = (props: Props) => {
 ```
 
 > `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
+
+Here, this is enough knowledge to start using **xoid**! You can refer to the [documentation website](https://xoid.dev) for more.
 
 ## More features
 
@@ -180,47 +186,48 @@ import { create } from 'xoid'
 import { useAtom } from '@xoid/react'
 
 const createMachine = () => {
-  const red = { color: '#f00', onClick: () => atom(green) }
-  const green = { color: '#0f0', onClick: () => atom(red) }
+  const red = { color: '#f00', onClick: () => atom.set(green) }
+  const green = { color: '#0f0', onClick: () => atom.set(red) }
   const atom = create(red)
   return atom
 }
 
 // in a React component
-const machine = useSetup(createMachine)
-const { color, onClick } = useAtom(machine)
+const { color, onClick } = useAtom(createMachine)
 return <div style={{ color }} onClick={onClick} />
 ```
 
 ### Redux Devtools integration
 
-Import `@xoid/devtools` and connect your atom. It will send action names to the Redux Devtools Extension.
+Import `@xoid/devtools` and set a `debugValue` to your atom. It will send values to the Redux Devtools Extension.
 
 ```js
 import { devtools } from '@xoid/devtools'
 import { create, use } from 'xoid'
+devtools() // run once
 
 const atom = create(
   { alpha: 5 }, 
   (atom) => {
-    const $alpha = use(atom, s => s.alpha)
+    const $alpha = atom.focus(s => s.alpha)
     return {
-      inc: () => $alpha(s => s + 1),
-      resetState: () => atom({ alpha: 5 })
+      inc: () => $alpha.update(s => s + 1),
+      resetState: () => atom.set({ alpha: 5 })
       deeply: {
         nested: {
-          action: () => $alpha(5)
+          action: () => $alpha.set(5)
         }
       } 
     }
   }
 )
-const disconnect = devtools(atom, 'myAtom') // second argument specifies the instance name
 
-const { deeply, incrementAlpha } = use(atom) // can work with destructuring
-incrementAlpha() // "*.incrementAlpha"
-deeply.nested.action() // "*.deeply.nested.action"
-use(atom, s => s.alpha)(25)  // "* Update ([timestamp])
+atom.debugValue = 'myAtom' // enable watching it by the devtools
+
+const { deeply, incrementAlpha } = use(atom) // destructuring is no problem
+incrementAlpha() // logs "(myAtom).incrementAlpha"
+deeply.nested.action() // logs "(myAtom).deeply.nested.action"
+atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
 ```
 
 ## Why **xoid**?
@@ -239,6 +246,8 @@ use(atom, s => s.alpha)(25)  // "* Update ([timestamp])
 
 - `@xoid/react` - **React** integration
 - `@xoid/devtools` - **Redux Devtools** integration
+- `@xoid/lite` - Lighter version with less features intended for library authors
+- `@xoid/feature` - A typesafe plugin system oriented in ES6 classes
 
 ## Thanks
 Following awesome projects inspired **xoid** a lot.

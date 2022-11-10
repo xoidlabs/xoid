@@ -1,8 +1,8 @@
 {
   "name": "@xoid/react",
-  "version": "0.9.28",
+  "version": "1.0.0-beta.0",
   "main": "./index.js",
-  "module": "./esm/index.js",
+  "module": "./index.esm.js",
   "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
@@ -21,15 +21,17 @@
     "react",
     "redux",
     "recoil",
+    "xoid",
     "atom",
-    "store"
+    "store",
+    "stream",
+    "observable"
   ],
   "dependencies": {
-    "xoid": ">=0.9.28",
-    "@xoid/engine": ">=0.9.28",
     "use-sync-external-store": "^1.1.0"
   },
   "peerDependencies": {
+    "xoid": ">=1.0.0-beta.0",
     "react": "*"
   }
 }

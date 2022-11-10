@@ -4,42 +4,42 @@ import { useAtom, useSetup } from '@xoid/react'
 
 const TimerSetup = () => {
   let interval: ReturnType<typeof setTimeout>
-  const time = create(0)
-  const state = create(stopped)
+  const $time = create(0)
+  const $state = create(stopped)
 
   function stopped() {
     clearInterval(interval)
-    time(0)
+    $time.set(0)
     return {
       playPauseButton: 'play',
-      handlePlayPause: () => state(playing),
-      handleStop: () => state(stopped),
+      handlePlayPause: () => $state.update(playing),
+      handleStop: () => $state.update(stopped),
     }
   }
   function playing() {
-    interval = setInterval(() => time((i) => i + 1), 100)
+    interval = setInterval(() => $time.update((i) => i + 1), 100)
     return {
       playPauseButton: 'pause',
-      handlePlayPause: () => state(paused),
-      handleStop: () => state(stopped),
+      handlePlayPause: () => $state.update(paused),
+      handleStop: () => $state.update(stopped),
     }
   }
   function paused() {
     clearInterval(interval)
     return {
       playPauseButton: 'play',
-      handlePlayPause: () => state(playing),
-      handleStop: () => state(stopped),
+      handlePlayPause: () => $state.update(playing),
+      handleStop: () => $state.update(stopped),
     }
   }
 
-  return { time, state }
+  return { $time, $state }
 }
 
 const Stopwatch = () => {
-  const setup = useSetup(TimerSetup)
-  const time = useAtom(setup.time)
-  const { playPauseButton, handlePlayPause, handleStop } = useAtom(setup.state)
+  const { $time, $state } = useSetup(TimerSetup)
+  const time = useAtom($time)
+  const { playPauseButton, handlePlayPause, handleStop } = useAtom($state)
 
   return (
     <div>

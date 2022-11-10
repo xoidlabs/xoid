@@ -3,12 +3,10 @@ id: nested-state
 title: Working with nested state
 ---
 
-**xoid** makes it easier to work with nested state. Redux and React are both based on immutable updates. Immutability is great, but it can easily "reduce" developer experience. (See? 🤣) One of the most significant by-products of immutable updates is the excessive usage of the spread operator to copy objects and arrays.
-
-Here's a typical nested state update that you can stumble into in a React component or a Redux reducer.
-
+TLDR:
+Before **xoid**:
 ```js
-const updateValue = () => setState((state) =>  {
+setState((state) =>  {
   ...state, 
   deeply: {
     ...state.deeply,
@@ -19,16 +17,16 @@ const updateValue = () => setState((state) =>  {
   }
 })
 ```
-
-Writing this is effortful, it's easy to make mistakes, and reading it is painful. To overcome this, tools like **immutablejs** or **immer** is being used. Even Redux Toolkit comes with **immer** by default. Note that using Redux toolkit means adding another ~11kB to your bundle size. This number is ~5kB for **immer** alone.
-
-With its `use` function, **xoid** (~1kB) doesn't require any additional library to simplify nested updates. The following is simply equivalent to the above example:
-
+after **xoid**:
 ```js
-use(atom, s => s.deeply.nested.value)(s => s + 1)
+atom.focus(s => s.deeply.nested.value).update(s => s + 1)
 ```
 
-### Advanced example
+**xoid** makes it easier to work with nested state. Redux and React (and **xoid**) are  based on immutable updates. Immutability is great, however it has by-products such as the excessive usage of the spread operator and others.
+
+To overcome this, there are other tools like **immutablejs** or **immer**. Even Redux Toolkit comes with **immer** by default. Note that using Redux toolkit means adding another ~11kB to your bundle size. This number is ~5kB for **immer** alone. **xoid** is ~1kB, yet it can handle that.
+
+### Related
 
 To see how **xoid** compares to a classical reducer, and a dedicated library that's using **immer** internally, you can check the following example:
 

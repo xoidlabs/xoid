@@ -2,7 +2,7 @@
   "name": "@xoid/tree",
   "version": "0.9.5",
   "main": "./index.js",
-  "module": "./esm/index.js",
+  "module": "./index.esm.js",
   "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
@@ -21,8 +21,11 @@
     "react",
     "redux",
     "recoil",
+    "xoid",
     "atom",
-    "store"
+    "store",
+    "stream",
+    "observable"
   ],
   "dependencies": {
     "@xoid/engine": ">=0.9.5"

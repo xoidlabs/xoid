@@ -1,8 +1,8 @@
 {
   "name": "xoid",
-  "version": "0.9.28",
+  "version": "1.0.0-beta.0",
   "main": "./index.js",
-  "module": "./esm/index.js",
+  "module": "./index.esm.js",
   "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
@@ -21,10 +21,10 @@
     "react",
     "redux",
     "recoil",
+    "xoid",
     "atom",
-    "store"
-  ],
-  "dependencies": {
-    "@xoid/engine": ">=0.9.28"
-  }
+    "store",
+    "stream",
+    "observable"
+  ]
 }

@@ -1,15 +1,5 @@
-// @ts-ignore
-import { create, use, subscribe, Atom } from 'xoid'
-
-const debug = (atom: Atom<any>) => {
-  return {
-    self: atom,
-    selfSerialized: JSON.stringify(atom),
-    get: atom(),
-    getSerialized: JSON.stringify(atom()),
-    use: use(atom as any),
-  }
-}
+import { create } from 'xoid'
+import { debug } from './testHelpers'
 
 it('creates a derived atom from multiple atoms', () => {
   const a = create(3)
@@ -29,7 +19,7 @@ it('creates a derived atom using the same atom', () => {
 
 it('creates a derived atom using the same atom using selectors', () => {
   const firstAtom = create({ alpha: 3, beta: 5 })
-  const atom = create((get) => get(firstAtom, 'alpha') + get(firstAtom, 'beta'))
+  const atom = create((get) => get(firstAtom.focus('alpha')) + get(firstAtom.focus('beta')))
   expect(debug(atom)).toMatchSnapshot()
 })
 
@@ -37,10 +27,10 @@ it('creates a derived atom from multiple atoms (keeps in sync)', () => {
   const a = create(3)
   const b = create(5)
   const atom = create((get) => get(a) + get(b))
-  expect(atom()).toBe(8)
+  expect(atom.value).toBe(8)
 
-  a((s) => s + 1)
-  expect(atom()).toBe(9)
+  a.update((s) => s + 1)
+  expect(atom.value).toBe(9)
 })
 
 it('creates a derived atom using the same atom (keeps in sync)', () => {
@@ -49,36 +39,36 @@ it('creates a derived atom using the same atom (keeps in sync)', () => {
     const value = get(firstAtom)
     return value.alpha + value.beta
   })
-  expect(atom()).toBe(8)
+  expect(atom.value).toBe(8)
 
-  use(firstAtom, 'alpha')((s) => s + 1)
-  expect(atom()).toBe(9)
+  firstAtom.focus('alpha').update((s) => s + 1)
+  expect(atom.value).toBe(9)
 })
 
 it('creates a derived atom using the same atom using selectors (keeps in sync)', () => {
   const firstAtom = create({ alpha: 3, beta: 5 })
-  const atom = create((get) => get(firstAtom, 'alpha') + get(firstAtom, 'beta'))
-  expect(atom()).toBe(8)
+  const atom = create((get) => get(firstAtom.focus('alpha')) + get(firstAtom.focus('beta')))
+  expect(atom.value).toBe(8)
 
-  use(firstAtom, 'alpha')((s) => s + 1)
-  expect(atom()).toBe(9)
+  firstAtom.focus('alpha').update((s) => s + 1)
+  expect(atom.value).toBe(9)
 })
 
 test('can derive state from external sources', () => {
   const fakeReduxBase = create(8)
   const fakeRedux = {
-    getState: () => fakeReduxBase(),
-    subscribe: (item: any) => subscribe(fakeReduxBase, item),
+    getState: () => fakeReduxBase.value,
+    subscribe: (item: any) => fakeReduxBase.subscribe(item),
   }
 
   const reduxAtom = create((get) => get(fakeRedux.getState, fakeRedux.subscribe))
   const listener = jest.fn()
 
-  expect(reduxAtom()).toBe(8)
+  expect(reduxAtom.value).toBe(8)
 
-  subscribe(reduxAtom, listener)
+  reduxAtom.subscribe(listener)
   expect(listener).not.toBeCalled()
-  reduxAtom((s) => s + 1)
+  reduxAtom.update((s) => s + 1)
   expect(listener).toBeCalled()
   expect(listener).toBeCalledWith(9, 8)
 })

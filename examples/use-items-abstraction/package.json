@@ -1,5 +1,5 @@
 {
-  "name": "xoid-vs-usereducer-vs-usemethods-comparison",
+  "name": "xoid-useitems-abstraction",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
@@ -8,8 +8,8 @@
     "react": "16.8.3",
     "react-dom": "16.8.3",
     "react-scripts": "2.1.8",
-    "xoid": "0.9.15",
-    "@xoid/react": "0.9.15"
+    "xoid": "^0.9.28",
+    "@xoid/react": "^0.9.28"
   },
   "devDependencies": {
     "typescript": "3.3.3"
