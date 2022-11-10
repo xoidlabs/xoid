@@ -1,6 +1,6 @@
 ---
-id: effect
-title: effect
+id: performance-optimizations
+title: Performance Optimizations
 ---
 
 ## Lazy evaluation
