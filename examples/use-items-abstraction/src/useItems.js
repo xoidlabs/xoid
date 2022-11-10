@@ -1,40 +1,31 @@
-import { create, use } from "xoid";
-import { useSetup } from "@xoid/react";
+import { useSetup } from '@xoid/react'
 
-const ItemsModel = ($props, { getActions, getInitialState }) =>
-  create(
-    (get) => get($props, "value"),
-    (atom) => {
-      let nextId = atom().length;
-      const getItem = (id) => {
-        const index = atom().findIndex((item) => item.id === id);
-        return use(atom, (s) => s[index]);
-      };
+const ItemsModel = ($props) => {
+  const { getActions, getInitialState } = $props.value
+  const $value = $props.focus('value')
+  $value.set = (s) => $props.value.onChange(s)
 
-      return {
-        add: () => {
-          atom((state) => [...state, getInitialState(nextId)]);
-          nextId++;
-        },
-        getActions: (id) => {
-          const $item = getItem(id);
-          return {
-            remove: (id) =>
-              atom((state) => state.filter((item) => item.id !== id)),
-            ...getActions($item)
-          };
-        }
-      };
+  let nextId = $value.value.length
+  const getItem = (id) => {
+    const index = $value.value.findIndex((item) => item.id === id)
+    return $value.focus(index)
+  }
+
+  return {
+    add: () => {
+      $value.update((s) => [...s, getInitialState(nextId)])
+      nextId++
     },
-    () => (value) => use($props, "onChange")()(value)
-  );
+    getActions: (id) => {
+      const $item = getItem(id)
+      return {
+        remove: (id) => $value.update((s) => s.filter((item) => item.id !== id)),
+        ...getActions($item),
+      }
+    },
+  }
+}
 
-const useItems = ({ value, onChange, getActions, getInitialState }) => {
-  const atom = useSetup(
-    ($props) => ItemsModel($props, { getActions, getInitialState }),
-    { value, onChange }
-  );
-  return use(atom);
-};
+const useItems = (props) => useSetup(ItemsModel, props)
 
-export default useItems;
+export default useItems

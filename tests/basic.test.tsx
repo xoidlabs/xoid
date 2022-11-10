@@ -1,18 +1,9 @@
-import React from 'react'
+import React, { StrictMode } from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create, use, Atom, StateOf } from 'xoid'
+import { create, use, Value } from 'xoid'
 import { useAtom } from '@xoid/react'
-
-const debug = <T,>(atom: Atom<T>) => {
-  return {
-    self: atom,
-    selfSerialized: JSON.stringify(atom),
-    get: atom(),
-    getSerialized: JSON.stringify(atom()),
-    use: use(atom as any),
-  }
-}
+import { debug } from './testHelpers'
 
 const consoleError = console.error
 afterEach(() => {
@@ -37,7 +28,7 @@ it('normalizes nested atoms in a record', () => {
 
 it('uses the actions in vanilla', async () => {
   const atom = create({ count: 0 }, (atom) => ({
-    inc: () => atom((state) => ({ count: state.count + 1 })),
+    inc: () => atom.update((state) => ({ count: state.count + 1 })),
   }))
   use(atom).inc()
   expect(debug(atom)).toMatchSnapshot()
@@ -45,7 +36,7 @@ it('uses the actions in vanilla', async () => {
 
 it('uses the actions in React', async () => {
   const atom = create({ count: 0 }, (atom) => ({
-    inc: () => atom((state) => ({ count: state.count + 1 })),
+    inc: () => atom.update((state) => ({ count: state.count + 1 })),
   }))
 
   function Counter() {
@@ -62,13 +53,13 @@ it('uses the actions in React', async () => {
 
 it('only runs when partial state changes in React', async () => {
   const atom = create({ count: 0, count2: 'constant' }, (atom) => ({
-    inc: () => atom((state) => ({ ...state, count: state.count + 1 })),
+    inc: () => atom.update((state) => ({ ...state, count: state.count + 1 })),
   }))
 
   let renderCount = 0
 
   function Counter() {
-    const c2 = useAtom(atom, (s) => s.count2)
+    const c2 = useAtom(atom.focus((s) => s.count2))
     React.useEffect(use(atom).inc, [])
     renderCount++
     return <div>count: {c2}</div>
@@ -86,7 +77,7 @@ it('can batch updates', async () => {
       count: 0,
     },
     (atom) => ({
-      inc: () => atom((state) => ({ count: state.count + 1 })),
+      inc: () => atom.update((state) => ({ count: state.count + 1 })),
     })
   )
 
@@ -113,10 +104,10 @@ it('can update the selector', async () => {
     two: 'two',
   }))
 
-  type State = StateOf<typeof atom>
+  type State = Value<typeof atom>
 
   function Component({ selector }: any) {
-    const value = useAtom(atom, selector)
+    const value = useAtom(atom.focus(selector))
     return <div>{value}</div>
   }
 
@@ -128,8 +119,10 @@ it('can update the selector', async () => {
 })
 
 it('ensures parent components subscribe before children', async () => {
-  type State = { children: Record<string, { text: string }> }
-
+  type State = {
+    children: { [key: string]: { text: string } }
+  }
+  type Props = { id: string }
   const atom = create<State>(() => ({
     children: {
       '1': { text: 'child 1' },
@@ -138,20 +131,22 @@ it('ensures parent components subscribe before children', async () => {
   }))
 
   function changeState() {
-    atom({
+    atom.set({
       children: {
         '3': { text: 'child 3' },
       },
     })
   }
 
-  function Child({ id }: { id: string }) {
-    const text = useAtom(atom, (s) => s.children[id].text)
+  function Child({ id }: Props) {
+    // In zustand's tests, the selector in the following line uses optional chaining.
+    // In xoid, focus function cannot use optional chaining, so the test is modified.
+    const { text } = useAtom(atom.focus((s) => s.children[id]))
     return <div>{text}</div>
   }
 
   function Parent() {
-    const childStates = useAtom(atom, (s) => s.children)
+    const childStates = useAtom(atom.focus((s) => s.children))
     return (
       <>
         <button onClick={changeState}>change state</button>
@@ -162,10 +157,11 @@ it('ensures parent components subscribe before children', async () => {
     )
   }
 
-  const { getByText, findByText } = render(<Parent />)
-
-  await findByText('child 1')
-  await findByText('child 2')
+  const { getByText, findByText } = render(
+    <StrictMode>
+      <Parent />
+    </StrictMode>
+  )
 
   fireEvent.click(getByText('change state'))
 
@@ -177,11 +173,11 @@ it('ensures the correct subscriber is removed on unmount', async () => {
   const atom = create({ count: 0 })
 
   function increment() {
-    atom(({ count }) => ({ count: count + 1 }))
+    atom.update(({ count }) => ({ count: count + 1 }))
   }
 
   function Count() {
-    const c = useAtom(atom, (s) => s.count)
+    const c = useAtom(atom.focus((s) => s.count))
     return <div>count: {c}</div>
   }
 
@@ -217,12 +213,12 @@ it('ensures a subscriber is not mistakenly overwritten', async () => {
   const atom = create({ count: 0 })
 
   function Count1() {
-    const c = useAtom(atom, (s) => s.count)
+    const c = useAtom(atom.focus((s) => s.count))
     return <div>count1: {c}</div>
   }
 
   function Count2() {
-    const c = useAtom(atom, (s) => s.count)
+    const c = useAtom(atom.focus((s) => s.count))
     return <div>count2: {c}</div>
   }
 
@@ -242,7 +238,7 @@ it('ensures a subscriber is not mistakenly overwritten', async () => {
   )
 
   // Call all subscribers
-  act(() => atom({ count: 1 }))
+  act(() => atom.set({ count: 1 }))
 
   expect((await findAllByText('count1: 1')).length).toBe(2)
   expect((await findAllByText('count2: 1')).length).toBe(1)

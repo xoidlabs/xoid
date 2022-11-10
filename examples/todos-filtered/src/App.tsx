@@ -11,12 +11,12 @@ const $todos = create(
     { title: 'world invasion', checked: false },
   ],
   (atom) => ({
-    add: (todo: TodoType) => atom((s) => [...s, todo]),
+    add: (todo: TodoType) => atom.update((s) => [...s, todo]),
     getItem: (index: number) => {
-      const $todo = use(atom, index)
+      const $todo = atom.focus(index)
       return {
-        toggle: () => use($todo, 'checked')((s) => !s),
-        rename: use($todo, 'title'),
+        toggle: () => $todo.focus('checked').update((s) => !s),
+        rename: $todo.focus('title').set,
       }
     },
   })
@@ -53,7 +53,11 @@ export const Todos = () => {
   return (
     <>
       <div style={{ marginBottom: 5 }}>
-        <input type="checkbox" checked={hideChecked} onChange={() => $hideChecked((s) => !s)} />
+        <input
+          type="checkbox"
+          checked={hideChecked}
+          onChange={() => $hideChecked.update((s) => !s)}
+        />
         Hide checked items
       </div>
       {filteredTodos.map((data, id) => (

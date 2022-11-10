@@ -4,8 +4,24 @@ exports[`lazily evaluates a state initializer function 1`] = `
 Object {
   "get": 5,
   "getSerialized": "5",
-  "self": [Function],
-  "selfSerialized": undefined,
+  "self": Object {
+    "focus": [Function],
+    "map": [Function],
+    "set": [Function],
+    "subscribe": [Function],
+    "update": [Function],
+    "value": 5,
+    "watch": [Function],
+    Symbol(): Object {
+      "evaluate": [Function],
+      "get": [Function],
+      "listeners": Set {},
+      "set": [Function],
+      "subscribe": [Function],
+      "usable": undefined,
+    },
+  },
+  "selfSerialized": "{\\"value\\":5}",
   "use": undefined,
 }
 `;

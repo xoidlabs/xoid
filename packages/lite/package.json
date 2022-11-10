@@ -1,0 +1,30 @@
+{
+  "name": "@xoid/lite",
+  "version": "1.0.0-beta.0",
+  "main": "./index.js",
+  "module": "./index.esm.js",
+  "types": "./index.d.ts",
+  "sideEffects": false,
+  "description": "Framework-agnostic state management library designed for simplicity and scalability",
+  "homepage": "https://xoid.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/onurkerimov/xoid",
+    "directory": "./packages/lite"
+  },
+  "license": "MIT",
+  "keywords": [
+    "framework-agnostic",
+    "state",
+    "management",
+    "state-management",
+    "react",
+    "redux",
+    "recoil",
+    "xoid",
+    "atom",
+    "store",
+    "stream",
+    "observable"
+  ]
+}

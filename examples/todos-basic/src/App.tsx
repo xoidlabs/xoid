@@ -1,5 +1,5 @@
 import React from 'react'
-import { create, use } from 'xoid'
+import { create } from 'xoid'
 import { useAtom } from '@xoid/react'
 
 type TodoType = { title: string; checked: boolean }
@@ -11,12 +11,12 @@ const $todos = create(
     { title: 'world invasion', checked: false },
   ],
   (atom) => ({
-    add: (todo: TodoType) => atom((s) => [...s, todo]),
+    add: (todo: TodoType) => atom.update((s) => [...s, todo]),
     getItem: (index: number) => {
-      const $todo = use(atom, index)
+      const $todo = atom.focus(index)
       return {
-        toggle: () => use($todo, 'checked')((s) => !s),
-        rename: use($todo, 'title'),
+        toggle: () => $todo.focus('checked').update((s) => !s),
+        rename: $todo.focus('title').set,
       }
     },
   })
@@ -38,8 +38,7 @@ const Todo = (props: { data: TodoType; actions: TodoActions }) => {
 }
 
 export const Todos = () => {
-  const todos = useAtom($todos)
-  const { add, getItem } = use($todos)
+  const [todos, { add, getItem }] = useAtom($todos, true)
   return (
     <>
       {todos.map((data, id) => (

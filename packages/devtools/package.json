@@ -1,8 +1,7 @@
 {
   "name": "@xoid/devtools",
-  "version": "0.2.0",
+  "version": "0.2.5",
   "main": "./index.js",
-  "module": "./esm/index.js",
   "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
@@ -21,10 +20,13 @@
     "react",
     "redux",
     "recoil",
+    "xoid",
     "atom",
-    "store"
+    "store",
+    "stream",
+    "observable"
   ],
   "peerDependencies": {
-    "@xoid/engine": ">=0.9.5"
+    "xoid": ">=1.0.0-beta.0"
   }
 }

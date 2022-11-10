@@ -1,81 +1,61 @@
+import './styles.css'
 import React from 'react'
-import Dot from './Dot'
+import { useAtom, useSetup } from '@xoid/react'
 import { create, use } from 'xoid'
-import { useAtom } from '@xoid/react'
-import './index.css'
-import { DotModel } from './models'
+import Dot from './components/Dot'
+import Arrow from './components/Arrow'
+import ModulateButton from './components/ModulateButton'
+import TemporaryArrow from './components/TemporaryArrow'
+import { DotType, ArrowType, TemporaryArrowModel } from './models'
 
-// const temporaryArrowStore = create(
-//   {
-//     drawing: false,
-//     temporaryArrow: ArrowModel({} as ArrowPayload),
-//   },
-//   (store) => {
-//     window.addEventListener('mousemove', (e) => {
-//       console.log('mv')
-//       if (get(store.drawing)) {
-//         set(store.temporaryArrow.to, {
-//           x: e.clientX + 10,
-//           y: e.clientY + 10,
-//         })
-//       }
-//       // if (get(store.drawing)) {
-//       //   set(store.temporaryArrow, {
-//       //     from: get(store.temporaryArrow.from),
-//       //     to: {
-//       //       x: e.clientX,
-//       //       y: e.clientY,
-//       //     },
-//       //   })
-//       // }
-//     })
-//     return {
-//       startArrow(dot: DotPayload) {
-//         // set(store.temporaryArrow, { from: dot, to: dot })
-//         // set(store.drawing, true)
-//         // IMPORTANT: types should complain about this
-//         set(store, {
-//           temporaryArrow: { from: dot, to: dot },
-//           drawing: true,
-//         })
-//       },
-//       endArrow(dot: DotPayload) {
-//         use(arrowsStore).add({ ...get(store.temporaryArrow), to: dot })
-//         set(store.drawing, false)
-//       },
-//       arrowCreator(dot: DotPayload) {
-//         if (get(store.drawing)) this.endArrow(dot)
-//         else this.startArrow(dot)
-//       },
-//     }
-//   }
-// )
-
-const $dots = create([], (atom) => ({
-  createDot: (x: number, y: number) => {
-    atom((s) => [...s, DotModel({ x, y, id: 0 })])
+const $atom = create<{
+  dots: Record<string, DotType>
+  arrows: Record<string, ArrowType>
+}>({
+  dots: {
+    aaa: { x: 60, y: 10 },
+    bbb: { x: 110, y: 100 },
+    ccc: { x: 30, y: 100 },
   },
-}))
+  arrows: {
+    yyy: { from: 'aaa', to: 'bbb' },
+  },
+})
 
-const App = () => {
-  const dots = useAtom($dots)
+const randomString = () => Math.random().toString()
 
+const createDot = (x: number, y: number) =>
+  $atom.focus('dots').update((s) => ({ ...s, [randomString()]: { x, y } }))
+
+export default function App() {
+  const { dots, arrows } = useAtom($atom)
+  const $temporaryArrow = useSetup(() =>
+    TemporaryArrowModel({
+      onEndArrow: (arrow) =>
+        $atom.focus('arrows').update((s) => ({ ...s, [randomString()]: arrow })),
+    })
+  )
   return (
-    <div
-      style={{ position: 'relative', width: '100vw', height: '100vh' }}
-      onClick={(e) => use($dots).createDot(e.clientX, e.clientY)}
-    >
-      {dots.map((atom, key) => (
-        <Dot atom={atom} key={key} />
+    <div className="App" onClick={(e) => createDot(e.clientX, e.clientY)}>
+      {Object.keys(dots).map((key) => (
+        <Dot
+          key={key}
+          $dot={$atom.focus((s) => s.dots[key])}
+          onClick={(e) => {
+            use($temporaryArrow).startOrEndArrow(key)
+            e.stopPropagation()
+          }}
+        />
       ))}
-      {/* <div style={{ pointerEvents: 'none', position: 'absolute', width: '100vw', height: '100vh' }}>
-        {arrowsStore.map((store, key) => (
-          <Arrow store={store} key={key} />
-        ))}
-        {drawing && <Arrow store={temporaryArrowStore.temporaryArrow} />}
-      </div> */}
+      {Object.keys(arrows).map((key) => (
+        <Arrow
+          key={key}
+          $arrow={$atom.focus((s) => s.arrows[key])}
+          $dots={$atom.focus((s) => s.dots)}
+        />
+      ))}
+      <TemporaryArrow $dots={$atom.focus('dots')} $temporaryArrow={$temporaryArrow} />
+      <ModulateButton $dots={$atom.focus('dots')} />
     </div>
   )
 }
-
-export default App

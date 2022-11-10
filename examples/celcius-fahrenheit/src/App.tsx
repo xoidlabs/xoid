@@ -4,15 +4,17 @@ import { useAtom } from '@xoid/react'
 
 const celcius = create(20)
 const fahrenheit = create(68)
+
 const setC = (num: number) => {
   if (!num) num = 0
-  celcius(num)
-  fahrenheit(num * (9 / 5) + 32)
+  celcius.set(num)
+  fahrenheit.set(num * (9 / 5) + 32)
 }
+
 const setF = (num: number) => {
   if (!num) num = 0
-  fahrenheit(num)
-  celcius(num - 32 * (5 / 9))
+  fahrenheit.set(num)
+  celcius.set(num - 32 * (5 / 9))
 }
 
 export default () => {

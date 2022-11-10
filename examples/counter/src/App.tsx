@@ -1,40 +1,48 @@
 import React from 'react'
-import { create, use } from 'xoid'
+import { create } from 'xoid'
 import { useAtom } from '@xoid/react'
+import './styles.css'
 
 const NumberModel = (payload: number) =>
   create(payload, (atom) => ({
-    increment: () => atom((state) => state + 1),
-    decrement: () => atom((state) => state - 1),
+    increment: () => atom.update((state) => state + 1),
+    decrement: () => atom.update((state) => state - 1),
   }))
 type NumberType = ReturnType<typeof NumberModel>
 
-const $red = NumberModel(0)
-const $blue = NumberModel(5)
-const $sum = create((get) => get($red) + get($blue))
+const $alpha = NumberModel(0)
+const $beta = NumberModel(5)
+const $sum = create((get) => get($alpha) + get($beta))
 
-const NumberCounter = (props: { atom: NumberType }) => {
-  const state = useAtom(props.atom)
-  const { increment, decrement } = use(props.atom)
+const NumberCounter = (props: { atom: NumberType; color: string }) => {
+  const [value, { increment, decrement }] = useAtom(props.atom, true)
   return (
-    <div>
-      {state}
-      <button onClick={increment}>+</button>
-      <button onClick={decrement}>-</button>
+    <div className="container" style={{ background: props.color }}>
+      {value}
+      <div className="actions">
+        <button onClick={decrement}>-</button>
+        <button onClick={increment}>+</button>
+      </div>
     </div>
   )
 }
 
-const Sum = () => {
+const Sum = (props: { color: string }) => {
   const state = useAtom($sum)
-  return <div>{state}</div>
+  return (
+    <div className="container" style={{ background: props.color }}>
+      {state}
+    </div>
+  )
 }
 
 const App = () => (
-  <div>
-    <NumberCounter atom={$red} />
-    <NumberCounter atom={$blue} />
-    <Sum />
+  <div className="wrapper">
+    <NumberCounter atom={$alpha} color="#1e2043" />
+    +
+    <NumberCounter atom={$beta} color="#473191" />
+    =
+    <Sum color="#7634d6" />
   </div>
 )
 

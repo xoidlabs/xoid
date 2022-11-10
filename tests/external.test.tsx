@@ -1,58 +1,60 @@
-import { create, subscribe, effect } from 'xoid'
+import { create } from 'xoid'
 
 const consoleError = console.error
 afterEach(() => {
   console.error = consoleError
 })
 
-const createMediatorAtom = <T extends Exclude<any, Function>>(initialState: T) => {
-  const $source = create(initialState)
-  const $mediator = create(
-    (get) =>
-      get(
-        () => $source(),
-        (fn: (value: T) => void) => subscribe($source, fn)
-      ),
-    null,
-    () => (nextValue: T) => $source(() => nextValue)
-  )
-
-  return $mediator
-}
-
-it('`subscribe` works', () => {
+it('mediator atoms work', () => {
   const listener = jest.fn()
-  const atom = createMediatorAtom(3)
+  const $source = create(3)
 
-  const unsub = subscribe(atom, listener)
+  const fakeRedux = {
+    getValue: () => $source.value,
+    subscribe: $source.subscribe,
+  }
+
+  const $mediator = create((get) => get(fakeRedux.getValue, fakeRedux.subscribe))
+  $mediator.set = $source.set
+
+  const unsub = $mediator.subscribe(listener)
   expect(listener).not.toBeCalled()
 
-  atom(3)
+  $mediator.set(3)
   expect(listener).not.toBeCalled()
 
-  atom(4)
+  $mediator.set(4)
   expect(listener).toBeCalledTimes(1)
   expect(listener).toBeCalledWith(4, 3)
+  expect($source.value).toBe(4)
 
   unsub()
   expect(listener).toBeCalledTimes(1)
 })
 
-it('`effect` works', () => {
+it('mediator atoms work with update function', () => {
   const listener = jest.fn()
-  const atom = createMediatorAtom(3)
+  const $source = create(3)
 
-  const unsub = effect(atom, listener)
+  const fakeRedux = {
+    getValue: () => $source.value,
+    subscribe: $source.subscribe,
+  }
+
+  const $mediator = create((get) => get(fakeRedux.getValue, fakeRedux.subscribe))
+  $mediator.set = $source.set
+
+  const unsub = $mediator.subscribe(listener)
+  expect(listener).not.toBeCalled()
+
+  $mediator.update(() => 3)
+  expect(listener).not.toBeCalled()
+
+  $mediator.update(() => 4)
   expect(listener).toBeCalledTimes(1)
-  expect(listener).toBeCalledWith(3, 3)
-
-  atom(3)
-  expect(listener).toBeCalledTimes(1)
-
-  atom(4)
-  expect(listener).toBeCalledTimes(2)
   expect(listener).toBeCalledWith(4, 3)
+  expect($source.value).toBe(4)
 
   unsub()
-  expect(listener).toBeCalledTimes(2)
+  expect(listener).toBeCalledTimes(1)
 })
