@@ -1,4 +1,4 @@
-import { Atom as $Atom, create, use as _use } from '@xoid/development'
+import { Atom as $Atom, create, use as _use } from 'xoid'
 
 const use = _use as unknown as {
   devtools: {
@@ -53,7 +53,7 @@ const defaultAction = () => {
 }
 const current = { action: defaultAction }
 
-export const devtools = () => {
+const devtools = () => {
   let extension: any
   try {
     extension = (window as any).__REDUX_DEVTOOLS_EXTENSION__
@@ -142,3 +142,5 @@ const createPathMembrane = (obj: any, path: string[] = [], atom: Atom): any => {
     },
   })
 }
+
+export default devtools

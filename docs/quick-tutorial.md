@@ -37,24 +37,22 @@ const numberAtom = create(5, (atom) => ({
 use(numberAtom).increment()
 ```
 
-
 There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
 ```js
 import { create } from 'xoid'
 
 const atom = create({ deeply: { nested: { alpha: 5 } } })
-const previousState = atom()
+const previousValue = atom.value
 
 // select `.deeply.nested.alpha`
 const alpha = atom.focus(s => s.deeply.nested.alpha)
 alpha.set(s => s + 1)
 
 // root state is replaced with new immutable state
-assert(atom() !== previousState) // ✅
-assert(atom().deeply.nested.alpha === 6) // ✅
+assert(atom.value !== previousValue) // ✅
+assert(atom.value.deeply.nested.alpha === 6) // ✅
 ```
-> Alternatively 
 
 ### Derived state
 
