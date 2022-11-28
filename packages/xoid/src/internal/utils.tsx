@@ -18,10 +18,10 @@ export function getIn(obj: any, path: string[], cache = false): any {
 
 export function setIn<T>(obj: T, path: string[], value: any): T {
   if (!path.length) return value
-  const rest = path.map((a) => a)
-  const key = rest.shift() as string
+  const nextPath = path.map((a) => a)
+  const key = nextPath.shift() as string
   const nextObj = shallowCopy(obj)
-  nextObj[key] = setIn((obj as any)[key], rest, value)
+  nextObj[key] = setIn((obj as any)[key], nextPath, value)
   return nextObj
 }
 
@@ -55,8 +55,6 @@ export const createSelector = <T,>(internal: Internal<T>, init: (get: GetState) 
     isPending = false
     set(init(getter))
   }
-
-  ;(internal as any).evaluate = evaluate
 
   return () => {
     if (isPending) evaluate()
@@ -94,46 +92,52 @@ export const createFocus =
     const relativePath = typeof key === 'function' ? getPath(key) : [key]
     if (!internal.cache) internal.cache = {}
     const path = basePath.concat(relativePath)
-    const { get, set, listeners, subscribe } = internal
-    return withCache(internal.cache, path, () =>
-      createApi(
-        {
-          listeners,
-          subscribe,
-          get: () => (get() ? getIn(get(), path) : undefined),
-          set: (value: T) => set(setIn(get(), path, value)),
-        },
-        internal,
-        relativePath
-      )
-    )
+    const { get } = internal
+    const nextInternal = {
+      listeners: internal.listeners,
+      subscribe: internal.subscribe,
+      get: () => (get() ? getIn(get(), path) : undefined),
+      set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
+      isStream: internal.isStream,
+    }
+    return withCache(internal.cache, path, () => createApi(nextInternal, internal, relativePath))
   }
 
 export const createStream =
   <T,>(internal: Internal<T>): Atom<T>['map'] =>
   // @ts-ignore
-  (selector: any, truthy: any) => {
+  (selector: any, isFilter: any) => {
     let prevValue: any
     // @ts-ignore
-    const { get, set, listeners, subscribe } = createInternal()
-    const getResult = () => {
-      const result = selector(internal.get(), prevValue)
-      if (!(truthy && !result)) {
-        set(result)
+    const nextInternal = createInternal()
+
+    let isPending = true
+    const listener = () => {
+      if (nextInternal.listeners.size) evaluate()
+      else isPending = true
+    }
+
+    const evaluate = () => {
+      const v = internal.get()
+      const result = selector(v, prevValue)
+      isPending = false
+      if (!(isFilter && !result)) {
+        nextInternal.set(result)
         prevValue = result
       }
     }
-    const listener = () => {
-      if (!listeners.size) return
-      getResult()
-    }
+
     return createApi({
-      get,
-      set,
-      listeners,
+      get: () => {
+        if (!internal.isStream && isPending) evaluate()
+        return nextInternal.get()
+      },
+      set: nextInternal.set,
+      listeners: nextInternal.listeners,
+      isStream: isFilter || internal.isStream,
       subscribe: (fn) => {
         const unsub = internal.subscribe(listener)
-        const unsub2 = subscribe(fn)
+        const unsub2 = nextInternal.subscribe(fn)
         return () => {
           unsub()
           unsub2()
@@ -149,8 +153,8 @@ export const createApi = <T,>(
 ) => {
   const nextAtom = createBaseApi(nextInternal) as unknown as Atom<T>
   nextAtom.focus = createFocus(internal, relativePath)
-  nextAtom.map = createStream(internal)
-  // nextAtom.filter = (fn) => nextAtom.map((a, b) => fn(a, b) && a, true)
-  ;(nextAtom as any)[INTERNAL] = internal
+  nextAtom.map = createStream(nextInternal)
+  ;(nextAtom as any)[INTERNAL] = nextInternal
+  nextInternal.atom = nextAtom
   return nextAtom
 }

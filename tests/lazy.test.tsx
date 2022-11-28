@@ -43,3 +43,19 @@ it('lazily evaluate only when a sub atom is read/written', () => {
   subAtom.set(25)
   expect(fn).toBeCalledTimes(1)
 })
+
+it('lazily evaluate when a mapped atom is read', () => {
+  const fn = jest.fn()
+
+  const sourceAtom = create({ deep: { value: 5 } })
+  const derivedAatom = sourceAtom.map((state) => {
+    fn()
+    return state.deep.value
+  })
+
+  expect(fn).not.toBeCalled()
+
+  console.log(derivedAatom.value)
+
+  expect(fn).toBeCalledTimes(1)
+})

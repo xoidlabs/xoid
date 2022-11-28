@@ -1,8 +1,8 @@
 import { Atom as $Atom, create, use as _use } from 'xoid'
 
 const use = _use as unknown as {
+  plugins: Function[]
   devtools: {
-    init: (atom: Atom, initialValue: unknown, isFunction: boolean) => void
     send: (atom: Atom) => void
     wrap: <T>(value: T, atom: Atom) => T
   }
@@ -69,9 +69,16 @@ const devtools = () => {
     return () => void 0
   }
 
-  use.devtools.init = (atom, initialValue) => {
-    register(atom[INTERNAL].debugValue, atom, initialValue)
-  }
+  use.plugins.push((atom: Atom, initialValue: unknown) => {
+    // devtools support
+    Object.defineProperty(atom, 'debugValue', {
+      set(debugValue: string) {
+        const internal = atom[INTERNAL]
+        internal.debugValue = debugValue
+        register(debugValue, atom, initialValue)
+      },
+    })
+  })
 
   use.devtools.send = (atom: Atom) => {
     const internal = atom[INTERNAL]

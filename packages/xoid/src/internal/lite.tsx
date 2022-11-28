@@ -14,8 +14,9 @@ export type Internal<T> = {
   set: (value: T) => void
   listeners: Set<() => void>
   subscribe: (listener: () => void) => () => void
-  evaluate?: () => void
+  isStream?: boolean
   debugValue?: string
+  atom?: LiteAtom<unknown>
   cache?: any
   usable?: any
 }
@@ -67,8 +68,8 @@ export const createInternal = <T,>(value: T, send?: () => void): Internal<T> => 
 
 export const createBaseApi = <T,>(internal: Internal<T>) => {
   const { get, set, subscribe } = internal
-  // Don't delete recurring api destructures from the following code.
-  // It lets enhancing atoms work.
+  // Don't delete recurring `api.set` calls from the following code.
+  // It lets enhanced atoms work.
   const api: LiteAtom<T> = {
     get value() {
       return get()
@@ -82,10 +83,4 @@ export const createBaseApi = <T,>(internal: Internal<T>) => {
     watch: (item) => subscribe(effectize(item, get, true)),
   }
   return api
-}
-
-export function create<T>(): LiteAtom<T | undefined>
-export function create<T>(value: T): LiteAtom<T>
-export function create<T>(value?: T): LiteAtom<T> {
-  return createBaseApi(createInternal(value as T))
 }

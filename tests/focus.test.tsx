@@ -1,5 +1,4 @@
-// @ts-ignore
-import { create, use } from 'xoid'
+import { create } from 'xoid'
 
 it('can get state via selectors', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
@@ -83,4 +82,25 @@ it('can use previous values via serial selectors', () => {
 
   expect(atomDeeply.value).toStrictEqual({ nested: { number: 6 } })
   expect(atom.value.deeply.nested.number).toStrictEqual(6)
+})
+
+it('Subscribes to the correct internal when .focus and .map is used adjacently', () => {
+  const fn = jest.fn()
+
+  const $props = create<{ value: number }>({ value: 5 })
+
+  const $value = $props.focus('value')
+
+  expect($value.value).toBe(5)
+
+  const $other = $value.map((state) => {
+    fn(state)
+    return state
+  })
+
+  expect(fn).not.toBeCalled()
+
+  $other.subscribe(console.log)
+
+  expect(fn).toBeCalledWith(5)
 })
