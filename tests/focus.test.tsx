@@ -8,6 +8,16 @@ it('can get state via selectors', () => {
   expect(atom.focus((s) => s.deeply.nested).value).toStrictEqual({ number: 5 })
 })
 
+it('can get state via selectors (deeper)', () => {
+  const atom = create({ deeply: { nested: { number: 5 } } })
+
+  const atom1 = atom.focus('deeply')
+  const atom2 = atom1.focus('nested')
+  const atom3 = atom2.focus('number')
+
+  expect(atom3.value).toStrictEqual(5)
+})
+
 it('can handle serial selectors', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
   const atomDeeply = atom.focus('deeply')

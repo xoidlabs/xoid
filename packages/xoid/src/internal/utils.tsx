@@ -100,7 +100,7 @@ export const createFocus =
       set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
       isStream: internal.isStream,
     }
-    return withCache(internal.cache, path, () => createApi(nextInternal, internal, relativePath))
+    return withCache(internal.cache, path, () => createApi(nextInternal, internal, path))
   }
 
 export const createStream =
@@ -152,6 +152,7 @@ export const createApi = <T,>(
   relativePath = [] as string[]
 ) => {
   const nextAtom = createBaseApi(nextInternal) as unknown as Atom<T>
+
   nextAtom.focus = createFocus(internal, relativePath)
   nextAtom.map = createStream(nextInternal)
   ;(nextAtom as any)[INTERNAL] = nextInternal
