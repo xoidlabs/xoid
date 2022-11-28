@@ -1,16 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`lazily evaluates a state initializer function 1`] = `
+exports[`uses the actions in vanilla 1`] = `
 Object {
-  "get": 5,
-  "getSerialized": "5",
+  "get": Object {
+    "count": 1,
+  },
+  "getSerialized": "{\\"count\\":1}",
   "self": Object {
     "focus": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
     "update": [Function],
-    "value": 5,
+    "value": Object {
+      "count": 1,
+    },
     "watch": [Function],
     Symbol(): Object {
       "atom": [Circular],
@@ -19,10 +23,14 @@ Object {
       "listeners": Set {},
       "set": [Function],
       "subscribe": [Function],
-      "usable": undefined,
+      "usable": Object {
+        "inc": [Function],
+      },
     },
   },
-  "selfSerialized": "{\\"value\\":5}",
-  "use": undefined,
+  "selfSerialized": "{\\"value\\":{\\"count\\":1}}",
+  "use": Object {
+    "inc": [Function],
+  },
 }
 `;

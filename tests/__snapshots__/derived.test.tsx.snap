@@ -13,8 +13,9 @@ Object {
     "value": 8,
     "watch": [Function],
     Symbol(): Object {
-      "evaluate": [Function],
+      "atom": [Circular],
       "get": [Function],
+      "isStream": false,
       "listeners": Set {},
       "set": [Function],
       "subscribe": [Function],
@@ -39,8 +40,9 @@ Object {
     "value": 8,
     "watch": [Function],
     Symbol(): Object {
-      "evaluate": [Function],
+      "atom": [Circular],
       "get": [Function],
+      "isStream": false,
       "listeners": Set {},
       "set": [Function],
       "subscribe": [Function],
@@ -65,8 +67,9 @@ Object {
     "value": 8,
     "watch": [Function],
     Symbol(): Object {
-      "evaluate": [Function],
+      "atom": [Circular],
       "get": [Function],
+      "isStream": false,
       "listeners": Set {},
       "set": [Function],
       "subscribe": [Function],

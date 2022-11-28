@@ -1,6 +1,3 @@
-/**
- * @see [xoid.dev/docs/api/atom](https://xoid.dev/docs/api/atom)
- */
 export type Atom<T> = {
   value: T
   set(state: T): void

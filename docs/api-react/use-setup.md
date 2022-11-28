@@ -15,7 +15,7 @@ import { useSetup } from '@xoid/react'
 const $num = useSetup(() => create(5))
 ```
 
-> `useSetup` is actually more suitable than `React.useMemo` to create values **exactly once**. According to [React docs](https://reactjs.org/docs/hooks-faq.html#how-to-create-expensive-objects-lazily), "You may rely on useMemo as a performance optimization, not as a semantic guarantee. In the future, React may choose to “forget” some previously memoized values and recalculate them on next render, e.g. to free memory for offscreen components.". `useSetup` hook is based on `useRef`, thus it's guaranteed that the callback will execute exactly **once**.
+> `useSetup` is actually more suitable than `React.useMemo` to create values **exactly once**. According to [React docs](https://reactjs.org/docs/hooks-faq.html#how-to-create-expensive-objects-lazily), "You may rely on useMemo as a performance optimization, not as a semantic guarantee. In the future, React may choose to “forget” some previously memoized values and recalculate them on next render, e.g. to free memory for offscreen components.". `useSetup` hook is based on `useRef`, thus it's guaranteed to run the callback exactly **once**.
 
 When a second argument is provided, it'll be available in the callback argument **as a reactive atom**.
 
@@ -33,7 +33,7 @@ const App = (props: Props) => {
 
 ## React adapter
 
-Second callback argument is the React adapter. It has the following shape:
+Second callback argument is the React adapter. Its type is exported from the `@xoid/react` as the following.
 ```js
 type ReactAdapter = {
   read: <T>(context: React.Context<T>) => T
