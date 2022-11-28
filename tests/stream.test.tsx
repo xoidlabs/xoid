@@ -107,17 +107,3 @@ it('Never evaluate dependents of streams unless the stream value is satisfied', 
 
   expect(fn).toBeCalledTimes(1)
 })
-
-// it.only('deneme', () => {
-//   const $stream = create<{ alpha?: number; beta?: number }>()
-//   const fnAlpha = jest.fn()
-//   const fnBeta = jest.fn()
-
-//   $stream.focus('alpha').subscribe(fnAlpha)
-//   $stream.focus('beta').subscribe(fnBeta)
-
-//   $stream.set({ alpha: 5 })
-
-//   expect(fnAlpha).not.toBeCalled(1)
-
-// })
