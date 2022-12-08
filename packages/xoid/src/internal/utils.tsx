@@ -8,20 +8,18 @@ export const shallowCopy = (obj: unknown) =>
     ? obj.slice() // avoid _spread polyfill
     : Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))
 
-export function getIn(obj: any, path: string[], cache = false): any {
-  if (!path.length) return obj
-  const nextPath = path.slice()
-  const key = nextPath.shift() as string
+export function getIn(obj: any, path: string[], cache = false, index = 0): any {
+  if (index === path.length) return obj
+  const key = path[index]
   if (cache && !obj[key]) obj[key] = {}
-  return getIn(obj[key], nextPath, cache)
+  return getIn(obj[key], path, cache, index + 1)
 }
 
-export function setIn<T>(obj: T, path: string[], value: any): T {
-  if (!path.length) return value
-  const nextPath = path.slice()
-  const key = nextPath.shift() as string
+export function setIn<T>(obj: T, path: string[], value: any, index = 0): T {
+  if (index === path.length) return value
+  const key = path[index]
   const nextObj = shallowCopy(obj)
-  nextObj[key] = setIn((obj as any)[key], nextPath, value)
+  nextObj[key] = setIn((obj as any)[key], path, value, index + 1)
   return nextObj
 }
 
