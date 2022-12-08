@@ -5,12 +5,12 @@ export const INTERNAL = Symbol()
 
 export const shallowCopy = (obj: unknown) =>
   Array.isArray(obj)
-    ? obj.map((s) => s) // avoid _spread polyfill
+    ? obj.slice() // avoid _spread polyfill
     : Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))
 
 export function getIn(obj: any, path: string[], cache = false): any {
   if (!path.length) return obj
-  const nextPath = path.map((a) => a)
+  const nextPath = path.slice()
   const key = nextPath.shift() as string
   if (cache && !obj[key]) obj[key] = {}
   return getIn(obj[key], nextPath, cache)
@@ -18,7 +18,7 @@ export function getIn(obj: any, path: string[], cache = false): any {
 
 export function setIn<T>(obj: T, path: string[], value: any): T {
   if (!path.length) return value
-  const nextPath = path.map((a) => a)
+  const nextPath = path.slice()
   const key = nextPath.shift() as string
   const nextObj = shallowCopy(obj)
   nextObj[key] = setIn((obj as any)[key], nextPath, value)
@@ -68,7 +68,7 @@ const createPathProxy = (path: string[], nullish?: boolean): any =>
     {
       get: (_, key) => {
         if (key === INTERNAL) return path
-        const pathClone = path.map((s) => s) // avoid _spread polyfill
+        const pathClone = path.slice() // avoid _spread polyfill
         pathClone.push(key as string)
         return createPathProxy(pathClone)
       },
