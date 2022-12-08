@@ -18,8 +18,11 @@ export function getIn(obj: any, path: string[], cache = false, index = 0): any {
 export function setIn<T>(obj: T, path: string[], value: any, index = 0): T {
   if (index === path.length) return value
   const key = path[index]
+  const currentValue = (obj as any)[key]
+  const nextValue = setIn(currentValue, path, value, index + 1)
+  if (nextValue === currentValue) return obj
   const nextObj = shallowCopy(obj)
-  nextObj[key] = setIn((obj as any)[key], path, value, index + 1)
+  nextObj[key] = nextValue
   return nextObj
 }
 

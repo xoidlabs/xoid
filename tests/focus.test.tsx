@@ -69,6 +69,25 @@ it('can handle updates via serial selectors', () => {
   expect(atom.value.deeply.nested.number).toStrictEqual(25)
 })
 
+it('can bail on no-op updates via selectors', () => {
+  const obj = { deeply: { nested: { number: 5 } } }
+  const atom = create(obj)
+  const atomDeeply = atom.focus('deeply')
+  const atomDeeplyNestedNumber = atom.focus((s) => s.deeply.nested.number)
+
+  const fn = jest.fn()
+  atom.subscribe(fn)
+  atomDeeply.subscribe(fn)
+  atomDeeplyNestedNumber.subscribe(fn)
+
+  atomDeeplyNestedNumber.set(5)
+
+  expect(atom.value).toBe(obj)
+  expect(atomDeeply.value).toBe(obj.deeply)
+
+  expect(fn).not.toBeCalled()
+})
+
 it('can use previous values', () => {
   const atom = create({ deeply: { nested: { number: 5 } } })
   const atomDeeply = atom.focus('deeply')
