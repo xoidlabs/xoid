@@ -96,7 +96,10 @@ export const createFocus =
     const nextInternal = {
       listeners: internal.listeners,
       subscribe: internal.subscribe,
-      get: () => (get() ? getIn(get(), path) : undefined),
+      get: () => {
+        const obj = get()
+        return obj ? getIn(obj, path) : undefined
+      },
       set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
       isStream: internal.isStream,
     }
