@@ -25,7 +25,7 @@
   </a> -->
 </p>
 
-**xoid** is a framework-agnostic state management library. **X** (though it's read as Z) in its name signifies the inspiration it draws from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
+**xoid** is a framework-agnostic state management library. **X** in its name signifies the inspiration it draws from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
 
 **xoid** is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
@@ -58,9 +58,6 @@ yarn add xoid
 - [Transient update resize observer](https://github.com/onurkerimov/xoid/blob/master/examples/transient-update-resize-observer) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/transient-update-resize-observer)
 
 - [xoid vs useReducer vs useMethods](https://githubbox.com/onurkerimov/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods)
-
-<!-- - [Trello clone](https://github.com/onurkerimov/xoid/blob/master/examples/trello) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/trello) -->
-
 
 ## Quick Tutorial
 
@@ -138,6 +135,9 @@ For subscriptions, `subscribe` and `watch` are used. They are the same, except `
 const unsub = atom.subscribe(
   (state, previousState) => { console.log(state, previousState) }
 )
+
+// later
+unsub()
 ```
 > To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
@@ -152,7 +152,20 @@ import { useAtom } from '@xoid/react'
 const state = useAtom(atom)
 ```
 
-The other hook is `useSetup`. It can be used for creating local component state. It'll run its callback **only once**. If a second argument is supplied, it'll be used for communication between the closure (`useSetup` scope) and outside (React component scope).
+The other hook is `useSetup`. It can be used for creating local component state. It's similar to `React.useMemo` with empty dependencies array. It'll run its callback **only once**.
+
+```js
+import { useSetup } from '@xoid/react'
+
+const App = () => {
+  const $counter = useSetup(() => create(5))
+
+  ...
+}
+```
+> `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
+
+An outer value can be supplied as the second argument. It'll turn into a reactive atom.
 
 ```js
 import { useSetup } from '@xoid/react'
@@ -162,16 +175,11 @@ const App = (props: Props) => {
     // `$props` has the type: Atom<Props>
     // this way, we can react to `props.something` as it changes
     $props.focus(s => s.something).subscribe(console.log)
-
-    const alpha = create(5)
-    return { alpha }
   }, props)
 
   ...
 }
 ```
-
-> `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
 
 Here, this is enough knowledge to start using **xoid**! You can refer to the [documentation website](https://xoid.dev) for more.
 
@@ -246,7 +254,7 @@ atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
 
 - `@xoid/react` - **React** integration
 - `@xoid/devtools` - **Redux Devtools** integration
-- `@xoid/lite` - Lighter version with less features intended for library authors
+- `@xoid/lite` - Lighter version with less features
 - `@xoid/feature` - A typesafe plugin system oriented in ES6 classes
 
 ## Thanks

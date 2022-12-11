@@ -2,7 +2,7 @@ import React, { StrictMode } from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { create, use, Value } from 'xoid'
-import { useAtom } from '@xoid/react'
+import { useAtom, useSetup } from '@xoid/react'
 import { debug } from './testHelpers'
 
 const consoleError = console.error
@@ -217,4 +217,28 @@ it('ensures a subscriber is not mistakenly overwritten', async () => {
 
   expect((await findAllByText('count1: 1')).length).toBe(2)
   expect((await findAllByText('count2: 1')).length).toBe(1)
+})
+
+it('effect function of the React adapter works', () => {
+  const mountFn = jest.fn()
+  const unmountFn = jest.fn()
+  function App() {
+    useSetup((_, { effect }) => {
+      effect(() => {
+        mountFn()
+        return () => unmountFn()
+      })
+    })
+    return <div>hello!</div>
+  }
+
+  const { unmount } = render(<App />)
+
+  expect(mountFn).toBeCalledTimes(1)
+  expect(unmountFn).not.toBeCalled()
+
+  unmount()
+
+  expect(mountFn).toBeCalledTimes(1)
+  expect(unmountFn).toBeCalledTimes(1)
 })

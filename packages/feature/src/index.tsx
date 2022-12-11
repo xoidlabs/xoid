@@ -68,6 +68,9 @@ export const compose =
         const instance = new item(options)
         instance.from = from
         contextMap.set(item, instance)
+        const parentPrototype = Object.getPrototypeOf(item)
+        if (parentPrototype !== Feature) contextMap.set(parentPrototype, instance)
+
         if (instance.id) {
           contextMap.set(instance.id, instance)
         }

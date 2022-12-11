@@ -5,6 +5,7 @@ title: Quick Tutorial
 
 > You can skip this part if you've already read the Github README.
 
+
 **xoid** has only 2 exports: `create` and `use`. This section will cover them, and the **@xoid/react**.
 
 ### Atom
@@ -33,6 +34,7 @@ const numberAtom = create(5, (atom) => ({
 
 use(numberAtom).increment()
 ```
+
 
 There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
@@ -67,12 +69,7 @@ Alternatively, `.map` method can be used to quickly derive the state from a sing
 ```js
 const alpha = create(3)
 // derived atom
-const doubleAlpha = alpha.map((state) => state * 2)
-```
-
-`.map` method has a second argument to filter out falsy values.
-```js
-const oddNumbersOnly = alpha.map((state) => state % 2 && state)
+const doubleAlpha = alpha.map((s) => s * 2)
 ```
 
 ### Subscriptions
@@ -117,7 +114,6 @@ const App = (props: Props) => {
 ```
 
 > `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
-
 
 ---
 

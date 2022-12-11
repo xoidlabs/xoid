@@ -56,13 +56,13 @@ export const createSelector = <T,>(internal: Internal<T>, init: (get: GetState) 
     set(init(getter))
   }
 
-  return () => {
+  internal.get = () => {
     if (isPending) evaluate()
     return get()
   }
 }
 
-const createPathProxy = (path: string[], nullish?: boolean): any =>
+const createPathProxy = (path: string[]): any =>
   new Proxy(
     {},
     {
@@ -97,6 +97,8 @@ export const createFocus =
       listeners: internal.listeners,
       subscribe: internal.subscribe,
       get: () => (get() ? getIn(get(), path) : undefined),
+      // `internal.atom.set` reference is used here instead of `internal.set`,
+      // because enhanced atoms need to work with focused atoms as well.
       set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
       isStream: internal.isStream,
     }
@@ -151,7 +153,7 @@ export const createApi = <T,>(
   internal = nextInternal,
   relativePath = [] as string[]
 ) => {
-  const nextAtom = createBaseApi(nextInternal) as unknown as Atom<T>
+  const nextAtom = createBaseApi(nextInternal) as Atom<T>
 
   nextAtom.focus = createFocus(internal, relativePath)
   nextAtom.map = createStream(nextInternal)

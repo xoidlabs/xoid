@@ -5,7 +5,7 @@ title: useSetup
 
 `import { useSetup } from '@xoid/react'`
 
-This export can be used for creating local state inside a React component. Its most basic usage looks similar to a `React.useMemo` call. It creates a value exactly **once**.
+This export can be used for creating local state inside a React component. It creates a value exactly **once**. Its basic usage is similar to a `React.useMemo` call. 
 
 ```js
 import { create } from 'xoid'
@@ -25,24 +25,24 @@ import { useSetup } from '@xoid/react'
 
 const App = (props: Props) => {
   useSetup(($props) => {// `$props` has the type: Atom<Props>
-    subscribe($props.focus(s => s.something), console.log)
+    $props.focus(s => s.something).subscribe(console.log)
   }, props)
   ...
 }
 ```
 
-## React adapter
+## React adapter (Advanced)
 
-Second callback argument is the React adapter. Its type is exported from the `@xoid/react` as the following.
+Second callback argument is the React adapter. Most **xoid** users would not need to use this. When the second argument is not destructured, this has no runtime overhead. Its type is exported from the `@xoid/react` as the following.
+
 ```js
 type ReactAdapter = {
   read: <T>(context: React.Context<T>) => T
-  mount: (fn: Function) => void
-  unmount: (fn: Function) => void
+  effect: (fn: React.EffectCallback) => void
 }
 ```
 
-### `.mount` and `.unmount`
+### `.effect`
 
 `.mount` and `.unmount` methods simply connect to a `useEffect` call internally. 
 
@@ -50,36 +50,41 @@ type ReactAdapter = {
 import { useSetup } from '@xoid/react'
 
 const App = (props: Props) => {
-  useSetup((_, adapter) => {
+  useSetup((_, { effect }) => {
     const callback = () => { ... }
 
-    adapter.mount(() => {
+    effect(() => {
       window.addEventListener('resize', callback)
       window.addEventListener('orientationchange', callback)
-    })
 
-    adapter.unmount(() => {
-      window.removeEventListener('resize', callback)
-      window.removeEventListener('orientationchange', callback)
+      return () => {
+        window.removeEventListener('resize', callback)
+        window.removeEventListener('orientationchange', callback)
+      }
     })
   })
   ...
 }
 ```
 
-Even if you do the following grouping, they'll connect to the same `useEffect` call. You can call as many as React adapter methods as you desire. You can even call them conditionally.
+You can call as many of them as you want. You can even call them conditionally. They'll connect to the same `useEffect` call. 
+
 ```js
 import { useSetup } from '@xoid/react'
 
 const App = (props: Props) => {
-  useSetup((_, adapter) => {
+  useSetup((_, { effect }) => {
     const callback = () => { ... }
 
-    adapter.mount(() => window.addEventListener('resize', callback))
-    adapter.unmount(() => window.removeEventListener('resize', callback))
+    effect(() => {
+      window.addEventListener('resize', callback)
+      return () => window.removeEventListener('resize', callback)
+    })
 
-    adapter.mount(() => window.addEventListener('orientationchange', callback))
-    adapter.unmount(() => window.removeEventListener('orientationchange', callback))
+    effect(() => {
+      window.addEventListener('orientationchange', callback)
+      return () => window.removeEventListener('orientationchange', callback)
+    })
   })
   ...
 }
