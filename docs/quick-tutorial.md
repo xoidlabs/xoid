@@ -44,7 +44,7 @@ const previousValue = atom.value
 
 // select `.deeply.nested.alpha`
 const alpha = atom.focus(s => s.deeply.nested.alpha)
-alpha.set(s => s + 1)
+alpha.set(6)
 
 // root state is replaced with new immutable state
 assert(atom.value !== previousValue) // ✅
