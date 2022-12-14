@@ -12,8 +12,8 @@
     "react": "18.0.0",
     "react-dom": "18.0.0",
     "react-scripts": "4.0.3",
-    "xoid": "^0.9.28",
-    "@xoid/react": "^0.9.28"
+    "xoid": "^1.0.0-beta.5",
+    "@xoid/react": "^1.0.0-beta.5"
   },
   "devDependencies": {
     "@types/react": "17.0.20",
