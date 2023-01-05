@@ -6,7 +6,8 @@ afterEach(() => {
 })
 
 it('`subscribe` works', () => {
-  const listener = jest.fn()
+  const cleanup = jest.fn()
+  const listener = jest.fn(() => cleanup)
   const atom = create(3)
 
   const unsub = atom.subscribe(listener)
@@ -14,17 +15,26 @@ it('`subscribe` works', () => {
 
   atom.set(3)
   expect(listener).not.toBeCalled()
+  expect(cleanup).not.toBeCalled()
 
   atom.set(4)
   expect(listener).toBeCalledTimes(1)
   expect(listener).toBeCalledWith(4, 3)
+  expect(cleanup).not.toBeCalled()
+
+  atom.set(5)
+  expect(listener).toBeCalledTimes(2)
+  expect(listener).toBeCalledWith(5, 4)
+  expect(cleanup).toBeCalledTimes(1)
 
   unsub()
-  expect(listener).toBeCalledTimes(1)
+  expect(listener).toBeCalledTimes(2)
+  expect(cleanup).toBeCalledTimes(2)
 })
 
 it('`subscribe` works for lazily evaluated atoms', () => {
-  const listener = jest.fn()
+  const cleanup = jest.fn()
+  const listener = jest.fn(() => cleanup)
   const atom = create(() => 3)
 
   const unsub = atom.subscribe(listener)
@@ -32,51 +42,69 @@ it('`subscribe` works for lazily evaluated atoms', () => {
 
   atom.set(3)
   expect(listener).not.toBeCalled()
+  expect(cleanup).not.toBeCalled()
 
   atom.set(4)
   expect(listener).toBeCalledTimes(1)
   expect(listener).toBeCalledWith(4, 3)
+  expect(cleanup).not.toBeCalled()
+
+  atom.set(5)
+  expect(listener).toBeCalledTimes(2)
+  expect(listener).toBeCalledWith(5, 4)
+  expect(cleanup).toBeCalledTimes(1)
 
   unsub()
-  expect(listener).toBeCalledTimes(1)
+  expect(listener).toBeCalledTimes(2)
+  expect(cleanup).toBeCalledTimes(2)
 })
 
 it('`watch` works', () => {
-  const listener = jest.fn()
+  const cleanup = jest.fn()
+  const listener = jest.fn(() => cleanup)
   const atom = create(3)
 
   const unsub = atom.watch(listener)
   expect(listener).toBeCalledTimes(1)
   expect(listener).toBeCalledWith(3, 3)
+  expect(cleanup).not.toBeCalled()
 
   atom.set(3)
   expect(listener).toBeCalledTimes(1)
+  expect(cleanup).not.toBeCalled()
 
   atom.set(4)
   expect(listener).toBeCalledTimes(2)
   expect(listener).toBeCalledWith(4, 3)
+  expect(cleanup).toBeCalledTimes(1)
 
   unsub()
   expect(listener).toBeCalledTimes(2)
+  expect(cleanup).toBeCalledTimes(2)
 })
 
 it('`watch` works for lazily evaluated atoms', () => {
-  const listener = jest.fn()
+  const cleanup = jest.fn()
+  const listener = jest.fn(() => cleanup)
   const atom = create(() => 3)
 
   const unsub = atom.watch(listener)
   expect(listener).toBeCalledTimes(1)
   expect(listener).toBeCalledWith(3, 3)
+  expect(cleanup).not.toBeCalled()
 
   atom.set(3)
   expect(listener).toBeCalledTimes(1)
+  expect(cleanup).not.toBeCalled()
 
   atom.set(4)
   expect(listener).toBeCalledTimes(2)
   expect(listener).toBeCalledWith(4, 3)
+  expect(cleanup).toBeCalledTimes(1)
 
   unsub()
   expect(listener).toBeCalledTimes(2)
+  expect(cleanup).toBeCalledTimes(2)
 })
 
 it('`watch` works for mapped atoms', () => {
