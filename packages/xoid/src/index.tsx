@@ -1,6 +1,6 @@
 import type { Atom, Stream, Init, GetState, Usable } from './types'
 import { createSelector, createApi, INTERNAL } from './internal/utils'
-import { createEvent, createInternal } from './internal/lite'
+import { createInternal } from './internal/lite'
 
 export * from './types'
 
@@ -21,7 +21,7 @@ export function create<T, U = undefined>(
   const initialValue = (isFunction ? undefined : init) as T
   const internal = createInternal(initialValue, (() => (use as any).devtools.send(atom)) as any)
   internal.isStream = !arguments.length
-  if (isFunction) internal.get = createSelector(internal, init as (get: GetState) => T)
+  if (isFunction) createSelector(internal, init as (get: GetState) => T)
   const atom = createApi(internal)
   use.plugins.forEach((fn: any) => fn(atom, initialValue))
   internal.usable = getUsable?.(atom)
@@ -38,7 +38,6 @@ export const use = <T extends any>(atom: Usable<T>): T =>
 // Untyped stuff for devtools
 const _use = use as any
 _use.symbol = INTERNAL
-_use.createEvent = createEvent
 _use.devtools = {
   send: <T,>(_atom: T) => void 0,
   wrap: <T,>(value: T): T => value,

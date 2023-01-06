@@ -11,10 +11,21 @@ const useConstant = <T extends any>(fn: () => T): T => {
   return ref.current.c
 }
 
+export const createEvent = () => {
+  const fns = new Set<Function>()
+  const add = (fn: Function) => {
+    fns.add(fn)
+  }
+  const fire = () => {
+    fns.forEach((fn) => fn())
+    fns.clear()
+  }
+  return { add, fire }
+}
+
 export type ReactAdapter = {
   read: <T>(context: Context<T>) => T
-  mount: (fn: Function) => void
-  unmount: (fn: Function) => void
+  effect: (fn: React.EffectCallback) => void
 }
 
 // The only experimental feature of this package is the `read` method in the following React adapter.
@@ -23,39 +34,41 @@ export type ReactAdapter = {
 // https://github.com/preactjs/preact/blob/cef315a681aaaef67200564d9a33bd007422665b/compat/src/render.js#L230
 const reactInternals = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
 const useReactAdapter = (): ReactAdapter => {
-  const result = useConstant(() => {
-    const m = (_use as any).createEvent()
-    const u = (_use as any).createEvent()
+  const setup = useConstant(() => {
+    const m = createEvent()
+    const u = createEvent()
     return {
-      m,
-      u,
       adapter: {
         read: <T,>(context: Context<T>): T =>
           reactInternals.ReactCurrentDispatcher.current.readContext(context),
-        mount: m.add,
-        unmount: u.add,
+        effect: (fn: React.EffectCallback) =>
+          m.add(() => {
+            const result = fn()
+            if (typeof result === 'function') u.add(result)
+          }),
       },
+      m,
+      u,
     }
   })
-  useIsoLayoutEffect(() => {
-    result.m.fire()
-    return result.u.fire
+  useEffect(() => {
+    setup.m.fire()
+    return () => setup.u.fire()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  return result.adapter
+  return setup.adapter
 }
 
 /**
- * Subscribes to an atom inside a React function component.
- *
  * An atom, or a function returning an atom can be passed as the first argument.
- * When the second optional argument is set to `true`, it will also consume the usables of the atom.
+ * When the second optional argument is set to `true`, it will also consume the actions of the atom.
  * @see [xoid.dev/docs/api-react/use-atom](https://xoid.dev/docs/api-react/use-atom)
  */
 export function useAtom<T>(atom: Atom<T>): T
 export function useAtom<T>(atom: () => Atom<T>): T
-export function useAtom<T, U>(atom: Atom<T> & Usable<U>, use: true): [T, U]
-export function useAtom<T, U>(atom: () => Atom<T> & Usable<U>, use: true): [T, U]
-export function useAtom<T, U>(maybeAtom: Atom<T> | (() => Atom<T>), use?: boolean): [T, U] | T {
+export function useAtom<T, U>(atom: Atom<T> & Usable<U>, tuple: true): [T, U]
+export function useAtom<T, U>(atom: () => Atom<T> & Usable<U>, tuple: true): [T, U]
+export function useAtom<T, U>(maybeAtom: Atom<T> | (() => Atom<T>), tuple?: boolean): [T, U] | T {
   const atom =
     useConstant(() => typeof maybeAtom === 'function' && maybeAtom()) || (maybeAtom as Atom<T>)
   const value = useSyncExternalStore(
@@ -64,7 +77,7 @@ export function useAtom<T, U>(maybeAtom: Atom<T> | (() => Atom<T>), use?: boolea
     () => atom.value
   )
   useDebugValue(value)
-  return use ? ([value, _use(atom as any)] as [T, U]) : (value as T)
+  return tuple ? ([value, _use(atom as any)] as [T, U]) : (value as T)
 }
 
 /**

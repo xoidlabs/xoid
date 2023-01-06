@@ -33,18 +33,34 @@ export const createEvent = () => {
   return { add, fire }
 }
 
-const effectize = <T,>(fn: (state: T, prevState: T) => any, getter: () => T, watch = false) => {
+const subscribeInternal = <T,>(
+  subscribe: (listener: () => void) => () => void,
+  fn: (state: T, prevState: T) => any,
+  getter: () => T,
+  watch = false
+) => {
   const event = createEvent()
   let prevState = getter()
-  if (watch) fn(prevState, prevState)
-  return () => {
-    event.fire()
+
+  const callback = (state: T) => {
+    const result = fn(state, prevState)
+    if (typeof result === 'function') event.add(result)
+  }
+
+  if (watch) callback(prevState)
+
+  const unsubscribe = subscribe(() => {
     const state = getter()
     if (state !== prevState) {
-      const result = fn(state, prevState)
-      if (typeof result === 'function') event.add(result)
+      event.fire()
+      callback(state)
+      prevState = state
     }
-    prevState = state
+  })
+
+  return () => {
+    event.fire()
+    unsubscribe()
   }
 }
 
@@ -79,8 +95,8 @@ export const createBaseApi = <T,>(internal: Internal<T>) => {
     },
     set: (value: any) => set(value),
     update: (fn: any) => api.set(fn(get())),
-    subscribe: (item) => subscribe(effectize(item, get)),
-    watch: (item) => subscribe(effectize(item, get, true)),
+    subscribe: (item) => subscribeInternal(subscribe, item, get),
+    watch: (item) => subscribeInternal(subscribe, item, get, true),
   }
   return api
 }
