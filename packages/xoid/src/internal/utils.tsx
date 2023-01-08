@@ -5,23 +5,24 @@ export const INTERNAL = Symbol()
 
 export const shallowCopy = (obj: unknown) =>
   Array.isArray(obj)
-    ? obj.map((s) => s) // avoid _spread polyfill
+    ? obj.slice() // avoid _spread polyfill
     : Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))
 
-export function getIn(obj: any, path: string[], cache = false): any {
-  if (!path.length) return obj
-  const nextPath = path.map((a) => a)
-  const key = nextPath.shift() as string
+export function getIn(obj: any, path: string[], cache = false, index = 0): any {
+  if (index === path.length) return obj
+  const key = path[index]
   if (cache && !obj[key]) obj[key] = {}
-  return getIn(obj[key], nextPath, cache)
+  return getIn(obj[key], path, cache, index + 1)
 }
 
-export function setIn<T>(obj: T, path: string[], value: any): T {
-  if (!path.length) return value
-  const nextPath = path.map((a) => a)
-  const key = nextPath.shift() as string
+export function setIn<T>(obj: T, path: string[], value: any, index = 0): T {
+  if (index === path.length) return value
+  const key = path[index]
+  const currentValue = (obj as any)[key]
+  const nextValue = setIn(currentValue, path, value, index + 1)
+  if (nextValue === currentValue) return obj
   const nextObj = shallowCopy(obj)
-  nextObj[key] = setIn((obj as any)[key], nextPath, value)
+  nextObj[key] = nextValue
   return nextObj
 }
 
@@ -68,7 +69,7 @@ const createPathProxy = (path: string[]): any =>
     {
       get: (_, key) => {
         if (key === INTERNAL) return path
-        const pathClone = path.map((s) => s) // avoid _spread polyfill
+        const pathClone = path.slice() // avoid _spread polyfill
         pathClone.push(key as string)
         return createPathProxy(pathClone)
       },
@@ -96,7 +97,10 @@ export const createFocus =
     const nextInternal = {
       listeners: internal.listeners,
       subscribe: internal.subscribe,
-      get: () => (get() ? getIn(get(), path) : undefined),
+      get: () => {
+        const obj = get()
+        return obj ? getIn(obj, path) : undefined
+      },
       // `internal.atom.set` reference is used here instead of `internal.set`,
       // because enhanced atoms need to work with focused atoms as well.
       set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
