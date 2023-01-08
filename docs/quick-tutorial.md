@@ -47,8 +47,8 @@ const atom = create({ deeply: { nested: { alpha: 5 } } })
 const previousValue = atom.value
 
 // select `.deeply.nested.alpha`
-const alpha = atom.focus(s => s.deeply.nested.alpha)
-alpha.set(6)
+const alphaAtom = atom.focus(s => s.deeply.nested.alpha)
+alphaAtom.set(6)
 
 // root state is replaced with new immutable state
 assert(atom.value !== previousValue) // ✅
