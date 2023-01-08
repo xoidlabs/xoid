@@ -1,4 +1,4 @@
-import type { Atom, Stream, Init, GetState, Usable } from './types'
+import type { Atom, Stream, Init, GetState, Actions } from './types'
 import { createSelector, createApi, INTERNAL } from './internal/utils'
 import { createInternal } from './internal/lite'
 
@@ -6,41 +6,49 @@ export * from './types'
 
 /**
  * Creates an atom with the first argument as the initial state.
- * Second argument can be used to attach "usables" to the atom.
- * @see [xoid.dev/docs/api/create](https://xoid.dev/docs/quick-tutorial)
+ * Second argument can be used to attach actions to the atom.
+ * @see [xoid.dev/docs/quick-tutorial](https://xoid.dev/docs/quick-tutorial)
  */
 export function create<T>(): Stream<T>
 export function create<T>(init: Init<T>): Atom<T>
-export function create<T>(init: Init<T>, getUsable: null): Atom<T>
-export function create<T, U>(init: Init<T>, getUsable?: (atom: Atom<T>) => U): Atom<T> & Usable<U>
+export function create<T>(init: Init<T>, getActions: null): Atom<T>
+export function create<T, U>(init: Init<T>, getActions?: (atom: Atom<T>) => U): Atom<T> & Actions<U>
 export function create<T, U = undefined>(
   init?: Init<T>,
-  getUsable?: null | ((atom: Atom<T>) => U)
+  getActions?: null | ((atom: Atom<T>) => U)
 ) {
   const isFunction = typeof init === 'function'
-  const initialValue = (isFunction ? undefined : init) as T
-  const internal = createInternal(initialValue, (() => (use as any).devtools.send(atom)) as any)
+  const internal = createInternal(
+    (isFunction ? undefined : init) as T,
+    (() => devtools.send(atom)) as any
+  )
   internal.isStream = !arguments.length
   if (isFunction) createSelector(internal, init as (get: GetState) => T)
   const atom = createApi(internal)
-  use.plugins.forEach((fn: any) => fn(atom, initialValue))
-  internal.usable = getUsable?.(atom)
+  create.plugins.forEach((fn) => fn(atom))
+
+  const actions = getActions?.(atom)
+  Object.defineProperty(atom, 'actions', {
+    get() {
+      return devtools.wrap(actions)
+    },
+  })
   return atom
 }
 
 /**
- * Gets the "usables" of an atom.
- * @see [xoid.dev/docs/api/use](https://xoid.dev/docs/quick-tutorial)
+ * @deprecated In the next versions, `use` will be removed in favor of `atom.actions`.
  */
-export const use = <T extends any>(atom: Usable<T>): T =>
-  _use.devtools.wrap((atom as any)[INTERNAL].usable, atom)
+export const use = <T extends any>(atom: Actions<T>): T => devtools.wrap((atom as any).actions)
 
-// Untyped stuff for devtools
-const _use = use as any
-_use.symbol = INTERNAL
-_use.devtools = {
+const devtools = {
   send: <T,>(_atom: T) => void 0,
   wrap: <T,>(value: T): T => value,
 }
 
-use.plugins = [] as ((atom: Atom<any>, initialValue?: any) => void)[]
+// untyped
+const _create = create as any
+_create.symbol = INTERNAL
+_create.devtools = devtools
+// typed
+create.plugins = [] as ((atom: Atom<any>) => void)[]

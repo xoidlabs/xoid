@@ -23,9 +23,6 @@ Object {
       "listeners": Set {},
       "set": [Function],
       "subscribe": [Function],
-      "usable": Object {
-        "inc": [Function],
-      },
     },
   },
   "selfSerialized": "{\\"value\\":{\\"count\\":1}}",

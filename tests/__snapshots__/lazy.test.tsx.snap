@@ -19,7 +19,6 @@ Object {
       "listeners": Set {},
       "set": [Function],
       "subscribe": [Function],
-      "usable": undefined,
     },
   },
   "selfSerialized": "{\\"value\\":5}",

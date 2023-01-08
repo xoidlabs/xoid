@@ -25,7 +25,12 @@ export type Stream<T> = {
 }
 
 declare const usable: unique symbol
-export type Usable<U> = { [usable]: U; debugValue?: string }
+export type Actions<U> = { [usable]: U; actions: U; debugValue?: string }
+
+/**
+ * @deprecated: Use `Actions` generic type instead
+ */
+export type Usable<T> = Actions<T>
 
 export type GetState = {
   <T>(atom: Atom<T>): T
