@@ -1,7 +1,7 @@
 import React, { StrictMode } from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create, use, Value } from 'xoid'
+import { create, Value } from 'xoid'
 import { useAtom, useSetup } from '@xoid/react'
 import { debug } from './testHelpers'
 
@@ -35,7 +35,7 @@ it('only runs when partial state changes in React', async () => {
 
   function Counter() {
     const c2 = useAtom(atom.focus((s) => s.count2))
-    React.useEffect(use(atom).inc, [])
+    React.useEffect(atom.actions.inc, [])
     renderCount++
     return <div>count: {c2}</div>
   }
@@ -59,7 +59,7 @@ it('can batch updates', async () => {
   function Counter() {
     const { count } = useAtom(atom)
     React.useEffect(() => {
-      const { inc } = use(atom)
+      const { inc } = atom.actions
       ReactDOM.unstable_batchedUpdates(() => {
         inc()
         inc()

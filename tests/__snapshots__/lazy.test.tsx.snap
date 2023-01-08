@@ -2,6 +2,7 @@
 
 exports[`lazily evaluates a state initializer function 1`] = `
 Object {
+  "actions": undefined,
   "get": 5,
   "getSerialized": "5",
   "self": Object {
@@ -22,6 +23,5 @@ Object {
     },
   },
   "selfSerialized": "{\\"value\\":5}",
-  "use": undefined,
 }
 `;

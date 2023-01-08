@@ -77,6 +77,7 @@ export function useAtom<T, U>(maybeAtom: Atom<T> | (() => Atom<T>), tuple?: bool
     () => atom.value
   )
   useDebugValue(value)
+  // TODO: reserve the second argument for an equality checker function in the next versions
   return tuple ? ([value, _use(atom as any)] as [T, U]) : (value as T)
 }
 

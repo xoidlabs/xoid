@@ -3,7 +3,7 @@ id: using-immer
 title: Using immer
 ---
 
-**xoid**'s API surface area is kept small intentionally, luckily there's a way for extensions. 
+While **xoid**'s API surface is kept small intentionally, however there's a way for extensions. 
 If you'd like to add a `.produce` method that uses **immer** internally, you can do so like the following.
 
 ```js
@@ -15,7 +15,7 @@ use.plugins.push((atom) => {
 })
 ```
 
-If you're using TypeScript, simply apply this module augmentation:
+If you're using TypeScript, simply apply the following module augmentation:
 
 ```js
 declare module 'xoid' {

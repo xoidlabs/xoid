@@ -2,6 +2,7 @@
 
 exports[`creates a atom with a primitive value 1`] = `
 Object {
+  "actions": undefined,
   "get": 5,
   "getSerialized": "5",
   "self": Object {
@@ -22,12 +23,12 @@ Object {
     },
   },
   "selfSerialized": "{\\"value\\":5}",
-  "use": undefined,
 }
 `;
 
 exports[`creates a atom with a record 1`] = `
 Object {
+  "actions": undefined,
   "get": Object {
     "alpha": 3,
     "beta": 5,
@@ -54,12 +55,12 @@ Object {
     },
   },
   "selfSerialized": "{\\"value\\":{\\"alpha\\":3,\\"beta\\":5}}",
-  "use": undefined,
 }
 `;
 
 exports[`normalizes nested atoms in a record 1`] = `
 Object {
+  "actions": undefined,
   "get": Object {
     "alpha": Object {
       "focus": [Function],
@@ -150,6 +151,5 @@ Object {
     },
   },
   "selfSerialized": "{\\"value\\":{\\"alpha\\":{\\"value\\":3},\\"beta\\":{\\"value\\":5}}}",
-  "use": undefined,
 }
 `;

@@ -44,7 +44,7 @@ export const MyComponent = () => {
   return (
     <div>
       alpha: {state.alpha}, beta: {state.beta}
-      <button onClick={() => use(atom, 'alpha')(s => s + 1)}>increment alpha</button>
+      <button onClick={() => atom.focus('alpha').update(s => s + 1)}>increment alpha</button>
     </div>
   )
 }

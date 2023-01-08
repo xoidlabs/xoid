@@ -1,4 +1,4 @@
-import { Atom, use } from 'xoid'
+import { Atom } from 'xoid'
 
 export const debug = <T,>(atom: Atom<T>) => {
   return {
@@ -7,6 +7,6 @@ export const debug = <T,>(atom: Atom<T>) => {
     get: atom.value,
     getSerialized: JSON.stringify(atom.value),
     // @ts-expect-error
-    use: use(atom),
+    actions: atom.actions,
   }
 }

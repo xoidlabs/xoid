@@ -2,6 +2,7 @@
 
 exports[`creates a derived atom from multiple atoms 1`] = `
 Object {
+  "actions": undefined,
   "get": 8,
   "getSerialized": "8",
   "self": Object {
@@ -22,12 +23,12 @@ Object {
     },
   },
   "selfSerialized": "{\\"value\\":8}",
-  "use": undefined,
 }
 `;
 
 exports[`creates a derived atom using the same atom 1`] = `
 Object {
+  "actions": undefined,
   "get": 8,
   "getSerialized": "8",
   "self": Object {
@@ -48,12 +49,12 @@ Object {
     },
   },
   "selfSerialized": "{\\"value\\":8}",
-  "use": undefined,
 }
 `;
 
 exports[`creates a derived atom using the same atom using selectors 1`] = `
 Object {
+  "actions": undefined,
   "get": 8,
   "getSerialized": "8",
   "self": Object {
@@ -74,6 +75,5 @@ Object {
     },
   },
   "selfSerialized": "{\\"value\\":8}",
-  "use": undefined,
 }
 `;

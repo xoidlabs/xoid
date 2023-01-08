@@ -1,5 +1,5 @@
 import React from 'react'
-import { create, use } from 'xoid'
+import { create } from 'xoid'
 import { useAtom } from '@xoid/react'
 
 type TodoType = { title: string; checked: boolean }
@@ -49,7 +49,7 @@ const Todo = (props: { data: TodoType; actions: TodoActions }) => {
 export const Todos = () => {
   const hideChecked = useAtom($hideChecked)
   const filteredTodos = useAtom($filteredTodos)
-  const { add, getItem } = use($todos)
+  const { add, getItem } = $todos.actions
   return (
     <>
       <div style={{ marginBottom: 5 }}>

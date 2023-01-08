@@ -6,11 +6,14 @@ title: Quick Tutorial
 > You can skip this part if you've already read the Github README.
 
 
-**xoid** has only 2 exports: `create` and `use`. This section will cover them, and the **@xoid/react**.
+**xoid** has only one export: `create`. Create is also exported as the default export.
+
+`import { create } from 'xoid'`
+`import create from 'xoid'`
 
 ### Atom
 
-Atoms are holders of state. `create` function is used to create them.
+Atoms are holders of state.
 
 ```js
 import { create } from 'xoid'
@@ -18,23 +21,22 @@ import { create } from 'xoid'
 const atom = create(3)
 console.log(atom.value) // 3
 atom.set(5)
-atom.update(state => state + 1)
+atom.update((state) => state + 1)
 console.log(atom.value) // 6
 ```
 
-Atoms can have actions, and with `.use` method they can be used.
+Atoms can have actions if the second argument is used.
 
 ```js
-import { create, use } from 'xoid'
+import { create } from 'xoid'
 
 const numberAtom = create(5, (atom) => ({
   increment: () => atom.update(s => s + 1),
   decrement: () => atom.update(s => s - 1)
 }))
 
-use(numberAtom).increment()
+numberAtom.actions.increment()
 ```
-
 
 There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
@@ -80,6 +82,9 @@ For subscriptions, `subscribe` and `watch` are used. They are the same, except `
 const unsub = atom.subscribe(
   (state, previousState) => { console.log(state, previousState) }
 )
+
+// later
+unsub()
 ```
 > To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
@@ -94,7 +99,21 @@ import { useAtom } from '@xoid/react'
 const state = useAtom(atom)
 ```
 
-The other hook is `useSetup`. It can be used for creating local component state. It'll run its callback **only once**. If a second argument is supplied, it'll be used for communication between the closure (`useSetup` scope) and outside (React component scope).
+The other hook is `useSetup`. It can be used for creating local component state. It's similar to `React.useMemo` with empty dependencies array. It'll run its callback **only once**.
+
+```js
+import { useSetup } from '@xoid/react'
+
+const App = () => {
+  const $counter = useSetup(() => create(5))
+
+  ...
+}
+```
+
+> `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
+
+An outer value can be supplied as the second argument. It'll turn into a reactive atom.
 
 ```js
 import { useSetup } from '@xoid/react'
@@ -104,17 +123,12 @@ const App = (props: Props) => {
     // `$props` has the type: Atom<Props>
     // this way, we can react to `props.something` as it changes
     $props.focus(s => s.something).subscribe(console.log)
-
-    const alpha = create(5)
-    return { alpha }
   }, props)
 
   ...
 }
 ```
 
-> `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
-
 ---
 
-This is all you need to know to start using **xoid**. In the following sections, you'll find more detailed explanation of the API.
+In the following sections, you'll find more detailed explanation of the API.
