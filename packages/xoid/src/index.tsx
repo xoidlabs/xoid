@@ -39,7 +39,7 @@ export function create<T, U = undefined>(
 /**
  * @deprecated In the next versions, `use` will be removed in favor of `atom.actions`.
  */
-export const use = <T extends any>(atom: Actions<T>): T => devtools.wrap((atom as any).actions)
+export const use = <T extends any>(atom: Actions<T>): T => atom.actions
 
 const devtools = {
   send: <T,>(_atom: T) => void 0,
