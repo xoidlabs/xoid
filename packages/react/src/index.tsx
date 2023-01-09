@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
 import React, { useEffect, useLayoutEffect, useRef, useDebugValue, Context } from 'react'
-import { Atom, Usable, create, use as _use } from 'xoid'
+import { Atom, Actions, create, GetState } from 'xoid'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
@@ -66,9 +66,12 @@ const useReactAdapter = (): ReactAdapter => {
  */
 export function useAtom<T>(atom: Atom<T>): T
 export function useAtom<T>(atom: () => Atom<T>): T
-export function useAtom<T, U>(atom: Atom<T> & Usable<U>, tuple: true): [T, U]
-export function useAtom<T, U>(atom: () => Atom<T> & Usable<U>, tuple: true): [T, U]
-export function useAtom<T, U>(maybeAtom: Atom<T> | (() => Atom<T>), tuple?: boolean): [T, U] | T {
+export function useAtom<T, U>(atom: Atom<T> & Actions<U>, withActions: true): [T, U]
+export function useAtom<T, U>(atom: () => Atom<T> & Actions<U>, withActions: true): [T, U]
+export function useAtom<T, U>(
+  maybeAtom: Atom<T> | (() => Atom<T>),
+  withActions?: boolean
+): [T, U] | T {
   const atom =
     useConstant(() => typeof maybeAtom === 'function' && maybeAtom()) || (maybeAtom as Atom<T>)
   const value = useSyncExternalStore(
@@ -78,7 +81,7 @@ export function useAtom<T, U>(maybeAtom: Atom<T> | (() => Atom<T>), tuple?: bool
   )
   useDebugValue(value)
   // TODO: reserve the second argument for an equality checker function in the next versions
-  return tuple ? ([value, _use(atom as any)] as [T, U]) : (value as T)
+  return withActions ? ([value, (atom as any).actions] as [T, U]) : (value as T)
 }
 
 /**
