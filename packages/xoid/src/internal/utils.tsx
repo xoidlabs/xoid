@@ -145,8 +145,8 @@ export const createStream =
         const unsub = internal.subscribe(listener)
         const unsub2 = nextInternal.subscribe(fn)
         return () => {
-          unsub()
           unsub2()
+          if (!nextInternal.listeners.size) unsub()
         }
       },
     })
