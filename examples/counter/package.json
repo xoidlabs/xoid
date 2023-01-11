@@ -8,8 +8,8 @@
     "react": "17.0.0",
     "react-dom": "17.0.0",
     "react-scripts": "3.4.3",
-    "xoid": "^1.0.0-beta.5",
-    "@xoid/react": "^1.0.0-beta.5"
+    "xoid": "^1.0.0-beta.6",
+    "@xoid/react": "^1.0.0-beta.6"
   },
   "devDependencies": {
     "typescript": "3.8.3"
