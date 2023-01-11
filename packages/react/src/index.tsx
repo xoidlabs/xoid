@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
 import React, { useEffect, useLayoutEffect, useRef, useDebugValue, Context } from 'react'
-import { Atom, Actions, create, GetState } from 'xoid'
+import { Atom, Actions, create } from 'xoid'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
