@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { use } from "xoid";
 import useItems from "./useItems";
 import Counter from "./Counter";
 
@@ -10,7 +9,7 @@ export default function App() {
     onChange,
     getInitialState: (id) => ({ id, count: 0 }),
     getActions: (atom) => {
-      const $count = use(atom, (s) => s.count);
+      const $count = atom.focus((s) => s.count);
       return {
         increment: () => $count((s) => s + 1),
         reset: () => $count(0)

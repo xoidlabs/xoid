@@ -6,7 +6,7 @@ import Counter from "./Counter";
 export default function XoidCounters() {
   const atom = useSetup(() => CountersModel(initialState));
   const counters = useAtom(atom);
-  const { addCounter, incrementCounter, resetCounter } = use(atom);
+  const { addCounter, incrementCounter, resetCounter } = atom.actions;
 
   return (
     <>

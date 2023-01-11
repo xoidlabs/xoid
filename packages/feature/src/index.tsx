@@ -3,7 +3,7 @@ export type From = {
   <T extends { id: any; type: any }>(item: T): T['type']
 }
 
-export type FeatureConstructor = new (options: any) => Feature<any>
+export type FeatureConstructor = new (options: any, from?: any) => Feature<any>
 
 export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
   k: infer I
@@ -23,34 +23,38 @@ type MergedTypes<P extends FeatureConstructor> = {
   [K in keyof UnionToIntersection<InstanceType<P>>]: ExtractKey<InstanceType<P>, K>
 }
 
-const defaultFrom: any = () => {
-  throw new Error('`this.from` cannot be used outside the `compose` context.')
-}
-
-const current = { from: defaultFrom }
-
-const createFrom = (contextMap: any) =>
-  function (this: any, input: any) {
-    const output = contextMap.get(typeof input === 'object' ? input.id : input)
-    if (!output) {
-      throw new Error(`Dependency '${input.name}' was not found in '${this.constructor.name}'.`)
-    }
-    return output
-  }
-
 export class Feature<T = {}> {
   id?: PropertyKey
   externalOptions!: T
   options!: T
-  from: From = (a: any) => current.from(a)
+  from: From = function () {
+    throw new Error('`this.from` cannot be used outside the `compose` context.')
+  }
   getOptions = <U,>(defaultOptions: U) => ({
     ...defaultOptions,
     ...this.externalOptions,
   })
-  constructor(options: T) {
+  constructor(options: T, from?: From) {
     this.options = options
     this.externalOptions = options
+    if (from) this.from = from
   }
+}
+
+const traversePrototypeChain = (instance: any, fn: any) => {
+  const prototype = Object.getPrototypeOf(instance)
+  const { constructor } = prototype
+  if (constructor === Feature || constructor === Function) return
+  fn(constructor)
+  traversePrototypeChain(prototype, fn)
+}
+
+function registerFeature(
+  contextMap: Map<PropertyKey | FeatureConstructor, Feature<unknown>>,
+  instance: Feature<any>
+) {
+  traversePrototypeChain(instance, (ctor: FeatureConstructor) => contextMap.set(ctor, instance))
+  if (instance.id) contextMap.set(instance.id, instance)
 }
 
 export const compose =
@@ -60,26 +64,30 @@ export const compose =
   ) =>
   (options: ExtractKey<InstanceType<P>, 'externalOptions'>) => {
     const contextMap = new Map<P | PropertyKey, Feature<unknown>>()
-    const from = createFrom(contextMap)
-    current.from = from
+    function from(this: any, input: any) {
+      const output = contextMap.get(typeof input === 'object' ? input.id : input)
+      if (!output) {
+        throw new Error(`Dependency '${input.name}' was not found in '${this.constructor.name}'.`)
+      }
+      return output
+    }
 
-    config
+    // if (typeof config === 'function') config(from)
+    ;(config as P[])
       .map((item) => {
-        const instance = new item(options)
-        instance.from = from
-        contextMap.set(item, instance)
-        const parentPrototype = Object.getPrototypeOf(item)
-        if (parentPrototype !== Feature) contextMap.set(parentPrototype, instance)
-
-        if (instance.id) {
-          contextMap.set(instance.id, instance)
-        }
+        const instance = new item(options, from)
+        registerFeature(contextMap, instance)
         return instance
       })
-      .forEach((instance) => {
-        ;(instance as any)?.main?.()
-      })
-    current.from = defaultFrom
+      .forEach((instance) => (instance as any)?.main?.())
 
-    return getAnswer(contextMap.get.bind(contextMap) as From, {} as MergedTypes<P>)
+    return getAnswer(from, {} as MergedTypes<P>)
   }
+
+// export const patch = <P extends FeatureConstructor, U extends {}>(ctor: P, prefilledOptions: U) =>
+//   // @ts-ignore
+//   class extends ctor {
+//     constructor(options: any, from: From) {
+//       super({ ...prefilledOptions, ...options }, from)
+//     }
+//   }

@@ -1,6 +1,6 @@
-import { Atom as $Atom, create, use as _use } from 'xoid'
+import { Atom as $Atom, create } from 'xoid'
 
-const use = _use as unknown as {
+const _create = create as unknown as {
   plugins: Function[]
   devtools: {
     send: (atom: Atom) => void
@@ -8,7 +8,7 @@ const use = _use as unknown as {
   }
 }
 
-const INTERNAL: unique symbol = (_use as any).symbol
+const INTERNAL: unique symbol = (create as any).symbol
 
 type Atom = $Atom<any> & { debugValue: string; [INTERNAL]: any }
 
@@ -33,7 +33,7 @@ const calledTimesMap = new WeakMap()
 
 const atomMap: Record<string, { count: number; map: Map<Atom, number> }> = {}
 const $registry = create<Record<string, unknown>>({})
-const register = (key: string, atom: Atom, value: unknown) => {
+const register = (key: string, atom: Atom) => {
   if (!atomMap[key]) atomMap[key] = { count: -1, map: new Map<Atom, number>() }
   let id = atomMap[key].map.get(atom)
   if (!id) {
@@ -43,7 +43,7 @@ const register = (key: string, atom: Atom, value: unknown) => {
   $registry.update((s) => {
     const registry = { ...s }
     if (!registry[key]) registry[key] = {} as typeof registry[string]
-    registry[id ? `${key}-${id}` : key] = value
+    registry[id ? `${key}-${id}` : key] = atom[INTERNAL].get()
     return registry
   })
 }
@@ -69,18 +69,18 @@ const devtools = () => {
     return () => void 0
   }
 
-  use.plugins.push((atom: Atom, initialValue: unknown) => {
+  _create.plugins.push((atom: Atom) => {
     // devtools support
     Object.defineProperty(atom, 'debugValue', {
       set(debugValue: string) {
         const internal = atom[INTERNAL]
         internal.debugValue = debugValue
-        register(debugValue, atom, initialValue)
+        register(debugValue, atom)
       },
     })
   })
 
-  use.devtools.send = (atom: Atom) => {
+  _create.devtools.send = (atom: Atom) => {
     const internal = atom[INTERNAL]
     const key = internal.debugValue
     if (key) {
@@ -89,7 +89,7 @@ const devtools = () => {
     }
   }
 
-  use.devtools.wrap = (item, atom) => {
+  _create.devtools.wrap = (item, atom) => {
     const { debugValue } = atom[INTERNAL]
     return debugValue ? createPathMembrane(item, [], atom) : item
   }

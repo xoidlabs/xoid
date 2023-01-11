@@ -1,5 +1,5 @@
 // This module is self contained. It doesn't have the following features:
-// selectors, useables, `focus` and `map` methods.
+// selectors, actions, `focus` and `map` methods.
 
 export type LiteAtom<T> = {
   value: T
@@ -15,10 +15,8 @@ export type Internal<T> = {
   listeners: Set<() => void>
   subscribe: (listener: () => void) => () => void
   isStream?: boolean
-  debugValue?: string
   atom?: LiteAtom<unknown>
   cache?: any
-  usable?: any
 }
 
 export const createEvent = () => {

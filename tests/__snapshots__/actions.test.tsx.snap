@@ -1,7 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`uses the actions in vanilla 1`] = `
+exports[`uses the actions in vanilla (interop) 1`] = `
 Object {
+  "actions": Object {
+    "inc": [Function],
+  },
   "get": Object {
     "count": 1,
   },
@@ -23,14 +26,40 @@ Object {
       "listeners": Set {},
       "set": [Function],
       "subscribe": [Function],
-      "usable": Object {
-        "inc": [Function],
-      },
     },
   },
   "selfSerialized": "{\\"value\\":{\\"count\\":1}}",
-  "use": Object {
+}
+`;
+
+exports[`uses the actions in vanilla 1`] = `
+Object {
+  "actions": Object {
     "inc": [Function],
   },
+  "get": Object {
+    "count": 1,
+  },
+  "getSerialized": "{\\"count\\":1}",
+  "self": Object {
+    "focus": [Function],
+    "map": [Function],
+    "set": [Function],
+    "subscribe": [Function],
+    "update": [Function],
+    "value": Object {
+      "count": 1,
+    },
+    "watch": [Function],
+    Symbol(): Object {
+      "atom": [Circular],
+      "get": [Function],
+      "isStream": false,
+      "listeners": Set {},
+      "set": [Function],
+      "subscribe": [Function],
+    },
+  },
+  "selfSerialized": "{\\"value\\":{\\"count\\":1}}",
 }
 `;

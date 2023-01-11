@@ -3,7 +3,9 @@ id: dynamic-functions-with-fixed-references
 title: Dynamic functions with fixed references
 ---
 
-Inside a React function component, in some cases which will be explained below, **a function with a fixed reference, but a dynamic content** may be needed. While this is not as straightforward with React hooks, it's trivial with **xoid**.
+Inside a React function component, in some cases **a function with a fixed reference, but a dynamic content** may be needed. While this is not as straightforward with React*, it is with **xoid**.
+
+> *: Since this recipe was written, `useEvent` "the missing hook" has been added to React to solve the same problem. However ergonomicity claims of **xoid** still hold.
 
 ### Quick Example
 
@@ -36,32 +38,40 @@ useEffect(() => {
 With **xoid**, the equivalent optimization is simply the following:
 
 ```js
-useSetup(($props, adapter) => {
-  const callback = () => console.log($props.value.number)
-
-  adapter.mount(() => window.addEventListener('click', callback))
-  adapter.unmount(() => window.removeEventListener('click', callback))
+useSetup(($props, { effect }) => {
+  effect(() => {
+    const callback = () => console.log($props.value.number)
+    window.addEventListener('click', callback)
+    return () => window.removeEventListener('click', callback)
+  })
 }, props)
 ```
 
-After getting used to, **xoid** can feel more intuitive than React hooks in a lot of cases. Here, `$props.value` gives the most recent value of `props`, even though the callback of `useSetup` is ran only once.
+After getting used to, **xoid** can feel more intuitive than React hooks in a lot of cases.
 
 ### Another Example
 
 Let's propose another problem, this time let's examine it in a more concrete scenario.
 
-Let's imagine, inside a React component, we're supposed to initialize a class called `DragDropLibrary` **only once** as `new DragDropLibrary({ onDrop })`. Let's assume we have only one chance to supply `onDrop` to the class instance, and this function cannot ve replaced afterwards. The library was not implemented by us, and we have no interest in modifying it to have dynamic options.
+Let's imagine, inside a React component, we're supposed to initialize a class called `DragDropLibrary` **only once** as `new DragDropLibrary({ onDrop })`. Let's assume we have only one chance to supply `onDrop` to the class instance, and this function cannot be replaced afterwards.
 
-Imagine that `props.func` is our dynamic function that changes in every render. We're going to use it as the source for different "onDrop" actions.
+Imagine that `props.func` is our dynamic function that changes in every render, and we're supposed to feed it to `onDrop`.
 
 With **xoid**:
 ```js
-const onDrop = useSetup(($props) => (...args) => $props.func(...args), props)
+useSetup(($props) => {
+  const onDrop = (...args) => $props.value.func(...args)
+  new DragDropLibrary({ onDrop })
+}, props)
 ```
+
+> Think of `useSetup` as not a hook, but as something unchanging, some closure that does not ever rerender. **@xoid/react**, in some sense, is a React without hooks.
 
 Without **xoid**: 
 ```js
-const onDropRef = useRef((...args) => props.func(...args))
-useEffect(() => { onDropRef.current = (...args) => props.func(...args) }, [props.func])
-const onDrop = onDropRef.current 
+const funcRef = useRef((...args) => props.func(...args))
+useEffect(() => { funcRef.current = (...args) => props.func(...args) }, [props.func])
+useMemo(() => {
+  new DragDropLibrary({ onDrop: funcRef.current })
+}, [])
 ```

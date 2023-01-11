@@ -42,7 +42,7 @@ export default function App() {
           key={key}
           $dot={$atom.focus((s) => s.dots[key])}
           onClick={(e) => {
-            use($temporaryArrow).startOrEndArrow(key)
+            $temporaryArrow.actions.startOrEndArrow(key)
             e.stopPropagation()
           }}
         />

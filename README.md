@@ -61,11 +61,14 @@ yarn add xoid
 
 ## Quick Tutorial
 
-**xoid** has only 2 exports: `create` and `use`. This section will cover them, and the **@xoid/react**.
+**xoid** has only one export: `create`. Create is also exported as the default export.
+
+`import { create } from 'xoid'`
+`import create from 'xoid'`
 
 ### Atom
 
-Atoms are holders of state. `create` function is used to create them.
+Atoms are holders of state.
 
 ```js
 import { create } from 'xoid'
@@ -73,23 +76,22 @@ import { create } from 'xoid'
 const atom = create(3)
 console.log(atom.value) // 3
 atom.set(5)
-atom.update(state => state + 1)
+atom.update((state) => state + 1)
 console.log(atom.value) // 6
 ```
 
-Atoms can have actions, and with `.use` method they can be used.
+Atoms can have actions if the second argument is used.
 
 ```js
-import { create, use } from 'xoid'
+import { create } from 'xoid'
 
 const numberAtom = create(5, (atom) => ({
   increment: () => atom.update(s => s + 1),
   decrement: () => atom.update(s => s - 1)
 }))
 
-use(numberAtom).increment()
+numberAtom.actions.increment()
 ```
-
 
 There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
@@ -100,8 +102,8 @@ const atom = create({ deeply: { nested: { alpha: 5 } } })
 const previousValue = atom.value
 
 // select `.deeply.nested.alpha`
-const alpha = atom.focus(s => s.deeply.nested.alpha)
-alpha.set(6)
+const alphaAtom = atom.focus(s => s.deeply.nested.alpha)
+alphaAtom.set(6)
 
 // root state is replaced with new immutable state
 assert(atom.value !== previousValue) // ✅
@@ -163,6 +165,7 @@ const App = () => {
   ...
 }
 ```
+
 > `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
 
 An outer value can be supplied as the second argument. It'll turn into a reactive atom.
@@ -181,7 +184,7 @@ const App = (props: Props) => {
 }
 ```
 
-Here, this is enough knowledge to start using **xoid**! You can refer to the [documentation website](https://xoid.dev) for more.
+If you've read until here, you have enough knowledge to start using **xoid**. You can refer to the [documentation website](https://xoid.dev) for more.
 
 ## More features
 
@@ -232,7 +235,7 @@ const atom = create(
 
 atom.debugValue = 'myAtom' // enable watching it by the devtools
 
-const { deeply, incrementAlpha } = use(atom) // destructuring is no problem
+const { deeply, incrementAlpha } = atom.actions // destructuring is no problem
 incrementAlpha() // logs "(myAtom).incrementAlpha"
 deeply.nested.action() // logs "(myAtom).deeply.nested.action"
 atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])

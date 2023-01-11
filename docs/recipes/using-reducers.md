@@ -36,8 +36,6 @@ const counterReducer = (state, { type, by }) => {
 Usage:
 
 ```js
-import { use, subscribe } from 'xoid'
-
 const { atom, dispatch } = createStore({ count: 0 }, counterReducer)
 
 dispatch({ type: types.increase, by: 1 })

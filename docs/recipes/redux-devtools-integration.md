@@ -3,32 +3,33 @@ id: redux-devtools-integration
 title: Redux Devtools integration
 ---
 
-Import `@xoid/devtools` and connect your atom. It will send action names to the Redux Devtools Extension.
+Import `@xoid/devtools` and set a `debugValue` to your atom. It will send values to the Redux Devtools Extension.
 
 ```js
 import { devtools } from '@xoid/devtools'
 import { create, use } from 'xoid'
+devtools() // run once
 
 const atom = create(
   { alpha: 5 }, 
   (atom) => {
-    const $alpha = use(atom, s => s.alpha)
+    const $alpha = atom.focus(s => s.alpha)
     return {
-      inc: () => $alpha(s => s + 1),
-      resetState: () => atom({ alpha: 5 })
+      inc: () => $alpha.update(s => s + 1),
+      resetState: () => atom.set({ alpha: 5 })
       deeply: {
         nested: {
-          action: () => $alpha(5)
+          action: () => $alpha.set(5)
         }
       } 
     }
   }
 )
-const disconnect = devtools(atom, 'myAtom') // second argument specifies the instance name
 
-const { deeply, incrementAlpha } = use(atom) // can work with destructuring
-incrementAlpha() // "*.incrementAlpha"
-deeply.nested.action() // "*.deeply.nested.action"
-use(atom, s => s.alpha)(25)  // "* Update ([timestamp])
+atom.debugValue = 'myAtom' // enable watching it by the devtools
+
+const { deeply, incrementAlpha } = atom.actions // destructuring is no problem
+incrementAlpha() // logs "(myAtom).incrementAlpha"
+deeply.nested.action() // logs "(myAtom).deeply.nested.action"
+atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
 ```
-
