@@ -48,3 +48,5 @@ _create.devtools = devtools
 
 // typed
 create.plugins = [] as ((atom: Atom<any>) => void)[]
+
+export default create

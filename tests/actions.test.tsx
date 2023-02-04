@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import { useAtom } from '@xoid/react'
 import React from 'react'
-import { create, use } from 'xoid'
+import { create } from 'xoid'
 import { debug } from './testHelpers'
 
 it('uses the actions in vanilla (interop)', async () => {
