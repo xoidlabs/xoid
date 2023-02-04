@@ -44,7 +44,7 @@ type ReactAdapter = {
 
 ### `.effect`
 
-`.mount` and `.unmount` methods simply connect to a `useEffect` call internally. 
+`.effect` method simply connect to a `useEffect` call internally. 
 
 ```js
 import { useSetup } from '@xoid/react'

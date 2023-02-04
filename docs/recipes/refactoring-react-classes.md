@@ -63,13 +63,14 @@ Observe that the only big differece is replacing `this` in the render function w
 
 After getting rid of `this.setState` usages, we can get rid of the `Runtime` class too.
 ```js
-const App = (props: Props) => {
-  const self = useSetup(($props) => {
-    const $state = create({ alpha: 5 })
-    const incrementAlpha = () => $state.focus('alpha').update((s) => s + 1)
-    return { $state, incrementAlpha }
-  }, props)
+const AppSetup = ($props: Atom<Props>) => {
+  const $state = create({ alpha: 5 })
+  const incrementAlpha = () => $state.focus('alpha').update((s) => s + 1)
+  return { $state, incrementAlpha }
+}
 
+const App = (props: Props) => {
+  const { $state, incrementAlpha } = useSetup(AppSetup, props)
   const { alpha } = useAtom(self.$state)
 
   return <div onClick={self.incrementAlpha}>{alpha}</div>

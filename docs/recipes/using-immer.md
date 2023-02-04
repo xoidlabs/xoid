@@ -3,8 +3,8 @@ id: using-immer
 title: Using immer
 ---
 
-While **xoid**'s API surface is kept small intentionally, however there's a way for extensions. 
-If you'd like to add a `.produce` method that uses **immer** internally, you can do so like the following.
+While **xoid**'s API surface is kept small intentionally, there's a way for extensions. 
+If you'd like to add a `.produce` method that uses **immer** internally, you can do it like the following.
 
 ```js
 import { create } from 'xoid'

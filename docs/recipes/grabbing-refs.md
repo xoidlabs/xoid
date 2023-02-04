@@ -8,16 +8,16 @@ A **xoid** atom can be used to grab element refs (as in React's terminology) in 
 ```js
 const $ref = create<HTMLElement>() // Stream<HTMLElement>
 
-$ref(document.body)
+$ref.set(document.body)
 ```
 
-It's completely safe to feed **xoid** atoms as refs to React components as `ref` prop.
+It's completely safe to feed `atom.set` calls as refs to React components as `ref` prop.
 
 ```js
 import { create } from 'xoid'
 import { useSetup } from '@xoid/react'
 // inside React
-const { ref } = useSetup(() => {
+const { $ref } = useSetup(() => {
   const $ref = create<HTMLDivElement>()
   subscribe($ref, (element) => console.log(element))
   return { $ref }
