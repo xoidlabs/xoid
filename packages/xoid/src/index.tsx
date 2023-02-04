@@ -36,11 +36,6 @@ export function create<T, U = undefined>(
   return atom
 }
 
-/**
- * @deprecated In the next versions, `use` will be removed in favor of `atom.actions`.
- */
-export const use = <T extends any>(atom: Actions<T>): T => atom.actions
-
 const devtools = {
   send: <T,>(_atom: T) => void 0,
   wrap: <T,>(value: T): T => value,
@@ -50,5 +45,6 @@ const devtools = {
 const _create = create as any
 _create.symbol = INTERNAL
 _create.devtools = devtools
+
 // typed
 create.plugins = [] as ((atom: Atom<any>) => void)[]
