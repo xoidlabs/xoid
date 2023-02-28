@@ -107,3 +107,26 @@ it('Never evaluate dependents of streams unless the stream value is satisfied', 
 
   expect(fn).toBeCalledTimes(1)
 })
+
+it('Continue notifying dependent subscriber after another one is unsubscribed', () => {
+  const fn = jest.fn()
+  const fn1 = jest.fn()
+
+  const sourceAtom = create<{ deep: { value: number } }>()
+  const derivedAtom = sourceAtom.map((state) => state.deep.value)
+
+  derivedAtom.subscribe(fn)
+  const unsub = derivedAtom.subscribe(fn1)
+
+  sourceAtom.set({ deep: { value: 5 } })
+
+  expect(fn).toBeCalledTimes(1)
+  expect(fn1).toBeCalledTimes(1)
+
+  unsub()
+
+  sourceAtom.set({ deep: { value: 6 } })
+
+  expect(fn).toBeCalledTimes(2)
+  expect(fn1).toBeCalledTimes(1)
+})
