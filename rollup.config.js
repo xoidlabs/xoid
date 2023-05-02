@@ -17,7 +17,7 @@ async function main() {
   ];
 
   const results = [];
-  const packages = [];
+  let packages = [];
 
   await workspacesRun({ cwd: __dirname, orderByDeps: true }, async (pkg) => {
     if (!pkg.config.private) {

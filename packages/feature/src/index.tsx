@@ -60,7 +60,7 @@ function registerFeature(
 export const compose =
   <P extends FeatureConstructor, V>(
     config: P[],
-    getAnswer: (from: From, common: MergedTypes<P>) => V
+    getResult: (from: From, imaginary: MergedTypes<P>) => V
   ) =>
   (options: ExtractKey<InstanceType<P>, 'externalOptions'>) => {
     const contextMap = new Map<P | PropertyKey, Feature<unknown>>()
@@ -72,7 +72,6 @@ export const compose =
       return output
     }
 
-    // if (typeof config === 'function') config(from)
     ;(config as P[])
       .map((item) => {
         const instance = new item(options, from)
@@ -81,13 +80,5 @@ export const compose =
       })
       .forEach((instance) => (instance as any)?.main?.())
 
-    return getAnswer(from, {} as MergedTypes<P>)
+    return getResult(from, {} as MergedTypes<P>)
   }
-
-// export const patch = <P extends FeatureConstructor, U extends {}>(ctor: P, prefilledOptions: U) =>
-//   // @ts-ignore
-//   class extends ctor {
-//     constructor(options: any, from: From) {
-//       super({ ...prefilledOptions, ...options }, from)
-//     }
-//   }

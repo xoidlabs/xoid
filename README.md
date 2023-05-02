@@ -35,25 +35,22 @@ To install, run the following command:
 ```bash
 npm install xoid
 ```
-or
-```bash
-yarn add xoid
-```
-
 
 ## Integrations
 
-- <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> [React](#react)
+<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> [React](#react)  
 
-- <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> [Vue](#vue)
+<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> [Vue](#vue)  
 
 <!-- - <img src="https://angular.io/assets/images/favicons/favicon.ico" width="16"/> [Angular](#angular) -->
 
-- <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> [Svelte](#svelte)
+<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> [Svelte](#svelte)  
 
-- <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="16"/> [Vanilla JS](#subscriptions)
+<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="16"/> [Vanilla JS](#subscriptions)  
 
-- <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="16"/> [Redux Devtools](#redux-devtools)
+<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="16"/> [Redux Devtools](#redux-devtools)  
+
+<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/robot.svg" width="16"/> [Redux Devtools](#finite-state-machines)  
 
 
 
@@ -79,11 +76,7 @@ yarn add xoid
 
 ## Quick Tutorial
 
-**xoid** has only one export. It's also exported as the default export.
-
-`import { create } from 'xoid'`
-
-`import create from 'xoid'`
+**xoid** is extremely easy to learn. It has only one export.
 
 ### Atom
 
