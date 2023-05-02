@@ -157,7 +157,7 @@ unsub()
 
 ## Integrations
 
-### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="32"/>  React
+### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="24"/>  React
 
 Just use **@xoid/react** and import `useAtom`. No context providers are needed.
 
