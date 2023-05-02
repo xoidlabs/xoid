@@ -39,6 +39,7 @@ npm install xoid
 ## Integrations
 
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> [React](#react)  
+
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> [Vue](#vue)  
 
 <!-- - <img src="https://angular.io/assets/images/favicons/favicon.ico" width="16"/> [Angular](#angular) -->
