@@ -50,7 +50,7 @@ npm install xoid
 
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="16"/> [Redux Devtools](#redux-devtools)  
 
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/robot.svg" width="16"/> [Redux Devtools](#finite-state-machines)  
+<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/robot.png" width="16"/> [Redux Devtools](#finite-state-machines)  
 
 
 
