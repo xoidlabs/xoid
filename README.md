@@ -41,6 +41,22 @@ yarn add xoid
 ```
 
 
+## Integrations
+
+- <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> [React](#react)
+
+- <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> [Vue](#vue)
+
+<!-- - <img src="https://angular.io/assets/images/favicons/favicon.ico" width="16"/> [Angular](#angular) -->
+
+- <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> [Svelte](#svelte)
+
+- <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="16"/> [Vanilla JS](#subscriptions)
+
+- <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="16"/> [Redux Devtools](#redux-devtools)
+
+
+
 ## Examples
 
 - [Counter](https://github.com/onurkerimov/xoid/blob/master/examples/counter) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/counter)
@@ -59,11 +75,14 @@ yarn add xoid
 
 - [xoid vs useReducer vs useMethods](https://githubbox.com/onurkerimov/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods)
 
+
+
 ## Quick Tutorial
 
-**xoid** has only one export: `create`. Create is also exported as the default export.
+**xoid** has only one export. It's also exported as the default export.
 
 `import { create } from 'xoid'`
+
 `import create from 'xoid'`
 
 ### Atom
@@ -143,9 +162,11 @@ unsub()
 ```
 > To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
 
-### React integration
+## Integrations
 
-**@xoid/react** is based on two hooks. `useAtom` subscribes the component to an atom. If a second argument is supplied, it'll be used as a selector function.
+### React
+
+Just use **@xoid/react** and import `useAtom`. No context providers are needed.
 
 ```js
 import { useAtom } from '@xoid/react'
@@ -154,7 +175,10 @@ import { useAtom } from '@xoid/react'
 const state = useAtom(atom)
 ```
 
-The other hook is `useSetup`. It can be used for creating local component state. It's similar to `React.useMemo` with empty dependencies array. It'll run its callback **only once**.
+<details>
+  <summary>There's also the "useSetup" hook, for managing local component state with xoid.</summary>
+
+`useSetup` can be used for creating local component state. It's similar to `React.useMemo` with an empty dependency array. It'll run its callback **only once**.
 
 ```js
 import { useSetup } from '@xoid/react'
@@ -168,7 +192,7 @@ const App = () => {
 
 > `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
 
-An outer value can be supplied as the second argument. It'll turn into a reactive atom.
+An outer value can be supplied as the second argument. It can be used as a reactive atom inside.
 
 ```js
 import { useSetup } from '@xoid/react'
@@ -178,37 +202,47 @@ const App = (props: Props) => {
     // `$props` has the type: Atom<Props>
     // this way, we can react to `props.something` as it changes
     $props.focus(s => s.something).subscribe(console.log)
-  }, props)
+  }, props) // <= `props` is supplied here
 
   ...
 }
 ```
+</details>
 
-If you've read until here, you have enough knowledge to start using **xoid**. You can refer to the [documentation website](https://xoid.dev) for more.
 
-## More features
 
-### Pattern: Finite state machines
+### Vue
 
-No additional syntax is required for state machines. Just use the good old `create` function.
+Just use `@xoid/vue` and import `useAtom`.
 
-```js
-import { create } from 'xoid'
-import { useAtom } from '@xoid/react'
+```html
+<script setup>
+import { useAtom } from '@xoid/vue'
+import { myAtom } from './my-atom'
 
-const createMachine = () => {
-  const red = { color: '#f00', onClick: () => atom.set(green) }
-  const green = { color: '#0f0', onClick: () => atom.set(red) }
-  const atom = create(red)
-  return atom
-}
+const value = useAtom(myAtom)
+</script>
 
-// in a React component
-const { color, onClick } = useAtom(createMachine)
-return <div style={{ color }} onClick={onClick} />
+<template>
+  <div>{{ value }}</div>
+</template>
 ```
 
-### Redux Devtools integration
+
+### Svelte
+
+Svelte integration is seamless, and requires no libraries since every store implements
+[Svelte's store contract](https://svelte.dev/docs#component-format-script-4-prefix-stores-with-$-to-access-their-values-store-contract). Just put a `$` before the variable name.
+
+```html
+<script>
+  import { myAtom } from './my-atom'
+</script>
+
+<header>{$myAtom}</header>
+```
+
+### Redux Devtools
 
 Import `@xoid/devtools` and set a `debugValue` to your atom. It will send values to the Redux Devtools Extension.
 
@@ -241,6 +275,31 @@ deeply.nested.action() // logs "(myAtom).deeply.nested.action"
 atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
 ```
 
+## Finite state machines
+
+No additional syntax is required for state machines. Just use the `create` function.
+
+```js
+import { create } from 'xoid'
+import { useAtom } from '@xoid/react'
+
+const createMachine = () => {
+  const red = { color: '#f00', onClick: () => atom.set(green) }
+  const green = { color: '#0f0', onClick: () => atom.set(red) }
+  const atom = create(red)
+  return atom
+}
+
+// in a React component
+const { color, onClick } = useAtom(createMachine)
+return <div style={{ color }} onClick={onClick} />
+```
+
+---
+
+If you've read until here, you have enough knowledge to start using **xoid**. You can refer to the [documentation website](https://xoid.dev) for more.
+
+
 ## Why **xoid**?
 
 - Easy to learn
@@ -253,12 +312,15 @@ atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
 - No middleware is required for async/generator stuff
 - Global state and local component state in the same API
 
-## Other packages
+## Packages
 
+- `xoid` - Core package
 - `@xoid/react` - **React** integration
+- `@xoid/vue` - **Vue** integration
 - `@xoid/devtools` - **Redux Devtools** integration
 - `@xoid/lite` - Lighter version with less features
-- `@xoid/feature` - A typesafe plugin system oriented in ES6 classes
+- `@xoid/feature` - A plugin system oriented in ES6 classes
+
 
 ## Thanks
 Following awesome projects inspired **xoid** a lot.
