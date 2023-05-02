@@ -157,7 +157,7 @@ unsub()
 
 ## Integrations
 
-### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="18"/>  React
+### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/>  React
 
 Just use **@xoid/react** and import `useAtom`. No context providers are needed.
 
@@ -204,7 +204,7 @@ const App = (props: Props) => {
 
 
 
-### Vue
+### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue
 
 Just use `@xoid/vue` and import `useAtom`.
 
@@ -222,7 +222,7 @@ const value = useAtom(myAtom)
 ```
 
 
-### Svelte
+### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte
 
 Svelte integration is seamless, and requires no libraries since every store implements
 [Svelte's store contract](https://svelte.dev/docs#component-format-script-4-prefix-stores-with-$-to-access-their-values-store-contract). Just put a `$` before the variable name.
