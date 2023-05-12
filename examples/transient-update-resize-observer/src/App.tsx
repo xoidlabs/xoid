@@ -12,7 +12,9 @@ const ResizeObserverSetup = (_: unknown, adapter: ReactAdapter) => {
 
   const unsub = $element.subscribe((element) => {
     observer.observe(element)
-    const unsub = $xy.subscribe((xy) => (element.innerHTML = xy))
+    const unsub = $xy.subscribe((xy) => {
+      element.innerHTML = xy
+    })
     return () => {
       unsub()
       observer.unobserve(element)
