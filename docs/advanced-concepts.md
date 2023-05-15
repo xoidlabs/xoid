@@ -49,6 +49,7 @@ Here's the difference of the two, from the `index.d.ts` file of **xoid**.
 ```js
 export type Atom<T> = {
   value: T
+  get(): T
   set(state: T): void
   update(fn: (state: T) => T): void
   subscribe(fn: (state: T, prevState: T) => unknown): () => void
@@ -61,6 +62,7 @@ export type Atom<T> = {
 
 export type Stream<T> = {
   value: T | undefined
+  get(): T | undefined
   set(state: T): void
   update(fn: (state: T | undefined) => T): void
   subscribe(fn: (state: T, prevState: T | undefined) => unknown): () => void

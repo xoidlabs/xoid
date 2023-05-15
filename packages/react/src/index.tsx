@@ -74,11 +74,7 @@ export function useAtom<T, U>(
 ): [T, U] | T {
   const atom =
     useConstant(() => typeof maybeAtom === 'function' && maybeAtom()) || (maybeAtom as Atom<T>)
-  const value = useSyncExternalStore(
-    atom.subscribe,
-    () => atom.value,
-    () => atom.value
-  )
+  const value = useSyncExternalStore(atom.subscribe, atom.get, atom.get)
   useDebugValue(value)
   // TODO: reserve the second argument for an equality checker function in the next versions
   return withActions ? ([value, (atom as any).actions] as [T, U]) : (value as T)

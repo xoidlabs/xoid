@@ -3,6 +3,7 @@
 
 export type LiteAtom<T> = {
   value: T
+  get(): T
   set(state: T): void
   update(fn: (state: T) => T): void
   subscribe(fn: (value: T, previousValue: T) => void): () => void
@@ -91,7 +92,8 @@ export const createBaseApi = <T,>(internal: Internal<T>) => {
     set value(item) {
       api.set(item)
     },
-    set: (value: any) => set(value),
+    get,
+    set,
     update: (fn: any) => api.set(fn(get())),
     subscribe: (item) => subscribeInternal(subscribe, item, get),
     watch: (item) => subscribeInternal(subscribe, item, get, true),

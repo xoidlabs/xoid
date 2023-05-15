@@ -11,6 +11,7 @@ Object {
   "getSerialized": "{\\"count\\":1}",
   "self": Object {
     "focus": [Function],
+    "get": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
@@ -43,6 +44,7 @@ Object {
   "getSerialized": "{\\"count\\":1}",
   "self": Object {
     "focus": [Function],
+    "get": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
