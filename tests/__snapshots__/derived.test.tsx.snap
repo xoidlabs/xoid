@@ -7,6 +7,7 @@ Object {
   "getSerialized": "8",
   "self": Object {
     "focus": [Function],
+    "get": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
@@ -33,6 +34,7 @@ Object {
   "getSerialized": "8",
   "self": Object {
     "focus": [Function],
+    "get": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
@@ -59,6 +61,7 @@ Object {
   "getSerialized": "8",
   "self": Object {
     "focus": [Function],
+    "get": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],

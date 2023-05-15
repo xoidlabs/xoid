@@ -8,14 +8,7 @@ export const useSelector = <T, U>(
   atom: Atom<T>,
   selector: (value: T) => U = identity as (value: T) => U,
   equals = Object.is
-) =>
-  useSyncExternalStoreWithSelector(
-    atom.subscribe,
-    () => atom.value,
-    () => atom.value,
-    selector,
-    equals
-  )
+) => useSyncExternalStoreWithSelector(atom.subscribe, atom.get, atom.get, selector, equals)
 
 const getKeys = <T,>(item: T) =>
   Array.isArray(item) ? item.map((_, i) => i) : Object.keys(item as any)
