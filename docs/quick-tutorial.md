@@ -5,11 +5,8 @@ title: Quick Tutorial
 
 > You can skip this part if you've already read the Github README.
 
+**xoid** is extremely easy to learn. 
 
-**xoid** has only one export: `create`. Create is also exported as the default export.
-
-`import { create } from 'xoid'`
-`import create from 'xoid'`
 
 ### Atom
 
@@ -87,48 +84,3 @@ const unsub = atom.subscribe(
 unsub()
 ```
 > To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
-
-### React integration
-
-**@xoid/react** is based on two hooks. `useAtom` subscribes the component to an atom. If a second argument is supplied, it'll be used as a selector function.
-
-```js
-import { useAtom } from '@xoid/react'
-
-// in a React component
-const state = useAtom(atom)
-```
-
-The other hook is `useSetup`. It can be used for creating local component state. It's similar to `React.useMemo` with empty dependencies array. It'll run its callback **only once**.
-
-```js
-import { useSetup } from '@xoid/react'
-
-const App = () => {
-  const $counter = useSetup(() => create(5))
-
-  ...
-}
-```
-
-> `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
-
-An outer value can be supplied as the second argument. It'll turn into a reactive atom.
-
-```js
-import { useSetup } from '@xoid/react'
-
-const App = (props: Props) => {
-  const setup = useSetup(($props) => {
-    // `$props` has the type: Atom<Props>
-    // this way, we can react to `props.something` as it changes
-    $props.focus(s => s.something).subscribe(console.log)
-  }, props)
-
-  ...
-}
-```
-
----
-
-In the following sections, you'll find more detailed explanation of the API.

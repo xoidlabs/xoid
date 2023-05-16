@@ -1,6 +1,13 @@
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
-import React, { useEffect, useLayoutEffect, useRef, useDebugValue, Context } from 'react'
-import { Atom, Actions, create } from 'xoid'
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useDebugValue,
+  Context,
+  createContext,
+} from 'react'
+import { create, Atom, Actions, InjectionKey, Adapter, Component, EffectCallback } from 'xoid'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
@@ -11,7 +18,7 @@ const useConstant = <T extends any>(fn: () => T): T => {
   return ref.current.c
 }
 
-export const createEvent = () => {
+const createEvent = () => {
   const fns = new Set<Function>()
   const add = (fn: Function) => {
     fns.add(fn)
@@ -23,14 +30,20 @@ export const createEvent = () => {
   return { add, fire }
 }
 
-export type ReactAdapter = {
+const contextMap = new Map<InjectionKey<any>, React.Context<any>>()
+export const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {
+  const context = createContext(defaultValue)
+  contextMap.set(key, context)
+  return context.Provider
+}
+
+export type ReactAdapter = Adapter & {
   read: <T>(context: Context<T>) => T
-  effect: (fn: React.EffectCallback) => void
 }
 
 // The only experimental feature of this package is the `read` method in the following React adapter.
-// It relies on React fiber internals that might change in the future. A good thing is that the same
-// interface is used by a popular module like `react-relay`, and it's is even mimicked in `preact/compat`.
+// It relies on the fiber internal: `reactInternals.ReactCurrentDispatcher.current.readContext`.
+// This may change in the future, but luckily popular projects like `react-relay`, `preact/compat` also assume it.
 // https://github.com/preactjs/preact/blob/cef315a681aaaef67200564d9a33bd007422665b/compat/src/render.js#L230
 const reactInternals = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
 const useReactAdapter = (): ReactAdapter => {
@@ -39,9 +52,14 @@ const useReactAdapter = (): ReactAdapter => {
     const u = createEvent()
     return {
       adapter: {
-        read: <T,>(context: Context<T>): T =>
-          reactInternals.ReactCurrentDispatcher.current.readContext(context),
-        effect: (fn: React.EffectCallback) =>
+        read: <T,>(context: Context<T>): T => {
+          return reactInternals.ReactCurrentDispatcher.current.readContext(context)
+        },
+        inject: <T,>(symbol: InjectionKey<T>): T => {
+          if (typeof symbol !== 'symbol') throw new Error('An symbol should be used')
+          return reactInternals.ReactCurrentDispatcher.current.readContext(contextMap.get(symbol))
+        },
+        effect: (fn: EffectCallback) =>
           m.add(() => {
             const result = fn()
             if (typeof result === 'function') u.add(result)
@@ -108,3 +126,12 @@ export function useSetup(fn: ($props: any, adapter: any) => any, props?: any): a
   return result
   /* eslint-enable react-hooks/rules-of-hooks */
 }
+
+const toReact =
+  <T,>(component: Component<T>) =>
+  (props: T) => {
+    const render = useSetup(component, props)
+    return useAtom(() => create((get) => render(get, React.createElement)))
+  }
+
+export default toReact

@@ -76,7 +76,7 @@ npm install xoid
 
 ## Quick Tutorial
 
-**xoid** is extremely easy to learn. It has only one export.
+**xoid** is extremely easy to learn. 
 
 ### Atom
 
@@ -171,7 +171,7 @@ const state = useAtom(atom)
 <details>
   <summary>There's also the "useSetup" hook, for managing local component state with xoid.</summary>
 
-`useSetup` can be used for creating local component state. It's similar to `React.useMemo` with an empty dependency array. It'll run its callback **only once**.
+`useSetup` is similar to `React.useMemo` with an empty dependency array. It'll run its callback **only once**.
 
 ```js
 import { useSetup } from '@xoid/react'
