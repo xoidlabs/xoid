@@ -10,7 +10,7 @@
       "@xoid/*": ["./packages/*/src"]
     },
     "target": "es5",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "downlevelIteration": true,
     "strict": true,
     "importHelpers": true,

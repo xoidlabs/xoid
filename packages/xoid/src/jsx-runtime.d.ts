@@ -1,1 +1,1 @@
-type A = JSX.Element
+export * from '@types/react'
