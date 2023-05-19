@@ -21,8 +21,9 @@ describe('Same isomorphic component works in React and Vue', () => {
 
   test('React', async () => {
     const { findByText, getByText, rerender, unmount } = renderReact(
+      // @ts-ignore
       <CounterReact initialValue={5}>
-        <span>default slot renders me</span>
+        <span>a slot renders me</span>
       </CounterReact>
     )
 
@@ -45,7 +46,7 @@ describe('Same isomorphic component works in React and Vue', () => {
   })
 
   /* eslint-disable react-hooks/rules-of-hooks */
-  test.only('Vue', async () => {
+  test('Vue', async () => {
     const { findByText, getByText, rerender, unmount } = renderVue(CounterVue, {
       props: { initialValue: 5 },
     })

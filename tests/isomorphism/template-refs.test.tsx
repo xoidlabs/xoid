@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import create, { Adapter, Component, InjectionKey } from 'xoid'
-import toReact from '@xoid/react'
-import toVue from '@xoid/vue'
+import toReact from '@xoid/react/runtime'
+import toVue from '@xoid/vue/runtime'
 import React from 'react'
 import { render as renderReact } from '@testing-library/react'
 import { render as renderVue } from '@testing-library/vue'

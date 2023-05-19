@@ -1,4 +1,4 @@
-/** @jsxImportSource vue */
+/** @jsxImportSource xoid/src */
 import { Component } from 'xoid'
 
 const Counter: Component<{ initialValue: number }, 'default'> = {

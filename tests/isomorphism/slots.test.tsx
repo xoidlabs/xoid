@@ -1,7 +1,7 @@
-/** @jsx h */
-import { component, h, Adapter, InjectionKey } from 'xoid'
-import toReact from '@xoid/react'
-import toVue from '@xoid/vue'
+/** @jsxImportSource xoid/src */
+import { Adapter, InjectionKey, Component } from 'xoid'
+import toReact from '@xoid/react/src/runtime'
+import toVue from '@xoid/vue/src/runtime'
 import React from 'react'
 import { defineComponent, h } from 'vue'
 import { render as renderReact } from '@testing-library/react'
@@ -11,7 +11,7 @@ export const StoreKey: InjectionKey<number> = Symbol()
 export const StoreSetup = (_: undefined, { inject }: Adapter) => inject(StoreKey)
 
 describe('Slots work in React and Vue', () => {
-  const AppIsomorphic = component({
+  const AppIsomorphic: Component<{}> = {
     props: [],
     slots: ['default'],
     render() {
@@ -23,7 +23,7 @@ describe('Slots work in React and Vue', () => {
         </div>
       )
     },
-  })
+  }
 
   const AppReact = toReact(AppIsomorphic)
   const AppVue = toVue(AppIsomorphic)

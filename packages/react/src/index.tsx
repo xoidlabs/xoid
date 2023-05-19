@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useDebugValue, Context, createContext } from 'react'
-import { create, Atom, InjectionKey, Adapter, Component, EffectCallback } from 'xoid'
+import { create, Atom, InjectionKey, Adapter, EffectCallback } from 'xoid'
 import { createEvent } from 'xoid/src/internal/lite'
-import { useAtom, useConstant } from './lite'
+import { useConstant } from './lite'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
@@ -72,30 +72,8 @@ export function useSetup(fn: ($props: any, adapter: any) => any, props?: any): a
 }
 
 const contextMap = new Map<InjectionKey<any>, React.Context<any>>()
-const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {
+export const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {
   const context = createContext(defaultValue)
   contextMap.set(key, context)
   return context.Provider
 }
-
-const toReact = (<T, U extends string>(arg: Component<T, U>, arg2: any) => {
-  if (typeof arg === 'symbol') return createProvider(arg, arg2)
-  return (props: T) => {
-    const [render, $props] = useSetup((a, b) => {
-      return [arg.render.call(b, a, b), a] as const
-    }, props)
-    return useAtom(() =>
-      create((get) =>
-        render(get, ((key?: string) => {
-          const k = !key || key === 'default' ? 'children' : key
-          return get($props.focus(k as any))
-        }) as any)
-      )
-    )
-  }
-}) as {
-  <T, U extends string>(component: Component<T, U>): (props: T) => JSX.Element | null
-  <T>(key: InjectionKey<T>, defaultValue: T): React.Provider<T>
-}
-
-export default toReact
