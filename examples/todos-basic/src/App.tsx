@@ -1,6 +1,6 @@
 import React from 'react'
 import { create } from 'xoid'
-import { useAtom } from '@xoid/react'
+import { useAtom } from "packages/react/src/useAtom";
 
 type TodoType = { title: string; checked: boolean }
 type TodoActions = { toggle: () => void; rename: (name: string) => void }

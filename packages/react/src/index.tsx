@@ -1,41 +1,10 @@
-import { useSyncExternalStore } from 'use-sync-external-store/shim'
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useDebugValue,
-  Context,
-  createContext,
-} from 'react'
-import { create, Atom, Actions, InjectionKey, Adapter, Component, EffectCallback } from 'xoid'
+import React, { useEffect, useLayoutEffect, useDebugValue, Context, createContext } from 'react'
+import { create, Atom, InjectionKey, Adapter, Component, EffectCallback } from 'xoid'
+import { createEvent } from 'xoid/src/internal/lite'
+import { useAtom, useConstant } from './lite'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
-
-const useConstant = <T extends any>(fn: () => T): T => {
-  const ref = useRef<{ c: T }>()
-  if (!ref.current) ref.current = { c: fn() }
-  return ref.current.c
-}
-
-const createEvent = () => {
-  const fns = new Set<Function>()
-  const add = (fn: Function) => {
-    fns.add(fn)
-  }
-  const fire = () => {
-    fns.forEach((fn) => fn())
-    fns.clear()
-  }
-  return { add, fire }
-}
-
-const contextMap = new Map<InjectionKey<any>, React.Context<any>>()
-export const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {
-  const context = createContext(defaultValue)
-  contextMap.set(key, context)
-  return context.Provider
-}
 
 export type ReactAdapter = Adapter & {
   read: <T>(context: Context<T>) => T
@@ -46,7 +15,7 @@ export type ReactAdapter = Adapter & {
 // This may change in the future, but luckily popular projects like `react-relay`, `preact/compat` also assume it.
 // https://github.com/preactjs/preact/blob/cef315a681aaaef67200564d9a33bd007422665b/compat/src/render.js#L230
 const reactInternals = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
-const useReactAdapter = (): ReactAdapter => {
+const useReactAdapter = (props: any): ReactAdapter => {
   const setup = useConstant(() => {
     const m = createEvent()
     const u = createEvent()
@@ -78,31 +47,6 @@ const useReactAdapter = (): ReactAdapter => {
 }
 
 /**
- * An atom, or a function returning an atom can be passed as the first argument.
- * When the second optional argument is set to `true`, it will also consume the actions of the atom.
- * @see [xoid.dev/docs/api-react/use-atom](https://xoid.dev/docs/api-react/use-atom)
- */
-export function useAtom<T>(atom: Atom<T>): T
-export function useAtom<T>(atom: () => Atom<T>): T
-export function useAtom<T, U>(atom: Atom<T> & Actions<U>, withActions: true): [T, U]
-export function useAtom<T, U>(atom: () => Atom<T> & Actions<U>, withActions: true): [T, U]
-export function useAtom<T, U>(
-  maybeAtom: Atom<T> | (() => Atom<T>),
-  withActions?: boolean
-): [T, U] | T {
-  const atom =
-    useConstant(() => typeof maybeAtom === 'function' && maybeAtom()) || (maybeAtom as Atom<T>)
-  const value = useSyncExternalStore(
-    atom.subscribe,
-    () => atom.value,
-    () => atom.value
-  )
-  useDebugValue(value)
-  // TODO: reserve the second argument for an equality checker function in the next versions
-  return withActions ? ([value, (atom as any).actions] as [T, U]) : (value as T)
-}
-
-/**
  * Can be used to create local state inside React components. Similar to `React.useMemo`,
  * but creates values **exactly once**.
  * @see [xoid.dev/docs/api-react/use-setup](https://xoid.dev/docs/api-react/use-setup)
@@ -113,7 +57,7 @@ export function useSetup(fn: ($props: any, adapter: any) => any, props?: any): a
   /* eslint-disable react-hooks/rules-of-hooks */
   // Calling hooks conditionally wouldn't be an issue here, because we rely on just
   // the Function.length and Arguments.length, which will remain static.
-  const api = fn.length > 1 ? useReactAdapter() : undefined
+  const api = fn.length > 1 ? useReactAdapter(props) : undefined
   let result
   if (arguments.length > 1) {
     const $props = useConstant(() => create(() => props))
@@ -127,11 +71,31 @@ export function useSetup(fn: ($props: any, adapter: any) => any, props?: any): a
   /* eslint-enable react-hooks/rules-of-hooks */
 }
 
-const toReact =
-  <T,>(component: Component<T>) =>
-  (props: T) => {
-    const render = useSetup(component, props)
-    return useAtom(() => create((get) => render(get, React.createElement)))
+const contextMap = new Map<InjectionKey<any>, React.Context<any>>()
+const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {
+  const context = createContext(defaultValue)
+  contextMap.set(key, context)
+  return context.Provider
+}
+
+const toReact = (<T, U extends string>(arg: Component<T, U>, arg2: any) => {
+  if (typeof arg === 'symbol') return createProvider(arg, arg2)
+  return (props: T) => {
+    const [render, $props] = useSetup((a, b) => {
+      return [arg.render.call(b, a, b), a] as const
+    }, props)
+    return useAtom(() =>
+      create((get) =>
+        render(get, ((key?: string) => {
+          const k = !key || key === 'default' ? 'children' : key
+          return get($props.focus(k as any))
+        }) as any)
+      )
+    )
   }
+}) as {
+  <T, U extends string>(component: Component<T, U>): (props: T) => JSX.Element | null
+  <T>(key: InjectionKey<T>, defaultValue: T): React.Provider<T>
+}
 
 export default toReact

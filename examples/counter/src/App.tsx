@@ -1,6 +1,6 @@
 import React from 'react'
 import { create } from 'xoid'
-import { useAtom } from '@xoid/react'
+import { useAtom } from "packages/react/src/useAtom"
 import './styles.css'
 
 const NumberModel = (payload: number) =>

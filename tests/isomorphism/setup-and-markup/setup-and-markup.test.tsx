@@ -21,7 +21,9 @@ describe('Same isomorphic component works in React and Vue', () => {
 
   test('React', async () => {
     const { findByText, getByText, rerender, unmount } = renderReact(
-      <CounterReact initialValue={5} />
+      <CounterReact initialValue={5}>
+        <span>default slot renders me</span>
+      </CounterReact>
     )
 
     expect(loggerFn).toBeCalledTimes(1)

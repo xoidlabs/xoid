@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAtom } from '@xoid/react'
+import { useAtom } from "packages/react/src/useAtom"
 import { Atom } from 'xoid'
 import { ArrowType, BaseArrowType, DotType } from '../models'
 

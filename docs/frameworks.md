@@ -3,16 +3,26 @@ id: frameworks
 title: Frameworks
 ---
 
-**xoid** unifies the patterns for global state and local component logic. 
+**xoid** unifies the patterns for global state and local component state. 
 As a framework-agnostic tool, it has integrations for React, Vue, and Svelte.
 
 Different UI frameworks have different APIs for local component logic. We can classify local component logic in 4 main sections:
-- Reactivity: Things like React.useState, vue.reactive, Svelte.writable
-- Lifecycle: Things like React.useEffect, React.useLayoutEffect, Vue.onMounted , Svelte.onMount
-- Dependency Injection: Things like React.Context API, Vue provide/inject, Svelte setContext/getContext
-- Other things like DOM element refs
+- Reactivity
+- Lifecycle
+- Dependency Injection
+- Other things like template refs
 
 What makes **xoid** special is that, it joins the local component logic of these frameworks into an isomorphic API. With **xoid**, the following setup function can be consumed by all these three frameworks.
+
+
+|  | xoid | React | Vue | Svelte |
+|---|---|---|---|---|
+| Reactivity | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
+| Reactivity (derived) | `create` | `useMemo` | `computed` | `derived` |
+| Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
+| Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
+| Template refs | `create` | `useRef` | `ref` | `bind:this` directive |
+
 
 ```js
 import { Atom, Adapter, InjectionKey } from 'xoid'
