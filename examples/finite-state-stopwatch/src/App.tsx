@@ -1,7 +1,7 @@
 import React from 'react'
 import { create } from 'xoid'
 import { useSetup } from '@xoid/react'
-import { useAtom } from "packages/react/src/useAtom"
+import { useAtom } from '@xoid/react'
 
 const TimerSetup = () => {
   let interval: ReturnType<typeof setTimeout>

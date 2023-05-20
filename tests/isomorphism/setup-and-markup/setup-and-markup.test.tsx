@@ -4,6 +4,7 @@ import { fireEvent, render as renderReact } from '@testing-library/react'
 import { render as renderVue } from '@testing-library/vue'
 import CounterReact from './CounterReact'
 import CounterVue from './CounterVue'
+import { h, defineComponent } from 'vue'
 
 describe('Same isomorphic component works in React and Vue', () => {
   const loggerFn = jest.fn()
@@ -27,6 +28,8 @@ describe('Same isomorphic component works in React and Vue', () => {
       </CounterReact>
     )
 
+    await findByText('a slot renders me')
+
     expect(loggerFn).toBeCalledTimes(1)
     expect(loggerFn).toBeCalledWith('mounted')
 
@@ -47,9 +50,13 @@ describe('Same isomorphic component works in React and Vue', () => {
 
   /* eslint-disable react-hooks/rules-of-hooks */
   test('Vue', async () => {
-    const { findByText, getByText, rerender, unmount } = renderVue(CounterVue, {
-      props: { initialValue: 5 },
+    const Wrapper = defineComponent(() => {
+      return () => h(CounterVue, { initialValue: 5 }, [h('div', {}, 'a slot renders me')])
     })
+
+    const { findByText, getByText, rerender, unmount } = renderVue(Wrapper)
+
+    await findByText('a slot renders me')
 
     expect(loggerFn).toBeCalledTimes(1)
     expect(loggerFn).toBeCalledWith('mounted')

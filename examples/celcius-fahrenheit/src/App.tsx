@@ -1,6 +1,6 @@
 import React from 'react'
 import { create } from 'xoid'
-import { useAtom } from "packages/react/src/useAtom"
+import { useAtom } from '@xoid/react'
 
 const $celcius = create(20)
 const $fahrenheit = create(68)

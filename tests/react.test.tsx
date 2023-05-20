@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { create, Value } from 'xoid'
 import { useSetup } from '@xoid/react'
-import { useAtom } from "packages/react/src/useAtom"
+import { useAtom } from '@xoid/react'
 import { debug } from './testHelpers'
 
 const consoleError = console.error

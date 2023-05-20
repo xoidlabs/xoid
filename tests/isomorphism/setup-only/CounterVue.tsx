@@ -2,7 +2,7 @@
 /** @jsx h */
 import { defineComponent, h } from 'vue'
 import { useSetup } from '@xoid/vue'
-import { useAtom } from "packages/vue/src/useAtom"
+import { useAtom } from '@xoid/vue'
 import { CounterSetup } from './CounterSetup'
 
 const CounterVue = defineComponent({

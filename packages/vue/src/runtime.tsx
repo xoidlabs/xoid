@@ -6,23 +6,18 @@ import { createGetState } from 'xoid/src/internal/utils'
 import { useSetup } from '.'
 import jsxFrom from 'vue/jsx-runtime'
 import jsxTo from 'xoid/jsx-runtime'
+import { createProvider } from './'
 
 const swapRuntime = () => {
-  jsxTo.jsx = jsxFrom.jsx
-  jsxTo.jsxs = jsxFrom.jsxs
-  jsxTo.Fragment = jsxFrom.Fragment
+  ;(jsxTo as any).jsx = jsxFrom.jsx
+  ;(jsxTo as any).jsxs = (jsxFrom as any).jsxs
+  ;(jsxTo as any).Fragment = jsxFrom.Fragment
 }
 
 const toVue = (<T, U extends string>(arg: Component<T, U>, arg2: any) => {
   if (typeof arg === 'symbol') {
-    return defineComponent({
-      props: ['value'],
-      setup(props) {
-        // @ts-ignore
-        provide(arg, props.value ?? arg2)
-        return (ctx: any) => renderSlot(ctx.$slots, 'default')
-      },
-    })
+    // @ts-ignore
+    return createProvider(arg, arg2)
   }
   return defineComponent({
     props: arg.props || [],

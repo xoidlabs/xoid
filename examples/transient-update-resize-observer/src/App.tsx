@@ -6,14 +6,14 @@ import { ResizeObserver } from '@juggle/resize-observer'
 const ResizeObserverSetup = (_: unknown, adapter: ReactAdapter) => {
   const $element = create<HTMLDivElement>()
   const $rect = create<{ width: number; height: number }>()
-  const $xy = $rect.map((rect) => `${rect.width} x ${rect.height}`)
-
   const observer = new ResizeObserver(([entry]) => $rect.set(entry.contentRect))
 
-  const unsub = $element.subscribe((element) => {
+  adapter.effect(() => {
+    const element = $element.value
+    if (!element) return
     observer.observe(element)
-    const unsub = $xy.subscribe((xy) => {
-      element.innerHTML = xy
+    const unsub = $rect.subscribe((rect) => {
+      element.innerHTML = `${rect.width} x ${rect.height}`
     })
     return () => {
       unsub()
@@ -21,7 +21,6 @@ const ResizeObserverSetup = (_: unknown, adapter: ReactAdapter) => {
     }
   })
 
-  adapter.unmount(unsub)
   return $element.set
 }
 

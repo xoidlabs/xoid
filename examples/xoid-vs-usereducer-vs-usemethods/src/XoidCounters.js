@@ -1,6 +1,6 @@
 import React from "react";
 import { create, use } from "xoid";
-import { useAtom, useSetup } from "@xoid/react";
+import { useAtom, useSetup } from '@xoid/react'
 import Counter from "./Counter";
 
 export default function XoidCounters() {

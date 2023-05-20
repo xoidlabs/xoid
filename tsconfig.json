@@ -4,7 +4,7 @@
     "baseUrl": ".",
     "paths": {
       "xoid": ["./packages/xoid/src"],
-      "xoid/jsx-runtime": ["./packages/xoid/src/jsx-runtime"],
+      "xoid/jsx-runtime": ["./packages/xoid/copy/jsx-runtime"],
       "@xoid/react/runtime": ["./packages/react/src/runtime"],
       "@xoid/vue/runtime": ["./packages/vue/src/runtime"],
       "@xoid/*": ["./packages/*/src"]

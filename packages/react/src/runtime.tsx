@@ -6,9 +6,9 @@ import jsxFrom from 'react/jsx-runtime'
 import jsxTo from 'xoid/jsx-runtime'
 
 const swapRuntime = () => {
-  jsxTo.jsx = jsxFrom.jsx
-  jsxTo.jsxs = jsxFrom.jsxs
-  jsxTo.Fragment = jsxFrom.Fragment
+  ;(jsxTo as any).jsx = (jsxFrom as any).jsx
+  ;(jsxTo as any).jsxs = (jsxFrom as any).jsxs
+  ;(jsxTo as any).Fragment = (jsxFrom as any).Fragment
 }
 
 const toReact = (<T, U extends string>(arg: Component<T, U>, arg2: any) => {

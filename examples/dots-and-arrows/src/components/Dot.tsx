@@ -1,4 +1,4 @@
-import { useAtom } from "packages/react/src/useAtom"
+import { useAtom } from '@xoid/react'
 import { Atom } from 'xoid'
 import React from 'react'
 import { DotType } from '../models'

@@ -1,6 +1,6 @@
 {
-  "name": "@xoid/react",
-  "version": "1.0.0-beta.8",
+  "name": "@xoid/svelte",
+  "version": "0.1.0",
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/onurkerimov/xoid",
-    "directory": "./packages/react"
+    "directory": "./packages/vue"
   },
   "license": "MIT",
   "keywords": [
@@ -19,6 +19,7 @@
     "management",
     "state-management",
     "react",
+    "vue",
     "redux",
     "recoil",
     "xoid",
@@ -27,11 +28,8 @@
     "stream",
     "observable"
   ],
-  "dependencies": {
-    "use-sync-external-store": "^1.1.0"
-  },
   "peerDependencies": {
     "xoid": ">=1.0.0-beta.8",
-    "react": "*"
+    "svelte": ">=3.59.1"
   }
 }

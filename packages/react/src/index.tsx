@@ -1,7 +1,8 @@
 import React, { useEffect, useLayoutEffect, useDebugValue, Context, createContext } from 'react'
 import { create, Atom, InjectionKey, Adapter, EffectCallback } from 'xoid'
-import { createEvent } from 'xoid/src/internal/lite'
+import { createEvent } from '../../xoid/src/internal/lite'
 import { useConstant } from './lite'
+export { useAtom } from './lite'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
@@ -25,7 +26,8 @@ const useReactAdapter = (props: any): ReactAdapter => {
           return reactInternals.ReactCurrentDispatcher.current.readContext(context)
         },
         inject: <T,>(symbol: InjectionKey<T>): T => {
-          if (typeof symbol !== 'symbol') throw new Error('An symbol should be used')
+          if (typeof symbol !== 'symbol')
+            throw new TypeError('An injection key should be a symbol.')
           return reactInternals.ReactCurrentDispatcher.current.readContext(contextMap.get(symbol))
         },
         effect: (fn: EffectCallback) =>

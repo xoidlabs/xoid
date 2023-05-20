@@ -5,7 +5,7 @@ import { Atom } from 'xoid'
  * @see [xoid.dev/docs/api-vue/use-atom](https://xoid.dev/docs/api-vue/use-atom)
  */
 
-function useAtom<T>(atom: Atom<T>) {
+export function useAtom<T>(atom: Atom<T>) {
   const state = shallowRef(atom.value)
 
   const unsubscribe = atom.subscribe((value) => {
@@ -15,5 +15,3 @@ function useAtom<T>(atom: Atom<T>) {
   getCurrentScope() && onScopeDispose(unsubscribe)
   return readonly(state)
 }
-
-export default useAtom
