@@ -1,4 +1,4 @@
-import toVue from '@xoid/vue/runtime'
+import toVue from '@nity/vue'
 import Counter from './Counter'
 
 const CounterVue = toVue(Counter)

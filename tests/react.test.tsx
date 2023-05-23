@@ -134,6 +134,7 @@ it('ensures parent components subscribe before children', async () => {
   }
 
   const { getByText, findByText } = render(
+    // @ts-ignore
     <React.StrictMode>
       <Parent />
     </React.StrictMode>

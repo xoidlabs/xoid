@@ -4,10 +4,10 @@
     "baseUrl": ".",
     "paths": {
       "xoid": ["./packages/xoid/src"],
-      "xoid/jsx-runtime": ["./packages/xoid/copy/jsx-runtime"],
-      "@xoid/react/runtime": ["./packages/react/src/runtime"],
-      "@xoid/vue/runtime": ["./packages/vue/src/runtime"],
-      "@xoid/*": ["./packages/*/src"]
+      "@xoid/*": ["./packages/*/src"],
+      "nity": ["./packages/nity/nity/src"],
+      "@nity/*": ["./packages/nity/*/src"],
+      "nity/jsx-runtime": ["./packages/nity/nity/copy/jsx-runtime"]
     },
     "target": "es5",
     "jsx": "react-jsx",

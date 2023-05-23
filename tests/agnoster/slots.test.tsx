@@ -1,4 +1,4 @@
-/** @jsxImportSource xoid/src */
+/** @jsxImportSource xoid */
 import { Adapter, InjectionKey, Component } from 'xoid'
 import toReact from '@xoid/react/src/runtime'
 import toVue from '@xoid/vue/src/runtime'
@@ -14,7 +14,7 @@ describe('Slots work in React and Vue', () => {
   const AppIsomorphic: Component<{}> = {
     props: [],
     slots: ['default'],
-    render() {
+    setup() {
       return () => (
         <div>
           template ref test

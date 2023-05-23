@@ -1,14 +1,15 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { onUnmounted, defineComponent, getCurrentInstance, provide, renderSlot } from 'vue'
-import { Component, InjectionKey } from 'xoid'
-import { createEvent } from 'xoid/src/internal/lite'
-import { createGetState } from 'xoid/src/internal/utils'
-import { useSetup } from '.'
+import { onUnmounted, defineComponent, getCurrentInstance, renderSlot } from 'vue'
+import component, { Component, InjectionKey } from 'nity'
+import { createEvent } from '../../../xoid/src/internal/lite'
+import { createGetState } from '../../../xoid/src/internal/utils'
+
 import jsxFrom from 'vue/jsx-runtime'
-import jsxTo from 'xoid/jsx-runtime'
-import { createProvider } from './'
+import jsxTo from 'nity/jsx-runtime'
+import { useSetup, createProvider } from '@xoid/vue'
 
 const swapRuntime = () => {
+  ;(component as any).runtime = toVue
   ;(jsxTo as any).jsx = jsxFrom.jsx
   ;(jsxTo as any).jsxs = (jsxFrom as any).jsxs
   ;(jsxTo as any).Fragment = jsxFrom.Fragment
@@ -23,7 +24,7 @@ const toVue = (<T, U extends string>(arg: Component<T, U>, arg2: any) => {
     props: arg.props || [],
     setup(props) {
       swapRuntime()
-      const render = useSetup(arg.render as any, props as T)
+      const render = useSetup(arg.setup as any, props as T)
       const event = createEvent()
       const instance = getCurrentInstance()
       const get = createGetState(() => {

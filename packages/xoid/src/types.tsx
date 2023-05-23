@@ -46,8 +46,6 @@ export type UpdateState<T extends Atom<any>> = T['update']
 
 export type Truthy<T> = Exclude<T, false | 0 | '' | null | undefined>
 
-// # Generalized components section
-
 // Following types are common for framework integrations, so they reside in this package.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-interface
 export interface InjectionKey<T> {}
@@ -55,16 +53,4 @@ export interface InjectionKey<T> {}
 export type Adapter = {
   inject: <T>(symbol: InjectionKey<T>) => T
   effect: (callback: EffectCallback) => void
-}
-
-type Slots<U extends string> = (key?: U) => JSX.Element
-
-export type Component<T, U extends string = string> = {
-  props: string[]
-  slots?: U[]
-  render: (
-    this: Adapter,
-    $props: Atom<T>,
-    adapter: Adapter
-  ) => (get: GetState, slots: Slots<U>) => any
 }

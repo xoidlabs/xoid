@@ -1,4 +1,4 @@
-/** @jsx jsx */
+/** @jsxImportSource xoid */
 import create, { Adapter, Component, InjectionKey } from 'xoid'
 import toReact from '@xoid/react/runtime'
 import toVue from '@xoid/vue/runtime'
@@ -11,16 +11,18 @@ export const StoreSetup = (_: undefined, { inject }: Adapter) => inject(StoreKey
 
 describe('Same isomorphic component can receive template refs in React and Vue', () => {
   const listener = jest.fn()
-  const AppIsomorphic: Component<{}> = (_, adapter) => {
-    const $ref = create<HTMLDivElement>()
-    adapter.effect(() => {
-      listener($ref.value?.innerHTML)
-    })
-    return (_, jsx) => <div ref={$ref.set}>template ref test</div>
+  const App: Component<{}> = {
+    setup(_, { effect }) {
+      const $ref = create<HTMLDivElement>()
+      effect(() => {
+        listener($ref.value?.innerHTML)
+      })
+      return () => <div ref={$ref.set}>template ref test</div>
+    },
   }
 
-  const AppReact = toReact(AppIsomorphic)
-  const AppVue = toVue(AppIsomorphic)
+  const AppReact = toReact(App)
+  const AppVue = toVue(App)
 
   it('React', async () => {
     const { findByText } = renderReact(React.createElement(AppReact))

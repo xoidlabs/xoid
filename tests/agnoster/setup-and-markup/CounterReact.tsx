@@ -1,4 +1,4 @@
-import toReact from '@xoid/react/runtime'
+import toReact from '@nity/react'
 import Counter from './Counter'
 
 const CounterReact = toReact(Counter)

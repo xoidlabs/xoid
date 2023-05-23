@@ -1,6 +1,6 @@
 {
-  "name": "@xoid/svelte",
-  "version": "0.0.2",
+  "name": "@nity/vue",
+  "version": "0.1.0",
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",
@@ -15,21 +15,14 @@
   "license": "MIT",
   "keywords": [
     "framework-agnostic",
-    "state",
-    "management",
-    "state-management",
     "react",
     "vue",
-    "redux",
-    "recoil",
-    "xoid",
-    "atom",
-    "store",
-    "stream",
-    "observable"
+    "reactive",
+    "components",
+    "xoid"
   ],
   "peerDependencies": {
     "xoid": ">=1.0.0-beta.8",
-    "svelte": ">=3.59.1"
+    "vue": ">=3.2.30"
   }
 }

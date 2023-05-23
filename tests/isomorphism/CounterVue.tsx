@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /** @jsx h */
 import { defineComponent, h } from 'vue'
-import { useSetup } from '@xoid/vue'
-import { useAtom } from '@xoid/vue'
+import { useAtom, useSetup } from '@xoid/vue'
 import { CounterSetup } from './CounterSetup'
 
 const CounterVue = defineComponent({
