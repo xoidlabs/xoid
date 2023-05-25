@@ -27,10 +27,12 @@
 
 **xoid** (ksoid or zoid) is a framework-agnostic state management library. 
 **X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. 
-Its API is the result of careful analyses of different state management tools and paradigms.  The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in a single, easy to learn API. 
+Its the result of careful analyses of different state management tools and paradigms.
 
-The second aim is to extend the term "framework-agnostic" one step further by taking local component state seriously. 
-**xoid** brings the concept of "isomorphic adapter"s. With it, you can move business logic out of components in a truly framework-agnostic manner.
+xoid is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in a single, easy to learn API. 
+
+**xoid** takes local component state seriously. 
+With the concept of "isomorphic adapters", you can move business logic out of components in a truly framework-agnostic manner.
 
 While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
@@ -43,23 +45,16 @@ npm install xoid
 ## Integrations
 
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> [React](#-react)  
-
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> [Vue](#-vue)  
-
-<!-- - <img src="https://angular.io/assets/images/favicons/favicon.ico" width="16"/> [Angular](#angular) -->
-
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> [Svelte](#-svelte)  
-
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="16"/> [Vanilla JS](#subscriptions)  
-
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="16"/> [Redux Devtools](#redux-devtools)  
-
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/gear.png" width="16"/> [Finite State Machines](#finite-state-machines)  
 
 
-## `Adapter`
+## A small revolution: Isomorphic adapters
 
-**xoid** takes local component state seriously. While several other atomic state management libraries can also replace `React.useState`, `Vue.ref`s, or `Svelte.writable`s, **xoid** additionally provides an `Adapter` interface. This interface covers the following across different frameworks:
+While several other atomic state management libraries can also replace `React.useState`, `Vue.ref`s, or `Svelte.writable`s, **xoid** might be the first library to introduce an `Adapter` interface (that has ZERO runtime burden for the core package) that's capable of doing the following across different frameworks:
 
 
 |  | xoid | React | Vue | Svelte |
@@ -69,7 +64,7 @@ npm install xoid
 | Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
 | Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
 
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` packages share this adapter interface in their `useSetup` export.
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` packages implement this adapter in their framework's own ways and they provide a unified language for managing local component logic.
 
 ## Examples
 
