@@ -28,13 +28,10 @@
 **xoid** (ksoid or zoid) is a framework-agnostic state management library. 
 **X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. 
 Its the result of careful analyses of different state management tools and paradigms.
-
-xoid is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in a single, easy to learn API. 
+xoid is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in a single API. 
 
 **xoid** takes local component state seriously. 
-With the concept of "isomorphic adapters", you can move business logic out of components in a truly framework-agnostic manner.
-
-While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
+With the concept of "isomorphic adapters", you can move business logic out of components in a truly framework-agnostic manner. While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
 
