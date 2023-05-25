@@ -45,26 +45,16 @@ npm install xoid
 ## Integrations
 
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> [React](#-react)  
+
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> [Vue](#-vue)  
+
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> [Svelte](#-svelte)  
+
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="16"/> [Vanilla JS](#subscriptions)  
+
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="16"/> [Redux Devtools](#redux-devtools)  
+
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/gear.png" width="16"/> [Finite State Machines](#finite-state-machines)  
-
-
-## A small revolution: Isomorphic adapters
-
-While several other atomic state management libraries can also replace `React.useState`, `Vue.ref`s, or `Svelte.writable`s, **xoid** might be the first library to introduce an `Adapter` interface (that has ZERO runtime burden for the core package) that's capable of doing the following across different frameworks:
-
-
-|  | xoid | React | Vue | Svelte |
-|---|---|---|---|---|
-| State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
-| Derived state | `create` | `useMemo` | `computed` | `derived` |
-| Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
-| Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
-
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` packages implement this adapter in their framework's own ways and they provide a unified language for managing local component logic.
 
 ## Examples
 
@@ -236,16 +226,33 @@ const value = useAtom(myAtom)
 
 ### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte
 
-Svelte integration is seamless, and requires no libraries since every store implements
-[Svelte's store contract](https://svelte.dev/docs#component-format-script-4-prefix-stores-with-$-to-access-their-values-store-contract). Just put a `$` before the variable name.
+Just use `@xoid/svelte` and import `useAtom`.
 
 ```html
 <script>
+  import { useAtom } from '@xoid/svelte'
   import { myAtom } from './my-atom'
+  let atom = useAtom(myAtom)
+
 </script>
 
-<header>{$myAtom}</header>
+<header>{$atom}</header>
 ```
+
+### Isomorphic adapters
+
+While several other atomic state management libraries can also replace `React.useState`, `Vue.ref`s, or `Svelte.writable`s with their own primitive, **xoid** might be the first library to actually introduce an `Adapter` that's capable of doing the following across different frameworks:
+
+
+|  | xoid | React | Vue | Svelte |
+|---|---|---|---|---|
+| State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
+| Derived state | `create` | `useMemo` | `computed` | `derived` |
+| Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
+| Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
+
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` packages export a function named `useSetup`, and all of them implement this adapter in their framework's own ways. The same "setup" function can be used across all these frameworks, and it acts identically.
+
 
 ### Redux Devtools
 
