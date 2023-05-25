@@ -25,6 +25,7 @@
     "use-sync-external-store": "^1.1.0"
   },
   "peerDependencies": {
+    "nity": ">=0.1.0",
     "xoid": ">=1.0.0-beta.8",
     "react": "*"
   }

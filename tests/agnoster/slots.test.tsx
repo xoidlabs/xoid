@@ -1,7 +1,8 @@
-/** @jsxImportSource xoid */
-import { Adapter, InjectionKey, Component } from 'xoid'
-import toReact from '@xoid/react/src/runtime'
-import toVue from '@xoid/vue/src/runtime'
+/** @jsxImportSource nity */
+import { Adapter, InjectionKey } from 'xoid'
+import component from 'nity'
+import toReact from '@nity/react'
+import toVue from '@nity/vue'
 import React from 'react'
 import { defineComponent, h } from 'vue'
 import { render as renderReact } from '@testing-library/react'
@@ -11,7 +12,7 @@ export const StoreKey: InjectionKey<number> = Symbol()
 export const StoreSetup = (_: undefined, { inject }: Adapter) => inject(StoreKey)
 
 describe('Slots work in React and Vue', () => {
-  const AppIsomorphic: Component<{}> = {
+  const AppIsomorphic = component({
     props: [],
     slots: ['default'],
     setup() {
@@ -19,11 +20,11 @@ describe('Slots work in React and Vue', () => {
         <div>
           template ref test
           <div>other markup</div>
-          {this.slot()}
+          {this.slots()}
         </div>
       )
     },
-  }
+  })
 
   const AppReact = toReact(AppIsomorphic)
   const AppVue = toVue(AppIsomorphic)

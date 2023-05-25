@@ -1,4 +1,12 @@
-import { provide, inject, watch, onMounted, onUnmounted, renderSlot, defineComponent } from 'vue'
+import vue, {
+  provide,
+  inject,
+  watch,
+  onMounted,
+  onUnmounted,
+  renderSlot,
+  defineComponent,
+} from 'vue'
 import { create, Atom, Adapter, EffectCallback, InjectionKey } from 'xoid'
 import { createEvent } from '../../xoid/src/internal/lite'
 export { useAtom } from './lite'
@@ -28,7 +36,7 @@ export const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {
       provide(key, props.value ?? defaultValue)
       return (ctx: any) => renderSlot(ctx.$slots, 'default')
     },
-  })
+  }) as unknown as (props: { value: T; children: JSX.Element }) => JSX.Element
 }
 
 /**

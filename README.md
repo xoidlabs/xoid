@@ -25,10 +25,14 @@
   </a> -->
 </p>
 
-**xoid** is a framework-agnostic state management library. **X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
+**xoid** (ksoid or zoid) is a framework-agnostic state management library. 
+**X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. 
+Its API is the result of careful analyses of different state management tools and paradigms.  The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in a single, easy to learn API. 
 
-**xoid** is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
+The second aim is to extend the term "framework-agnostic" one step further by taking local component state seriously. 
+**xoid** brings the concept of "isomorphic adapter"s. With it, you can move business logic out of components in a truly framework-agnostic manner.
 
+While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
 
@@ -53,6 +57,19 @@ npm install xoid
 <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/gear.png" width="16"/> [Finite State Machines](#finite-state-machines)  
 
 
+## `Adapter`
+
+**xoid** takes local component state seriously. While several other atomic state management libraries can also replace `React.useState`, `Vue.ref`s, or `Svelte.writable`s, **xoid** additionally provides an `Adapter` interface. This interface covers the following across different frameworks:
+
+
+|  | xoid | React | Vue | Svelte |
+|---|---|---|---|---|
+| State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
+| Derived state | `create` | `useMemo` | `computed` | `derived` |
+| Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
+| Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
+
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` packages share this adapter interface in their `useSetup` export.
 
 ## Examples
 

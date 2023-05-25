@@ -12,16 +12,15 @@ Different UI frameworks have different APIs for local component logic. We can cl
 - Dependency Injection
 - Other things like template refs
 
-What makes **xoid** special is that, it joins the local component logic of these frameworks into an isomorphic API. With **xoid**, the following setup function can be consumed by all these three frameworks.
+What makes **xoid** special, again, is its isomorphic component lifecycle API. With **xoid**, the following setup function can be consumed by all these three frameworks.
 
 
 |  | xoid | React | Vue | Svelte |
 |---|---|---|---|---|
-| Reactivity | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
-| Reactivity (derived) | `create` | `useMemo` | `computed` | `derived` |
+| State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
+| Derived state | `create` | `useMemo` | `computed` | `derived` |
 | Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
 | Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
-| Template refs | `create` | `useRef` | `ref` | `bind:this` directive |
 
 
 ```js

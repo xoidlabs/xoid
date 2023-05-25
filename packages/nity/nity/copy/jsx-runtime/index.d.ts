@@ -1,1 +1,1 @@
-export * from '@types/react'
+import '@types/react'

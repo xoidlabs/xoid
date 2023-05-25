@@ -1,7 +1,7 @@
 /** @jsxImportSource nity */
 import component from 'nity'
 
-const Counter = component({
+const Counter = component<{ initialValue: number }, 'default'>({
   props: ['initialValue'],
   slots: ['default'],
   setup($props) {
@@ -14,12 +14,12 @@ const Counter = component({
       return () => console.log('unmounted')
     })
 
-    return (get, slots) => (
+    return (get) => (
       <div>
         count: {get($counter)}
         <button onClick={increment}>+</button>
         <button onClick={decrement}>-</button>
-        {slots()}
+        {this.slots()}
       </div>
     )
   },
