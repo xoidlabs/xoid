@@ -42,7 +42,7 @@ const register = (key: string, atom: Atom) => {
   }
   $registry.update((s) => {
     const registry = { ...s }
-    if (!registry[key]) registry[key] = {} as typeof registry[string]
+    if (!registry[key]) registry[key] = {} as (typeof registry)[string]
     registry[id ? `${key}-${id}` : key] = atom[INTERNAL].get()
     return registry
   })
@@ -142,6 +142,7 @@ const createPathMembrane = (obj: any, path: string[] = [], atom: Atom): any => {
       }
       notify({ ...action, payload: args })
       const result = Reflect.apply(target, thisArg, args)
+      // @ts-ignore
       if (isAsync) result.then(() => notify({ ...action, end: true }))
       else notify(undefined)
 

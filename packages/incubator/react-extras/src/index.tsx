@@ -1,4 +1,5 @@
-import { useAtom, useSetup } from '@xoid/react'
+import { useSetup } from '@xoid/react'
+import { useAtom } from '@xoid/react'
 export { slice } from './slice'
 
 export type Pair<T> = { value: T; onChange: (value: T) => void }

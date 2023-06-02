@@ -4,10 +4,13 @@
     "baseUrl": ".",
     "paths": {
       "xoid": ["./packages/xoid/src"],
-      "@xoid/*": ["./packages/*/src"]
+      "@xoid/*": ["./packages/*/src"],
+      // "project": ["./packages/incubator/project/project/src"],
+      // "@project/*": ["./packages/incubator/project/*/src"],
+      // "project/jsx-runtime": ["./packages/incubator/project/project/copy/jsx-runtime"]
     },
     "target": "es5",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "downlevelIteration": true,
     "strict": true,
     "importHelpers": true,

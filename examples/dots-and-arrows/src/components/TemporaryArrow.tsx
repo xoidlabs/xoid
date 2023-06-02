@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAtom } from '@xoid/react'
+import { useAtom } from "@xoid/react"
 import { Atom } from 'xoid'
 import { ArrowBase } from './Arrow'
 import { DotType, TemporaryArrowModel, $mousePositionDot } from '../models'

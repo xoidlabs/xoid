@@ -5,6 +5,33 @@
 </p> 
 
 <p align="center">
+  <a href="#-react">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="14"/>
+    React
+  </a>&nbsp;&nbsp;
+  <a href="#-react">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="14"/>
+    Preact
+  </a>&nbsp;&nbsp;
+  <a href="#-vue">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="14"/>
+    Vue
+  </a>&nbsp;&nbsp;
+  <a href="#-svelte">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="14"/>
+    Svelte
+  </a>&nbsp;&nbsp;
+  <a href="#subscriptions">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="14"/>
+    Vanilla JS
+  </a>&nbsp;&nbsp;
+  <a href="#subscriptions">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="14"/>
+    Redux Devtools
+  </a>
+</p>
+
+<p align="center">
   <a href="https://bundlephobia.com/result?p=xoid" >
     <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=4f2eb3&colorB=4f2eb3">
   </a>
@@ -14,21 +41,19 @@
   <a href="https://www.npmjs.com/package/xoid">
     <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=4f2eb3&colorB=4f2eb3"/>
   </a>
-  <a href="https://xoid.dev">
-    <img alt="Netlify" src="https://img.shields.io/netlify/681a364c-45a3-40cf-815d-cd62b15d1f96?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
-  </a>
   <a href="https://www.npmjs.com/package/xoid">
     <img alt="License" src="https://img.shields.io/github/license/onurkerimov/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
   </a>
-<!--   <a href="https://bundlephobia.com/result?p=xoid" >
-    <img alt="Build" src="https://img.shields.io/github/workflow/status/onurkerimov/xoid/Lint?style=flat&colorA=4f2eb3&colorB=4f2eb3">
-  </a> -->
 </p>
 
-**xoid** is a framework-agnostic state management library. **X** in its name signifies the inspiration it draws from great projects such as Redu**X**, Mob**X** and **X**state. It was designed to be simple and scalable. It has extensive Typescript support.
 
-**xoid** is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. One of the biggest aims of **xoid** is to unify global state, local component state, and finite state machines in a single API. While doing all these, it also aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
+**xoid** (*ksoid or zoid*) is a framework-agnostic state management library. 
+**X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. Its the result of careful analyses of different state management tools and paradigms. The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API.
 
+**xoid** takes local component state seriously. 
+It might be the first library to ever introduce an "isomorphic adapter" for writing component logic that works across React, Vue and Svelte.
+With **xoid**, you can move business logic out of components in a truly framework-agnostic manner.
+While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
 
@@ -36,23 +61,11 @@ To install, run the following command:
 npm install xoid
 ```
 
-## Integrations
+---
 
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> [React](#react)  
+### Visit [xoid.dev](https://xoid.dev) for detailed docs and recipes.
 
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> [Vue](#vue)  
-
-<!-- - <img src="https://angular.io/assets/images/favicons/favicon.ico" width="16"/> [Angular](#angular) -->
-
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> [Svelte](#svelte)  
-
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="16"/> [Vanilla JS](#subscriptions)  
-
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="16"/> [Redux Devtools](#redux-devtools)  
-
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/gear.png" width="16"/> [Finite State Machines](#finite-state-machines)  
-
-
+---
 
 ## Examples
 
@@ -76,14 +89,14 @@ npm install xoid
 
 ## Quick Tutorial
 
-**xoid** is extremely easy to learn. It has only one export.
+**xoid** is extremely easy, and it can be learned within 5 minutes. 
 
 ### Atom
 
 Atoms are holders of state.
 
 ```js
-import { create } from 'xoid'
+import create from 'xoid'
 
 const atom = create(3)
 console.log(atom.value) // 3
@@ -95,7 +108,7 @@ console.log(atom.value) // 6
 Atoms can have actions if the second argument is used.
 
 ```js
-import { create } from 'xoid'
+import create from 'xoid'
 
 const numberAtom = create(5, (atom) => ({
   increment: () => atom.update(s => s + 1),
@@ -108,7 +121,7 @@ numberAtom.actions.increment()
 There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
 ```js
-import { create } from 'xoid'
+import create from 'xoid'
 
 const atom = create({ deeply: { nested: { alpha: 5 } } })
 const previousValue = atom.value
@@ -130,7 +143,7 @@ Atoms can be derived from other atoms. This API was heavily inspired by **Recoil
 const alpha = create(3)
 const beta = create(5)
 // derived atom
-const sum = create((get) => get(alpha) + get(beta))
+const sum = create((read) => read(alpha) + read(beta))
 ```
 
 Alternatively, `.map` method can be used to quickly derive the state from a single atom.
@@ -146,9 +159,9 @@ const doubleAlpha = alpha.map((s) => s * 2)
 For subscriptions, `subscribe` and `watch` are used. They are the same, except `watch` runs the callback immediately, while `subscribe` waits for the first update after subscription.
 
 ```js
-const unsub = atom.subscribe(
-  (state, previousState) => { console.log(state, previousState) }
-)
+const unsub = atom.subscribe((state, previousState) => {
+  console.log(state, previousState)
+})
 
 // later
 unsub()
@@ -157,7 +170,7 @@ unsub()
 
 ## Integrations
 
-### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/>  React
+### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React
 
 Just use **@xoid/react** and import `useAtom`. No context providers are needed.
 
@@ -167,42 +180,6 @@ import { useAtom } from '@xoid/react'
 // in a React component
 const state = useAtom(atom)
 ```
-
-<details>
-  <summary>There's also the "useSetup" hook, for managing local component state with xoid.</summary>
-
-`useSetup` can be used for creating local component state. It's similar to `React.useMemo` with an empty dependency array. It'll run its callback **only once**.
-
-```js
-import { useSetup } from '@xoid/react'
-
-const App = () => {
-  const $counter = useSetup(() => create(5))
-
-  ...
-}
-```
-
-> `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
-
-An outer value can be supplied as the second argument. It can be used as a reactive atom inside.
-
-```js
-import { useSetup } from '@xoid/react'
-
-const App = (props: Props) => {
-  const setup = useSetup(($props) => {
-    // `$props` has the type: Atom<Props>
-    // this way, we can react to `props.something` as it changes
-    $props.focus(s => s.something).subscribe(console.log)
-  }, props) // <= `props` is supplied here
-
-  ...
-}
-```
-</details>
-
-
 
 ### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue
 
@@ -224,16 +201,58 @@ const value = useAtom(myAtom)
 
 ### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte
 
-Svelte integration is seamless, and requires no libraries since every store implements
-[Svelte's store contract](https://svelte.dev/docs#component-format-script-4-prefix-stores-with-$-to-access-their-values-store-contract). Just put a `$` before the variable name.
+Just use `@xoid/svelte` and import `useAtom`.
 
 ```html
 <script>
+  import { useAtom } from '@xoid/svelte'
   import { myAtom } from './my-atom'
+  let atom = useAtom(myAtom)
+
 </script>
 
-<header>{$myAtom}</header>
+<header>{$atom}</header>
 ```
+
+### 🔥 Isomorphic local component state
+
+With **xoid**, by writing a *setup function*, you can write component logic that works across different frameworks. A setup function looks like the following:
+
+```js
+import create from 'xoid'
+import type { Atom, Adapter, InjectionKey } from 'xoid'
+import type { Theme } from './theme'
+
+export const ThemeSymbol: InjectionKey<Theme> = Symbol()
+
+export const CounterSetup = ($props: Atom<{ initialValue: number }>, adapter: Adapter) => {
+  const { initialValue } = $props.value
+  const $counter =  create(initialValue)
+
+  const theme = adapter.inject(ThemeSymbol)
+  console.log("theme is obtained using context:", theme)
+
+  adapter.effect(() => {
+    console.log('mounted')
+    return () => console.log('unmounted')
+  })
+
+  return {
+    $counter,
+    increment: () => $counter.update((s) => s + 1),
+    decrement: () => $counter.update((s) => s - 1),
+  }
+}
+```
+
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like above. With **xoid**, you can effectively replace the following framework-specific APIs:
+
+|  | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
+|---|---|---|---|---|
+| State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
+| Derived state | `create` | `useMemo` | `computed` | `derived` |
+| Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
+| Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
 
 ### Redux Devtools
 
@@ -241,7 +260,7 @@ Import `@xoid/devtools` and set a `debugValue` to your atom. It will send values
 
 ```js
 import { devtools } from '@xoid/devtools'
-import { create, use } from 'xoid'
+import create from 'xoid'
 devtools() // run once
 
 const atom = create(
@@ -273,7 +292,7 @@ atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
 No additional syntax is required for state machines. Just use the `create` function.
 
 ```js
-import { create } from 'xoid'
+import create from 'xoid'
 import { useAtom } from '@xoid/react'
 
 const createMachine = () => {
@@ -310,6 +329,7 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 - `xoid` - Core package
 - `@xoid/react` - **React** integration
 - `@xoid/vue` - **Vue** integration
+- `@xoid/svelte` - **Svelte** integration
 - `@xoid/devtools` - **Redux Devtools** integration
 - `@xoid/lite` - Lighter version with less features
 - `@xoid/feature` - A plugin system oriented in ES6 classes

@@ -1,5 +1,6 @@
 declare const voidOnly: unique symbol
 type Destructor = () => void | { [voidOnly]: never }
+export type EffectCallback = () => void | Destructor
 
 export type Atom<T> = {
   value: T
@@ -44,3 +45,12 @@ export type SetState<T extends Atom<any>> = T['set']
 export type UpdateState<T extends Atom<any>> = T['update']
 
 export type Truthy<T> = Exclude<T, false | 0 | '' | null | undefined>
+
+// Following types are common for framework integrations, so they reside in this package.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-interface
+export interface InjectionKey<T> {}
+
+export type Adapter = {
+  inject: <T>(symbol: InjectionKey<T>) => T
+  effect: (callback: EffectCallback) => void
+}

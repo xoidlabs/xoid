@@ -1,0 +1,155 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a atom with a primitive value 1`] = `
+Object {
+  "actions": undefined,
+  "get": 5,
+  "getSerialized": "5",
+  "self": Object {
+    "focus": [Function],
+    "map": [Function],
+    "set": [Function],
+    "subscribe": [Function],
+    "update": [Function],
+    "value": 5,
+    "watch": [Function],
+    Symbol(): Object {
+      "atom": [Circular],
+      "get": [Function],
+      "isStream": false,
+      "listeners": Set {},
+      "set": [Function],
+      "subscribe": [Function],
+    },
+  },
+  "selfSerialized": "{\\"value\\":5}",
+}
+`;
+
+exports[`creates a atom with a record 1`] = `
+Object {
+  "actions": undefined,
+  "get": Object {
+    "alpha": 3,
+    "beta": 5,
+  },
+  "getSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
+  "self": Object {
+    "focus": [Function],
+    "map": [Function],
+    "set": [Function],
+    "subscribe": [Function],
+    "update": [Function],
+    "value": Object {
+      "alpha": 3,
+      "beta": 5,
+    },
+    "watch": [Function],
+    Symbol(): Object {
+      "atom": [Circular],
+      "get": [Function],
+      "isStream": false,
+      "listeners": Set {},
+      "set": [Function],
+      "subscribe": [Function],
+    },
+  },
+  "selfSerialized": "{\\"value\\":{\\"alpha\\":3,\\"beta\\":5}}",
+}
+`;
+
+exports[`normalizes nested atoms in a record 1`] = `
+Object {
+  "actions": undefined,
+  "get": Object {
+    "alpha": Object {
+      "focus": [Function],
+      "map": [Function],
+      "set": [Function],
+      "subscribe": [Function],
+      "update": [Function],
+      "value": 3,
+      "watch": [Function],
+      Symbol(): Object {
+        "atom": [Circular],
+        "get": [Function],
+        "isStream": false,
+        "listeners": Set {},
+        "set": [Function],
+        "subscribe": [Function],
+      },
+    },
+    "beta": Object {
+      "focus": [Function],
+      "map": [Function],
+      "set": [Function],
+      "subscribe": [Function],
+      "update": [Function],
+      "value": 5,
+      "watch": [Function],
+      Symbol(): Object {
+        "atom": [Circular],
+        "get": [Function],
+        "isStream": false,
+        "listeners": Set {},
+        "set": [Function],
+        "subscribe": [Function],
+      },
+    },
+  },
+  "getSerialized": "{\\"alpha\\":{\\"value\\":3},\\"beta\\":{\\"value\\":5}}",
+  "self": Object {
+    "focus": [Function],
+    "map": [Function],
+    "set": [Function],
+    "subscribe": [Function],
+    "update": [Function],
+    "value": Object {
+      "alpha": Object {
+        "focus": [Function],
+        "map": [Function],
+        "set": [Function],
+        "subscribe": [Function],
+        "update": [Function],
+        "value": 3,
+        "watch": [Function],
+        Symbol(): Object {
+          "atom": [Circular],
+          "get": [Function],
+          "isStream": false,
+          "listeners": Set {},
+          "set": [Function],
+          "subscribe": [Function],
+        },
+      },
+      "beta": Object {
+        "focus": [Function],
+        "map": [Function],
+        "set": [Function],
+        "subscribe": [Function],
+        "update": [Function],
+        "value": 5,
+        "watch": [Function],
+        Symbol(): Object {
+          "atom": [Circular],
+          "get": [Function],
+          "isStream": false,
+          "listeners": Set {},
+          "set": [Function],
+          "subscribe": [Function],
+        },
+      },
+    },
+    "watch": [Function],
+    Symbol(): Object {
+      "atom": [Circular],
+      "get": [Function],
+      "isStream": false,
+      "listeners": Set {},
+      "set": [Function],
+      "subscribe": [Function],
+    },
+  },
+  "selfSerialized": "{\\"value\\":{\\"alpha\\":{\\"value\\":3},\\"beta\\":{\\"value\\":5}}}",
+}
+`;
