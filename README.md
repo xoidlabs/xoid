@@ -271,18 +271,14 @@ const atom = create(
     return {
       inc: () => $alpha.update(s => s + 1),
       resetState: () => atom.set({ alpha: 5 })
-      deeply: {
-        nested: {
-          action: () => $alpha.set(5)
-        }
-      } 
+      deeply: { nested: { action: () => $alpha.set(5) } }
     }
   }
 )
 
 atom.debugValue = 'myAtom' // enable watching it by the devtools
 
-const { deeply, incrementAlpha } = atom.actions // destructuring is no problem
+const { deeply, incrementAlpha } = atom.actions // destructuring is OK
 incrementAlpha() // logs "(myAtom).incrementAlpha"
 deeply.nested.action() // logs "(myAtom).deeply.nested.action"
 atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
@@ -325,6 +321,8 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 - Easy to work with nested states
 - Computed values, transient updates
 - Same API to rule them all!
+  - Global, Local, FSMs, Streams
+  - React, Vue, Svelte, VanillaJS
 
 ## Packages
 
