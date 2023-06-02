@@ -44,10 +44,12 @@
 
 
 **xoid** (*ksoid or zoid*) is a framework-agnostic state management library. 
-**X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. Its the result of careful analyses of different state management tools and paradigms. The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API.
+**X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. Its the result of careful analyses of different state management tools and paradigms. It was designed to be simple and scalable.
 
-With **xoid**, you can move business logic out of components in a truly framework-agnostic manner.
-It might be the first library to ever introduce the notion of [isomorphic component logic](#-isomorphic-component-logic).
+The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API. It even has a basic support for observable streams. It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) that runs across multiple frameworks. 
+With xoid, you can move business logic out of components in a **truly** framework-agnostic manner.
+
+
 While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
@@ -253,7 +255,7 @@ All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `u
 
 > **✨ Opinionated comment ✨**
 >
-> If you're using xoid with React, you won't ever need hooks like **useMemo**, **useCallback**, **useRef**, or **useEvent**. **xoid**'s mental model of component logic, just like Vue and Svelte, is a static closure instead of a render function. From a static closure's perspective, these hooks are complete bloat. This was one of the reasons behind **xoid**'s existence.
+> If you're using `@xoid/react`, you won't ever need hooks like **useMemo**, **useCallback**, **useRef**, or **useEvent**. **xoid**'s mental model of component logic, just like Vue and Svelte, is a static closure instead of a render function. From a static closure's perspective, most hooks are complete bloat. Bringing this kind of component mental model to React was one of the first reasons behind **xoid**'s existence.
 
 ### Redux Devtools
 
@@ -317,15 +319,13 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 
 <img align="right" width="50%" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/diagram.png">
 
+- Small size
 - Easy to learn
-- Small bundle size
-- Framework-agnostic
-- Extensive Typescript support
-- Easy to work with nested states
-- Computed values, transient updates
-- Can be used to express finite state machines
-- No middleware is required for async/generator stuff
-- Global state and local component state in the same API
+- First-class Typescript support
+- Most importantly, is a unification library for all these concepts:
+  - Can be used to express finite state machines
+  - No middleware is required for async/generator stuff
+  - Global state and local component state in the same API
 
 ## Packages
 
