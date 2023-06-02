@@ -6,23 +6,23 @@
 
 <p align="center">
   <a href="#-react">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/>
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="14"/>
     React
-  </a>&nbsp;&nbsp;&nbsp;
+  </a>&nbsp;&nbsp;
   <a href="#-vue">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/>
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="14"/>
     Vue
-  </a>&nbsp;&nbsp;&nbsp;
+  </a>&nbsp;&nbsp;
   <a href="#-svelte">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/>
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="14"/>
     Svelte
-  </a>&nbsp;&nbsp;&nbsp;
+  </a>&nbsp;&nbsp;
   <a href="#subscriptions">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="16"/>
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="14"/>
     Vanilla JS
-  </a>&nbsp;&nbsp;&nbsp;
+  </a>&nbsp;&nbsp;
   <a href="#subscriptions">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="16"/>
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="14"/>
     Redux Devtools
   </a>
 </p>
