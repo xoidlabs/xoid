@@ -155,9 +155,9 @@ const doubleAlpha = alpha.map((s) => s * 2)
 For subscriptions, `subscribe` and `watch` are used. They are the same, except `watch` runs the callback immediately, while `subscribe` waits for the first update after subscription.
 
 ```js
-const unsub = atom.subscribe(
-  (state, previousState) => { console.log(state, previousState) }
-)
+const unsub = atom.subscribe((state, previousState) => {
+  console.log(state, previousState)
+})
 
 // later
 unsub()
@@ -237,9 +237,9 @@ export const CounterSetup = ($props: Atom<{ initialValue: number }>, adapter: Ad
 }
 ```
 
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like above. With **xoid**, you can effectively replace the following framework-specific APIs. **xoid** might be the first library to introduce this.
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like above. With **xoid**, you can effectively replace the following framework-specific APIs. 
 
-|  | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
+|  | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
 | State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
