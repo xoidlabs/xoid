@@ -60,7 +60,11 @@ npm install xoid
 
 ---
 
-### Visit [xoid.dev](https://xoid.dev) for detailed docs and recipes.
+<h3 align="center">
+
+Visit [xoid.dev](https://xoid.dev) for detailed docs and recipes.
+
+</h3>
 
 ---
 
@@ -317,15 +321,16 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 
 ## Why **xoid**?
 
-<img align="right" width="50%" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/diagram.png">
+<img align="right" width="50%" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/diagram.png" alt="Venn diagram that shows that xoid is able to unify global, local state, and finite state machines across React, Vue, Svelte, and vanilla JS">
 
-- Small size
 - Easy to learn
+- Small bundle size
+- Framework-agnostic
+- No middlewares needed
 - First-class Typescript support
-- Most importantly, is a unification library for all these concepts:
-  - Can be used to express finite state machines
-  - No middleware is required for async/generator stuff
-  - Global state and local component state in the same API
+- Easy to work with nested states
+- Computed values, transient updates
+- Same API to rule them all!
 
 ## Packages
 
