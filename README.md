@@ -47,7 +47,7 @@
 **X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. Its the result of careful analyses of different state management tools and paradigms. The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API.
 
 With **xoid**, you can move business logic out of components in a truly framework-agnostic manner.
-It might be the first library to ever introduce the notion of [isomorphic local component state](#-isomorphic-local-component-state).
+It might be the first library to ever introduce the notion of [isomorphic component logic](#-isomorphic-component-logic).
 While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
@@ -93,11 +93,11 @@ Atoms are holders of state.
 ```js
 import create from 'xoid'
 
-const atom = create(3)
-console.log(atom.value) // 3
-atom.set(5)
-atom.update((state) => state + 1)
-console.log(atom.value) // 6
+const $count = create(3)
+console.log($count.value) // 3
+$count.set(5)
+$count.update((state) => state + 1)
+console.log($count.value) // 6
 ```
 
 Atoms can have actions if the second argument is used.
@@ -105,12 +105,12 @@ Atoms can have actions if the second argument is used.
 ```js
 import create from 'xoid'
 
-const numberAtom = create(5, (atom) => ({
+const $count = create(5, (atom) => ({
   increment: () => atom.update(s => s + 1),
   decrement: () => atom.update(s => s - 1)
 }))
 
-numberAtom.actions.increment()
+$count.actions.increment()
 ```
 
 There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
@@ -118,16 +118,16 @@ There's the `.focus` method, which can be used as a selector/lens. **xoid** is b
 ```js
 import create from 'xoid'
 
-const atom = create({ deeply: { nested: { alpha: 5 } } })
-const previousValue = atom.value
+const $atom = create({ deeply: { nested: { alpha: 5 } } })
+const previousValue = $atom.value
 
 // select `.deeply.nested.alpha`
-const alphaAtom = atom.focus(s => s.deeply.nested.alpha)
-alphaAtom.set(6)
+const $alpha = $atom.focus(s => s.deeply.nested.alpha)
+$alpha.set(6)
 
 // root state is replaced with new immutable state
-assert(atom.value !== previousValue) // ✅
-assert(atom.value.deeply.nested.alpha === 6) // ✅
+assert($atom.value !== previousValue) // ✅
+assert($atom.value.deeply.nested.alpha === 6) // ✅
 ```
 
 ### Derived state
@@ -135,19 +135,20 @@ assert(atom.value.deeply.nested.alpha === 6) // ✅
 Atoms can be derived from other atoms. This API was heavily inspired by **Recoil**.
 
 ```js
-const alpha = create(3)
-const beta = create(5)
+const $alpha = create(3)
+const $beta = create(5)
 // derived atom
-const sum = create((read) => read(alpha) + read(beta))
+const $sum = create((read) => read($alpha) + read($beta))
 ```
 
 Alternatively, `.map` method can be used to quickly derive the state from a single atom.
 
 ```js
-const alpha = create(3)
+const $alpha = create(3)
 // derived atom
-const doubleAlpha = alpha.map((s) => s * 2)
+const $doubleAlpha = $alpha.map((s) => s * 2)
 ```
+> Atoms are lazily evaluated. This means that the callback functions of `$sum` and `$doubleAlpha` in this example won't execute until the first subscription to these atoms. This is a performance optimization.
 
 ### Subscriptions
 
@@ -209,10 +210,10 @@ Just use `@xoid/svelte` and import `useAtom`.
 <header>{$atom}</header>
 ```
 
-### 🔥 Isomorphic local component state
+### 🔥 Isomorphic component logic
 
-**xoid** takes local component state seriously. 
-With **xoid**, by writing a *setup function*, you can write component logic that works across React, Vue, and Svelte. A setup function looks like the following:
+**xoid** takes component logic seriously. 
+You can - *but don't have to* - write your component logic with **xoid**. The following function is called a "setup function" and it can run across multiple frameworks.
 
 ```js
 import create from 'xoid'
@@ -249,6 +250,10 @@ All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `u
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
 | Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
 | Dependency injection | `Adapter["inject"]` | `useContext` | `inject` | `getContext` |
+
+> **✨ Opinionated comment ✨**
+>
+> If you're using xoid with React, you won't ever need hooks like **useMemo**, **useCallback**, **useRef**, or **useEvent**. **xoid**'s mental model of component logic, just like Vue and Svelte, is a static closure instead of a render function. From a static closure's perspective, these hooks are complete bloat. This was one of the reasons behind **xoid**'s existence.
 
 ### Redux Devtools
 
