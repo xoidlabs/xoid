@@ -85,14 +85,14 @@ npm install xoid
 
 ## Quick Tutorial
 
-**xoid** is extremely easy to learn. 
+**xoid** is extremely easy, and it can be learned within 5 minutes. 
 
 ### Atom
 
 Atoms are holders of state.
 
 ```js
-import { create } from 'xoid'
+import create from 'xoid'
 
 const atom = create(3)
 console.log(atom.value) // 3
@@ -104,7 +104,7 @@ console.log(atom.value) // 6
 Atoms can have actions if the second argument is used.
 
 ```js
-import { create } from 'xoid'
+import create from 'xoid'
 
 const numberAtom = create(5, (atom) => ({
   increment: () => atom.update(s => s + 1),
@@ -117,7 +117,7 @@ numberAtom.actions.increment()
 There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
 ```js
-import { create } from 'xoid'
+import create from 'xoid'
 
 const atom = create({ deeply: { nested: { alpha: 5 } } })
 const previousValue = atom.value
@@ -139,7 +139,7 @@ Atoms can be derived from other atoms. This API was heavily inspired by **Recoil
 const alpha = create(3)
 const beta = create(5)
 // derived atom
-const sum = create((get) => get(alpha) + get(beta))
+const sum = create((read) => read(alpha) + read(beta))
 ```
 
 Alternatively, `.map` method can be used to quickly derive the state from a single atom.
@@ -177,42 +177,6 @@ import { useAtom } from '@xoid/react'
 const state = useAtom(atom)
 ```
 
-<details>
-  <summary>There's also the "useSetup" hook, for managing local component state with xoid.</summary>
-
-`useSetup` is similar to `React.useMemo` with an empty dependency array. It'll run its callback **only once**.
-
-```js
-import { useSetup } from '@xoid/react'
-
-const App = () => {
-  const $counter = useSetup(() => create(5))
-
-  ...
-}
-```
-
-> `useSetup` is guaranteed to be **non-render-causing**. Atoms returned by that should be explicitly subscribed via `useAtom` hook.
-
-An outer value can be supplied as the second argument. It can be used as a reactive atom inside.
-
-```js
-import { useSetup } from '@xoid/react'
-
-const App = (props: Props) => {
-  const setup = useSetup(($props) => {
-    // `$props` has the type: Atom<Props>
-    // this way, we can react to `props.something` as it changes
-    $props.focus(s => s.something).subscribe(console.log)
-  }, props) // <= `props` is supplied here
-
-  ...
-}
-```
-</details>
-
-
-
 ### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue
 
 Just use `@xoid/vue` and import `useAtom`.
@@ -246,19 +210,41 @@ Just use `@xoid/svelte` and import `useAtom`.
 <header>{$atom}</header>
 ```
 
-### Isomorphic adapters
+### 🔥 Isomorphic local component state
 
-While several other atomic state management libraries can also replace `React.useState`, `Vue.ref`s, or `Svelte.writable`s with their own primitive, **xoid** might be the first library to actually introduce an `Adapter` that's capable of doing the following across different frameworks:
+With **xoid**, by writing a *setup function*, you can write  component logic that works across different frameworks. A setup function looks like the following:
 
+```js
+import create, { Atom, Adapter } from 'xoid'
 
-|  | xoid | React | Vue | Svelte |
+export const CounterSetup = ($props: Atom<{ initialValue: number }>, adapter: Adapter) => {
+  const { initialValue } = $props.value
+  const $counter =  create(initialValue)
+
+  const theme = adapter.inject(ThemeSymbol)
+  console.log("theme is obtained using context:", theme)
+
+  adapter.effect(() => {
+    console.log('mounted')
+    return () => console.log('unmounted')
+  })
+
+  return {
+    $counter,
+    increment: () => $counter.update((s) => s + 1),
+    decrement: () => $counter.update((s) => s - 1),
+  }
+}
+```
+
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like above. With **xoid**, you can effectively replace the following framework-specific APIs. **xoid** might be the first library to introduce this.
+
+|  | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
 | State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
 | Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
 | Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
-
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` packages export a function named `useSetup`, and all of them implement this adapter in their framework's own ways. The same "setup" function can be used across all these frameworks, and it acts identically.
 
 
 ### Redux Devtools
@@ -267,7 +253,7 @@ Import `@xoid/devtools` and set a `debugValue` to your atom. It will send values
 
 ```js
 import { devtools } from '@xoid/devtools'
-import { create, use } from 'xoid'
+import create from 'xoid'
 devtools() // run once
 
 const atom = create(
@@ -299,7 +285,7 @@ atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
 No additional syntax is required for state machines. Just use the `create` function.
 
 ```js
-import { create } from 'xoid'
+import create from 'xoid'
 import { useAtom } from '@xoid/react'
 
 const createMachine = () => {
