@@ -1,12 +1,4 @@
-import vue, {
-  provide,
-  inject,
-  watch,
-  onMounted,
-  onUnmounted,
-  renderSlot,
-  defineComponent,
-} from 'vue'
+import { provide, inject, watch, onMounted, onUnmounted, renderSlot, defineComponent } from 'vue'
 import { create, Atom, Adapter, EffectCallback, InjectionKey } from 'xoid'
 import { createEvent } from '../../xoid/src/internal/lite'
 export { useAtom } from './lite'

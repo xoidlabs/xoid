@@ -9,6 +9,10 @@
     <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="14"/>
     React
   </a>&nbsp;&nbsp;
+  <a href="#-react">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="14"/>
+    Preact
+  </a>&nbsp;&nbsp;
   <a href="#-vue">
     <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="14"/>
     Vue
@@ -212,10 +216,14 @@ Just use `@xoid/svelte` and import `useAtom`.
 
 ### 🔥 Isomorphic local component state
 
-With **xoid**, by writing a *setup function*, you can write  component logic that works across different frameworks. A setup function looks like the following:
+With **xoid**, by writing a *setup function*, you can write component logic that works across different frameworks. A setup function looks like the following:
 
 ```js
-import create, { Atom, Adapter } from 'xoid'
+import create from 'xoid'
+import type { Atom, Adapter, InjectionKey } from 'xoid'
+import type { Theme } from './theme'
+
+export const ThemeSymbol: InjectionKey<Theme> = Symbol()
 
 export const CounterSetup = ($props: Atom<{ initialValue: number }>, adapter: Adapter) => {
   const { initialValue } = $props.value
@@ -237,7 +245,7 @@ export const CounterSetup = ($props: Atom<{ initialValue: number }>, adapter: Ad
 }
 ```
 
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like above. With **xoid**, you can effectively replace the following framework-specific APIs. 
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like above. With **xoid**, you can effectively replace the following framework-specific APIs:
 
 |  | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
@@ -245,7 +253,6 @@ All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `u
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
 | Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
 | Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
-
 
 ### Redux Devtools
 
@@ -322,6 +329,7 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 - `xoid` - Core package
 - `@xoid/react` - **React** integration
 - `@xoid/vue` - **Vue** integration
+- `@xoid/svelte` - **Svelte** integration
 - `@xoid/devtools` - **Redux Devtools** integration
 - `@xoid/lite` - Lighter version with less features
 - `@xoid/feature` - A plugin system oriented in ES6 classes
