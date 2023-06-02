@@ -46,7 +46,7 @@
 **xoid** (*ksoid or zoid*) is a framework-agnostic state management library. 
 **X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. Its the result of careful analyses of different state management tools and paradigms. It was designed to be simple and scalable.
 
-The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API. It even has a basic support for observable streams. It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) that runs across multiple frameworks. 
+The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API. It even has a basic support for observable streams. It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) that's able to run across multiple frameworks. 
 With xoid, you can move business logic out of components in a **truly** framework-agnostic manner.
 
 
@@ -90,8 +90,6 @@ Visit [xoid.dev](https://xoid.dev) for detailed docs and recipes.
 
 ## Quick Tutorial
 
-**xoid** is extremely easy, and it can be learned within 5 minutes. 
-
 ### Atom
 
 Atoms are holders of state.
@@ -106,7 +104,7 @@ $count.update((state) => state + 1)
 console.log($count.value) // 6
 ```
 
-Atoms can have actions if the second argument is used.
+Atoms may have actions.
 
 ```js
 import create from 'xoid'
@@ -138,7 +136,7 @@ assert($atom.value.deeply.nested.alpha === 6) // ✅
 
 ### Derived state
 
-Atoms can be derived from other atoms. This API was heavily inspired by **Recoil**.
+State can be derived from other atoms. This API was heavily inspired by **Recoil**.
 
 ```js
 const $alpha = create(3)
@@ -161,7 +159,7 @@ const $doubleAlpha = $alpha.map((s) => s * 2)
 For subscriptions, `subscribe` and `watch` are used. They are the same, except `watch` runs the callback immediately, while `subscribe` waits for the first update after subscription.
 
 ```js
-const unsub = atom.subscribe((state, previousState) => {
+const unsub = $atom.subscribe((state, previousState) => {
   console.log(state, previousState)
 })
 
@@ -219,32 +217,28 @@ Just use `@xoid/svelte` and import `useAtom`.
 ### 🔥 Isomorphic component logic
 
 **xoid** takes component logic seriously. 
-You can - *but don't have to* - write your component logic with **xoid**. The following function is called a "setup function" and it can run across multiple frameworks.
+You can - *but don't have to* - write serious component logic with **xoid**. The following function is called a "setup function" and it can run across multiple frameworks.
 
 ```js
-import create from 'xoid'
-import type { Atom, Adapter, InjectionKey } from 'xoid'
-import type { Theme } from './theme'
-
-export const ThemeSymbol: InjectionKey<Theme> = Symbol()
+import create, { Atom, Adapter } from 'xoid'
+import { ThemeSymbol } from './theme'
 
 export const CounterSetup = ($props: Atom<{ initialValue: number }>, adapter: Adapter) => {
   const { initialValue } = $props.value
-  const $counter =  create(initialValue)
 
-  const theme = adapter.inject(ThemeSymbol)
-  console.log("theme is obtained using context:", theme)
+  const $counter = create(initialValue)
+  const increment = () => $counter.update((s) => s + 1)
+  const decrement = () => $counter.update((s) => s - 1)
 
   adapter.effect(() => {
     console.log('mounted')
     return () => console.log('unmounted')
   })
 
-  return {
-    $counter,
-    increment: () => $counter.update((s) => s + 1),
-    decrement: () => $counter.update((s) => s - 1),
-  }
+  const theme = adapter.inject(ThemeSymbol)
+  console.log("theme is obtained using context:", theme)
+
+  return { $counter, increment, decrement }
 }
 ```
 
