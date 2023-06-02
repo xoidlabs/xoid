@@ -5,6 +5,29 @@
 </p> 
 
 <p align="center">
+  <a href="#-react">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/>
+    React
+  </a>&nbsp;&nbsp;&nbsp;
+  <a href="#-vue">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/>
+    Vue
+  </a>&nbsp;&nbsp;&nbsp;
+  <a href="#-svelte">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/>
+    Svelte
+  </a>&nbsp;&nbsp;&nbsp;
+  <a href="#subscriptions">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="16"/>
+    Vanilla JS
+  </a>&nbsp;&nbsp;&nbsp;
+  <a href="#subscriptions">
+    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="16"/>
+    Redux Devtools
+  </a>
+</p>
+
+<p align="center">
   <a href="https://bundlephobia.com/result?p=xoid" >
     <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=4f2eb3&colorB=4f2eb3">
   </a>
@@ -14,24 +37,19 @@
   <a href="https://www.npmjs.com/package/xoid">
     <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=4f2eb3&colorB=4f2eb3"/>
   </a>
-  <a href="https://xoid.dev">
-    <img alt="Netlify" src="https://img.shields.io/netlify/681a364c-45a3-40cf-815d-cd62b15d1f96?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
-  </a>
   <a href="https://www.npmjs.com/package/xoid">
     <img alt="License" src="https://img.shields.io/github/license/onurkerimov/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
   </a>
-<!--   <a href="https://bundlephobia.com/result?p=xoid" >
-    <img alt="Build" src="https://img.shields.io/github/workflow/status/onurkerimov/xoid/Lint?style=flat&colorA=4f2eb3&colorB=4f2eb3">
-  </a> -->
 </p>
 
-**xoid** (ksoid or zoid) is a framework-agnostic state management library. 
-**X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. 
-Its the result of careful analyses of different state management tools and paradigms.
-xoid is lightweight (~1kB gzipped), but quite powerful. It's composed of building blocks for advanced state management patterns. The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in a single API. 
+
+**xoid** (*ksoid or zoid*) is a framework-agnostic state management library. 
+**X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. Its the result of careful analyses of different state management tools and paradigms. The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API.
 
 **xoid** takes local component state seriously. 
-With the concept of "isomorphic adapters", you can move business logic out of components in a truly framework-agnostic manner. While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
+It might be the first library to ever introduce an "isomorphic adapter" for writing component logic that works across React, Vue and Svelte.
+With **xoid**, you can move business logic out of components in a truly framework-agnostic manner.
+While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
 
@@ -39,19 +57,11 @@ To install, run the following command:
 npm install xoid
 ```
 
-## Integrations
+---
 
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> [React](#-react)  
+### Visit [xoid.dev](https://xoid.dev) for detailed docs and recipes.
 
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> [Vue](#-vue)  
-
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> [Svelte](#-svelte)  
-
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="16"/> [Vanilla JS](#subscriptions)  
-
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="16"/> [Redux Devtools](#redux-devtools)  
-
-<img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/gear.png" width="16"/> [Finite State Machines](#finite-state-machines)  
+---
 
 ## Examples
 
