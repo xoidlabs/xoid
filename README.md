@@ -9,10 +9,6 @@
     <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="14"/>
     React
   </a>&nbsp;&nbsp;
-  <a href="#-react">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="14"/>
-    Preact
-  </a>&nbsp;&nbsp;
   <a href="#-vue">
     <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="14"/>
     Vue
@@ -50,9 +46,8 @@
 **xoid** (*ksoid or zoid*) is a framework-agnostic state management library. 
 **X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. Its the result of careful analyses of different state management tools and paradigms. The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API.
 
-**xoid** takes local component state seriously. 
-It might be the first library to ever introduce an "isomorphic adapter" for writing component logic that works across React, Vue and Svelte.
 With **xoid**, you can move business logic out of components in a truly framework-agnostic manner.
+It might be the first library to ever introduce the notion of [isomorphic local component state](#-isomorphic-local-component-state).
 While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
@@ -216,7 +211,8 @@ Just use `@xoid/svelte` and import `useAtom`.
 
 ### 🔥 Isomorphic local component state
 
-With **xoid**, by writing a *setup function*, you can write component logic that works across different frameworks. A setup function looks like the following:
+**xoid** takes local component state seriously. 
+With **xoid**, by writing a *setup function*, you can write component logic that works across React, Vue, and Svelte. A setup function looks like the following:
 
 ```js
 import create from 'xoid'
@@ -252,7 +248,7 @@ All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `u
 | State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
 | Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
-| Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
+| Dependency injection | `Adapter["inject"]` | `useContext` | `inject` | `getContext` |
 
 ### Redux Devtools
 
@@ -313,6 +309,8 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 
 
 ## Why **xoid**?
+
+<img align="right" width="50%" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/diagram.png">
 
 - Easy to learn
 - Small bundle size
