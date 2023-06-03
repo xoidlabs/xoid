@@ -321,8 +321,8 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 - Easy to work with nested states
 - Computed values, transient updates
 - Same API to rule them all!
-  - Global, Local, FSMs, Streams
-  - React, Vue, Svelte, VanillaJS
+  - Global state, Local state, FSMs, Streams
+  - React, Vue, Svelte, Vanilla JavaScript
 
 ## Packages
 
