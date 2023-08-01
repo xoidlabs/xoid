@@ -1,4 +1,4 @@
-import { createInstance } from './utils'
+import { createNotifier, createCell } from './utils'
 import { subscribe as _subscribe, effect as _effect } from '@xoid/engine'
 import type { Init, Atom } from '@xoid/engine'
 export type { Atom, Init, GetState, Listener, StateOf } from '@xoid/engine'
@@ -15,7 +15,18 @@ export type Create = {
  * @see [xoid.dev/docs/api/create](https://xoid.dev/docs/api/create)
  */
 
-export const create: Create = createInstance()
+export const create: Create = (init) => {
+  const root = createNotifier()
+  const store = createCell(
+    {
+      node: { value: init },
+      cache: {},
+      root,
+    },
+    'value'
+  )
+  return store
+}
 
 /**
  * Subscribes to an observable.

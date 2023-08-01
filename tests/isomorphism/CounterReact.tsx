@@ -1,6 +1,5 @@
 import React from 'react'
-import { useSetup } from '@xoid/react'
-import { useAtom } from '@xoid/react'
+import { useAtom, useSetup } from '@xoid/react'
 import { CounterSetup } from './CounterSetup'
 
 const CounterReact = (props: { initialValue: number }) => {

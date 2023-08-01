@@ -1,8 +1,9 @@
 import React, { useEffect, useLayoutEffect, useDebugValue, Context, createContext } from 'react'
 import { create, Atom, InjectionKey, Adapter, EffectCallback } from 'xoid'
 import { createEvent } from '../../xoid/src/internal/lite'
-import { useConstant } from './lite'
-export { useAtom } from './lite'
+import { useConstant } from './useAtom'
+
+export { useAtom } from './useAtom'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect

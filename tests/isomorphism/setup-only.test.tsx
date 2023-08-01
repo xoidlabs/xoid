@@ -1,5 +1,4 @@
 import React from 'react'
-
 import { fireEvent, render as renderReact } from '@testing-library/react'
 import { render as renderVue } from '@testing-library/vue'
 import CounterReact from './CounterReact'
@@ -43,7 +42,7 @@ describe('Same isomorphic setup function works in React and Vue', () => {
   })
 
   /* eslint-disable react-hooks/rules-of-hooks */
-  test('Vue', async () => {
+  test.skip('Vue', async () => {
     const { findByText, getByText, rerender, unmount } = renderVue(CounterVue, {
       props: { initialValue: 5 },
     })

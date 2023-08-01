@@ -7,7 +7,8 @@ module.exports = {
   "testEnvironment": "jsdom",
   "modulePathIgnorePatterns": [
     "dist",
-    "tree"
+    "tree",
+    ".backup"
   ],
   "moduleNameMapper": pathsToModuleNameMapper(compilerOptions.paths || {}, {
       prefix: '<rootDir>/',

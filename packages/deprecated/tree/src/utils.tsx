@@ -1,4 +1,4 @@
-import { createTarget, createNotifier, META, RECORD, Atom } from '@xoid/engine'
+import { createTarget, META, Atom } from '@xoid/engine'
 
 type Meta = {
   parentMeta?: Meta
@@ -10,39 +10,37 @@ type Meta = {
   root: ReturnType<typeof createNotifier>
 }
 
-export const createCell = (pm: Meta, key: string) => {
-  // `pm` stands for `parentMeta`
-  if (Object.prototype.hasOwnProperty.call(pm.cache, key)) return pm.cache[key]
-  const root = pm.root
-  const shape = pm.shape && (pm.shape[key] || pm.shape[RECORD])
-  const address = pm.address ? pm.address.map((s) => s) : ([] as string[])
+export const createCell = (meta: Meta, key: string) => {
+  // Return the child cell if it already exists
+  if (Object.prototype.hasOwnProperty.call(meta.cache, key)) return meta.cache[key]
 
-  const meta = {
-    parentMeta: pm,
-    root,
+  const address = meta.address ? meta.address.map((s) => s) : ([] as string[])
+
+  const nextMeta = {
+    parentMeta: meta,
+    root: meta.root,
     key,
     address,
     get node() {
-      return pm.node[key]
+      return meta.node[key]
     },
     set node(value) {
-      const copy = shallowClone(pm.node)
+      const copy = shallowClone(meta.node)
       copy[key] = value
-      pm.node = copy
+      meta.node = copy
     },
     cache: {},
-    shape,
   } as Meta
 
   const target = createTarget(
-    () => meta.node,
-    (value: any) => void (meta.node = value)
+    () => nextMeta.node,
+    (value: any) => void (nextMeta.node = value)
   )
   const proxy: any = new Proxy(target, {
     get(_, prop: string | symbol) {
-      if (prop === META) return meta
+      if (prop === META) return nextMeta
       // start: prototype stuff
-      const node = meta.node
+      const node = nextMeta.node
       if ((prop as symbol) === Symbol.toPrimitive) return () => node
 
       if (
@@ -53,43 +51,27 @@ export const createCell = (pm: Meta, key: string) => {
         throw Error("Array prototype methods shouldn't be used with xoid stores")
       }
       // end: prototype stuff
-      return createCell(meta, prop as string)
+      return createCell(nextMeta, prop as string)
     },
     set() {
       return false
     },
     has(_, key) {
-      return key in meta.node
+      return key in nextMeta.node
     },
     ownKeys(t) {
-      let keys = Reflect.ownKeys(meta.node)
+      let keys = Reflect.ownKeys(nextMeta.node)
       keys = keys.concat(Reflect.ownKeys(t))
       return Array.from(new Set(keys))
     },
     getOwnPropertyDescriptor(t, k) {
       if (Reflect.ownKeys(t).includes(k)) return Reflect.getOwnPropertyDescriptor(t, k)
-      return Reflect.getOwnPropertyDescriptor(meta.node, k)
+      return Reflect.getOwnPropertyDescriptor(nextMeta.node, k)
     },
   })
-  pm.cache[key] = proxy
+  meta.cache[key] = proxy
   return proxy
 }
-
-export const createInstance = (options: { shape?: any } = {}): any =>
-  function (init?: any) {
-    const { shape } = options
-    const root = createNotifier()
-    const store = createCell(
-      {
-        node: { value: init },
-        shape: { value: shape },
-        cache: {},
-        root,
-      },
-      'value'
-    )
-    return store
-  }
 
 const shallowClone = (obj: any) =>
   Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))

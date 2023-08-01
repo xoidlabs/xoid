@@ -78,8 +78,6 @@ const createPathProxy = (path: string[]): any =>
 
 const pathProxy = createPathProxy([])
 
-export const getPath = <T extends (...args: any) => any>(fn: T): string[] => fn(pathProxy)[INTERNAL]
-
 const withCache = (cache: any, path: string[], fn: any) => {
   const attempt = getIn(cache, path, true)
   const memoizedResult = attempt && attempt[INTERNAL]
@@ -90,13 +88,14 @@ const withCache = (cache: any, path: string[], fn: any) => {
 export const createFocus =
   <T,>(internal: Internal<T>, basePath = [] as string[]): Atom<T>['focus'] =>
   (key: any) => {
-    const relativePath = typeof key === 'function' ? getPath(key) : [key]
+    const relativePath = typeof key === 'function' ? key(pathProxy)[INTERNAL] : [key]
     if (!internal.cache) internal.cache = {}
     const path = basePath.concat(relativePath)
     const { get } = internal
     const nextInternal = {
       listeners: internal.listeners,
       subscribe: internal.subscribe,
+      isStream: internal.isStream,
       get: () => {
         const obj = get()
         return obj ? getIn(obj, path) : undefined
@@ -104,7 +103,6 @@ export const createFocus =
       // `internal.atom.set` reference is used here instead of `internal.set`,
       // because enhanced atoms need to work with focused atoms as well.
       set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
-      isStream: internal.isStream,
     }
     return withCache(internal.cache, path, () => createApi(nextInternal, internal, path))
   }

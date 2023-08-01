@@ -2,7 +2,8 @@ import { create, Atom, Adapter, EffectCallback, InjectionKey } from 'xoid'
 import { createEvent } from '../../xoid/src/internal/lite'
 import { getContext, onDestroy, onMount } from 'svelte/internal'
 import type { Readable } from 'svelte/store'
-export { useAtom } from './lite'
+
+export { useAtom } from './useAtom'
 
 export type SvelteAdapter = Adapter
 
