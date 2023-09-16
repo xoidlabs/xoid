@@ -1,6 +1,5 @@
-import React, { useEffect, useLayoutEffect, useDebugValue, Context, createContext } from 'react'
-import { create, Atom, InjectionKey, Adapter, EffectCallback } from 'xoid'
-import { createEvent } from '../../xoid/src/internal/lite'
+import React, { useEffect, useLayoutEffect, useDebugValue, createContext } from 'react'
+import { create, Atom, InjectionKey, EffectCallback } from 'xoid'
 import { useConstant } from './useAtom'
 
 export { useAtom } from './useAtom'
@@ -8,66 +7,62 @@ export { useAtom } from './useAtom'
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
 
-export type ReactAdapter = Adapter & {
-  read: <T>(context: Context<T>) => T
-}
-
 // The only experimental feature of this package is the `read` method in the following React adapter.
 // It relies on the fiber internal: `reactInternals.ReactCurrentDispatcher.current.readContext`.
 // This may change in the future, but luckily popular projects like `react-relay`, `preact/compat` also assume it.
 // https://github.com/preactjs/preact/blob/cef315a681aaaef67200564d9a33bd007422665b/compat/src/render.js#L230
 const reactInternals = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
-const useReactAdapter = (props: any): ReactAdapter => {
-  const setup = useConstant(() => {
-    const m = createEvent()
-    const u = createEvent()
+const { intercept, createEvent } = (create as any).internal
+
+const inject = <T,>(symbol: InjectionKey<T>): T => {
+  if (typeof symbol !== 'symbol') throw new TypeError('An injection key should be a symbol.')
+  return reactInternals.ReactCurrentDispatcher.current.readContext(contextMap.get(symbol))
+}
+
+const useReactAdapter = () => {
+  const adapter = useConstant(() => {
+    const mount = createEvent()
+    const unmount = createEvent()
+
     return {
-      adapter: {
-        read: <T,>(context: Context<T>): T => {
-          return reactInternals.ReactCurrentDispatcher.current.readContext(context)
-        },
-        inject: <T,>(symbol: InjectionKey<T>): T => {
-          if (typeof symbol !== 'symbol')
-            throw new TypeError('An injection key should be a symbol.')
-          return reactInternals.ReactCurrentDispatcher.current.readContext(contextMap.get(symbol))
-        },
-        effect: (fn: EffectCallback) =>
-          m.add(() => {
-            const result = fn()
-            if (typeof result === 'function') u.add(result)
-          }),
+      inject,
+      effectCallback: () => {
+        mount.fire()
+        return () => unmount.fire()
       },
-      m,
-      u,
+      effect: (fn: EffectCallback) =>
+        mount.add(() => {
+          const result = fn()
+          if (typeof result === 'function') unmount.add(result)
+        }),
     }
   })
-  useEffect(() => {
-    setup.m.fire()
-    return () => setup.u.fire()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  return setup.adapter
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks, react-hooks/exhaustive-deps
+  useEffect(adapter.effectCallback, [])
+
+  return adapter
 }
 
 /**
  * Can be used to create local state inside React components. Similar to `React.useMemo`,
  * but creates values **exactly once**.
- * @see [xoid.dev/docs/api-react/use-setup](https://xoid.dev/docs/api-react/use-setup)
+ * @see [xoid.dev/docs/framework-integrations/use-setup](https://xoid.dev/docs/framework-integrations/use-setup)
  */
-export function useSetup<T>(fn: ($props: undefined, adapter: ReactAdapter) => T): T
-export function useSetup<T, P>(fn: ($props: Atom<P>, adapter: ReactAdapter) => T, props: P): T
-export function useSetup(fn: ($props: any, adapter: any) => any, props?: any): any {
-  /* eslint-disable react-hooks/rules-of-hooks */
+export function useSetup<T>(fn: ($props: undefined) => T): T
+export function useSetup<T, P>(fn: ($props: Atom<P>) => T, props: P): T
+export function useSetup(fn: ($props?: any) => any, props?: any): any {
   // Calling hooks conditionally wouldn't be an issue here, because we rely on just
-  // the Function.length and Arguments.length, which will remain static.
-  const api = fn.length > 1 ? useReactAdapter(props) : undefined
+  // the Function.length, which will remain static.
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const adapter = useReactAdapter()
   let result
   if (arguments.length > 1) {
     const $props = useConstant(() => create(() => props))
     useIsoLayoutEffect(() => ($props as Atom<any>).set(props), [props])
-    result = useConstant(() => fn($props, api))
+    result = useConstant(() => intercept(adapter, () => fn($props)))
   } else {
-    result = useConstant(() => fn(undefined, api))
+    result = useConstant(() => intercept(adapter, fn))
   }
   useDebugValue(result)
   return result

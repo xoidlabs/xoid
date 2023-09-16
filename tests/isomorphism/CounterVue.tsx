@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-/** @jsx h */
-import { defineComponent, h } from 'vue'
+/** @jsxImportSource vue */
+import { defineComponent } from 'vue'
 import { useAtom, useSetup } from '@xoid/vue'
 import { CounterSetup } from './CounterSetup'
 

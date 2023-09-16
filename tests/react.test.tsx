@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create, Value } from 'xoid'
+import { create, effect, Value } from 'xoid'
 import { useSetup } from '@xoid/react'
 import { useAtom } from '@xoid/react'
 import { debug } from './testHelpers'
@@ -225,7 +225,7 @@ it('effect function of the React adapter works', () => {
   const mountFn = jest.fn()
   const unmountFn = jest.fn()
   function App() {
-    useSetup((_, { effect }) => {
+    useSetup(() => {
       effect(() => {
         mountFn()
         return () => unmountFn()

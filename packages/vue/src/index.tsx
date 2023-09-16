@@ -1,14 +1,14 @@
 import { provide, inject, watch, onMounted, onUnmounted, renderSlot, defineComponent } from 'vue'
-import { create, Atom, Adapter, EffectCallback, InjectionKey } from 'xoid'
+import { create, Atom, EffectCallback, InjectionKey } from 'xoid'
 import { createEvent } from '../../xoid/src/internal/lite'
 export { useAtom } from './useAtom'
 
-export type VueAdapter = Adapter
+const { intercept } = (create as any).internal
 
-const createAdapter = (): VueAdapter => {
+const createAdapter = () => {
   const m = createEvent()
   const u = createEvent()
-  const adapter: VueAdapter = {
+  const adapter = {
     inject: inject as <T>(symbol: InjectionKey<T>) => T,
     effect: (fn: EffectCallback) =>
       m.add(() => {
@@ -28,20 +28,20 @@ export const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {
       provide(key, props.value ?? defaultValue)
       return (ctx: any) => renderSlot(ctx.$slots, 'default')
     },
-  }) as unknown as (props: { value: T; children: JSX.Element }) => JSX.Element
+  })
 }
 
 /**
- * @see [xoid.dev/docs/api-vue/use-setup](https://xoid.dev/docs/api-vue/use-setup)
+ * @see [xoid.dev/docs/framework-integrations/use-setup](https://xoid.dev/docs/framework-integrations/use-setup)
  */
-export function useSetup<T>(fn: ($props: undefined, adapter: VueAdapter) => T): T
-export function useSetup<T, P>(fn: ($props: Atom<P>, adapter: VueAdapter) => T, props: P): T
-export function useSetup(fn: ($props: any, adapter: any) => any, props?: any): any {
-  const api = fn.length > 1 ? createAdapter() : undefined
+export function useSetup<T>(fn: () => T): T
+export function useSetup<T, P>(fn: ($props: Atom<P>) => T, props: P): T
+export function useSetup(fn: ($props?: any) => any, props?: any): any {
+  const adapter = createAdapter()
   if (arguments.length > 1) {
     const $props = create(() => props)
     onUnmounted(watch(props, () => $props.set({ ...props })))
-    return fn($props, api)
+    return intercept(adapter, () => fn($props))
   }
-  return fn(undefined, api)
+  return intercept(adapter, fn)
 }

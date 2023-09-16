@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-namespace */
-import { Atom, Adapter } from 'xoid'
+import { Atom, effect } from 'xoid'
 
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace WindowEvent {
   export type Props<T extends keyof WindowEventMap> = [
     type: T,
@@ -8,10 +8,7 @@ export namespace WindowEvent {
     options?: boolean | AddEventListenerOptions
   ]
 
-  export const setup = <TType extends keyof WindowEventMap>(
-    $props: Atom<Props<TType>>,
-    { effect }: Adapter
-  ) =>
+  export const setup = <T extends keyof WindowEventMap>($props: Atom<Props<T>>) =>
     effect(() =>
       $props.watch((args) => {
         window.addEventListener(...args)

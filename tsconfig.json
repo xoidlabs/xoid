@@ -4,7 +4,10 @@
     "baseUrl": ".",
     "paths": {
       "xoid": ["./packages/xoid/src"],
-      "@xoid/*": ["./packages/*/src"]
+      "@xoid/*": ["./packages/*/src"],
+      "doja/jsx-runtime": ["./packages-doja/doja/copy/jsx-runtime"],
+      "doja": ["./packages-doja/doja/src"],
+      "@doja/*": ["./packages-doja/*/src"]
     },
     "target": "es5",
     "jsx": "react-jsx",
@@ -16,5 +19,5 @@
     "declarationDir": "dist/ts-out",
     "esModuleInterop": true
   },
-  "include": ["packages", "tests", "examples"]
+  "include": ["packages", "tests", "packages-doja", "tests-doja", "examples"]
 }

@@ -1,35 +1,32 @@
 {
-  "name": "@xoid/vue",
-  "version": "0.5.0",
+  "name": "@doja/react",
+  "version": "0.1.0",
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
-  "homepage": "https://xoid.dev",
+  "homepage": "https://xoid.dev/doja",
   "repository": {
     "type": "git",
-    "url": "https://github.com/onurkerimov/xoid",
-    "directory": "./packages/vue"
+    "url": "https://github.com/onurkerimov/doja",
+    "directory": "./packages/react"
   },
   "license": "MIT",
   "keywords": [
     "framework-agnostic",
-    "state",
-    "management",
-    "state-management",
     "react",
     "vue",
-    "redux",
-    "recoil",
-    "xoid",
-    "atom",
-    "store",
-    "stream",
-    "observable"
+    "reactive",
+    "components",
+    "xoid"
   ],
+  "dependencies": {
+    "doja": ">=0.1.0",
+    "xoid": ">=1.0.0-beta.10",
+    "@xoid/react": ">=1.0.0-beta.10"
+  },
   "peerDependencies": {
-    "xoid": ">=1.0.0-beta.9",
-    "vue": "*"
+    "react": "*"
   }
 }

@@ -49,8 +49,3 @@ export type Truthy<T> = Exclude<T, false | 0 | '' | null | undefined>
 // Following types are common for framework integrations, so they reside in this package.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-interface
 export interface InjectionKey<T> {}
-
-export type Adapter = {
-  inject: <T>(symbol: InjectionKey<T>) => T
-  effect: (callback: EffectCallback) => void
-}

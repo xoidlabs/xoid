@@ -96,6 +96,7 @@ Atoms are holders of state.
 
 ```js
 import create from 'xoid'
+// or: import { create } from 'xoid'
 
 const $count = create(3)
 console.log($count.value) // 3
@@ -216,40 +217,42 @@ Just use `@xoid/svelte` and import `useAtom`.
 
 ### 🔥 Isomorphic component logic
 
-**xoid** takes component logic seriously. 
-You can - *but don't have to* - write serious component logic with **xoid**. The following function is called a "setup function" and it can run across multiple frameworks.
+**xoid** takes component logic seriously. The main package has `effect` and `inject` exports. With the, you can write component logic ONCE and make it run across different frameworks. 
+
+The following function is called a "setup function".
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like this.
 
 ```js
-import create, { Atom, Adapter } from 'xoid'
+import create, { effect, inject, Atom } from 'xoid'
 import { ThemeSymbol } from './theme'
 
-export const CounterSetup = ($props: Atom<{ initialValue: number }>, adapter: Adapter) => {
+export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   const { initialValue } = $props.value
 
   const $counter = create(initialValue)
   const increment = () => $counter.update((s) => s + 1)
   const decrement = () => $counter.update((s) => s - 1)
 
-  adapter.effect(() => {
+  effect(() => {
     console.log('mounted')
     return () => console.log('unmounted')
   })
 
-  const theme = adapter.inject(ThemeSymbol)
+  const theme = inject(ThemeSymbol)
   console.log("theme is obtained using context:", theme)
 
   return { $counter, increment, decrement }
 }
 ```
 
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like above. With **xoid**, you can effectively replace the following framework-specific APIs:
+With **xoid**, you can effectively replace the following framework-specific APIs:
 
 |  | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
 | State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
-| Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
-| Dependency injection | `Adapter["inject"]` | `useContext` | `inject` | `getContext` |
+| Lifecycle | `effect` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
+| Dependency injection | `inject` | `useContext` | `inject` | `getContext` |
 
 > **✨ Opinionated comment ✨**
 >

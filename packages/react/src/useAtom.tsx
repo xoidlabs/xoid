@@ -11,7 +11,7 @@ export const useConstant = <T extends any>(fn: () => T): T => {
 /**
  * An atom, or a function returning an atom can be passed as the first argument.
  * When the second optional argument is set to `true`, it will also consume the actions of the atom.
- * @see [xoid.dev/docs/api-react/use-atom](https://xoid.dev/docs/api-react/use-atom)
+ * @see [xoid.dev/docs/framework-integrations/use-atom](https://xoid.dev/docs/framework-integrations/use-atom)
  */
 
 export function useAtom<T>(atom: Atom<T>): T

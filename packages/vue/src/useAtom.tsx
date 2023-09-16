@@ -2,7 +2,7 @@ import { getCurrentScope, onScopeDispose, readonly, shallowRef } from 'vue'
 import { Atom } from 'xoid'
 
 /**
- * @see [xoid.dev/docs/api-vue/use-atom](https://xoid.dev/docs/api-vue/use-atom)
+ * @see [xoid.dev/docs/framework-integrations/use-atom](https://xoid.dev/docs/framework-integrations/use-atom)
  */
 
 export function useAtom<T>(atom: Atom<T>) {

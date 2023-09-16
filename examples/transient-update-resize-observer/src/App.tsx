@@ -1,14 +1,14 @@
 import React from 'react'
-import { create } from 'xoid'
-import { ReactAdapter, useSetup } from '@xoid/react'
+import { create, effect } from 'xoid'
+import { useSetup } from '@xoid/react'
 import { ResizeObserver } from '@juggle/resize-observer'
 
-const ResizeObserverSetup = (_: unknown, adapter: ReactAdapter) => {
+const ResizeObserverSetup = () => {
   const $element = create<HTMLDivElement>()
   const $rect = create<{ width: number; height: number }>()
   const observer = new ResizeObserver(([entry]) => $rect.set(entry.contentRect))
 
-  adapter.effect(() => {
+  effect(() => {
     const element = $element.value
     if (!element) return
     observer.observe(element)
