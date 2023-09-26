@@ -174,7 +174,7 @@ unsub()
 
 ## Framework Integrations
 
-Integrating with framwerorks is so simple. No configuration, or context providers are needed. Currently there are `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` packages. All of them export a hook called `useAtom`. 
+Integrating with frameworks is so simple. No configuration, or context providers are needed. Currently all `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` packages export a hook called `useAtom`. 
 
 ### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React
 
@@ -217,9 +217,9 @@ const value = useAtom(myAtom)
 
 ## 🔥 Isomorphic component logic
 
-This might be the most unique feature of **xoid** that sets it apart from other tools. With **xoid**, you can write component logic (including lifecycle) that can run across multiple frameworks. This feature is for you if:
+This might be the most unique feature of **xoid** that sets it apart from other tools. With **xoid**, you can write component logic (including lifecycle) in a truly framework-agnostic manner. You can write ONCE, and run it across multiple frameworks. This feature is for you especially if:
 - You're a design system, or a headless UI library maintainer
-- You're using multiple frameworks in your project, or refactoring your code from one library to another
+- You're using multiple frameworks in your project, or refactoring your code from one frameworks to another
 - You dislike React's render cycle and want a simpler, real closure for managing complex state
 
 The following is called a "setup" function:
@@ -271,7 +271,7 @@ const atom = create(
   (atom) => {
     const $alpha = atom.focus(s => s.alpha)
     return {
-      resetState: () => atom.set({ alpha: 5 })
+      inc: () => $alpha.update(s => s + 1),
       deeply: { nested: { action: () => $alpha.update((s) => s + 1) } }
     }
   }
@@ -279,8 +279,8 @@ const atom = create(
 
 atom.debugValue = 'myAtom' // enable watching it by the devtools
 
-const { deeply, resetState } = atom.actions
-resetState() // "(myAtom).resetState"
+const { deeply, inc } = atom.actions
+inc() // "(myAtom).inc"
 deeply.nested.action() // "(myAtom).deeply.nested.action"
 atom.focus(s => s.alpha).set(25)  // "(myAtom) Update ([timestamp])
 ```

@@ -34,12 +34,6 @@ export type GetState = {
 
 export type Init<T> = T | ((get: GetState) => T)
 
-export type Value<T extends Atom<any>> = T['value']
-
-export type SetState<T extends Atom<any>> = T['set']
-
-export type UpdateState<T extends Atom<any>> = T['update']
-
 export type Actions<U> = { actions: U; debugValue?: string }
 
 export type Truthy<T> = Exclude<T, false | 0 | '' | null | undefined>
