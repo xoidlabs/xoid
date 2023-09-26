@@ -34,19 +34,6 @@ async function main() {
   }
 
   packages.forEach((pkg) => {
-    const {
-      dependencies,
-      peerDependencies,
-      main,
-      module,
-      types,
-    } = pkg.config
-
-    const external = [
-      ...Object.keys(dependencies || []),
-      ...Object.keys(peerDependencies || [])
-    ];
-
     const basePath = path.relative(__dirname, pkg.dir)
     const outputPath = basePath.replace('packages/', 'dist/');
     let copyPath = path.join(basePath, 'copy');
@@ -64,24 +51,41 @@ async function main() {
       copyTargets.push({ src: 'README.md', dest: outputPath })
     }
 
-    const entries = fs.readdirSync(path.join(pkg.dir, 'src'))
-      .filter((file) => fs.lstatSync(path.join(pkg.dir, 'src', file)).isFile())
+    const configExports = pkg.config.exports || {'.': {
+      types: pkg.config.types,
+      module: pkg.config.module,
+      default: pkg.config.main,
+    }}
+
+    const entries = Object.keys(configExports)
 
     entries.forEach((entry) => {
-      const entryWithoutExtension = entry.replace('.tsx', '')
-      const input = path.join(basePath, 'src', entry);
+      const external = [
+        ...Object.keys(pkg.config.dependencies || []),
+        ...Object.keys(pkg.config.peerDependencies || []),
+        ...entries.filter(s => s !== '.' || s !== entry)
+      ];
+
+      const entryOutputs = configExports[entry]
+      if(entry === '.') entry = 'index'
+
+
+
+
+      const input = path.join(basePath, 'src', entry + '.tsx');
       const output = []
 
-      if(main) {
+
+      if(entryOutputs.default) {
         output.push({
-          file: path.join(outputPath, entryWithoutExtension + '.js'),
+          file: path.join(outputPath, entry + '.js'),
           format: 'cjs',
         })
       }
       
-      if(module) {
+      if(entryOutputs.module) {
         output.push({
-          file: path.join(outputPath, entryWithoutExtension + '.esm.js'),
+          file: path.join(outputPath, entry + '.esm.js'),
           format: 'esm',
         })
       }
@@ -93,10 +97,10 @@ async function main() {
         plugins,
       });
 
-      if(types) {
+      if(entryOutputs.types) {
         results.push({
-          input: path.join('dist/ts-out', basePath, `src/${entryWithoutExtension}.d.ts`),
-          output: { file: path.join(outputPath, `${entryWithoutExtension}.d.ts`), format: 'es' },
+          input: path.join('dist/ts-out', basePath, `src/${entry}.d.ts`),
+          output: { file: path.join(outputPath, `${entry}.d.ts`), format: 'es' },
           external,
           plugins: [dts({})],
         });

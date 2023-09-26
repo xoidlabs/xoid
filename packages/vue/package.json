@@ -4,6 +4,23 @@
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "module": "./index.esm.js",
+      "default": "./index.js"
+    },
+    "./useAtom": {
+      "types": "./useAtom.d.ts",
+      "module": "./useAtom.esm.js",
+      "default": "./useAtom.js"
+    },
+    "./useAdapter": {
+      "types": "./useAdapter.d.ts",
+      "module": "./useAdapter.esm.js",
+      "default": "./useAdapter.js"
+    }
+  },
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
   "homepage": "https://xoid.dev",

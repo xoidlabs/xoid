@@ -1,7 +1,6 @@
 import React, { useEffect, createContext } from 'react'
-import { setup, InjectionKey, EffectCallback } from 'xoid/setup'
+import { setup, InjectionKey, createAdapter } from 'xoid/setup'
 import { useConstant } from './useAtom'
-import { createEvent } from '../../xoid/src/internal/lite'
 
 const contextMap = new Map<InjectionKey<any>, React.Context<any>>()
 // TODO: This may require revision.
@@ -25,26 +24,11 @@ const inject = <T,>(symbol: InjectionKey<T>): T => {
 }
 
 export const useAdapter = <T,>(fn: () => T) => {
-  const adapter = useConstant(() => {
-    const mount = createEvent()
-    const unmount = createEvent()
-
-    return {
-      inject,
-      effectCallback: () => {
-        mount.fire()
-        return () => unmount.fire()
-      },
-      effect: (fn: EffectCallback) =>
-        mount.add(() => {
-          const result = fn()
-          if (typeof result === 'function') unmount.add(result)
-        }),
-    }
-  })
-
+  const adapter = useConstant(() => createAdapter({ inject }))
   // eslint-disable-next-line react-hooks/rules-of-hooks, react-hooks/exhaustive-deps
-  useEffect(adapter.effectCallback, [])
-
-  return setup.call(adapter, fn)
+  useEffect(() => {
+    adapter.mount()
+    return () => adapter.unmount()
+  }, [])
+  return useConstant(() => setup.call(adapter, fn))
 }

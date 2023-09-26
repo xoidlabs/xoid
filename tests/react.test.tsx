@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create, effect, Value } from 'xoid'
+import { create } from 'xoid'
+import { effect } from 'xoid/setup'
 import { useSetup } from '@xoid/react'
 import { useAtom } from '@xoid/react'
 import { debug } from './testHelpers'
@@ -80,7 +81,7 @@ it('can update the selector', async () => {
     two: 'two',
   }))
 
-  type State = Value<typeof atom>
+  type State = (typeof atom)['value']
 
   function Component({ selector }: any) {
     const value = useAtom(atom.focus(selector))

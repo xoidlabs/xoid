@@ -3,6 +3,11 @@
   "version": "0.4.0",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "exports": {
+    "./devtools": {
+      "default": "./devtools.js"
+    }
+  },
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
   "homepage": "https://xoid.dev",
