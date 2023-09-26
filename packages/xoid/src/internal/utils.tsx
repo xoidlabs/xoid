@@ -1,5 +1,5 @@
 import { createBaseApi, createEvent, createInternal, Internal } from './lite'
-import { Atom, GetState } from '../types'
+import { Atom, GetState } from './types'
 
 export const INTERNAL = Symbol()
 

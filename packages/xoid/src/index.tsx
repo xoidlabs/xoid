@@ -1,8 +1,8 @@
-import type { Atom, Stream, Init, GetState, Actions, InjectionKey, EffectCallback } from './types'
+import type { Atom, Stream, Init, GetState, Actions } from './internal/types'
 import { createSelector, createApi, INTERNAL } from './internal/utils'
-import { createInternal, createEvent } from './internal/lite'
+import { createInternal } from './internal/lite'
 
-export * from './types'
+export * from './internal/types'
 
 /**
  * Creates an atom with the first argument as the initial state.
@@ -12,10 +12,7 @@ export * from './types'
 export function create<T>(): Stream<T>
 export function create<T>(init: Init<T>): Atom<T>
 export function create<T, U>(init: Init<T>, getActions?: (atom: Atom<T>) => U): Atom<T> & Actions<U>
-export function create<T, U = undefined>(
-  init?: Init<T>,
-  getActions?: null | ((atom: Atom<T>) => U)
-) {
+export function create<T, U = undefined>(init?: Init<T>, getActions?: (atom: Atom<T>) => U) {
   const isFunction = typeof init === 'function'
   const internal = createInternal(
     (isFunction ? undefined : init) as T,
@@ -36,34 +33,17 @@ export function create<T, U = undefined>(
 }
 
 export default create
-export const inject = <T,>(symbol: InjectionKey<T>): T => (adapter.inject as any)(symbol)
-export const effect = (callback: EffectCallback): void => (adapter.effect as any)(callback)
 
-// the rest of the file is internal stuff
 create.plugins = [] as ((atom: Atom<any>) => void)[]
 
+// the rest of the file is internal stuff
 const devtools = {
   send: <T,>(_atom: T) => void 0,
   wrap: <T,>(value: T): T => value,
 }
 
-/* eslint-disable @typescript-eslint/no-empty-function */
-const initialAdapter = {
-  effect: () => {},
-  inject: () => {},
-}
-
-let adapter = initialAdapter
-
 // intentionally untyped
 ;(create as any).internal = {
   symbol: INTERNAL,
   devtools,
-  createEvent,
-  intercept: (nextAdapter: any, fn: any) => {
-    adapter = nextAdapter
-    const result = fn()
-    adapter = initialAdapter
-    return result
-  },
 }

@@ -1,4 +1,4 @@
-import { LiteAtom, createBaseApi, createInternal } from '../../xoid/src/internal/lite'
+import { LiteAtom, createBaseApi, createInternal } from '../src/internal/lite'
 
 export function create<T>(): LiteAtom<T | undefined>
 export function create<T>(value: T): LiteAtom<T>

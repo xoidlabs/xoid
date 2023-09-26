@@ -47,13 +47,9 @@ async function main() {
       ...Object.keys(peerDependencies || [])
     ];
 
-    const maybeDevtools = (str) => pkg.name == '@xoid/devtools' ? str.replace('index', 'devtools') : str
-
     const basePath = path.relative(__dirname, pkg.dir)
     const outputPath = basePath.replace('packages/', 'dist/');
-    let input = path.join(basePath, maybeDevtools('src/index.tsx'));
     let copyPath = path.join(basePath, 'copy');
-    const output = []
 
     if(fs.existsSync(copyPath)) {
       copyTargets.push({ src: `${copyPath}/*`, dest: outputPath })
@@ -68,35 +64,46 @@ async function main() {
       copyTargets.push({ src: 'README.md', dest: outputPath })
     }
 
-    if(main) {
-      output.push({
-        file: path.join(outputPath, maybeDevtools(main)),
-        format: 'cjs',
-      })
-    }
-    
-    if(module) {
-      output.push({
-        file: path.join(outputPath, maybeDevtools(module)),
-        format: 'esm',
-      })
-    }
+    const entries = fs.readdirSync(path.join(pkg.dir, 'src'))
+      .filter((file) => fs.lstatSync(path.join(pkg.dir, 'src', file)).isFile())
 
-    results.push({
-      input,
-      output,
-      external,
-      plugins,
-    });
+    entries.forEach((entry) => {
+      const entryWithoutExtension = entry.replace('.tsx', '')
+      const input = path.join(basePath, 'src', entry);
+      const output = []
 
-    if(types) {
+      if(main) {
+        output.push({
+          file: path.join(outputPath, entryWithoutExtension + '.js'),
+          format: 'cjs',
+        })
+      }
+      
+      if(module) {
+        output.push({
+          file: path.join(outputPath, entryWithoutExtension + '.esm.js'),
+          format: 'esm',
+        })
+      }
+      
       results.push({
-        input: path.join('dist/ts-out', basePath, maybeDevtools('src/index.d.ts')),
-        output: { file: path.join(outputPath, 'index.d.ts'), format: 'es' },
+        input,
+        output,
         external,
-        plugins: [dts({})],
+        plugins,
       });
-    }
+
+      if(types) {
+        results.push({
+          input: path.join('dist/ts-out', basePath, `src/${entryWithoutExtension}.d.ts`),
+          output: { file: path.join(outputPath, `${entryWithoutExtension}.d.ts`), format: 'es' },
+          external,
+          plugins: [dts({})],
+        });
+      }
+      
+    })
+
   });
   return results;
 }

@@ -50,7 +50,7 @@ The biggest aim of **xoid** is to unify global state, local component state, and
 With xoid, you can move business logic out of components in a **truly** framework-agnostic manner.
 
 
-While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
+While doing all these, it also cares about its package size (~1.2kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
 
@@ -217,13 +217,11 @@ Just use `@xoid/svelte` and import `useAtom`.
 
 ### 🔥 Isomorphic component logic
 
-**xoid** takes component logic seriously. The main package has `effect` and `inject` exports. With the, you can write component logic ONCE and make it run across different frameworks. 
-
-The following function is called a "setup function".
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like this.
+**xoid** takes component logic seriously. It introduces "setup" functions for writing component logic in a truly framework-agnostic manner. All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like this.
 
 ```js
-import create, { effect, inject, Atom } from 'xoid'
+import create, { Atom } from 'xoid'
+import { effect, inject } from 'xoid/setup'
 import { ThemeSymbol } from './theme'
 
 export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
@@ -244,6 +242,7 @@ export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   return { $counter, increment, decrement }
 }
 ```
+> If you're building an UI component library, or a headless UI library for multiple frameworks, this feature is for you.
 
 With **xoid**, you can effectively replace the following framework-specific APIs:
 
@@ -256,7 +255,7 @@ With **xoid**, you can effectively replace the following framework-specific APIs
 
 > **✨ Opinionated comment ✨**
 >
-> If you're using `@xoid/react`, you won't ever need hooks like **useMemo**, **useCallback**, **useRef**, or **useEvent**. **xoid**'s mental model of component logic, just like Vue and Svelte, is a static closure instead of a render function. From a static closure's perspective, most hooks are complete bloat. Bringing this kind of component mental model to React was one of the first reasons behind **xoid**'s existence.
+> **xoid**'s mental model of component logic, just like Vue and Svelte, is a static closure instead of a render function. From a static closure's perspective, most React hooks are complete bloat. Bringing this kind of component mental model to React was one of the first reasons behind **xoid**'s existence.
 
 ### Redux Devtools
 
@@ -272,16 +271,15 @@ const atom = create(
   (atom) => {
     const $alpha = atom.focus(s => s.alpha)
     return {
-      inc: () => $alpha.update(s => s + 1),
       resetState: () => atom.set({ alpha: 5 })
-      deeply: { nested: { action: () => $alpha.set(5) } }
+      deeply: { nested: { action: () => $alpha.update((s) => s + 1) } }
     }
   }
 )
 
 atom.debugValue = 'myAtom' // enable watching it by the devtools
 
-const { deeply, incrementAlpha } = atom.actions // destructuring is OK
+const { deeply, incrementAlpha } = atom.actions
 incrementAlpha() // logs "(myAtom).incrementAlpha"
 deeply.nested.action() // logs "(myAtom).deeply.nested.action"
 atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
@@ -330,6 +328,7 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 ## Packages
 
 - `xoid` - Core package
+  - `xoid/setup` - Exports `inject` and `effect` for ad
 - `@xoid/react` - **React** integration
 - `@xoid/vue` - **Vue** integration
 - `@xoid/svelte` - **Svelte** integration
