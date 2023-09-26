@@ -46,7 +46,7 @@
     "observable"
   ],
   "peerDependencies": {
-    "xoid": ">=1.0.0-beta.9",
+    "xoid": ">=1.0.0-beta.10",
     "svelte": "*"
   }
 }
