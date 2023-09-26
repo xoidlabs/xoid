@@ -19,6 +19,11 @@
       "types": "./useAdapter.d.ts",
       "module": "./useAdapter.esm.js",
       "default": "./useAdapter.js"
+    },
+    "./useConstant": {
+      "types": "./useConstant.d.ts",
+      "module": "./useConstant.esm.js",
+      "default": "./useConstant.js"
     }
   },
   "sideEffects": false,

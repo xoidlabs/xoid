@@ -1,9 +1,9 @@
 import React, { useEffect, createContext } from 'react'
 import { setup, InjectionKey, createAdapter } from 'xoid/setup'
-import { useConstant } from './useAtom'
+import { useConstant } from './useConstant'
 
 const contextMap = new Map<InjectionKey<any>, React.Context<any>>()
-// TODO: This may require revision.
+// TODO: Consider this in the future
 // Instead of multiple kinds of context providers, we may use single provider wrapped, so that it manually
 // merges the overrides onto its parents context. so we keep consistency.
 // everytime a `context(() => {` opens up, we would run injectMeta maybe
@@ -25,10 +25,10 @@ const inject = <T,>(symbol: InjectionKey<T>): T => {
 
 export const useAdapter = <T,>(fn: () => T) => {
   const adapter = useConstant(() => createAdapter({ inject }))
-  // eslint-disable-next-line react-hooks/rules-of-hooks, react-hooks/exhaustive-deps
   useEffect(() => {
     adapter.mount()
     return () => adapter.unmount()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return useConstant(() => setup.call(adapter, fn))
 }

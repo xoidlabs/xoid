@@ -60,11 +60,12 @@ async function main() {
     const entries = Object.keys(configExports)
 
     entries.forEach((entry) => {
-      const external = [
+      const externalLookup = [
         ...Object.keys(pkg.config.dependencies || []),
         ...Object.keys(pkg.config.peerDependencies || []),
         ...entries.filter(s => s !== '.' || s !== entry)
       ];
+      const external = (name) => externalLookup.includes(/^((?:\.\/)?(?:.*?))(?:\/|$)/.exec(name)[1])
 
       const entryOutputs = configExports[entry]
       if(entry === '.') entry = 'index'

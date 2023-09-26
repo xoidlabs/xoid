@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useDebugValue } from 'react'
 import { create, Atom } from 'xoid'
-import { useConstant } from './useAtom'
+import { useConstant } from './useConstant'
 import { useAdapter } from './useAdapter'
 
 export { useAtom } from './useAtom'

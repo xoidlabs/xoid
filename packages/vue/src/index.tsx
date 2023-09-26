@@ -2,7 +2,7 @@
 import { provide, watch, onUnmounted, renderSlot, defineComponent } from 'vue'
 import { create, Atom } from 'xoid'
 import { useAdapter } from './useAdapter'
-import { InjectionKey } from '../../xoid/src/setup'
+import { InjectionKey } from 'xoid/setup'
 export { useAtom } from './useAtom'
 
 export const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {

@@ -1,12 +1,7 @@
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
-import { useDebugValue, useRef } from 'react'
+import { useDebugValue } from 'react'
 import { Atom, Actions } from 'xoid'
-
-export const useConstant = <T extends any>(fn: () => T): T => {
-  const ref = useRef<{ c: T }>()
-  if (!ref.current) ref.current = { c: fn() }
-  return ref.current.c
-}
+import { useConstant } from './useConstant'
 
 /**
  * An atom, or a function returning an atom can be passed as the first argument.
@@ -30,6 +25,5 @@ export function useAtom<T, U>(
     () => atom.value
   )
   useDebugValue(value)
-  // TODO: reserve the second argument for an equality checker function in the next versions
   return withActions ? ([value, (atom as any).actions] as [T, U]) : (value as T)
 }
