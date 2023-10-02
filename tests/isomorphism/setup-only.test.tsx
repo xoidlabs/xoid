@@ -1,6 +1,7 @@
 import React from 'react'
 import { fireEvent, render as renderReact } from '@testing-library/react'
 import { render as renderVue } from '@testing-library/vue'
+import { defineComponent, h } from 'vue'
 import CounterReact from './CounterReact'
 import CounterVue from './CounterVue'
 
@@ -41,11 +42,10 @@ describe('Same isomorphic setup function works in React and Vue', () => {
     expect(loggerFn).toBeCalledWith('unmounted')
   })
 
-  /* eslint-disable react-hooks/rules-of-hooks */
-  test.skip('Vue', async () => {
-    const { findByText, getByText, rerender, unmount } = renderVue(CounterVue, {
-      props: { initialValue: 5 },
-    })
+  test('Vue', async () => {
+    const { findByText, getByText, rerender, unmount } = renderVue(
+      h(CounterVue, { initialValue: 5 })
+    )
 
     expect(loggerFn).toBeCalledTimes(1)
     expect(loggerFn).toBeCalledWith('mounted')

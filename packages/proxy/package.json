@@ -1,28 +1,16 @@
 {
-  "name": "xoid",
-  "version": "1.0.0-beta.10",
+  "name": "@xoid/proxy",
+  "version": "0.1.0",
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./index.d.ts",
-      "module": "./index.esm.js",
-      "default": "./index.js"
-    },
-    "./setup": {
-      "types": "./setup.d.ts",
-      "module": "./setup.esm.js",
-      "default": "./setup.js"
-    }
-  },
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
   "homepage": "https://xoid.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/onurkerimov/xoid",
-    "directory": "./packages/xoid"
+    "directory": "./packages/proxy"
   },
   "license": "MIT",
   "keywords": [

@@ -1,5 +1,5 @@
 import { createBaseApi, createEvent, createInternal, Internal } from './lite'
-import { Atom, GetState } from '../types'
+import { Atom, GetState } from './types'
 
 export const INTERNAL = Symbol()
 
@@ -159,7 +159,7 @@ export const createApi = <T,>(
 
   nextAtom.focus = createFocus(internal, relativePath)
   nextAtom.map = createStream(nextInternal)
-  ;(nextAtom as any)[INTERNAL] = nextInternal
+  nextAtom[INTERNAL] = nextInternal
   nextInternal.atom = nextAtom
   return nextAtom
 }

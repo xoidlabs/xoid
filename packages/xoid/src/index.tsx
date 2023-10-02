@@ -1,8 +1,8 @@
-import type { Atom, Stream, Init, GetState, Actions } from './types'
+import type { Atom, Stream, Init, GetState, Actions } from './internal/types'
 import { createSelector, createApi, INTERNAL } from './internal/utils'
 import { createInternal } from './internal/lite'
 
-export * from './types'
+export * from './internal/types'
 
 /**
  * Creates an atom with the first argument as the initial state.
@@ -11,12 +11,8 @@ export * from './types'
  */
 export function create<T>(): Stream<T>
 export function create<T>(init: Init<T>): Atom<T>
-export function create<T>(init: Init<T>, getActions: null): Atom<T>
 export function create<T, U>(init: Init<T>, getActions?: (atom: Atom<T>) => U): Atom<T> & Actions<U>
-export function create<T, U = undefined>(
-  init?: Init<T>,
-  getActions?: null | ((atom: Atom<T>) => U)
-) {
+export function create<T, U = undefined>(init?: Init<T>, getActions?: (atom: Atom<T>) => U) {
   const isFunction = typeof init === 'function'
   const internal = createInternal(
     (isFunction ? undefined : init) as T,
@@ -36,17 +32,18 @@ export function create<T, U = undefined>(
   return atom
 }
 
+export default create
+
+create.plugins = [] as ((atom: Atom<any>) => void)[]
+
+// the rest of the file is internal stuff
 const devtools = {
   send: <T,>(_atom: T) => void 0,
   wrap: <T,>(value: T): T => value,
 }
 
-// untyped
-const _create = create as any
-_create.symbol = INTERNAL
-_create.devtools = devtools
-
-// typed
-create.plugins = [] as ((atom: Atom<any>) => void)[]
-
-export default create
+// intentionally untyped
+;(create as any).internal = {
+  symbol: INTERNAL,
+  devtools,
+}

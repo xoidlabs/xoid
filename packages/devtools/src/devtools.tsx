@@ -1,14 +1,16 @@
 import { Atom as $Atom, create } from 'xoid'
 
-const _create = create as unknown as {
-  plugins: Function[]
-  devtools: {
-    send: (atom: Atom) => void
-    wrap: <T>(value: T, atom: Atom) => T
+const { plugins, internal } = create as typeof create & {
+  internal: {
+    readonly symbol: unique symbol
+    devtools: {
+      send: (atom: Atom) => void
+      wrap: <T>(value: T, atom: Atom) => T
+    }
   }
 }
 
-const INTERNAL: unique symbol = (create as any).symbol
+const INTERNAL: unique symbol = (internal as any).symbol
 
 type Atom = $Atom<any> & { debugValue: string; [INTERNAL]: any }
 
@@ -69,7 +71,7 @@ const devtools = () => {
     return () => void 0
   }
 
-  _create.plugins.push((atom: Atom) => {
+  plugins.push((atom: any) => {
     // devtools support
     Object.defineProperty(atom, 'debugValue', {
       set(debugValue: string) {
@@ -80,7 +82,7 @@ const devtools = () => {
     })
   })
 
-  _create.devtools.send = (atom: Atom) => {
+  internal.devtools.send = (atom: Atom) => {
     const internal = atom[INTERNAL]
     const key = internal.debugValue
     if (key) {
@@ -89,7 +91,7 @@ const devtools = () => {
     }
   }
 
-  _create.devtools.wrap = (item, atom) => {
+  internal.devtools.wrap = (item, atom) => {
     const { debugValue } = atom[INTERNAL]
     return debugValue ? createPathMembrane(item, [], atom) : item
   }

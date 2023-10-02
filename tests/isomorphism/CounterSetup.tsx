@@ -1,6 +1,7 @@
-import { Adapter, Atom } from 'xoid'
+import { Atom } from 'xoid'
+import { effect } from 'xoid/setup'
 
-export const CounterSetup = ($props: Atom<{ initialValue: number }>, { effect }: Adapter) => {
+export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   const $counter = $props.map((s) => s.initialValue)
 
   effect(() => {

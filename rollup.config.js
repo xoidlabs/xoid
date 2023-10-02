@@ -34,26 +34,9 @@ async function main() {
   }
 
   packages.forEach((pkg) => {
-    const {
-      dependencies,
-      peerDependencies,
-      main,
-      module,
-      types,
-    } = pkg.config
-
-    const external = [
-      ...Object.keys(dependencies || []),
-      ...Object.keys(peerDependencies || [])
-    ];
-
-    const maybeDevtools = (str) => pkg.name == '@xoid/devtools' ? str.replace('index', 'devtools') : str
-
     const basePath = path.relative(__dirname, pkg.dir)
     const outputPath = basePath.replace('packages/', 'dist/');
-    let input = path.join(basePath, maybeDevtools('src/index.tsx'));
     let copyPath = path.join(basePath, 'copy');
-    const output = []
 
     if(fs.existsSync(copyPath)) {
       copyTargets.push({ src: `${copyPath}/*`, dest: outputPath })
@@ -68,35 +51,64 @@ async function main() {
       copyTargets.push({ src: 'README.md', dest: outputPath })
     }
 
-    if(main) {
-      output.push({
-        file: path.join(outputPath, maybeDevtools(main)),
-        format: 'cjs',
-      })
-    }
-    
-    if(module) {
-      output.push({
-        file: path.join(outputPath, maybeDevtools(module)),
-        format: 'esm',
-      })
-    }
+    const configExports = pkg.config.exports || {'.': {
+      types: pkg.config.types,
+      module: pkg.config.module,
+      default: pkg.config.main,
+    }}
 
-    results.push({
-      input,
-      output,
-      external,
-      plugins,
-    });
+    const entries = Object.keys(configExports)
 
-    if(types) {
+    entries.forEach((entry) => {
+      const externalLookup = [
+        ...Object.keys(pkg.config.dependencies || []),
+        ...Object.keys(pkg.config.peerDependencies || []),
+        ...entries.filter(s => s !== '.' || s !== entry)
+      ];
+      const external = (name) => externalLookup.includes(/^((?:\.\/)?(?:.*?))(?:\/|$)/.exec(name)[1])
+
+      const entryOutputs = configExports[entry]
+      if(entry === '.') entry = 'index'
+
+
+
+
+      const input = path.join(basePath, 'src', entry + '.tsx');
+      const output = []
+
+
+      if(entryOutputs.default) {
+        output.push({
+          file: path.join(outputPath, entry + '.js'),
+          format: 'cjs',
+        })
+      }
+      
+      if(entryOutputs.module) {
+        output.push({
+          file: path.join(outputPath, entry + '.esm.js'),
+          format: 'esm',
+        })
+      }
+      
       results.push({
-        input: path.join('dist/ts-out', basePath, maybeDevtools('src/index.d.ts')),
-        output: { file: path.join(outputPath, 'index.d.ts'), format: 'es' },
+        input,
+        output,
         external,
-        plugins: [dts({})],
+        plugins,
       });
-    }
+
+      if(entryOutputs.types) {
+        results.push({
+          input: path.join('dist/ts-out', basePath, `src/${entry}.d.ts`),
+          output: { file: path.join(outputPath, `${entry}.d.ts`), format: 'es' },
+          external,
+          plugins: [dts({})],
+        });
+      }
+      
+    })
+
   });
   return results;
 }

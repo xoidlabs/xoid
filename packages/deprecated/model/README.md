@@ -1,3 +1,3 @@
-This is an internal library used by `xoid`
+Heavily experimental stuff. Deprecated. Might delete later.
 
 [xoid.dev](https://xoid.dev)

@@ -19,8 +19,8 @@ What makes **xoid** special, again, is its isomorphic component lifecycle API. W
 |---|---|---|---|---|
 | State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
-| Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
-| Dependency injection | `Adapter["inject"]` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
+| Lifecycle | `effect` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
+| Dependency injection | `inject` | `createContext`, `useContext` | `provide`, `inject` | `setContext`, `getContext` |
 
 
 ```js

@@ -1,12 +1,15 @@
-// This module is self contained. It doesn't have the following features:
+// This is a lightweight version of xoid that doesn't have the following features:
 // selectors, actions, `focus` and `map` methods.
+
+declare const voidOnly: unique symbol
+export type Destructor = () => void | { [voidOnly]: never }
 
 export type LiteAtom<T> = {
   value: T
   set(state: T): void
   update(fn: (state: T) => T): void
-  subscribe(fn: (value: T, previousValue: T) => void): () => void
-  watch(fn: (value: T, previousValue: T) => void): () => void
+  subscribe(fn: (state: T, prevState: T) => void | Destructor): () => void
+  watch(fn: (state: T, prevState: T) => void | Destructor): () => void
 }
 
 export type Internal<T> = {

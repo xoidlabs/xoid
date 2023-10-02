@@ -43,14 +43,14 @@
 </p>
 
 
-**xoid** (*ksoid or zoid*) is a framework-agnostic state management library. 
-**X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. Its the result of careful analyses of different state management tools and paradigms. It was designed to be simple and scalable.
+**xoid** (*"zoid"*) is a framework-agnostic state management library. 
+**X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. It's the result of careful analyses of different state management tools and paradigms. It was designed to be simple and scalable.
 
 The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API. It even has a basic support for observable streams. It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) that's able to run across multiple frameworks. 
 With xoid, you can move business logic out of components in a **truly** framework-agnostic manner.
 
 
-While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
+While doing all these, it also cares about its package size (~1.2kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
 
@@ -90,12 +90,15 @@ Visit [xoid.dev](https://xoid.dev) for detailed docs and recipes.
 
 ## Quick Tutorial
 
+> Basic usage of **xoid** can be learned within a few minutes.
+
 ### Atom
 
 Atoms are holders of state.
 
 ```js
 import create from 'xoid'
+// or: import { create } from 'xoid'
 
 const $count = create(3)
 console.log($count.value) // 3
@@ -117,7 +120,7 @@ const $count = create(5, (atom) => ({
 $count.actions.increment()
 ```
 
-There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
+Perhaps, the best feature of **xoid** is the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
 ```js
 import create from 'xoid'
@@ -133,6 +136,7 @@ $alpha.set(6)
 assert($atom.value !== previousValue) // ✅
 assert($atom.value.deeply.nested.alpha === 6) // ✅
 ```
+
 
 ### Derived state
 
@@ -166,13 +170,14 @@ const unsub = $atom.subscribe((state, previousState) => {
 // later
 unsub()
 ```
-> To cleanup side-effects, a function can be returned in the subscriber function. (Just like `React.useEffect`)
+> At this point, you've learned about `.set`, `.update`, `.subscribe`, `.watch`, `focus`, `.map` methods, and the `.value` getter. These are all methods of a **xoid** atom! 
 
-## Integrations
+## Framework Integrations
+
+Integrating with frameworks is so simple. No configuration, or context providers are needed. Currently all `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` packages export a hook called `useAtom`. 
 
 ### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React
 
-Just use **@xoid/react** and import `useAtom`. No context providers are needed.
 
 ```js
 import { useAtom } from '@xoid/react'
@@ -182,8 +187,6 @@ const state = useAtom(atom)
 ```
 
 ### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue
-
-Just use `@xoid/vue` and import `useAtom`.
 
 ```html
 <script setup>
@@ -201,8 +204,6 @@ const value = useAtom(myAtom)
 
 ### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte
 
-Just use `@xoid/svelte` and import `useAtom`.
-
 ```html
 <script>
   import { useAtom } from '@xoid/svelte'
@@ -214,53 +215,54 @@ Just use `@xoid/svelte` and import `useAtom`.
 <header>{$atom}</header>
 ```
 
-### 🔥 Isomorphic component logic
+## 🔥 Isomorphic component logic
 
-**xoid** takes component logic seriously. 
-You can - *but don't have to* - write serious component logic with **xoid**. The following function is called a "setup function" and it can run across multiple frameworks.
+This might be the most unique feature of **xoid** that sets it apart from other tools. With **xoid**, you can write component logic (including lifecycle) in a truly framework-agnostic manner. You can write ONCE, and run it across multiple frameworks. This feature is for you especially if:
+- You're a design system, or a headless UI library maintainer
+- You're using multiple frameworks in your project, or refactoring your code from one frameworks to another
+- You dislike React's render cycle and want a simpler, real closure for managing complex state
+
+The following is called a "setup" function:
 
 ```js
-import create, { Atom, Adapter } from 'xoid'
+import create, { Atom } from 'xoid'
+import { effect, inject } from 'xoid/setup'
 import { ThemeSymbol } from './theme'
 
-export const CounterSetup = ($props: Atom<{ initialValue: number }>, adapter: Adapter) => {
+export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   const { initialValue } = $props.value
 
   const $counter = create(initialValue)
   const increment = () => $counter.update((s) => s + 1)
   const decrement = () => $counter.update((s) => s - 1)
 
-  adapter.effect(() => {
+  effect(() => {
     console.log('mounted')
     return () => console.log('unmounted')
   })
 
-  const theme = adapter.inject(ThemeSymbol)
+  const theme = inject(ThemeSymbol)
   console.log("theme is obtained using context:", theme)
 
   return { $counter, increment, decrement }
 }
 ```
-
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like above. With **xoid**, you can effectively replace the following framework-specific APIs:
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like this. With this feature, you can effectively replace the following framework-specific APIs:
 
 |  | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
 | State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
-| Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
-| Dependency injection | `Adapter["inject"]` | `useContext` | `inject` | `getContext` |
+| Lifecycle | `effect` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
+| Dependency injection | `inject` | `useContext` | `inject` | `getContext` |
 
-> **✨ Opinionated comment ✨**
->
-> If you're using `@xoid/react`, you won't ever need hooks like **useMemo**, **useCallback**, **useRef**, or **useEvent**. **xoid**'s mental model of component logic, just like Vue and Svelte, is a static closure instead of a render function. From a static closure's perspective, most hooks are complete bloat. Bringing this kind of component mental model to React was one of the first reasons behind **xoid**'s existence.
 
-### Redux Devtools
+## Redux Devtools
 
-Import `@xoid/devtools` and set a `debugValue` to your atom. It will send values to the Redux Devtools Extension.
+Import `@xoid/devtools` and set a `debugValue` to your atom. It will send values and action names to the Redux Devtools Extension.
 
 ```js
-import { devtools } from '@xoid/devtools'
+import devtools from '@xoid/devtools'
 import create from 'xoid'
 devtools() // run once
 
@@ -270,18 +272,17 @@ const atom = create(
     const $alpha = atom.focus(s => s.alpha)
     return {
       inc: () => $alpha.update(s => s + 1),
-      resetState: () => atom.set({ alpha: 5 })
-      deeply: { nested: { action: () => $alpha.set(5) } }
+      deeply: { nested: { action: () => $alpha.update((s) => s + 1) } }
     }
   }
 )
 
 atom.debugValue = 'myAtom' // enable watching it by the devtools
 
-const { deeply, incrementAlpha } = atom.actions // destructuring is OK
-incrementAlpha() // logs "(myAtom).incrementAlpha"
-deeply.nested.action() // logs "(myAtom).deeply.nested.action"
-atom.focus(s => s.alpha).set(25)  // logs "(myAtom) Update ([timestamp])
+const { deeply, inc } = atom.actions
+inc() // "(myAtom).inc"
+deeply.nested.action() // "(myAtom).deeply.nested.action"
+atom.focus(s => s.alpha).set(25)  // "(myAtom) Update ([timestamp])
 ```
 
 ## Finite state machines

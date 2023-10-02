@@ -1,6 +1,4 @@
-declare const voidOnly: unique symbol
-type Destructor = () => void | { [voidOnly]: never }
-export type EffectCallback = () => void | Destructor
+import { Destructor } from './lite'
 
 export type Atom<T> = {
   value: T
@@ -29,8 +27,6 @@ export type Stream<T> = {
   ): Stream<Truthy<U>>
 }
 
-export type Actions<U> = { actions: U; debugValue?: string }
-
 export type GetState = {
   <T>(atom: Atom<T>): T
   <T>(getState: () => T, subscribe: (fn: () => void) => () => void): T
@@ -38,19 +34,6 @@ export type GetState = {
 
 export type Init<T> = T | ((get: GetState) => T)
 
-export type Value<T extends Atom<any>> = T['value']
-
-export type SetState<T extends Atom<any>> = T['set']
-
-export type UpdateState<T extends Atom<any>> = T['update']
+export type Actions<U> = { actions: U; debugValue?: string }
 
 export type Truthy<T> = Exclude<T, false | 0 | '' | null | undefined>
-
-// Following types are common for framework integrations, so they reside in this package.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-interface
-export interface InjectionKey<T> {}
-
-export type Adapter = {
-  inject: <T>(symbol: InjectionKey<T>) => T
-  effect: (callback: EffectCallback) => void
-}

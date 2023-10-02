@@ -1,9 +1,31 @@
 {
   "name": "@xoid/react",
-  "version": "1.0.0-beta.9",
+  "version": "1.0.0-beta.10",
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "module": "./index.esm.js",
+      "default": "./index.js"
+    },
+    "./useAtom": {
+      "types": "./useAtom.d.ts",
+      "module": "./useAtom.esm.js",
+      "default": "./useAtom.js"
+    },
+    "./useAdapter": {
+      "types": "./useAdapter.d.ts",
+      "module": "./useAdapter.esm.js",
+      "default": "./useAdapter.js"
+    },
+    "./useConstant": {
+      "types": "./useConstant.d.ts",
+      "module": "./useConstant.esm.js",
+      "default": "./useConstant.js"
+    }
+  },
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
   "homepage": "https://xoid.dev",
@@ -31,7 +53,7 @@
     "use-sync-external-store": "^1.1.0"
   },
   "peerDependencies": {
-    "xoid": ">=1.0.0-beta.9",
+    "xoid": ">=1.0.0-beta.10",
     "react": "*"
   }
 }
