@@ -17,8 +17,7 @@ export const useSelector = <T, U>(
     equals
   )
 
-const getKeys = <T,>(item: T) =>
-  Array.isArray(item) ? item.map((_, i) => i) : Object.keys(item as any)
+const getKeys = <T,>(item: T) => (Array.isArray(item) ? item.map((_, i) => i) : Object.keys(item))
 
 function shallowEqualArrays<T>(a: T[], b: T[]) {
   const len = a.length

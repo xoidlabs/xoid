@@ -159,7 +159,7 @@ export const createApi = <T,>(
 
   nextAtom.focus = createFocus(internal, relativePath)
   nextAtom.map = createStream(nextInternal)
-  ;(nextAtom as any)[INTERNAL] = nextInternal
+  nextAtom[INTERNAL] = nextInternal
   nextInternal.atom = nextAtom
   return nextAtom
 }

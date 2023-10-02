@@ -10,7 +10,6 @@
     "target": "es5",
     "jsx": "react-jsx",
     "downlevelIteration": true,
-    "strict": true,
     "importHelpers": true,
     "isolatedModules": true,
     "declaration": true,
