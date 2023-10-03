@@ -26,7 +26,7 @@ export function create<T, U = undefined>(init?: Init<T>, getActions?: (atom: Ato
   const actions = getActions?.(atom)
   Object.defineProperty(atom, 'actions', {
     get() {
-      return devtools.wrap(actions)
+      return devtools.wrap(actions, atom)
     },
   })
   return atom
@@ -39,7 +39,7 @@ create.plugins = [] as ((atom: Atom<any>) => void)[]
 // the rest of the file is internal stuff
 const devtools = {
   send: <T,>(_atom: T) => void 0,
-  wrap: <T,>(value: T): T => value,
+  wrap: <T,>(value: T, _atom: Atom<unknown>): T => value,
 }
 
 // intentionally untyped

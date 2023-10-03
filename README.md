@@ -29,7 +29,7 @@
 
 <p align="center">
   <a href="https://bundlephobia.com/result?p=xoid" >
-    <img alt="Bundle Size" src="https://img.shields.io/bundlephobia/min/xoid?label=bundle%20size&style=flat&colorA=4f2eb3&colorB=4f2eb3">
+    <img alt="Bundle Size" src="https://deno.bundlejs.com/badge?q=xoid@1.0.0-beta.9&treeshake=[*]&">
   </a>
   <a href="https://www.npmjs.com/package/xoid">
     <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
@@ -44,13 +44,18 @@
 
 
 **xoid** (*"zoid"*) is a framework-agnostic state management library. 
-**X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. It's the result of careful analyses of different state management tools and paradigms. It was designed to be simple and scalable.
+**X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state.
+It's the result of careful analyses of different state management tools and paradigms. 
+It was designed to be simple and scalable.
 
-The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API. It even has a basic support for observable streams. It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) that's able to run across multiple frameworks. 
+**xoid** aims to make atomic state management approachable.
+You can use it for managing global state, local component state, finite state machines, and even observable streams in the same easy-to-learn API. It even has a basic support for observable streams. 
+It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) that's able to run across multiple frameworks. 
 With xoid, you can move business logic out of components in a **truly** framework-agnostic manner.
 
 
-While doing all these, it also cares about its package size (~1.2kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
+While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
+
 
 To install, run the following command:
 
@@ -191,7 +196,6 @@ const state = useAtom(atom)
 ```html
 <script setup>
 import { useAtom } from '@xoid/vue'
-import { myAtom } from './my-atom'
 
 const value = useAtom(myAtom)
 </script>
@@ -206,10 +210,9 @@ const value = useAtom(myAtom)
 
 ```html
 <script>
-  import { useAtom } from '@xoid/svelte'
-  import { myAtom } from './my-atom'
-  let atom = useAtom(myAtom)
+import { useAtom } from '@xoid/svelte'
 
+let atom = useAtom(myAtom)
 </script>
 
 <header>{$atom}</header>
@@ -217,7 +220,7 @@ const value = useAtom(myAtom)
 
 ## 🔥 Isomorphic component logic
 
-This might be the most unique feature of **xoid** that sets it apart from other tools. With **xoid**, you can write component logic (including lifecycle) in a truly framework-agnostic manner. You can write ONCE, and run it across multiple frameworks. This feature is for you especially if:
+This might be the most unique feature of **xoid**. With **xoid**, you can write component logic (including lifecycle)  ONCE, and run it across multiple frameworks. This feature is for you especially if:
 - You're a design system, or a headless UI library maintainer
 - You're using multiple frameworks in your project, or refactoring your code from one frameworks to another
 - You dislike React's render cycle and want a simpler, real closure for managing complex state
@@ -247,7 +250,12 @@ export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   return { $counter, increment, decrement }
 }
 ```
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like this. With this feature, you can effectively replace the following framework-specific APIs:
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like this. 
+
+> We're aware that not all users need this feature, so we've built it tree-shakable. If `useAtom` is all you need, you may choose to import it from `@xoid/[FRAMEWORK]/useAtom`. 
+
+
+With this feature, you can effectively replace the following framework-specific APIs:
 
 |  | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
@@ -333,6 +341,7 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 - `@xoid/svelte` - **Svelte** integration
 - `@xoid/devtools` - **Redux Devtools** integration
 - `@xoid/lite` - Lighter version with less features
+- `@xoid/proxy` - `toProxy` and `toAtom` helpers for MobX-like proxy state
 - `@xoid/feature` - A plugin system oriented in ES6 classes
 
 

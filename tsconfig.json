@@ -4,17 +4,19 @@
     "baseUrl": ".",
     "paths": {
       "xoid": ["./packages/xoid/src"],
+      "@xoid/devtools": ["./packages/devtools/src/devtools"],
       "xoid/*": ["./packages/xoid/src/*"],
       "@xoid/*": ["./packages/*/src"]
     },
-    "target": "es5",
+    "target": "ES6",
     "jsx": "react-jsx",
     "downlevelIteration": true,
     "importHelpers": true,
     "isolatedModules": true,
     "declaration": true,
     "declarationDir": "dist/ts-out",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "moduleResolution": "Node"
   },
   "include": ["packages", "tests", "examples"]
 }
