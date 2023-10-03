@@ -1,4 +1,4 @@
-import { toProxy, toAtom, produce } from '@xoid/proxy'
+import { toProxy, toAtom } from '@xoid/proxy'
 import { create } from 'xoid'
 
 const consoleError = console.error

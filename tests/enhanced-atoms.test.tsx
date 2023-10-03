@@ -77,3 +77,26 @@ it('enhanced atoms also work when updates are nested', () => {
   expect(fn).toBeCalledTimes(1)
   expect($source.value.deep.value).toBe(25)
 })
+
+it('enhanced atoms should not accidentally override internal set', () => {
+  const fn = jest.fn()
+  const $source = create({ deep: { value: 24 } })
+
+  const $enhanced = create((get) => get($source))
+  $enhanced.set = (value: typeof $enhanced.value) => {
+    fn()
+    $source.set(value)
+  }
+
+  expect(fn).toBeCalledTimes(0)
+  expect($source.value.deep.value).toBe(24)
+
+  $enhanced.focus((s) => s.deep.value).update((s) => s + 1)
+
+  expect(fn).toBeCalledTimes(1)
+  expect($source.value.deep.value).toBe(25)
+
+  // this time editing source
+  $source.focus((s) => s.deep.value).update((s) => s + 1)
+  expect(fn).toBeCalledTimes(1)
+})
