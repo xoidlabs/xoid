@@ -4,6 +4,8 @@ import { useConstant } from './useConstant'
 import { useAdapter } from './useAdapter'
 
 export { useAtom } from './useAtom'
+export { useConstant } from './useConstant'
+export { createProvider } from './useAdapter'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
 const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect

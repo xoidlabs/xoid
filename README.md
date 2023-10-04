@@ -219,7 +219,7 @@ let atom = useAtom(myAtom)
 
 This might be the most unique feature of **xoid**. With **xoid**, you can write component logic (including lifecycle) ONCE, and run it across multiple frameworks. This feature is for you especially if:
 - You're a design system, or a headless UI library maintainer
-- You're using multiple frameworks in your project, or refactoring your code from one frameworks to another
+- You're using multiple frameworks in your project, or refactoring your code from one framework to another
 - You dislike React's render cycle and want a simpler, real closure for managing complex state
 
 The following is called a "setup" function:

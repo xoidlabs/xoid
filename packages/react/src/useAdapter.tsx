@@ -23,7 +23,7 @@ const inject = <T,>(symbol: InjectionKey<T>): T => {
   return reactInternals.ReactCurrentDispatcher.current.readContext(contextMap.get(symbol))
 }
 
-export const useAdapter = <T,>(fn: () => T) => {
+export const useAdapter = <T,>(fn: () => T): T => {
   const adapter = useConstant(() => createAdapter({ inject }))
   useEffect(() => {
     adapter.mount()

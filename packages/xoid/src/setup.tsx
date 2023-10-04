@@ -22,7 +22,10 @@ export const inject = <T,>(symbol: InjectionKey<T>): T => (adapter.inject as any
 
 export const effect = (callback: EffectCallback): void => (adapter.effect as any)(callback)
 
-export function setup<T>(this: { inject: typeof inject; effect: typeof effect }, fn: () => T): T {
+export function setup<T>(
+  this: { inject: typeof inject; effect: typeof effect } | void,
+  fn: () => T
+): T {
   const prevAdapter = adapter
   adapter = this as any
   const result = fn()
