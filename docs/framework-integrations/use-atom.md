@@ -20,4 +20,3 @@ const num = useAtom(numberAtom);
 // in a React component
 const name = useAtom(personAtom.focus('name'));
 ```
-

@@ -32,11 +32,11 @@ const createMachine = () => {
   const gas = { name: "vapor", actions: { condense } };
 
   const machine = create(solid)
-  return store;
+  return machine;
 }
 
 const App = () => {
-  const { name, actions } = useStore(createMachine)
+  const { name, actions } = useAtom(createMachine)
   return (
     <div>
       {name}

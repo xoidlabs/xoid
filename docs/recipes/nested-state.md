@@ -3,7 +3,6 @@ id: nested-state
 title: Working with nested state
 ---
 
-TLDR:
 Before **xoid**:
 ```js
 setState((state) =>  {
@@ -17,7 +16,8 @@ setState((state) =>  {
   }
 })
 ```
-after **xoid**:
+
+After **xoid**:
 ```js
 atom.focus(s => s.deeply.nested.value).update(s => s + 1)
 ```
