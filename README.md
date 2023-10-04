@@ -46,13 +46,18 @@
 
 **xoid** is a framework-agnostic state management library. 
 **X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. 
-It's the result of careful analyses of different state management tools and paradigms. It was designed to be simple and scalable.
+It's the result of careful analyses of different state management tools and paradigms. It was designed to be simple and scalable.The API reflects the following philosophy:
+
+**xoid** can handle global state, local component state, finite state machines, and observable streams in the single API. 
+Its versatility comes from its good foundations. It believes in the following philosophy:
 
 
-The biggest aim of **xoid** is to unify global state, local component state, and finite state machines in the single API. 
-It has a basic support for observable streams. 
+> Starting with good primitives is a profound way to build an API.
+> You don't have to invent patterns in such an API, you discover them.
+
+
 It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) that's able to run across multiple frameworks. 
-With xoid, you can move business logic out of components in a **truly** framework-agnostic manner.
+With **xoid**, you can move business logic out of components in a **truly** framework-agnostic manner.
 
 While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. More features are explained below, and the [documentation website](https://xoid.dev).
 
@@ -329,9 +334,6 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 - Same API to rule them all!
   - Global state, Local state, FSMs, Streams
   - React, Vue, Svelte, Vanilla JavaScript
-
-> Starting with good primitives is a profound way to build an API.
-> You don't have to invent patterns in such an API, you discover them.
 
 ## Packages
 
