@@ -46,13 +46,13 @@
 
 **xoid** is a framework-agnostic state management library. 
 **X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. 
-It's the result of careful analyses of different state management tools and paradigms. It was designed to be simple and scalable.The API reflects the following philosophy:
+It's the result of careful analyses of different state management tools and paradigms. It was designed to be simple and scalable. 
 
-**xoid** can handle global state, local component state, finite state machines, and observable streams in the single API. 
-Its versatility comes from its good foundations. It believes in the following philosophy:
+**xoid** unifies global state, local component state, finite state machines, and observable streams in the single API. Its versatility comes from its good foundations. It believes in the following philosophy:
 
 
 > Starting with good primitives is a profound way to build an API.
+> 
 > You don't have to invent patterns in such an API, you discover them.
 
 
