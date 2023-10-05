@@ -31,6 +31,7 @@ const devtools = (instanceName = 'xoid') => {
   plugins.push((atom: any) => {
     // devtools support
     Object.defineProperty(atom, 'debugValue', {
+      configurable: true,
       set(debugValue: string) {
         const internal = atom[INTERNAL]
         internal.debugValue = debugValue

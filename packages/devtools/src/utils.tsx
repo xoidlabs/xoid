@@ -87,7 +87,7 @@ export const createPathMembrane = (obj: any, path: string[] = [], atom: Atom): a
         attemptTimes.i++
         action.type = action.type + ' #' + attemptTimes.i
       }
-      notify({ ...action, payload: args })
+      notify({ ...action, payload: target.length ? args : [] })
       const result = Reflect.apply(target, thisArg, args)
       // @ts-ignore
       if (isAsync) result.then(() => notify({ ...action, end: true }))
