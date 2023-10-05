@@ -5,13 +5,17 @@ title: useSetup
 
 `import { useSetup } from '@xoid/react'`
 
-This export can be used for creating local state inside a React component. It creates a value exactly **once**. Its basic usage is similar to a `React.useMemo` call. 
+`import { useSetup } from '@xoid/svelte'`
+
+`import { useSetup } from '@xoid/vue'`
+
+## Basic usage
 
 ```js
 import { create } from 'xoid'
 import { useSetup } from '@xoid/react'
 
-// inside React
+// inside a component
 const $num = useSetup(() => create(5))
 ```
 
@@ -31,23 +35,22 @@ const App = (props: Props) => {
 }
 ```
 
-## React adapter (Advanced)
+## Importance of `useSetup` for React users
 
-Second callback argument is the React adapter. Most **xoid** users would not need to use this. When the second argument is not destructured, this has no runtime overhead. Its type is exported from the `@xoid/react` as the following.
+TLDR: Mental model of frameworks like Svelte and Vue are clearly advantageous over React, and `useSetup` brings the same to React.
 
-```js
-type ReactAdapter = {
-  read: <T>(context: React.Context<T>) => T
-  effect: (fn: React.EffectCallback) => void
-}
-```
+Compared to the other two frameworks, a React component's closure is not a real closure, it's a render cycle. This is a huge footgun, however this is even marketed as a "mental model" with arguments like "these constraints force you to write good code", but we think that it's clear that React hooks are a leaky idea, and they're generating more problems than they try to solve. 
 
-### `.effect`
+- There should be no need for hooks such as `useCallback`, `useMemo`, `useRef`, or the new `useEvent` ever. Frameworks like Vue or Svelte never needs such abstractions, since they operate in a real closure.
+- What would be wrong with being able to call `useContext` or `useEffect` conditionally? React's lack of closure forces the runtime to rely on the hook order, and as a result, developers are losing a lot of flexibility.
 
-`.effect` method simply connect to a `useEffect` call internally. 
+### `effect`
+
+With **xoid**, you can call `effect` the way you want. You don't have to worry about calling it conditionally. You can call it mutliple times. It'll connect to the same `useEffect` call. 
 
 ```js
 import { useSetup } from '@xoid/react'
+import { effect } from 'xoid/setup'
 
 const App = (props: Props) => {
   useSetup((_, { effect }) => {
@@ -67,10 +70,10 @@ const App = (props: Props) => {
 }
 ```
 
-You can call as many of them as you want. You can even call them conditionally. They'll connect to the same `useEffect` call. 
 
 ```js
 import { useSetup } from '@xoid/react'
+import { effect } from 'xoid/setup'
 
 const App = (props: Props) => {
   useSetup((_, { effect }) => {
@@ -90,17 +93,20 @@ const App = (props: Props) => {
 }
 ```
 
-### `.read`
+### `inject`
 
-`.read` can be used to read the context conditionally. **There's an important note about the `.read` method.** It's the only experimental feature of `@xoid/react` and relies on React internals. This part of React *MIGHT* change in the future. You can consider the `.read` method unsafe and not use it if your React version is -somehow- not fixed. When it's not used, it has no runtime effect. You can see the implementation [here](https://github.com/onurkerimov/xoid/tree/master/packages/react/src/index.tsx). The good thing is, it's known that `react-relay` uses the same internal, and it's even supported by `preact/compat`.
+Same applies for `inject`. Calling useContext conditionally is possible in React now.
+
+> Warning: `@xoid/react`'s way of implementing `inject` relies on React internals that *MIGHT* change in the future. This works properly since the React version 16 to the latest version 18 as of now, however if you choose to not use it, we would like to assure you that it has no runtime effect when it's not called. You can see the implementation [here](https://github.com/onurkerimov/xoid/tree/master/packages/react/src/index.tsx). The good thing is, it's known that `react-relay` uses the same internal, and it's even supported by `preact/compat`. So it's likely there to stay, or at least an equivalent mechanism is there to stay.
 
 ```js
 import { useSetup } from '@xoid/react'
-import { ThemeContext } from './some-module'
+import { inject } from 'xoid/setup'
+import { ThemeSymbol } from './some-module'
 
 const App = (props: Props) => {
   useSetup((_, adapter) => {
-    const theme = adapter.read(ThemeContext)
+    const theme = inject(ThemeSymbol)
     // do something with the theme
   })
   ...

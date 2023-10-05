@@ -5,18 +5,23 @@ title: useAtom
 
 `import { useAtom } from '@xoid/react'`
 
-React hook that's used for consuming an atom. Optional second argument either takes a selector function or a string key.
+`import { useAtom } from '@xoid/svelte'`
+
+`import { useAtom } from '@xoid/vue'`
+
+
+Used for subscribing a component to an atom. 
 
 ```js
 import { create } from 'xoid';
-import { useAtom } from '@xoid/react';
+import { useAtom } from '@xoid/react'; // or '@xoid/vue' or '@xoid/svelte'
 
-const numberAtom = create(5);
-const personAtom = create({ name: 'John', surname: 'Doe' });
+const $number = create(5);
+const $person = create({ name: 'John', surname: 'Doe' });
 
-// in a React component
-const num = useAtom(numberAtom);
+// inside a component
+const number = useAtom($number);
 
-// in a React component
-const name = useAtom(personAtom.focus('name'));
+// inside a component
+const name = useAtom($person.focus('name'));
 ```

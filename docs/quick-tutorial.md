@@ -10,7 +10,7 @@ title: Quick Tutorial
 Atoms are holders of state.
 
 ```js
-import create from 'xoid'
+import create from 'xoid' // or: import { create } from 'xoid'
 
 const $count = create(3)
 console.log($count.value) // 3
@@ -26,7 +26,7 @@ import create from 'xoid'
 
 const $count = create(5, (atom) => ({
   increment: () => atom.update(s => s + 1),
-  decrement: () => atom.update(s => s - 1)
+  decrement: () => atom.value-- // `.value` setter is supported too
 }))
 
 $count.actions.increment()
@@ -48,6 +48,7 @@ $alpha.set(6)
 assert($atom.value !== previousValue) // ✅
 assert($atom.value.deeply.nested.alpha === 6) // ✅
 ```
+
 
 ### Derived state
 
@@ -81,4 +82,4 @@ const unsub = $atom.subscribe((state, previousState) => {
 // later
 unsub()
 ```
-> To cleanup side-effects, a function can be returned in the subscriber function.
+> All methods of a **xoid** atom are covered up to this point. This concludes the basic usage! 🎉

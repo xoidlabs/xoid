@@ -43,41 +43,46 @@ npm install @xoid/svelte
 
 ## Isomorphic component logic
 
-**xoid** takes component logic seriously. 
-You can - *but don't have to* - write serious component logic with it. The following *setup function* can run across multiple frameworks.
+This might be the most unique feature of **xoid**. With **xoid**, you can write component logic (including lifecycle) ONCE, and run it across multiple frameworks. This feature is for you especially if:
+- You're a design system, or a headless UI library maintainer
+- You're using multiple frameworks in your project, or refactoring your code from one framework to another
+- You dislike React's render cycle and want a simpler, real closure for managing complex state
+
+The following is called a "setup" function:
 
 ```js
-import create, { Atom, Adapter } from 'xoid'
+import create, { Atom } from 'xoid'
+import { effect, inject } from 'xoid/setup'
 import { ThemeSymbol } from './theme'
 
-export const CounterSetup = ($props: Atom<{ initialValue: number }>, adapter: Adapter) => {
+export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   const { initialValue } = $props.value
 
   const $counter = create(initialValue)
   const increment = () => $counter.update((s) => s + 1)
   const decrement = () => $counter.update((s) => s - 1)
 
-  adapter.effect(() => {
+  effect(() => {
     console.log('mounted')
     return () => console.log('unmounted')
   })
 
-  const theme = adapter.inject(ThemeSymbol)
+  const theme = inject(ThemeSymbol)
   console.log("theme is obtained using context:", theme)
 
   return { $counter, increment, decrement }
 }
 ```
+All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like this. 
 
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like above. With **xoid**, you can effectively replace the following framework-specific APIs:
+> We're aware that not all users need this feature, so we've built it tree-shakable. If `useAtom` is all you need, you may choose to import it from `'@xoid/[FRAMEWORK]/useAtom'`. 
+
+
+With this feature, you can effectively replace the following framework-specific APIs:
 
 |  | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
 | State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
-| Lifecycle | `Adapter["effect"]` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
-| Dependency injection | `Adapter["inject"]` | `useContext` | `inject` | `getContext` |
-
-> **✨ Opinionated comment ✨**
->
-> If you're using `@xoid/react`, you won't ever need hooks like **useMemo**, **useCallback**, **useRef**, or **useEvent**. **xoid**'s mental model of component logic, just like Vue and Svelte, is a static closure instead of a render function. From a static closure's perspective, most hooks are complete bloat. Bringing this kind of component mental model to React was one of the first reasons behind **xoid**'s existence.
+| Lifecycle | `effect` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
+| Dependency injection | `inject` | `useContext` | `inject` | `getContext` |
