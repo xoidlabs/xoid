@@ -1,0 +1,34 @@
+.wrapper {
+  display: flex;
+  width: fit-content;
+  font-family: sans-serif;
+  margin: 100px auto;
+  font-size: 50px;
+  text-align: center;
+  line-height: 100px;
+  user-select: none;
+}
+
+.container {
+  flex: 1;
+  width: 100px;
+  height: 100px;
+  margin: 0 10px;
+  border-radius: 50%;
+  color: white;
+}
+
+.actions {
+  display: flex;
+}
+
+.actions button {
+  -webkit-appearance: none;
+  border: none;
+  flex: 1;
+  height: 50px;
+  font-size: 25px;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+}
