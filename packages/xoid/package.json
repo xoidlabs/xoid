@@ -21,7 +21,7 @@
   "homepage": "https://xoid.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/onurkerimov/xoid",
+    "url": "https://github.com/xoidlabs/xoid",
     "directory": "./packages/xoid"
   },
   "license": "MIT",
