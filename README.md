@@ -86,6 +86,9 @@ Visit <a href="https://xoid.dev">xoid.dev</a> for detailed docs and recipes.
 
 - [Transient update resize observer](https://github.com/onurkerimov/xoid/blob/master/examples/transient-update-resize-observer) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/transient-update-resize-observer)
 
+- [Redux Devtools](https://github.com/onurkerimov/xoid/blob/master/examples/redux-devtools) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/redux-devtools)
+
+
 - [xoid vs useReducer vs useMethods](https://githubbox.com/onurkerimov/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods)
 
 
@@ -339,7 +342,6 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 - `@xoid/devtools` - **Redux Devtools** integration
 - `@xoid/lite` - Lighter version with less features
 - `@xoid/proxy` - Helpers for MobX-like proxy state
-- `@xoid/feature` - A plugin system oriented in ES6 classes
 
 
 ## Thanks
