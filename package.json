@@ -12,11 +12,21 @@
       "packages/*"
     ]
   },
+  "filesize": {
+    "track": [
+      "./dist/xoid/index.js",
+      "./dist/xoid/index.esm.js",
+      "./dist/lite/index.js",
+      "./dist/lite/index.esm.js"
+    ]
+  },
   "scripts": {
     "build": "rollup --config",
-    "test": "jest"
+    "test": "jest",
+    "filesize": "filesize"
   },
   "devDependencies": {
+    "@ampproject/filesize": "^4.3.0",
     "eslint": "^7.5.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-react-app": "^6.0.0",
@@ -47,7 +57,7 @@
     "rollup-plugin-dts": "^4.0.0",
     "rollup-plugin-typescript2": "^0.30.0",
     "svelte": "^3.59.1",
-    "ts-jest": "^26.4.1",
+    "ts-jest": "26.5.2",
     "typescript": "^4.4.3",
     "use-sync-external-store": "^1.1.0",
     "vue": ">=3.2.30",
