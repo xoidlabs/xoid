@@ -1,28 +1,28 @@
 <p align="center">
   <a href="https://xoid.dev">
-    <img width="560" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-full.svg" />
+    <img width="560" src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/logo-full.svg" />
   </a>
 </p> 
 
 <p align="center">
   <a href="#-react">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="14"/>
+    <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/react.ico" width="14"/>
     React
   </a>&nbsp;&nbsp;
   <a href="#-vue">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="14"/>
+    <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/vue.png" width="14"/>
     Vue
   </a>&nbsp;&nbsp;
   <a href="#-svelte">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="14"/>
+    <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/svelte.png" width="14"/>
     Svelte
   </a>&nbsp;&nbsp;
   <a href="#subscriptions">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/js.png" width="14"/>
+    <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/js.png" width="14"/>
     Vanilla JS
   </a>&nbsp;&nbsp;
   <a href="#redux-devtools">
-    <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/redux.svg" width="14"/>
+    <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/redux.svg" width="14"/>
     Redux Devtools
   </a>
 </p>
@@ -39,7 +39,7 @@
     <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=4f2eb3&colorB=4f2eb3"/>
   </a>
   <a href="https://www.npmjs.com/package/xoid">
-    <img alt="License" src="https://img.shields.io/github/license/onurkerimov/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
+    <img alt="License" src="https://img.shields.io/github/license/xoidlabs/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
   </a>
 </p>
 
@@ -72,24 +72,24 @@ Visit <a href="https://xoid.dev">xoid.dev</a> for detailed docs and recipes.
 
 ## Examples
 
-- [Counter](https://github.com/onurkerimov/xoid/blob/master/examples/counter) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/counter)
+- [Counter](https://github.com/xoidlabs/xoid/blob/master/examples/counter) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/counter)
 
-- [Todos (Basic)](https://github.com/onurkerimov/xoid/blob/master/examples/todos-basic) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/todos-basic)
+- [Todos (Basic)](https://github.com/xoidlabs/xoid/blob/master/examples/todos-basic) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/todos-basic)
 
-- [Todos (Filtered)](https://github.com/onurkerimov/xoid/blob/master/examples/todos-filtered) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/todos-filtered)
+- [Todos (Filtered)](https://github.com/xoidlabs/xoid/blob/master/examples/todos-filtered) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/todos-filtered)
 
-- [Celcius-Fahrenheit conversion](https://github.com/onurkerimov/xoid/blob/master/examples/celcius-fahrenheit) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/celcius-fahrenheit)
+- [Celcius-Fahrenheit conversion](https://github.com/xoidlabs/xoid/blob/master/examples/celcius-fahrenheit) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/celcius-fahrenheit)
 
-- [Finite state stopwatch](https://github.com/onurkerimov/xoid/blob/master/examples/finite-state-stopwatch) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/finite-state-stopwatch)
+- [Finite state stopwatch](https://github.com/xoidlabs/xoid/blob/master/examples/finite-state-stopwatch) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/finite-state-stopwatch)
 
-- [Dots and arrows](https://githubbox.com/onurkerimov/xoid/tree/master/examples/dots-and-arrows) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/dots-and-arrows)
+- [Dots and arrows](https://githubbox.com/xoidlabs/xoid/tree/master/examples/dots-and-arrows) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/dots-and-arrows)
 
-- [Transient update resize observer](https://github.com/onurkerimov/xoid/blob/master/examples/transient-update-resize-observer) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/transient-update-resize-observer)
+- [Transient update resize observer](https://github.com/xoidlabs/xoid/blob/master/examples/transient-update-resize-observer) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/transient-update-resize-observer)
 
-- [Redux Devtools](https://github.com/onurkerimov/xoid/blob/master/examples/redux-devtools) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/redux-devtools)
+- [Redux Devtools](https://github.com/xoidlabs/xoid/blob/master/examples/redux-devtools) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/redux-devtools)
 
 
-- [xoid vs useReducer vs useMethods](https://githubbox.com/onurkerimov/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/onurkerimov/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods)
+- [xoid vs useReducer vs useMethods](https://githubbox.com/xoidlabs/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/xoid-vs-usereducer-vs-usemethods)
 
 
 
@@ -181,7 +181,7 @@ unsub()
 
 Integrating with frameworks is so simple. No configuration, or context providers are needed. Currently all `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` packages export a hook called `useAtom`. 
 
-### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React
+### <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/react.ico" width="16"/> React
 
 
 ```js
@@ -191,7 +191,7 @@ import { useAtom } from '@xoid/react'
 const state = useAtom(atom)
 ```
 
-### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue
+### <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/vue.png" width="16"/> Vue
 
 ```html
 <script setup>
@@ -206,7 +206,7 @@ const value = useAtom(myAtom)
 ```
 
 
-### <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte
+### <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte
 
 ```html
 <script>
@@ -257,7 +257,7 @@ All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `u
 
 With this feature, you can effectively replace the following framework-specific APIs:
 
-|  | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
+|  | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
 | State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
@@ -320,7 +320,7 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 
 ## Why **xoid**?
 
-<img align="right" width="50%" src="https://raw.githubusercontent.com/onurkerimov/xoid/master/assets/diagram.png" alt="Venn diagram that shows that xoid is able to unify global, local state, and finite state machines across React, Vue, Svelte, and vanilla JS">
+<img align="right" width="50%" src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/diagram.png" alt="Venn diagram that shows that xoid is able to unify global, local state, and finite state machines across React, Vue, Svelte, and vanilla JS">
 
 - Easy to learn
 - Small bundle size
