@@ -24,7 +24,7 @@ async function main() {
   });
 
   if (!process.env.TARGET) {
-    console.log('Found following packages:')
+    console.log('Found the following packages:')
     packages.forEach((pkg) => console.log('- ', pkg.name))
   } else {
     packages = packages.filter((pkg) => pkg.name === process.env.TARGET)
@@ -40,15 +40,13 @@ async function main() {
       copyTargets.push({ src: `${copyPath}/*`, dest: outputPath })
     }
     ['package.json', 'README.md'].forEach((fileName) => {
-      const packageConfigFile = path.join(basePath, fileName)
-      if(fs.existsSync(packageConfigFile)) {
-        copyTargets.push({ src: packageConfigFile, dest: outputPath })
-      }  
+      const file = path.join(basePath, fileName)
+      if(fs.existsSync(file)) {
+        copyTargets.push({ src: file, dest: outputPath })
+      } else if (fileName === 'README.md') {
+        copyTargets.push({ src: 'README.md', dest: outputPath })
+      }
     })
-    if(pkg.name == 'xoid') {
-      copyTargets.push({ src: 'README.md', dest: outputPath })
-    }
-
     const configExports = pkg.config.exports || {'.': {
       types: pkg.config.types,
       module: pkg.config.module,
