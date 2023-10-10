@@ -352,3 +352,10 @@ Following awesome projects inspired **xoid** a lot.
 
 Thanks to [Anatoly](http://a-maslennikov.com/) for the pencil&ruler icon [#24975](https://www.flaticon.com/free-icon/ruler_245975).
 
+---
+
+If you'd like to support the project, consider sponsoring on OpenCollective:
+
+<a href="https://opencollective.com/xoid">
+  <img src="https://opencollective.com/xoid/tiers/fan.svg" />
+</a>
