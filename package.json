@@ -2,6 +2,7 @@
   "name": "xoid-root",
   "version": "0.1.0",
   "private": true,
+  "author": "onurkerimov",
   "homepage": "https://xoid.dev",
   "repository": {
     "type": "git",
@@ -15,9 +16,7 @@
   "filesize": {
     "track": [
       "./dist/xoid/index.js",
-      "./dist/xoid/index.esm.js",
-      "./dist/lite/index.js",
-      "./dist/lite/index.esm.js"
+      "./dist/lite/index.js"
     ]
   },
   "scripts": {
@@ -36,9 +35,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.8",
-    "prettier": "^2.0.5"
-  },
-  "dependencies": {
+    "prettier": "^2.0.5",
     "@rollup/plugin-terser": "^0.3.0",
     "@testing-library/react": "^12.1.2",
     "@testing-library/vue": "^7.0.0",

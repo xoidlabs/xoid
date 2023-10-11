@@ -18,6 +18,7 @@
   },
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
+  "author": "onurkerimov",
   "homepage": "https://xoid.dev",
   "repository": {
     "type": "git",
@@ -38,5 +39,9 @@
     "store",
     "stream",
     "observable"
-  ]
+  ],
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/xoid"
+  }
 }
