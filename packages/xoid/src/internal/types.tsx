@@ -37,3 +37,5 @@ export type Init<T> = T | ((get: GetState) => T)
 export type Actions<U> = { actions: U; debugValue?: string }
 
 export type Truthy<T> = Exclude<T, false | 0 | '' | null | undefined>
+
+export type { Destructor }

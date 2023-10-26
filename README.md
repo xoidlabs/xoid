@@ -119,7 +119,7 @@ import create from 'xoid'
 
 const $count = create(5, (atom) => ({
   increment: () => atom.update(s => s + 1),
-  decrement: () => atom.value-- // `.value` setter is supported too
+  decrement: () => atom.value-- // `.value` setter is also supported
 }))
 
 $count.actions.increment()
@@ -259,7 +259,7 @@ With this feature, you can effectively replace the following framework-specific 
 
 |  | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
-| State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
+| State | `create` | `useState` / `useReducer` | `reactive` / `shallowRef` | `readable` / `writable` |
 | Derived state | `create` | `useMemo` | `computed` | `derived` |
 | Lifecycle | `effect` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
 | Dependency injection | `inject` | `useContext` | `inject` | `getContext` |
@@ -341,7 +341,7 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 - `@xoid/svelte` - **Svelte** integration
 - `@xoid/devtools` - **Redux Devtools** integration
 - `@xoid/lite` - Lighter version with less features
-- `@xoid/proxy` - Helpers for MobX-like proxy state
+- `@xoid/reactive` - MobX-like proxy state library over **xoid**
 
 
 ## Thanks

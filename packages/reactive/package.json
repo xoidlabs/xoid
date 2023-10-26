@@ -1,6 +1,6 @@
 {
-  "name": "@xoid/proxy",
-  "version": "0.1.0",
+  "name": "@xoid/reactive",
+  "version": "0.0.1",
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/xoidlabs/xoid",
-    "directory": "./packages/proxy"
+    "directory": "./packages/reactive"
   },
   "license": "MIT",
   "keywords": [
@@ -27,5 +27,8 @@
     "store",
     "stream",
     "observable"
-  ]
+  ],
+  "peerDependencies": {
+    "xoid": ">=1.0.0-beta.10"
+  }
 }
