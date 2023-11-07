@@ -6,6 +6,7 @@ Object {
   "get": 5,
   "getSerialized": "5",
   "self": Object {
+    "actions": undefined,
     "focus": [Function],
     "map": [Function],
     "set": [Function],

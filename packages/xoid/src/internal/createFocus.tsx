@@ -1,5 +1,5 @@
 import { Atom } from './types'
-import { createApi, Internal } from './utils'
+import { createAtom, Internal } from './utils'
 
 export const INTERNAL = Symbol()
 
@@ -42,30 +42,26 @@ const handler = {
 
 const pathProxy = new Proxy([], handler)
 
-const withCache = (cache: any, path: string[], fn: any) => {
-  const attempt = getIn(cache, path, true)
-  const memoizedResult = attempt && attempt[INTERNAL]
-  if (memoizedResult) return memoizedResult
-  return (attempt[INTERNAL] = fn())
-}
-
 export const createFocus =
-  <T,>(internal: Internal<T>, basePath = [] as string[]): Atom<T>['focus'] =>
+  <T,>(internal: Internal<T>, basePath: string[]): Atom<T>['focus'] =>
   (key: any) => {
     const relativePath = typeof key === 'function' ? key(pathProxy)[INTERNAL] : [key]
     if (!internal.cache) internal.cache = {}
     const path = basePath.concat(relativePath)
     const { get } = internal
-    const nextInternal = {
-      ...internal,
-      path,
-      get: () => {
-        const obj = get()
-        return obj ? getIn(obj, path) : undefined
-      },
-      // `internal.atom.set` reference is used here instead of `internal.set`,
-      // because enhanced atoms need to work with focused atoms as well.
-      set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
-    }
-    return withCache(internal.cache, path, () => createApi(nextInternal))
+    const attempt = getIn(internal.cache, path, true)
+    return (
+      attempt[INTERNAL] ||
+      (attempt[INTERNAL] = createAtom({
+        ...internal,
+        path,
+        get: () => {
+          const obj = get()
+          return obj ? getIn(obj, path) : undefined
+        },
+        // `internal.atom.set` reference is used here instead of `internal.set`,
+        // because enhanced atoms need to work with focused atoms as well.
+        set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
+      }))
+    )
   }

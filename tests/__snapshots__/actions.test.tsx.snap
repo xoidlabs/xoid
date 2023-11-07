@@ -10,6 +10,9 @@ Object {
   },
   "getSerialized": "{\\"count\\":1}",
   "self": Object {
+    "actions": Object {
+      "inc": [Function],
+    },
     "focus": [Function],
     "map": [Function],
     "set": [Function],
@@ -28,7 +31,7 @@ Object {
       "subscribe": [Function],
     },
   },
-  "selfSerialized": "{\\"value\\":{\\"count\\":1}}",
+  "selfSerialized": "{\\"value\\":{\\"count\\":1},\\"actions\\":{}}",
 }
 `;
 
@@ -42,6 +45,9 @@ Object {
   },
   "getSerialized": "{\\"count\\":1}",
   "self": Object {
+    "actions": Object {
+      "inc": [Function],
+    },
     "focus": [Function],
     "map": [Function],
     "set": [Function],
@@ -60,6 +66,6 @@ Object {
       "subscribe": [Function],
     },
   },
-  "selfSerialized": "{\\"value\\":{\\"count\\":1}}",
+  "selfSerialized": "{\\"value\\":{\\"count\\":1},\\"actions\\":{}}",
 }
 `;

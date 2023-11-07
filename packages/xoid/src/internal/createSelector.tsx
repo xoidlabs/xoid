@@ -1,5 +1,6 @@
-import { createEvent, Internal } from './utils'
+import { Internal } from './utils'
 import { GetState } from './types'
+import { createEvent } from './createEvent'
 
 export const createGetState =
   (updateState: () => void, add: (fn: Function) => void): GetState =>

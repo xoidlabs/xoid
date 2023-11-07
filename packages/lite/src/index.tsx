@@ -25,8 +25,8 @@ export const createBaseApi = <T,>(value: T): LiteAtom<T> => {
     },
     set: (value: any) => set(value),
     update: (fn: any) => api.set(fn(get())),
-    subscribe: (item) => subscribeInternal(subscribe, item, get),
-    watch: (item) => subscribeInternal(subscribe, item, get, true),
+    subscribe: subscribeInternal(subscribe, get),
+    watch: subscribeInternal(subscribe, get, true),
   }
   return api
 }

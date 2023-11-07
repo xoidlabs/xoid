@@ -6,6 +6,7 @@ Object {
   "get": 5,
   "getSerialized": "5",
   "self": Object {
+    "actions": undefined,
     "focus": [Function],
     "map": [Function],
     "set": [Function],
@@ -35,6 +36,7 @@ Object {
   },
   "getSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
   "self": Object {
+    "actions": undefined,
     "focus": [Function],
     "map": [Function],
     "set": [Function],
@@ -63,6 +65,7 @@ Object {
   "actions": undefined,
   "get": Object {
     "alpha": Object {
+      "actions": undefined,
       "focus": [Function],
       "map": [Function],
       "set": [Function],
@@ -80,6 +83,7 @@ Object {
       },
     },
     "beta": Object {
+      "actions": undefined,
       "focus": [Function],
       "map": [Function],
       "set": [Function],
@@ -99,6 +103,7 @@ Object {
   },
   "getSerialized": "{\\"alpha\\":{\\"value\\":3},\\"beta\\":{\\"value\\":5}}",
   "self": Object {
+    "actions": undefined,
     "focus": [Function],
     "map": [Function],
     "set": [Function],
@@ -106,6 +111,7 @@ Object {
     "update": [Function],
     "value": Object {
       "alpha": Object {
+        "actions": undefined,
         "focus": [Function],
         "map": [Function],
         "set": [Function],
@@ -123,6 +129,7 @@ Object {
         },
       },
       "beta": Object {
+        "actions": undefined,
         "focus": [Function],
         "map": [Function],
         "set": [Function],
