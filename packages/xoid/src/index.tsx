@@ -1,6 +1,7 @@
 import type { Atom, Stream, Init, GetState, Actions } from './internal/types'
-import { createSelector, createApi, INTERNAL } from './internal/utils'
-import { createInternal } from './internal/lite'
+import { createApi, createInternal } from './internal/utils'
+import { createSelector } from './internal/createSelector'
+import { INTERNAL } from './internal/createFocus'
 
 export * from './internal/types'
 

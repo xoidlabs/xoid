@@ -1,4 +1,4 @@
-import { toProxy, toAtom } from '@xoid/proxy'
+import { toReactive, toAtom } from '@xoid/reactive'
 import { create } from 'xoid'
 
 const consoleError = console.error
@@ -12,9 +12,9 @@ const $state = create(() => {
   fn()
   return initialState
 })
-const state = toProxy($state)
+const state = toReactive($state)
 
-it('`toProxy` is able to make immutable updates', () => {
+it('`toReactive` is able to make immutable updates', () => {
   expect(fn).toBeCalledTimes(1)
   expect($state.value === initialState)
   expect($state.focus('deep').value === initialState.deep)
@@ -25,7 +25,7 @@ it('`toProxy` is able to make immutable updates', () => {
   expect($state.focus('deep').value !== initialState.deep)
 })
 
-it('`toProxy` is able to make immutable updates in classes', () => {
+it('`toReactive` is able to make immutable updates in classes', () => {
   class System {
     alpha = 3
     deep = { beta: 3 }
@@ -45,7 +45,7 @@ it('`toProxy` is able to make immutable updates in classes', () => {
   const fn = jest.fn()
   $instance.subscribe(rootFn)
   $instance.focus('alpha').subscribe(fn)
-  const proxy = toProxy($instance)
+  const proxy = toReactive($instance)
 
   expect(fn).toBeCalledTimes(0)
 
@@ -82,7 +82,7 @@ it('`toProxy` is able to make immutable updates in classes', () => {
   expect($instance.value.arr).toEqual(['hi', 'hello'])
 })
 
-it('`toProxy` caches subproxies properly', () => {
+it('`toReactive` caches subproxies properly', () => {
   const { deep } = state
   expect(state.deep === deep).toBe(true)
 })

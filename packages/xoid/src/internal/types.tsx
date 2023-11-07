@@ -1,5 +1,3 @@
-import { Destructor } from './lite'
-
 export type Atom<T> = {
   value: T
   set(state: T): void
@@ -38,4 +36,5 @@ export type Actions<U> = { actions: U; debugValue?: string }
 
 export type Truthy<T> = Exclude<T, false | 0 | '' | null | undefined>
 
-export type { Destructor }
+declare const voidOnly: unique symbol
+export type Destructor = () => void | { [voidOnly]: never }

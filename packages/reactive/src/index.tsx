@@ -1,12 +1,16 @@
 import { create, Atom, Destructor } from 'xoid'
 
+export * from 'xoid'
+
+create
+
 const IS_PROXY = Symbol()
 
 const isPrimitive = (obj: any) =>
   !(typeof obj === 'function' || typeof obj === 'object') || obj === null
 
 declare const reactivity: unique symbol
-type ReactiveValue<T> = T extends object ? Reactive<T> : T
+type ReactiveValue<T> = T extends object ? (T extends Function ? T : Reactive<T>) : T
 export type Reactive<T> = { [reactivity]: never } & (T extends object
   ? { [K in keyof T]: ReactiveValue<T[K]> }
   : T)
@@ -29,7 +33,7 @@ export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
       if (typeof nextTarget === 'function') {
         if (Object.prototype.hasOwnProperty.call(atom.value, key)) {
           console.warn(
-            `[@xoid/proxy] Calling functions which are instance variables results in original instance to be mutated.`
+            `[@xoid/reactive] Calling functions which are instance variables results in original instance to be mutated.`
           )
         }
         return nextTarget

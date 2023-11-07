@@ -1,154 +1,107 @@
-import { createBaseApi, createEvent, createInternal, Internal } from './lite'
-import { Atom, GetState } from './types'
+import { createFocus, INTERNAL } from './createFocus'
+import { createStream } from './createStream'
+import { Atom, Destructor } from './types'
 
-export const INTERNAL = Symbol()
+// This is a lightweight version of xoid that doesn't have the following features:
+// selectors, actions, `focus` and `map` methods.
 
-export const shallowCopy = (obj: unknown) =>
-  Array.isArray(obj)
-    ? obj.slice() // avoid _spread polyfill
-    : Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj))
-
-export function getIn(obj: any, path: string[], cache = false, index = 0): any {
-  if (index === path.length) return obj
-  const key = path[index]
-  if (cache && !obj[key]) obj[key] = {}
-  return getIn(obj[key], path, cache, index + 1)
+export type LiteAtom<T> = {
+  value: T
+  set(state: T): void
+  update(fn: (state: T) => T): void
+  subscribe(fn: (state: T, prevState: T) => void | Destructor): () => void
+  watch(fn: (state: T, prevState: T) => void | Destructor): () => void
 }
 
-export function setIn<T>(obj: T, path: string[], value: any, index = 0): T {
-  if (index === path.length) return value
-  const key = path[index]
-  const currentValue = (obj as any)[key]
-  const nextValue = setIn(currentValue, path, value, index + 1)
-  if (nextValue === currentValue) return obj
-  const nextObj = shallowCopy(obj)
-  nextObj[key] = nextValue
-  return nextObj
+export type Internal<T> = {
+  get: () => T
+  set: (value: T) => void
+  listeners: Set<() => void>
+  subscribe: (listener: () => void) => () => void
+  isStream?: boolean
+  atom?: LiteAtom<unknown>
+  cache?: any
 }
 
-export const createGetState =
-  (updateState: () => void, add: (fn: Function) => void): GetState =>
-  // @ts-ignore
-  (read, sub) => {
-    if (sub) {
-      add(sub(updateState))
-      return read()
+export const createEvent = () => {
+  const fns = new Set<Function>()
+  const add = (fn: Function) => {
+    fns.add(fn)
+  }
+  const fire = () => {
+    fns.forEach((fn) => fn())
+    fns.clear()
+  }
+  return { add, fire }
+}
+
+const subscribeInternal = <T,>(
+  subscribe: (listener: () => void) => () => void,
+  fn: (state: T, prevState: T) => any,
+  getter: () => T,
+  watch = false
+) => {
+  const event = createEvent()
+  let prevState = getter()
+
+  const callback = (state: T) => {
+    const result = fn(state, prevState)
+    if (typeof result === 'function') event.add(result)
+  }
+
+  if (watch) callback(prevState)
+
+  const unsubscribe = subscribe(() => {
+    const state = getter()
+    if (state !== prevState) {
+      event.fire()
+      callback(state)
+      prevState = state
     }
-    // @ts-ignore
-    add(read.subscribe(updateState))
-    // @ts-ignore
-    return read.value
-  }
+  })
 
-export const createSelector = <T,>(internal: Internal<T>, init: (get: GetState) => T) => {
-  const { get, set, listeners } = internal
-  const { add, fire } = createEvent()
-
-  let isPending = true
-  const getter = createGetState(() => {
-    if (listeners.size) evaluate()
-    else isPending = true
-  }, add)
-
-  const evaluate = () => {
-    // cleanup previous subscriptions
-    fire()
-    isPending = false
-    set(init(getter))
-  }
-
-  internal.get = () => {
-    if (isPending) evaluate()
-    return get()
+  return () => {
+    event.fire()
+    unsubscribe()
   }
 }
 
-const createPathProxy = (path: string[]): any =>
-  new Proxy(
-    {},
-    {
-      get: (_, key) => {
-        if (key === INTERNAL) return path
-        const pathClone = path.slice() // avoid _spread polyfill
-        pathClone.push(key as string)
-        return createPathProxy(pathClone)
-      },
-    }
-  )
-
-const pathProxy = createPathProxy([])
-
-const withCache = (cache: any, path: string[], fn: any) => {
-  const attempt = getIn(cache, path, true)
-  const memoizedResult = attempt && attempt[INTERNAL]
-  if (memoizedResult) return memoizedResult
-  return (attempt[INTERNAL] = fn())
+export const createInternal = <T,>(value: T, send?: () => void): Internal<T> => {
+  const listeners = new Set<() => void>()
+  return {
+    listeners,
+    get: () => value as T,
+    set: (nextValue: T) => {
+      if (value === nextValue) return
+      value = nextValue
+      send?.()
+      listeners.forEach((listener) => listener())
+    },
+    subscribe: (listener: () => void) => {
+      listeners.add(listener)
+      return () => void listeners.delete(listener)
+    },
+  }
 }
 
-export const createFocus =
-  <T,>(internal: Internal<T>, basePath = [] as string[]): Atom<T>['focus'] =>
-  (key: any) => {
-    const relativePath = typeof key === 'function' ? key(pathProxy)[INTERNAL] : [key]
-    if (!internal.cache) internal.cache = {}
-    const path = basePath.concat(relativePath)
-    const { get } = internal
-    const nextInternal = {
-      listeners: internal.listeners,
-      subscribe: internal.subscribe,
-      isStream: internal.isStream,
-      get: () => {
-        const obj = get()
-        return obj ? getIn(obj, path) : undefined
-      },
-      // `internal.atom.set` reference is used here instead of `internal.set`,
-      // because enhanced atoms need to work with focused atoms as well.
-      set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
-    }
-    return withCache(internal.cache, path, () => createApi(nextInternal, internal, path))
+export const createBaseApi = <T,>(internal: Internal<T>) => {
+  const { get, set, subscribe } = internal
+  // Don't delete recurring `api.set` calls from the following code.
+  // It lets enhanced atoms work.
+  const api: LiteAtom<T> = {
+    get value() {
+      return get()
+    },
+    set value(item) {
+      api.set(item)
+    },
+    set: (value: any) => set(value),
+    update: (fn: any) => api.set(fn(get())),
+    subscribe: (item) => subscribeInternal(subscribe, item, get),
+    watch: (item) => subscribeInternal(subscribe, item, get, true),
   }
-
-export const createStream =
-  <T,>(internal: Internal<T>): Atom<T>['map'] =>
-  // @ts-ignore
-  (selector: any, isFilter: any) => {
-    let prevValue: any
-    // @ts-ignore
-    const nextInternal = createInternal()
-
-    let isPending = true
-    const listener = () => {
-      if (nextInternal.listeners.size) evaluate()
-      else isPending = true
-    }
-
-    const evaluate = () => {
-      const v = internal.get()
-      const result = selector(v, prevValue)
-      isPending = false
-      if (!(isFilter && !result)) {
-        nextInternal.set(result)
-        prevValue = result
-      }
-    }
-
-    return createApi({
-      get: () => {
-        if (!internal.isStream && isPending) evaluate()
-        return nextInternal.get()
-      },
-      set: nextInternal.set,
-      listeners: nextInternal.listeners,
-      isStream: isFilter || internal.isStream,
-      subscribe: (fn) => {
-        const unsub = internal.subscribe(listener)
-        const unsub2 = nextInternal.subscribe(fn)
-        return () => {
-          unsub2()
-          if (!nextInternal.listeners.size) unsub()
-        }
-      },
-    })
-  }
+  return api
+}
 
 export const createApi = <T,>(
   nextInternal: Internal<T>,
