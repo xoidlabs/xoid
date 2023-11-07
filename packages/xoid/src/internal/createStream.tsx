@@ -27,12 +27,11 @@ export const createStream =
     }
 
     return createApi({
+      ...nextInternal,
       get: () => {
         if (!internal.isStream && isPending) evaluate()
         return nextInternal.get()
       },
-      set: nextInternal.set,
-      listeners: nextInternal.listeners,
       isStream: isFilter || internal.isStream,
       subscribe: (fn) => {
         const unsub = internal.subscribe(listener)

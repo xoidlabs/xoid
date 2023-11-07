@@ -1,17 +1,6 @@
 import { createFocus, INTERNAL } from './createFocus'
 import { createStream } from './createStream'
-import { Atom, Destructor } from './types'
-
-// This is a lightweight version of xoid that doesn't have the following features:
-// selectors, actions, `focus` and `map` methods.
-
-export type LiteAtom<T> = {
-  value: T
-  set(state: T): void
-  update(fn: (state: T) => T): void
-  subscribe(fn: (state: T, prevState: T) => void | Destructor): () => void
-  watch(fn: (state: T, prevState: T) => void | Destructor): () => void
-}
+import { Atom } from './types'
 
 export type Internal<T> = {
   get: () => T
@@ -19,7 +8,8 @@ export type Internal<T> = {
   listeners: Set<() => void>
   subscribe: (listener: () => void) => () => void
   isStream?: boolean
-  atom?: LiteAtom<unknown>
+  atom?: Atom<unknown>
+  path?: string[]
   cache?: any
 }
 
@@ -35,7 +25,7 @@ export const createEvent = () => {
   return { add, fire }
 }
 
-const subscribeInternal = <T,>(
+export const subscribeInternal = <T,>(
   subscribe: (listener: () => void) => () => void,
   fn: (state: T, prevState: T) => any,
   getter: () => T,
@@ -53,6 +43,7 @@ const subscribeInternal = <T,>(
 
   const unsubscribe = subscribe(() => {
     const state = getter()
+    // this check holds, because sometimes even though root is updated, some branch might be intact.
     if (state !== prevState) {
       event.fire()
       callback(state)
@@ -84,35 +75,28 @@ export const createInternal = <T,>(value: T, send?: () => void): Internal<T> => 
   }
 }
 
-export const createBaseApi = <T,>(internal: Internal<T>) => {
-  const { get, set, subscribe } = internal
+export const createApi = <T,>(internal: Internal<T>) => {
+  const { get, set, subscribe, path, atom } = internal
   // Don't delete recurring `api.set` calls from the following code.
   // It lets enhanced atoms work.
-  const api: LiteAtom<T> = {
+  const nextAtom = {
     get value() {
       return get()
     },
     set value(item) {
-      api.set(item)
+      nextAtom.set(item)
     },
     set: (value: any) => set(value),
-    update: (fn: any) => api.set(fn(get())),
+    update: (fn: any) => nextAtom.set(fn(get())),
     subscribe: (item) => subscribeInternal(subscribe, item, get),
     watch: (item) => subscribeInternal(subscribe, item, get, true),
-  }
-  return api
-}
 
-export const createApi = <T,>(
-  nextInternal: Internal<T>,
-  internal = nextInternal,
-  relativePath = [] as string[]
-) => {
-  const nextAtom = createBaseApi(nextInternal) as Atom<T>
+    focus: createFocus(atom ? atom[INTERNAL] : internal, path),
+    map: createStream(internal),
+    [INTERNAL]: internal,
+  } as Atom<T>
+  // @ts-ignore
+  internal.atom = nextAtom
 
-  nextAtom.focus = createFocus(internal, relativePath)
-  nextAtom.map = createStream(nextInternal)
-  nextAtom[INTERNAL] = nextInternal
-  nextInternal.atom = nextAtom
   return nextAtom
 }
