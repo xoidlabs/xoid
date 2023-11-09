@@ -1,4 +1,4 @@
-import { create, computed, reactive } from '@xoid/reactive'
+import { create, computed, toReactive, reactive } from '@xoid/reactive'
 
 const $count = create(0)
 const $derived = computed(() => {
@@ -29,32 +29,27 @@ $computed2.subscribe(console.warn)
 
 class Anonymous {}
 
-// const Reactive = new Proxy(Anonymous, {
-//   construct(a, b) {
-//     const obj = Object.create(reactive({}))
-//     return reactive(obj)
-//   },
-//   apply() {
-//     return 4
-//   },
-// }) as {
-//   (): number
-//   new (): {}
-// }
+const Reactive = new Proxy(Anonymous, {
+  construct(a, b) {
+    const obj = Object.create(reactive({}))
+    return reactive(obj)
+  },
+  apply() {
+    return 4
+  },
+}) as {
+  (): number
+  new (): {}
+}
 
-class System {
+class System extends Reactive {
   count = 0
-  inc = () => {
+  inc() {
     this.count++
   }
 }
-const original = new System()
-const instance = reactive(original)
+const instance = new System()
 console.log(instance)
 console.log(instance.count)
 instance.inc()
-instance.inc()
-instance.inc()
-instance.inc()
 console.log(instance.count)
-console.log(original)
