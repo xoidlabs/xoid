@@ -86,19 +86,19 @@ it("Doesn't accidentally subscribe to dependencies of dependencies", () => {
   expect($doubleCount.value).toBe(2)
 })
 
-it("Doesn't accidentally subscribe to dependencies of dependencies", () => {
-  const $alpha = create(0) // { value: 0 }
+it("Doesn't accidentally subscribe to dependencies of dependencies (both)", () => {
+  const $alpha = create(0)
   const $beta = computed(() => $alpha.value)
-  const fn = jest.fn()
+  const $gamma = computed(() => $beta.value)
 
-  const $doubleCount = computed(() => {
-    fn()
-    return $beta.value * 2
-  })
-  expect(fn).not.toBeCalled()
-  expect($doubleCount.value).toBe(0)
-  $beta.value++
-  expect($doubleCount.value).toBe(2)
+  expect($beta.value).toBe(0)
+  expect($gamma.value).toBe(0)
+
   $alpha.value++
-  expect($doubleCount.value).toBe(2)
+  expect($beta.value).toBe(1)
+  expect($gamma.value).toBe(1)
+
+  $alpha.value++
+  expect($beta.value).toBe(2)
+  expect($gamma.value).toBe(2)
 })

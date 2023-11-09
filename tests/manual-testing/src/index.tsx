@@ -1,4 +1,4 @@
-import { create, computed } from '@xoid/reactive'
+import { create, computed, reactive } from '@xoid/reactive'
 
 const $count = create(0)
 const $derived = computed(() => {
@@ -26,3 +26,35 @@ window.onclick = () => $count.value++
 $computed2.subscribe(console.warn)
 
 // console.log($computed2.value)
+
+class Anonymous {}
+
+// const Reactive = new Proxy(Anonymous, {
+//   construct(a, b) {
+//     const obj = Object.create(reactive({}))
+//     return reactive(obj)
+//   },
+//   apply() {
+//     return 4
+//   },
+// }) as {
+//   (): number
+//   new (): {}
+// }
+
+class System {
+  count = 0
+  inc = () => {
+    this.count++
+  }
+}
+const original = new System()
+const instance = reactive(original)
+console.log(instance)
+console.log(instance.count)
+instance.inc()
+instance.inc()
+instance.inc()
+instance.inc()
+console.log(instance.count)
+console.log(original)

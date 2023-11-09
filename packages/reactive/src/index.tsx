@@ -27,23 +27,23 @@ export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
   const proxy = new Proxy(target, {
     get(t, key) {
       const nextTarget = atom.value[key]
+      // console.log(key, atom.value)
       if (key === IS_PROXY) return atom
       const subAtom = atom.focus(key as keyof T)
-      // @ts-ignore
-      // if (create.internal.get) create.internal.get(subAtom)
       if (isPrimitive(nextTarget)) return nextTarget
       if (typeof nextTarget === 'function') {
-        if (Object.prototype.hasOwnProperty.call(atom.value, key)) {
-          console.warn(
-            `[@xoid/reactive] Calling functions which are instance variables results in original instance to be mutated.`
-          )
-        }
+        // if (Object.prototype.hasOwnProperty.call(atom.value, key)) {
+        //   console.warn(
+        //     `[@xoid/reactive] Calling functions which are instance variables results in original instance to be mutated.`
+        //   )
+        // }
         return nextTarget
       }
       return t[key] || (t[key] = toReactive(subAtom))
     },
     set(t, key, nextValue) {
       atom.focus(key as keyof T).set(nextValue)
+      console.log(key, nextValue)
       return true
     },
     deleteProperty(t, key) {

@@ -29,12 +29,18 @@
 
 
 <p align="center">
-
-[![Bundle Size](https://deno.bundlejs.com/badge?q=xoid@1.0.0-beta.9&treeshake=[*]&)](https://bundlejs.com/?q=xoid)
-[![Version](https://img.shields.io/npm/v/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3)](https://www.npmjs.com/package/xoid)
-[![Downloads](https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=4f2eb3&colorB=4f2eb3)](https://www.npmjs.com/package/xoid)
-[![License](https://img.shields.io/github/license/xoidlabs/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3)](https://www.npmjs.com/package/xoid)
-
+  <a href="https://bundlephobia.com/result?p=xoid" >
+    <img alt="Bundle Size" src="https://deno.bundlejs.com/badge?q=xoid@1.0.0-beta.9&treeshake=[*]&">
+  </a>
+  <a href="https://www.npmjs.com/package/xoid">
+    <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
+  </a>
+  <a href="https://www.npmjs.com/package/xoid">
+    <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=4f2eb3&colorB=4f2eb3"/>
+  </a>
+  <a href="https://www.npmjs.com/package/xoid">
+    <img alt="License" src="https://img.shields.io/github/license/xoidlabs/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
+  </a>
 </p>
 
 **xoid** is a framework-agnostic state management library. 
