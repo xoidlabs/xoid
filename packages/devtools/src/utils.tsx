@@ -3,10 +3,8 @@ import { Atom as $Atom, create } from 'xoid'
 export const { plugins, internal } = create as typeof create & {
   internal: {
     readonly symbol: unique symbol
-    devtools: {
-      send: (atom: Atom) => void
-      wrap: <T>(value: T, atom: Atom) => T
-    }
+    send: (atom: Atom) => void
+    wrap: <T>(value: T, atom: Atom) => T
   }
 }
 

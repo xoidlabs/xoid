@@ -15,16 +15,18 @@ export type Internal<T> = {
   cache?: any
 }
 
-export const devtools = {
+export const tools = {
+  symbol: INTERNAL,
   send: () => void 0,
   wrap: (value) => value,
 } as {
+  get?: Function
   send: <T>(_atom: T) => void
   wrap: <T>(value: T, _atom: Atom<unknown>) => T
 }
 
 export const subscribeInternal =
-  <T,>(subscribe: (listener: () => void) => () => void, getter: () => T, watch = false) =>
+  <T,>(subscribe: (listener: () => void) => () => void, getter: () => T, watch?: boolean) =>
   (fn: (state: T, prevState: T) => any) => {
     const event = createEvent()
     let prevState = getter()
@@ -60,7 +62,7 @@ export const createInternal = <T,>(value: T, send?: () => void): Internal<T> => 
     set: (nextValue: T) => {
       if (value === nextValue) return
       value = nextValue
-      send && send?.()
+      send && send()
       listeners.forEach((listener) => listener())
     },
     subscribe: (listener: () => void) => {
@@ -76,19 +78,20 @@ export function createAtom<T>(internal: Internal<T>, getActions?: any) {
   // It lets enhanced atoms work.
   const nextAtom = {
     get value() {
+      // @ts-ignore
+      tools.get && tools.get(nextAtom)
       return get()
     },
     set value(item) {
       nextAtom.set(item)
     },
     get actions() {
-      return devtools.wrap(actions, nextAtom)
+      return tools.wrap(actions, nextAtom)
     },
     set: (value: any) => internal.set(value),
     update: (fn: any) => nextAtom.set(fn(get())),
     subscribe: subscribeInternal(subscribe, get),
     watch: subscribeInternal(subscribe, get, true),
-
     focus: createFocus(atom ? atom[INTERNAL] : internal, internal.path || []),
     map: createStream(internal),
     [INTERNAL]: internal,

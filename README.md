@@ -29,32 +29,24 @@
 
 
 <p align="center">
-  <a href="https://bundlephobia.com/result?p=xoid" >
-    <img alt="Bundle Size" src="https://deno.bundlejs.com/badge?q=xoid@1.0.0-beta.9&treeshake=[*]&">
-  </a>
-  <a href="https://www.npmjs.com/package/xoid">
-    <img alt="Version" src="https://img.shields.io/npm/v/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
-  </a>
-  <a href="https://www.npmjs.com/package/xoid">
-    <img alt="Downloads" src="https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=4f2eb3&colorB=4f2eb3"/>
-  </a>
-  <a href="https://www.npmjs.com/package/xoid">
-    <img alt="License" src="https://img.shields.io/github/license/xoidlabs/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3">
-  </a>
+
+[![Bundle Size](https://deno.bundlejs.com/badge?q=xoid@1.0.0-beta.9&treeshake=[*]&)](https://bundlejs.com/?q=xoid)
+[![Version](https://img.shields.io/npm/v/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3)](https://www.npmjs.com/package/xoid)
+[![Downloads](https://img.shields.io/npm/dt/xoid.svg?style=flat&colorA=4f2eb3&colorB=4f2eb3)](https://www.npmjs.com/package/xoid)
+[![License](https://img.shields.io/github/license/xoidlabs/xoid?style=flat&4f2eb3=293140&colorA=4f2eb3&colorB=4f2eb3)](https://www.npmjs.com/package/xoid)
+
 </p>
 
 **xoid** is a framework-agnostic state management library. 
 **X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. 
 It's the result of careful analyses of different state management tools and paradigms. 
-It was designed to be simple and scalable. 
+It was designed to be tiny (~1kB gzipped) and easy-to-learn.
 
-The biggest aim of xoid is to unify global state, local component state, and finite state machines in the single API. 
-It even has a basic support for observable streams.
+The biggest aim of **xoid** is to unify global state, local component state, finite state machines, and observable streams in the same API. This is especially a big deal for React users where switching between local and global state requires thinking in two different APIs.
 It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) that's able to run across multiple frameworks. 
 With **xoid**, you can move business logic out of components in a **truly** framework-agnostic manner.
 
-While doing all these, it also cares about its package size (~1kB gzipped), and aims to keep itself approachable for newcomers. 
-More features are explained below, and the [documentation website](https://xoid.dev).
+**xoid** (*zoid* is easier to say multiple times) is a robust library based on explicit subscriptions, immutable updates, and a first-class TypeScript support. This makes it ideal for teams. If you prefer implicit subscriptions and mutable updates similar to MobX or Vue 3, you can use **@xoid/reactive**, a tiny proxy-state layer over ***xoid**. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
 
@@ -340,7 +332,6 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 - `@xoid/vue` - **Vue** integration
 - `@xoid/svelte` - **Svelte** integration
 - `@xoid/devtools` - **Redux Devtools** integration
-- `@xoid/lite` - Lighter version with less features
 - `@xoid/reactive` - MobX-like proxy state library over **xoid**
 
 

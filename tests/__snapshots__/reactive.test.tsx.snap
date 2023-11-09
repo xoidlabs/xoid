@@ -21,6 +21,7 @@ Object {
       "listeners": Set {},
       "set": [Function],
       "subscribe": [Function],
+      "track": true,
     },
   },
   "selfSerialized": "{\\"value\\":8}",

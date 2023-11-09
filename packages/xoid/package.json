@@ -1,6 +1,6 @@
 {
   "name": "xoid",
-  "version": "1.0.0-beta.10",
+  "version": "1.0.0-beta.11",
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",

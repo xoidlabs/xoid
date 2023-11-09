@@ -1,13 +1,9 @@
 import { create, Atom, Destructor } from 'xoid'
 
+// @ts-ignore
+const tools = create.internal
+
 export * from 'xoid'
-
-create
-
-const IS_PROXY = Symbol()
-
-const isPrimitive = (obj: any) =>
-  !(typeof obj === 'function' || typeof obj === 'object') || obj === null
 
 declare const reactivity: unique symbol
 type ReactiveValue<T> = T extends object ? (T extends Function ? T : Reactive<T>) : T
@@ -15,7 +11,12 @@ export type Reactive<T> = { [reactivity]: never } & (T extends object
   ? { [K in keyof T]: ReactiveValue<T[K]> }
   : T)
 
+const IS_PROXY = Symbol()
+
 const map = new WeakMap()
+
+const isPrimitive = (obj: any) =>
+  !(typeof obj === 'function' || typeof obj === 'object') || obj === null
 
 export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
   const { value } = atom
@@ -28,7 +29,8 @@ export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
       const nextTarget = atom.value[key]
       if (key === IS_PROXY) return atom
       const subAtom = atom.focus(key as keyof T)
-      if (trackDependencies) trackDependencies(subAtom)
+      // @ts-ignore
+      // if (create.internal.get) create.internal.get(subAtom)
       if (isPrimitive(nextTarget)) return nextTarget
       if (typeof nextTarget === 'function') {
         if (Object.prototype.hasOwnProperty.call(atom.value, key)) {
@@ -55,18 +57,9 @@ export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
   return proxy as Reactive<T>
 }
 
-export const reactive = <T,>(initialValue: T) => toReactive(create(initialValue))
+export const reactive = <T,>(initialValue: T): Reactive<T> => toReactive(create(initialValue))
 
 export const toAtom = <T,>(proxy: T): Atom<T> => proxy[IS_PROXY]
-
-let trackDependencies: Function
-
-const intercept = (get, fn) => {
-  trackDependencies = get
-  const result = fn()
-  trackDependencies = undefined
-  return result
-}
 
 export const watch = (fn: () => void | Destructor) => {
   let cleanup
@@ -76,9 +69,9 @@ export const watch = (fn: () => void | Destructor) => {
       cleanup = undefined
     }
   }
-  const atom = create((get) => {
+  const atom = computed(() => {
     clean()
-    cleanup = intercept(get, fn)
+    cleanup = fn()
   })
   const unsub = atom.subscribe(() => 0 as any)
   return () => {
@@ -86,5 +79,10 @@ export const watch = (fn: () => void | Destructor) => {
     clean()
   }
 }
-
-export const computed = <T,>(fn: () => T): Atom<T> => create((get) => intercept(get, fn))
+// @ts-ignore
+const INTERNAL = tools.symbol
+export const computed = <T,>(fn: () => T): Atom<T> => {
+  const atom = create(fn)
+  atom[INTERNAL].track = true
+  return atom
+}
