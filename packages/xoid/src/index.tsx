@@ -1,7 +1,6 @@
 import type { Atom, Stream, Init, GetState, Actions } from './internal/types'
-import { createApi, createInternal } from './internal/utils'
+import { createAtom, createInternal, tools } from './internal/utils'
 import { createSelector } from './internal/createSelector'
-import { INTERNAL } from './internal/createFocus'
 
 export * from './internal/types'
 
@@ -17,19 +16,11 @@ export function create<T, U = undefined>(init?: Init<T>, getActions?: (atom: Ato
   const isFunction = typeof init === 'function'
   const internal = createInternal(
     (isFunction ? undefined : init) as T,
-    (() => devtools.send(atom)) as any
+    (() => tools.send(atom)) as any
   )
   internal.isStream = !arguments.length
   if (isFunction) createSelector(internal, init as (get: GetState) => T)
-  const atom = createApi(internal)
-  create.plugins.forEach((fn) => fn(atom))
-
-  const actions = getActions?.(atom)
-  Object.defineProperty(atom, 'actions', {
-    get() {
-      return devtools.wrap(actions, atom)
-    },
-  })
+  const atom = createAtom(internal, getActions)
   return atom
 }
 
@@ -37,14 +28,5 @@ export default create
 
 create.plugins = [] as ((atom: Atom<any>) => void)[]
 
-// the rest of the file is internal stuff
-const devtools = {
-  send: <T,>(_atom: T) => void 0,
-  wrap: <T,>(value: T, _atom: Atom<unknown>): T => value,
-}
-
 // intentionally untyped
-;(create as any).internal = {
-  symbol: INTERNAL,
-  devtools,
-}
+;(create as any).internal = tools

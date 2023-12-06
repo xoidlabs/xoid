@@ -40,7 +40,7 @@ const devtools = (instanceName = 'xoid') => {
     })
   })
 
-  internal.devtools.send = (atom: Atom) => {
+  internal.send = (atom: Atom) => {
     const internal = atom[INTERNAL]
     const debugValue = internal.debugValue
     if (debugValue) {
@@ -50,7 +50,7 @@ const devtools = (instanceName = 'xoid') => {
     }
   }
 
-  internal.devtools.wrap = (item, atom) => {
+  internal.wrap = (item, atom) => {
     const { debugValue } = atom[INTERNAL]
     return debugValue ? createPathMembrane(item, [], atom) : item
   }

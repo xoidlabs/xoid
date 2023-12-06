@@ -1,6 +1,6 @@
 import { createInternal, Internal } from './utils'
 import { Atom } from './types'
-import { createApi } from './utils'
+import { createAtom } from './utils'
 
 export const createStream =
   <T,>(internal: Internal<T>): Atom<T>['map'] =>
@@ -26,13 +26,12 @@ export const createStream =
       }
     }
 
-    return createApi({
+    return createAtom({
+      ...nextInternal,
       get: () => {
         if (!internal.isStream && isPending) evaluate()
         return nextInternal.get()
       },
-      set: nextInternal.set,
-      listeners: nextInternal.listeners,
       isStream: isFilter || internal.isStream,
       subscribe: (fn) => {
         const unsub = internal.subscribe(listener)

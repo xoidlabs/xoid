@@ -1,6 +1,5 @@
-import { Internal } from './lite'
 import { Atom } from './types'
-import { createApi } from './utils'
+import { createAtom, Internal } from './utils'
 
 export const INTERNAL = Symbol()
 
@@ -27,50 +26,42 @@ export function setIn<T>(obj: T, path: string[], value: any, index = 0): T {
   const key = path[index]
   const currentValue = (obj as any)[key]
   const nextValue = setIn(currentValue, path, value, index + 1)
+  // this check holds, because we can avoid recursively copying the parent objects
   if (nextValue === currentValue) return obj
   const nextObj = shallowCopy(obj)
   nextObj[key] = nextValue
   return nextObj
 }
 
-const createPathProxy = (path: string[]): any =>
-  new Proxy(
-    {},
-    {
-      get: (_, key) => {
-        if (key === INTERNAL) return path
-        const pathClone = path.slice() // avoid _spread polyfill
-        pathClone.push(key as string)
-        return createPathProxy(pathClone)
-      },
-    }
-  )
-const pathProxy = createPathProxy([])
-const withCache = (cache: any, path: string[], fn: any) => {
-  const attempt = getIn(cache, path, true)
-  const memoizedResult = attempt && attempt[INTERNAL]
-  if (memoizedResult) return memoizedResult
-  return (attempt[INTERNAL] = fn())
+const handler = {
+  get: (path, key) => {
+    if (key === INTERNAL) return path
+    return new Proxy([...path, key], handler)
+  },
 }
 
+const pathProxy = new Proxy([], handler)
+
 export const createFocus =
-  <T,>(internal: Internal<T>, basePath = [] as string[]): Atom<T>['focus'] =>
+  <T,>(internal: Internal<T>, basePath: string[]): Atom<T>['focus'] =>
   (key: any) => {
     const relativePath = typeof key === 'function' ? key(pathProxy)[INTERNAL] : [key]
     if (!internal.cache) internal.cache = {}
     const path = basePath.concat(relativePath)
     const { get } = internal
-    const nextInternal = {
-      listeners: internal.listeners,
-      subscribe: internal.subscribe,
-      isStream: internal.isStream,
-      get: () => {
-        const obj = get()
-        return obj ? getIn(obj, path) : undefined
-      },
-      // `internal.atom.set` reference is used here instead of `internal.set`,
-      // because enhanced atoms need to work with focused atoms as well.
-      set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
-    }
-    return withCache(internal.cache, path, () => createApi(nextInternal, internal, path))
+    const attempt = getIn(internal.cache, path, true)
+    return (
+      attempt[INTERNAL] ||
+      (attempt[INTERNAL] = createAtom({
+        ...internal,
+        path,
+        get: () => {
+          const obj = get()
+          return obj ? getIn(obj, path) : undefined
+        },
+        // `internal.atom.set` reference is used here instead of `internal.set`,
+        // because enhanced atoms need to work with focused atoms as well.
+        set: (value: T) => (internal.atom as Atom<unknown>).set(setIn(get(), path, value)),
+      }))
+    )
   }

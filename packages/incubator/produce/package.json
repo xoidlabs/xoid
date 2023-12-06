@@ -1,26 +1,9 @@
 {
-  "name": "@xoid/vue",
-  "version": "0.5.0",
+  "name": "@xoid/produce",
+  "version": "0.0.1",
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./index.d.ts",
-      "module": "./index.esm.js",
-      "default": "./index.js"
-    },
-    "./useAtom": {
-      "types": "./useAtom.d.ts",
-      "module": "./useAtom.esm.js",
-      "default": "./useAtom.js"
-    },
-    "./useAdapter": {
-      "types": "./useAdapter.d.ts",
-      "module": "./useAdapter.esm.js",
-      "default": "./useAdapter.js"
-    }
-  },
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
   "author": "onurkerimov",
@@ -28,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/xoidlabs/xoid",
-    "directory": "./packages/vue"
+    "directory": "./packages/reactive"
   },
   "license": "MIT",
   "keywords": [
@@ -37,7 +20,6 @@
     "management",
     "state-management",
     "react",
-    "vue",
     "redux",
     "recoil",
     "xoid",
@@ -47,7 +29,6 @@
     "observable"
   ],
   "peerDependencies": {
-    "xoid": ">=1.0.0-beta.11",
-    "vue": "*"
+    "xoid": ">=1.0.0-beta.11"
   }
 }

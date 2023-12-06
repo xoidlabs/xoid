@@ -6,6 +6,7 @@ Object {
   "get": 8,
   "getSerialized": "8",
   "self": Object {
+    "actions": undefined,
     "focus": [Function],
     "map": [Function],
     "set": [Function],
@@ -20,6 +21,7 @@ Object {
       "listeners": Set {},
       "set": [Function],
       "subscribe": [Function],
+      "track": true,
     },
   },
   "selfSerialized": "{\\"value\\":8}",
