@@ -27,9 +27,7 @@ export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
   const proxy = new Proxy(target, {
     get(t, key) {
       const nextTarget = atom.value[key]
-      // console.log(key, atom.value)
       if (key === IS_PROXY) return atom
-      const subAtom = atom.focus(key as keyof T)
       if (isPrimitive(nextTarget)) return nextTarget
       if (typeof nextTarget === 'function') {
         // if (Object.prototype.hasOwnProperty.call(atom.value, key)) {
@@ -39,11 +37,10 @@ export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
         // }
         return nextTarget
       }
-      return t[key] || (t[key] = toReactive(subAtom))
+      return t[key] || (t[key] = toReactive(atom.focus(key as keyof T)))
     },
     set(t, key, nextValue) {
       atom.focus(key as keyof T).set(nextValue)
-      console.log(key, nextValue)
       return true
     },
     deleteProperty(t, key) {

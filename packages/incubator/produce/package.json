@@ -1,6 +1,6 @@
 {
-  "name": "@xoid/reactive",
-  "version": "0.0.2",
+  "name": "@xoid/produce",
+  "version": "0.0.1",
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",
