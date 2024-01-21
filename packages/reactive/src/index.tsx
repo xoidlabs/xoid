@@ -76,6 +76,7 @@ export const watch = (fn: () => void | Destructor) => {
     clean()
   }
 }
+
 // @ts-ignore
 const INTERNAL = tools.symbol
 export const computed = <T,>(fn: () => T): Atom<T> => {

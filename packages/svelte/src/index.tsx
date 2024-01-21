@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { create, Atom } from 'xoid'
-import { onDestroy } from 'svelte/internal'
+import { onDestroy } from 'svelte'
 import type { Readable } from 'svelte/store'
 import { useAdapter } from './useAdapter'
 

@@ -1,5 +1,5 @@
 import { setup, createAdapter } from 'xoid/setup'
-import { getContext, onDestroy, onMount } from 'svelte/internal'
+import { getContext, onDestroy, onMount } from 'svelte'
 
 export const useAdapter = <T,>(fn: () => T): T => {
   const adapter = createAdapter({ inject: getContext })
