@@ -227,7 +227,7 @@ The following is called a "setup" function:
 
 ```js
 import create, { Atom } from 'xoid'
-import { effect, inject } from 'xoid/setup'
+import { effect, inject } from 'xoid'
 import { ThemeSymbol } from './theme'
 
 export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {

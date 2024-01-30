@@ -1,6 +1,6 @@
 import './styles.css'
 import React from 'react'
-import { useSetup } from '@xoid/react'
+import { useSetup } from "@xoid/useSetup"
 import { useAtom } from '@xoid/react'
 import { create } from 'xoid'
 import Dot from './components/Dot'

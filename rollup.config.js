@@ -79,7 +79,7 @@ async function main() {
       
       if(entryOutputs.module) {
         output.push({
-          file: path.join(outputPath, entry + '.esm.js'),
+          file: path.join(outputPath, 'esm', entry + '.js'),
           format: 'esm',
         })
       }
@@ -95,6 +95,13 @@ async function main() {
         results.push({
           input: path.join('dist/ts-out', basePath, `src/${entry}.d.ts`),
           output: { file: path.join(outputPath, `${entry}.d.ts`), format: 'es' },
+          external,
+          plugins: [dts({})],
+        });
+
+        results.push({
+          input: path.join('dist/ts-out', basePath, `src/${entry}.d.ts`),
+          output: { file: path.join(outputPath, 'esm', `${entry}.d.ts`), format: 'es' },
           external,
           plugins: [dts({})],
         });

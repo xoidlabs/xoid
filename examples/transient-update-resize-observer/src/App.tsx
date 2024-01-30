@@ -1,6 +1,6 @@
 import React from 'react'
 import { create, effect } from 'xoid'
-import { useSetup } from '@xoid/react'
+import { useSetup } from "@xoid/useSetup"
 import { ResizeObserver } from '@juggle/resize-observer'
 
 const ResizeObserverSetup = () => {

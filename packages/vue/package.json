@@ -1,24 +1,29 @@
 {
   "name": "@xoid/vue",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "main": "./index.js",
-  "module": "./index.esm.js",
+  "module": "./esm/index.js",
   "types": "./index.d.ts",
   "exports": {
     ".": {
       "types": "./index.d.ts",
-      "module": "./index.esm.js",
+      "module": "./esm/index.js",
       "default": "./index.js"
     },
     "./useAtom": {
       "types": "./useAtom.d.ts",
-      "module": "./useAtom.esm.js",
+      "module": "./esm/useAtom.js",
       "default": "./useAtom.js"
     },
     "./useAdapter": {
       "types": "./useAdapter.d.ts",
-      "module": "./useAdapter.esm.js",
+      "module": "./esm/useAdapter.js",
       "default": "./useAdapter.js"
+    },
+    "./useSetup": {
+      "types": "./useSetup.d.ts",
+      "module": "./esm/useSetup.js",
+      "default": "./useSetup.js"
     }
   },
   "sideEffects": false,

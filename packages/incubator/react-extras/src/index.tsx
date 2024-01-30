@@ -1,4 +1,4 @@
-import { useSetup } from '@xoid/react'
+import { useSetup } from "@xoid/useSetup";
 import { useAtom } from '@xoid/react'
 export { slice } from './slice'
 

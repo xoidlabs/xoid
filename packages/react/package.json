@@ -1,29 +1,34 @@
 {
   "name": "@xoid/react",
-  "version": "1.0.0-beta.11",
+  "version": "1.0.0-beta.12",
   "main": "./index.js",
-  "module": "./index.esm.js",
+  "module": "./esm/index.js",
   "types": "./index.d.ts",
   "exports": {
     ".": {
       "types": "./index.d.ts",
-      "module": "./index.esm.js",
+      "module": "./esm/index.js",
       "default": "./index.js"
     },
     "./useAtom": {
       "types": "./useAtom.d.ts",
-      "module": "./useAtom.esm.js",
+      "module": "./esm/useAtom.js",
       "default": "./useAtom.js"
     },
     "./useAdapter": {
       "types": "./useAdapter.d.ts",
-      "module": "./useAdapter.esm.js",
+      "module": "./esm/useAdapter.js",
       "default": "./useAdapter.js"
     },
     "./useConstant": {
       "types": "./useConstant.d.ts",
-      "module": "./useConstant.esm.js",
+      "module": "./esm/useConstant.js",
       "default": "./useConstant.js"
+    },
+    "./useSetup": {
+      "types": "./useSetup.d.ts",
+      "module": "./esm/useSetup.js",
+      "default": "./useSetup.js"
     }
   },
   "sideEffects": false,

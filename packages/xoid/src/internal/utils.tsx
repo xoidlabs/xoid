@@ -1,4 +1,4 @@
-import create from '..'
+import { create } from '../create'
 import { createEvent } from './createEvent'
 import { createFocus, INTERNAL } from './createFocus'
 import { createStream } from './createStream'

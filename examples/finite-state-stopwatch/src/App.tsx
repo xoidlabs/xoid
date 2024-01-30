@@ -1,6 +1,6 @@
 import React from 'react'
 import { create } from 'xoid'
-import { useSetup } from '@xoid/react'
+import { useSetup } from "@xoid/useSetup"
 import { useAtom } from '@xoid/react'
 
 const TimerSetup = () => {

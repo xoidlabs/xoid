@@ -1,5 +1,5 @@
 import React, { useEffect, createContext } from 'react'
-import { setup, InjectionKey, createAdapter } from 'xoid/setup'
+import { setup, InjectionKey, createAdapter } from 'xoid'
 import { useConstant } from './useConstant'
 
 const contextMap = new Map<InjectionKey<any>, React.Context<any>>()
@@ -12,6 +12,7 @@ export const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {
   contextMap.set(key, context)
   return context.Provider
 }
+
 // The only experimental feature of this package is the `read` method in the following React adapter.
 // It relies on the fiber internal: `reactInternals.ReactCurrentDispatcher.current.readContext`.
 // This may change in the future, but luckily popular projects like `react-relay`, `preact/compat` also assume it.

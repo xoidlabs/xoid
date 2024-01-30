@@ -1,18 +1,23 @@
 {
   "name": "xoid",
-  "version": "1.0.0-beta.11",
+  "version": "1.0.0",
   "main": "./index.js",
-  "module": "./index.esm.js",
+  "module": "./esm/index.js",
   "types": "./index.d.ts",
   "exports": {
     ".": {
       "types": "./index.d.ts",
-      "module": "./index.esm.js",
+      "module": "./esm/index.js",
       "default": "./index.js"
+    },
+    "./create": {
+      "types": "./create.d.ts",
+      "module": "./esm/create.js",
+      "default": "./create.js"
     },
     "./setup": {
       "types": "./setup.d.ts",
-      "module": "./setup.esm.js",
+      "module": "./esm/setup.js",
       "default": "./setup.js"
     }
   },

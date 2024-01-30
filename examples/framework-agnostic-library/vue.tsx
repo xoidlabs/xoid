@@ -1,4 +1,4 @@
-import { useSetup } from '@xoid/vue'
+import { useSetup } from "@xoid/useSetup"
 import { WindowEvent } from './core'
 
 export const useWindowEvent = <T extends keyof WindowEventMap>(...props: WindowEvent.Props<T>) =>

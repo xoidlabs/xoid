@@ -2,7 +2,7 @@
   "name": "@xoid/produce",
   "version": "0.0.1",
   "main": "./index.js",
-  "module": "./index.esm.js",
+  "module": "./esm/index.js",
   "types": "./index.d.ts",
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
