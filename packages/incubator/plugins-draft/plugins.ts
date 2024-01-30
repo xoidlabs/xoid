@@ -1,0 +1,84 @@
+// an atom that can
+type Action = any
+type Reducer<T> = (state: T, action: Action) => T
+
+const pluginReducer = <T>(atom: any, options: { reducer?: Reducer<T> }) => {
+  const { reducer } = options
+  return {
+    dispatch(action: Action) {
+      atom.update((s) => reducer(s, action))
+    },
+  }
+}
+
+const pluginProduce = <T>(atom: any, options: {}) => {
+  return {
+    produce(fn: (draft: T) => void) {
+      atom.update((s) => produce(s, fn))
+    },
+  }
+}
+
+const pluginLocalStorage = (atom: any, options: { localStorageKey?: string }) => {
+  const { localStorageKey } = options
+  if (!localStorageKey) return
+
+  const get = (init) => {
+    const maybeItem = localStorage.getItem(localStorageKey)
+    if (maybeItem) return JSON.parse(maybeItem)
+    return init
+  }
+  const set = (state) => localStorage.setItem(localStorageKey, JSON.stringify(state))
+  atom.middleware({ get, set })
+}
+
+type ReduxLikeStore<T> = {
+  getState: () => T
+  dispatch: (action: any) => void
+  subscribe: () => () => void
+}
+
+const pluginRedux = (
+  atom: Atom<unknown>,
+  options: {
+    reduxStore: ReduxLikeStore<unknown>
+    reduxActionType: string
+  }
+) => {
+  const { reduxStore, reduxActionType } = options
+  if (!reduxStore) return
+
+  atom.middleware({
+    get: reduxStore.getState,
+    set: (s) => reduxStore.dispatch({ type: reduxActionType, payload: s }),
+    subscribe: reduxStore.subscribe,
+  })
+}
+
+export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I
+) => void
+  ? I
+  : never
+
+type Composable = (context: any, options?: any) => any
+type GetOptions<T> = T extends (a: any, b: infer P) => any ? P : {}
+type GetExtensions<T> = T extends (a: any, b: any) => infer P ? P : never
+
+export type Truthy<T> = Exclude<T, false | 0 | '' | null | undefined>
+
+const create = <T, P extends Composable>(i, plugins: P[]) => {
+  type Options = UnionToIntersection<GetOptions<P>>
+  type Extensions = UnionToIntersection<GetExtensions<P>>
+  return <T>(init: T, options?: Options) => {
+    const atom = create(init, options)
+    plugins.forEach((fn) => fn(atom, options))
+    return atom as Extensions
+  }
+}
+
+const createWithReducer = <T>(value: T) => create(value, [pluginProduce<T>, pluginReducer])
+
+const atomWithReducer = createWithReducer('5')
+
+//
