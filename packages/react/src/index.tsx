@@ -8,7 +8,7 @@ export { useConstant } from './useConstant'
 export { createProvider } from './useAdapter'
 
 // For server-side rendering: https://github.com/react-spring/zustand/pull/34
-const useIsoLayoutEffect = window === undefined ? useEffect : useLayoutEffect
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 /**
  * Can be used to create local state inside React components. Similar to `React.useMemo`,
