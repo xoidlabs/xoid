@@ -1,14 +1,7 @@
-import { Atom as $Atom, create } from 'xoid'
+import { Ref as $Atom, create } from 'xoid'
+import { INTERNAL } from 'xoid/debug'
 
-export const { plugins, internal } = create as typeof create & {
-  internal: {
-    readonly symbol: unique symbol
-    send: (atom: Atom) => void
-    wrap: <T>(value: T, atom: Atom) => T
-  }
-}
-
-export const INTERNAL: unique symbol = (internal as any).symbol
+export const { plugins } = create
 
 export type Atom = $Atom<any> & { debugValue: string; [INTERNAL]: any }
 

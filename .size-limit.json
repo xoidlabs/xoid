@@ -1,0 +1,30 @@
+[
+  {
+    "name": "lite",
+    "import": {
+      "./packages/xoid/src/lite/index.tsx": "{ liteRef }"
+    },
+    "limit": "330 B"
+  },
+  {
+    "name": "ref",
+    "import": {
+      "./packages/xoid/src/index.tsx": "{ ref }"
+    },
+    "limit": "732 B"
+  },
+  {
+    "name": "reactive",
+    "import": {
+      "./packages/xoid/src/index.tsx": "{ ref, reactive, toRef, toReactive, computed, watchEffect }"
+    },
+    "limit": "1100 B"
+  },
+  {
+    "name": "setup",
+    "import": {
+      "./packages/xoid/src/index.tsx": "{ scope, provide, inject, resource }"
+    },
+    "limit": "1100 B"
+  }
+]

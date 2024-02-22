@@ -2,19 +2,19 @@
 type Action = any
 type Reducer<T> = (state: T, action: Action) => T
 
-const pluginReducer = <T>(atom: any, options: { reducer?: Reducer<T> }) => {
+const pluginReducer = <T>(options: { reducer?: Reducer<T> }) => {
   const { reducer } = options
   return {
     dispatch(action: Action) {
-      atom.update((s) => reducer(s, action))
+      this.update((s) => reducer(s, action))
     },
   }
 }
 
-const pluginProduce = <T>(atom: any, options: {}) => {
+const pluginProduce = <T>(options: {}) => {
   return {
     produce(fn: (draft: T) => void) {
-      atom.update((s) => produce(s, fn))
+      this.update((s) => produce(s, fn))
     },
   }
 }
@@ -38,13 +38,7 @@ type ReduxLikeStore<T> = {
   subscribe: () => () => void
 }
 
-const pluginRedux = (
-  atom: Atom<unknown>,
-  options: {
-    reduxStore: ReduxLikeStore<unknown>
-    reduxActionType: string
-  }
-) => {
+const pluginRedux = (options: { reduxStore: ReduxLikeStore<unknown>; reduxActionType: string }) => {
   const { reduxStore, reduxActionType } = options
   if (!reduxStore) return
 
@@ -79,6 +73,17 @@ const create = <T, P extends Composable>(i, plugins: P[]) => {
 
 const createWithReducer = <T>(value: T) => create(value, [pluginProduce<T>, pluginReducer])
 
-const atomWithReducer = createWithReducer('5')
+declare const bind: <T, P>(options: {
+  plugins: (type?: T) => P[]
+}) => (value: T) => GetExtensions<P>
 
+const atomWithReducer = bind({
+  plugins: <T>() => [pluginProduce<T>, pluginReducer],
+})
+
+const a = atomWithReducer({ anan: 4 })
+
+const newCreate = middleware({
+  plugins: (value) => [pluginProduce<typeof value>, pluginReducer],
+})
 //

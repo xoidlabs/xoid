@@ -1,4 +1,4 @@
-import { Atom, effect } from 'xoid'
+import { Ref, effect } from 'xoid'
 
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace WindowEvent {
@@ -8,7 +8,7 @@ export namespace WindowEvent {
     options?: boolean | AddEventListenerOptions
   ]
 
-  export const setup = <T extends keyof WindowEventMap>($props: Atom<Props<T>>) =>
+  export const setup = <T extends keyof WindowEventMap>($props: Ref<Props<T>>) =>
     effect(() =>
       $props.watch((args) => {
         window.addEventListener(...args)

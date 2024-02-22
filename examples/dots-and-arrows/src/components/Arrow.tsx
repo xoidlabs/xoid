@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAtom } from "@xoid/react"
-import { Atom } from 'xoid'
+import { Ref } from 'xoid'
 import { ArrowType, BaseArrowType, DotType } from '../models'
 
 export const ArrowBase = (props: BaseArrowType) => {
@@ -18,7 +18,7 @@ export const ArrowBase = (props: BaseArrowType) => {
   )
 }
 
-const Arrow = (props: { $arrow: Atom<ArrowType>; $dots: Atom<Record<string, DotType>> }) => {
+const Arrow = (props: { $arrow: Ref<ArrowType>; $dots: Ref<Record<string, DotType>> }) => {
   const arrow = useAtom(props.$arrow)
   const dots = useAtom(props.$dots)
   const from = dots[arrow.from]

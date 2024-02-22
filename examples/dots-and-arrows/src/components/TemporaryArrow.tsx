@@ -1,11 +1,11 @@
 import React from 'react'
 import { useAtom } from '@xoid/react'
-import { Atom } from 'xoid'
+import { Ref } from 'xoid'
 import { ArrowBase } from './Arrow'
 import { DotType, TemporaryArrowModel, $mousePositionDot } from '../models'
 
 const TemporaryArrow = (props: {
-  $dots: Atom<Record<string, DotType>>
+  $dots: Ref<Record<string, DotType>>
   $temporaryArrow: ReturnType<typeof TemporaryArrowModel>
 }) => {
   const temporaryArrow = useAtom(props.$temporaryArrow)

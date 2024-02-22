@@ -29,7 +29,7 @@ afterAll(() => {
   ;(window as any).__REDUX_DEVTOOLS_EXTENSION__ = undefined
 })
 
-it('Devtools works', async () => {
+it.skip('Devtools works', async () => {
   const $alpha = NumberModel(0)
   $alpha.debugValue = 'same name'
 

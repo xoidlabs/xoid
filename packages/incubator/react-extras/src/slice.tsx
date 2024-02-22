@@ -1,11 +1,11 @@
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector'
 import React from 'react'
-import { Atom } from 'xoid'
+import { Ref } from 'xoid'
 
 const identity = <T,>(value: T) => value
 
 export const useSelector = <T, U>(
-  atom: Atom<T>,
+  atom: Ref<T>,
   selector: (value: T) => U = identity as (value: T) => U,
   equals = Object.is
 ) =>
@@ -31,8 +31,8 @@ function shallowEqualArrays<T>(a: T[], b: T[]) {
 }
 
 export const slice = <T, K extends keyof T, U>(
-  atom: Atom<T>,
-  fn: (item: Atom<T[K]>, key: string) => U
+  atom: Ref<T>,
+  fn: (item: Ref<T[K]>, key: string) => U
 ) =>
   React.createElement(() => (
     <>

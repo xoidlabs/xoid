@@ -13,12 +13,6 @@
       "packages/*"
     ]
   },
-  "filesize": {
-    "track": [
-      "./dist/xoid/index.js",
-      "./dist/lite/index.js"
-    ]
-  },
   "scripts": {
     "build": "rollup --config",
     "dev": "vite dev",
@@ -26,7 +20,6 @@
     "filesize": "filesize"
   },
   "devDependencies": {
-    "@ampproject/filesize": "^4.3.0",
     "@rollup/plugin-terser": "^0.3.0",
     "@testing-library/react": "^12.1.2",
     "@testing-library/vue": "^7.0.0",
@@ -63,6 +56,8 @@
     "workspaces-run": "^1.0.1"
   },
   "dependencies": {
+    "@size-limit/preset-small-lib": "^11.0.2",
+    "size-limit": "^11.0.2",
     "vite-tsconfig-paths": "^4.2.1"
   }
 }

@@ -7,12 +7,10 @@ While **xoid**'s API surface is kept small intentionally, there's a way for exte
 If you'd like to add a `.produce` method that uses **immer** internally, you can do it like the following.
 
 ```js
-import { create } from 'xoid'
+import { atom } from 'xoid'
 import { produce } from 'immer'
 
-create.plugins.push((atom) => {
-  atom.produce = (fn) => atom.update((s) => produce(s, fn))
-})
+atom.prototype.produce = (fn) => atom.update((s) => produce(s, fn))
 ```
 
 If you're using TypeScript, simply apply the following module augmentation:

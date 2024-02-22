@@ -1,14 +1,6 @@
-import {
-  INTERNAL,
-  register,
-  Atom,
-  atomMap,
-  $registry,
-  createPathMembrane,
-  current,
-  plugins,
-  internal,
-} from './utils'
+import { INTERNAL, TOOLS } from 'xoid/debug'
+import { register, atomMap, $registry, createPathMembrane, current, plugins } from './utils'
+import { AtomImpl } from 'xoid/atom/atom'
 
 export { $registry }
 
@@ -28,19 +20,15 @@ const devtools = (instanceName = 'xoid') => {
     return () => void 0
   }
 
-  plugins.push((atom: any) => {
-    // devtools support
-    Object.defineProperty(atom, 'debugValue', {
-      configurable: true,
-      set(debugValue: string) {
-        const internal = atom[INTERNAL]
-        internal.debugValue = debugValue
-        register(debugValue, atom)
-      },
-    })
+  Object.defineProperty(AtomImpl.prototype, 'debugValue', {
+    configurable: true,
+    set(debugValue: string) {
+      register(debugValue, this)
+    },
   })
 
-  internal.send = (atom: Atom) => {
+  // @ts-ignore: TODO
+  TOOLS.send = (atom: AtomImpl) => {
     const internal = atom[INTERNAL]
     const debugValue = internal.debugValue
     if (debugValue) {
@@ -50,9 +38,9 @@ const devtools = (instanceName = 'xoid') => {
     }
   }
 
-  internal.wrap = (item, atom) => {
+  TOOLS.wrap = (item, atom) => {
     const { debugValue } = atom[INTERNAL]
-    return debugValue ? createPathMembrane(item, [], atom) : item
+    return debugValue ? createPathMembrane(item, [], atom as any) : item
   }
 
   const dt = extension.connect({ name: instanceName })

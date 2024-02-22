@@ -1,5 +1,5 @@
 import React from 'react'
-import { Atom } from 'xoid'
+import { Ref } from 'xoid'
 import { useEffect, useState } from 'react'
 import { DotType } from '../models'
 
@@ -8,7 +8,7 @@ const modulate = (dot: DotType) => ({
   y: dot.y + 2 * (Math.random() - 0.5),
 })
 
-const ModulateButton = (props: { $dots: Atom<Record<string, DotType>> }) => {
+const ModulateButton = (props: { $dots: Ref<Record<string, DotType>> }) => {
   const [state, setState] = useState(false)
   useEffect(() => {
     const listener = () => {

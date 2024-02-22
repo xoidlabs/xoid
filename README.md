@@ -250,9 +250,6 @@ export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
 ```
 All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like this. 
 
-> We're aware that not all users need this feature, so we've built it tree-shakable. If `useAtom` is all you need, you may choose to import it from `'@xoid/[FRAMEWORK]/useAtom'`. 
-
-
 With this feature, you can effectively replace the following framework-specific APIs:
 
 |  | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
