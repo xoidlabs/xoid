@@ -1,7 +1,12 @@
 import { IDENTITY } from 'xoid/core/shared'
 import { provide, setup } from 'xoid'
+import type { Feature } from 'xoid'
 
-type Setup<T, U> = (options: T) => U
+export type ComposeController<P extends Feature<any, any>> = {
+  types: UnionToIntersection<ReturnType<P>>
+  mount: () => () => void
+  symbol: symbol
+}
 
 export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
   k: infer I
@@ -9,43 +14,48 @@ export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) ex
   ? I
   : never
 
-export function compose<P extends Setup<any, any>>(
+/**
+ * The first argument accepts and array of features. The function that's returned will combine the
+ * options of the features as an intersection object. A context symbol can be supplied in the
+ * thisArg. This override will return a {@link ComposeController}.
+ */
+export function compose<P extends Feature<any, any>>(
   this: symbol | void,
   plugins: P[]
-): (options: UnionToIntersection<Parameters<P>[0]>) => {
-  types: UnionToIntersection<ReturnType<P>>
-  mount: () => () => void
-  symbol: symbol
-}
+): (options: UnionToIntersection<Parameters<P>[0]>) => ComposeController<P>
 
-export function compose<P extends Setup<any, any>, T>(
+/**
+ * This override has all the properties of the other override, however, by using a second argument,
+ * you can return anything you want instead of the  {@link ComposeController}. The second argument
+ * also has the context of the whole thing, so things like `inject` can be used.
+ */
+export function compose<P extends Feature<any, any>, T>(
   this: symbol | void,
   plugins: P[],
-  callback: (payload: {
-    types: UnionToIntersection<ReturnType<P>>
-    mount: () => () => void
-    symbol: symbol
-  }) => T
+  callback: (controller: ComposeController<P>) => T
 ): (options: UnionToIntersection<Parameters<P>[0]>) => T
 
-export function compose<P extends Setup<any, any>, T>(
+export function compose<P extends Feature<any, any>, T>(
   this: symbol | void,
   plugins: P[],
-  callback = IDENTITY as (payload: {
-    types: UnionToIntersection<ReturnType<P>>
-    mount: () => () => void
-    symbol: symbol
-  }) => T
+  callback = IDENTITY as (payload: ComposeController<P>) => T
 ) {
   return (options: UnionToIntersection<Parameters<P>[0]>) => {
-    const sym = this || Symbol()
-    const mount = setup.call(sym, () => {
+    // Create a symbol right here, if one is not supplied. This is especially useful when the
+    // callback in the second argument is not used.
+    const contextSymbol = this || Symbol()
+    const mount = setup.call(contextSymbol, () => {
+      // Use the function references as injection keys, and supply them to the current setup context.
       plugins.map((fn) => provide(fn, fn(options)))
+      // Grab the mount/unmount controller.
     })[1] as () => () => void
-    return callback({
-      symbol: sym,
-      mount,
-      types: {} as any,
-    })
+    // Finally return
+    return setup.call(contextSymbol, () =>
+      callback({
+        symbol: contextSymbol,
+        mount,
+        types: {} as UnionToIntersection<ReturnType<P>>,
+      })
+    )
   }
 }

@@ -4,23 +4,6 @@
   "main": "./index.js",
   "module": "./esm/index.js",
   "types": "./index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./index.d.ts",
-      "module": "./esm/index.js",
-      "default": "./index.js"
-    },
-    "./create": {
-      "types": "./create.d.ts",
-      "module": "./esm/create.js",
-      "default": "./create.js"
-    },
-    "./setup": {
-      "types": "./setup.d.ts",
-      "module": "./esm/setup.js",
-      "default": "./setup.js"
-    }
-  },
   "sideEffects": false,
   "description": "Framework-agnostic state management library designed for simplicity and scalability",
   "author": "onurkerimov",

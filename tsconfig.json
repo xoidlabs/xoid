@@ -16,7 +16,8 @@
     "declaration": true,
     "declarationDir": "dist/ts-out",
     "esModuleInterop": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "strictNullChecks": true,
   },
   "include": ["packages", "tests", "examples"],
   "exclude": ["packages/deprecated"]

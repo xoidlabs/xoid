@@ -1,9 +1,5 @@
 import { atom, type Atom } from '../atom/atom'
-import { INTERNAL, SHARED } from '../core/shared'
-import { temporarySwap } from '../utils/temporarySwap'
-import type { Destructor } from '../utils/types'
-
-export * from 'xoid'
+import { INTERNAL } from '../core/shared'
 
 declare const reactivity: unique symbol
 type ReactiveValue<T> = T extends object ? (T extends Function ? T : Reactive<T>) : T
@@ -55,11 +51,3 @@ export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
 export const reactive = <T,>(initialValue: T): Reactive<T> => toReactive(atom(initialValue))
 
 export const toAtom = <T,>(proxy: T): Atom<T> => proxy[INTERNAL]
-
-export const watch = (fn: () => void | Destructor) => {
-  const unsub = computed(fn).subscribe((cleanup) => cleanup)
-  SHARED.add(() => () => unsub)
-  return unsub
-}
-
-export const computed = <T,>(fn: () => T): Atom<T> => atom(temporarySwap(fn, 'get'))

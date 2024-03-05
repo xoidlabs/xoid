@@ -4,13 +4,14 @@ import { store, selector, subscribe, focus } from '../core'
 import type { StandardConfig, LazyConfig, EnhancedConfig, Store, Config } from '../core/types'
 import { Stream, Init, Atom, Actions } from './types'
 
-const createAtom = <T,>(internal: Store<T>, actions) => {
+const createAtom = <T, U>(internal: Store<T>, getActions?: (atom: Atom<T>) => U) => {
   const { get, set } = internal
+  let actions
   const atom = {
     get,
     set,
     get value() {
-      // `xoid/reactive` implicitly collects dependencies using `SHARED.get`
+      // `xoid/tracking` implicitly collects dependencies using `SHARED.get`
       SHARED.get(this.c)
       return get()
     },
@@ -18,6 +19,7 @@ const createAtom = <T,>(internal: Store<T>, actions) => {
       this.set(item)
     },
     get actions() {
+      if (!actions) actions = (getActions as (atom: Atom<T>) => U)(atom as Atom<T>)
       // `@xoid/devtools` relies on this wrapper function
       return SHARED.wrap(actions, atom)
     },
@@ -36,9 +38,30 @@ type AtomCreator = {
   /** Creates a basic atom using a initializer. If a function is used as an initializer, it will be lazily evaluated. */
   <T>(init: Init<T>): Atom<T>
   /** If a function is supplied in the second argument, it will be used to populate `.actions`.  */
-  <T, U>(init: Init<T>, getActions: () => U): Atom<T> & Actions<U>
-  /** If no arguments are supplied, it will produce a {@link Stream} instead of an {@link Atom}. Links have different properties in terms of lazy evaluation. */
+  <T, U>(init: Init<T>, actions: (atom: Atom<T>) => U): Atom<T> & Actions<U>
+}
+
+type StreamCreator = {
+  /** If no arguments are supplied, it will produce a {@link Stream} instead of an {@link Atom}. Strams are atoms that
+   *  might not have an immediate value, and they have different properties in terms of lazy evaluation. */
   <T>(): Stream<T>
+}
+
+// TODO: actions arg is missing from these
+type AtomBind = {
+  <T>(config: StandardConfig<T>): AtomCreator
+  <T>(config: EnhancedConfig<T>): AtomCreator
+  // I don't know these are the correct types
+  <T>(config: LazyConfig<T>): (init?: Init<T>) => Stream<T>
+  <T>(config: LazyConfig<T>['subscribe']): (init?: Init<T>) => Stream<T>
+}
+
+type AtomCall = {
+  <T>(config: StandardConfig<T>): Atom<T>
+  <T>(config: EnhancedConfig<T>, init: Init<T>): Atom<T>
+  // I don't know these are the correct types
+  <T>(config: LazyConfig<T>, init?: Init<T>): Stream<T>
+  <T>(config: LazyConfig<T>['subscribe'], init?: Init<T>): Stream<T>
 }
 
 // type A = {
@@ -62,29 +85,15 @@ type AtomCreator = {
 //   plugins: AtomPlugin[]
 // }
 
-// declare const specialPlugin: <T>(
-//   atom: Atom<T>,
-//   options: { adana: T }
-// ) => { produce: (state: T) => void }
-
-// declare const meta: <T, P extends AtomPlugin<any, any>>(config: {
-//   plugins: (_type?: T) => P
-// }) => (value: Init<T>, options?: PluginOptions<P>) => Atom<T> & Plugins<P>
-
-export const atom = function <T, V>(
+export const atom: AtomCreator = function <T, V>(
   this: Config<T>,
   init: Init<T>,
-  options?: { actions?: (atom: Atom<T>) => V }
+  actions?: (atom: Atom<T>) => V
 ) {
   const st = (typeof init === 'function' ? selector : store).call(this, init)
-  const actions = 
-  const atom = createAtom(st,options.actions && options.actions(this))
-  for (const plugin in [actionsPlugin]) {
-    Object.defineProperties(atom, Object.getOwnPropertyDescriptors(plugin.call(atom, options)))
-  }
-
-  return atom
+  return createAtom(st, actions)
 }
 
+bind()
 // Global plugins
 atom.plugins = []

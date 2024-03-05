@@ -1,5 +1,6 @@
 import { SHARED } from '../core/shared'
 import { temporarySwap } from '../utils/temporarySwap'
+import type { Feature } from './feature'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-interface
 export interface InjectionKey<T> extends Symbol {}
@@ -15,7 +16,7 @@ type ContextMap = WeakMap<InjectionKey<unknown>, unknown>
 const contextRegistry = new Map<symbol, ContextMap>()
 
 export function scope<T>(this: symbol, fn: () => T) {
-  // Get the weakMap associated with the symbol
+  // Get the map associated with the symbol
   let map = contextRegistry.get(this)
   if (!map) {
     map = new WeakMap()
@@ -24,8 +25,9 @@ export function scope<T>(this: symbol, fn: () => T) {
   return temporarySwap(fn, 'ctx')(map)
 }
 
-export const provide = <T,>(symbol: InjectionKey<T>, value: T) => SHARED.ctx.set(symbol, value)
+export const provide = <T,>(symbol: InjectionKey<T> | Feature<any, T>, value: T) =>
+  SHARED.ctx.set(symbol, value)
 
-export const inject = <T,>(symbol: InjectionKey<T>) => SHARED.ctx.get(symbol) as T
+export const inject = <T,>(symbol: InjectionKey<T> | Feature<any, T>) => SHARED.ctx.get(symbol) as T
 
-export const frameworkSymbol = Symbol()
+export const has = <T,>(symbol: InjectionKey<T> | Feature<any, T>) => SHARED.ctx.has(symbol)
