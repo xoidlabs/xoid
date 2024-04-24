@@ -8,21 +8,13 @@ Object {
   "self": Object {
     "actions": undefined,
     "focus": [Function],
+    "get": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
     "update": [Function],
     "value": 8,
     "watch": [Function],
-    Symbol(): Object {
-      "atom": [Circular],
-      "get": [Function],
-      "isStream": false,
-      "listeners": Set {},
-      "set": [Function],
-      "subscribe": [Function],
-      "track": true,
-    },
   },
   "selfSerialized": "{\\"value\\":8}",
 }

@@ -6,7 +6,7 @@
       "xoid": ["./packages/xoid/src"],
       "@xoid/devtools": ["./packages/devtools/src/devtools"],
       "xoid/*": ["./packages/xoid/src/*"],
-      "@xoid/*": ["./packages/*/src"]
+      "@xoid/*": ["./packages/integrations/*/src"]
     },
     "target": "ES6",
     "jsx": "react-jsx",
@@ -17,7 +17,7 @@
     "declarationDir": "dist/ts-out",
     "esModuleInterop": true,
     "moduleResolution": "Node",
-    "strictNullChecks": true,
+    "strictNullChecks": true
   },
   "include": ["packages", "tests", "examples"],
   "exclude": ["packages/deprecated"]

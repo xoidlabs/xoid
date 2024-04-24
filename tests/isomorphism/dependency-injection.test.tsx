@@ -1,4 +1,4 @@
-import { inject, InjectionKey } from 'xoid/setup'
+import { inject, InjectionKey } from 'xoid'
 import { createProvider as createProviderReact, useSetup as useSetupReact } from '@xoid/react'
 import { createProvider as createProviderVue, useSetup as useSetupVue } from '@xoid/vue'
 import { render as renderReact } from '@testing-library/react'

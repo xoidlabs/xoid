@@ -9,23 +9,37 @@ type StoreInternal<T> = Store<T> & {
   cache?: Record<string, unknown>
 }
 
-export function focus<T, U>(baseStore: Store<T>, fn: (state: T) => U) {
-  // Use the root ref
-  const root = ((baseStore as StoreInternal<T>).root || baseStore) as StoreInternal<T>
-  if (!root.cache) root.cache = new Proxy([], pathHandler)
-  // Auto-generate the path array using the proxy
-  const path = fn(root.cache as T) as string[]
-  // Finally cache the ref
+export function focus<T, U>(baseStore: Store<T>, key: (state: T) => U) {
+  const fn = typeof key === 'function' ? key : (s) => s[key]
+  // Use the root store
+  const rootStore = ((baseStore as StoreInternal<T>).root || baseStore) as StoreInternal<T>
+  // If the root store doesn't have a cache, create it.
+  if (!rootStore.cache) rootStore.cache = new Proxy({ [INTERNAL]: [] }, pathHandler)
+  // In case if we're in an intermediate node, use the store cache, and obtain the next
+  // node's cache.
+  const cacheNode = fn((baseStore as any).cache)
+  const path = cacheNode[INTERNAL] as string[]
+
+  // Finally cache the store
   return (
-    path[INTERNAL] ||
-    (path[INTERNAL] = store({
-      root,
-      path,
-      get: () => fn(root.get()),
-      set: (state) => root.set(setIn(root.get(), path, state)),
-      subscribe: () => root.subscribe(fn),
+    (path as any)[INTERNAL] ||
+    ((path as any)[INTERNAL] = store.call({
+      root: rootStore,
+      cache: cacheNode,
+      get: () => fn(rootStore.get()),
+      set: (state) => rootStore.set(setIn(rootStore.get(), path, state)),
+      subscribe: () => rootStore.subscribe(fn),
     }))
   )
 }
 
-const pathHandler = { get: (acc, key) => new Proxy((acc[key] = [...acc, key]), pathHandler) }
+const pathHandler = {
+  get: (acc, key) => {
+    const pathArray = acc[INTERNAL]
+
+    if (key === INTERNAL) return pathArray
+    const nextAcc = { [INTERNAL]: [...pathArray, key] }
+    acc[key] = nextAcc
+    return new Proxy(nextAcc, pathHandler)
+  },
+}

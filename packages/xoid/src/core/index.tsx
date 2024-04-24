@@ -4,4 +4,5 @@ export { focus } from './focus'
 export { subscribe } from './subscribe'
 export { setIn } from './setIn'
 export { shallowCopy } from './shallowCopy'
-export type * from './types'
+
+export * from './types'

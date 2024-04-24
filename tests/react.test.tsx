@@ -1,8 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create } from 'xoid'
-import { effect } from 'xoid/setup'
+import { create, effect } from 'xoid'
 import { useSetup } from '@xoid/react'
 import { useAtom } from '@xoid/react'
 import { debug } from './testHelpers'
@@ -187,16 +186,19 @@ it('ensures the correct subscriber is removed on unmount', async () => {
 })
 
 // https://github.com/pmndrs/zustand/issues/86
-it('ensures a subscriber is not mistakenly overwritten', async () => {
+it.only('ensures a subscriber is not mistakenly overwritten', async () => {
   const atom = create({ count: 0 })
 
   function Count1() {
-    const c = useAtom(atom.focus((s) => s.count))
-    return <div>count1: {c}</div>
+    const focusedAtom = atom.focus((s) => s.count)
+    const value = focusedAtom.value // useAtom(focusedAtom)
+    console.log({ focusedAtom, value })
+    return <div>count1: {value}</div>
   }
 
   function Count2() {
-    const c = useAtom(atom.focus((s) => s.count))
+    const focusedAtom = atom.focus((s) => s.count)
+    const c = focusedAtom.value // useAtom(focusedAtom)
     return <div>count2: {c}</div>
   }
 

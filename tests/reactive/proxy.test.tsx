@@ -1,4 +1,4 @@
-import { toReactive, toAtom } from '@xoid/reactive'
+import { toReactive, toAtom } from 'xoid'
 import { create } from 'xoid'
 
 const consoleError = console.error
@@ -29,7 +29,7 @@ it('`toReactive` is able to make immutable updates in classes', () => {
   class System {
     alpha = 3
     deep = { beta: 3 }
-    arr = []
+    arr = [] as string[]
     increment() {
       this.alpha++
       this.deep.beta++

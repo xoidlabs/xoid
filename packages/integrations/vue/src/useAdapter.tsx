@@ -1,5 +1,5 @@
-import { inject, onMounted, onUnmounted } from 'vue'
-import { setup, createAdapter } from 'xoid'
+import { inject as injectVue, onMounted, onUnmounted } from 'vue'
+import { setup } from 'xoid'
 import { provide, renderSlot, defineComponent } from 'vue'
 import { InjectionKey } from 'xoid'
 
@@ -14,8 +14,8 @@ export const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {
 }
 
 export const useAdapter = <T,>(fn: () => T): T => {
-  const adapter = createAdapter({ inject })
-  onMounted(adapter.mount)
-  onUnmounted(adapter.unmount)
-  return setup.call(adapter, fn)
+  const [ans, controller] = setup(fn)
+  onMounted(controller.mount)
+  onUnmounted(controller.unmount)
+  return ans
 }

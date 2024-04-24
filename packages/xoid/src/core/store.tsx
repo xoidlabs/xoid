@@ -16,7 +16,7 @@ export function store<T>(this: Config<T> | void, value?: T): Store<T> {
       listeners.forEach((fn) => fn())
     },
     subscribe,
-  } = config as Partial<Store<T>>
+  } = (config || {}) as Partial<Store<T>>
 
   let dispose
   return {

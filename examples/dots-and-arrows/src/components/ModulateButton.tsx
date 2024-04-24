@@ -1,5 +1,5 @@
 import React from 'react'
-import { Ref } from 'xoid'
+import { Atom } from 'xoid'
 import { useEffect, useState } from 'react'
 import { DotType } from '../models'
 

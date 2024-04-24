@@ -1,9 +1,8 @@
-export const IDENTITY = <T,>(value: T, ...args: any) => value
+export const IDENTITY = <T,>(value: T) => value
 
-// Used by `toReactive` to access the internal atom
+// Used by the reactive and tracking APIs, as well as the `.focus` method.
 export const INTERNAL = Symbol()
 
-// Used by @xoid/devtools
 export const SHARED = {
   // Used by `computed` to collect `.value` destructures implicitly
   get: IDENTITY,

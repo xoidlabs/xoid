@@ -1,7 +1,7 @@
-import { Ref } from 'xoid'
-import { effect } from 'xoid/setup'
+import type { Atom } from 'xoid'
+import { effect } from 'xoid'
 
-export const CounterSetup = ($props: Ref<{ initialValue: number }>) => {
+export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   const $counter = $props.map((s) => s.initialValue)
 
   effect(() => {

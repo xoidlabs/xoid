@@ -1,22 +1,29 @@
 [
   {
-    "name": "lite",
+    "name": "store",
     "import": {
-      "./packages/xoid/src/lite/index.tsx": "{ liteRef }"
+      "./packages/xoid/src/core/index.tsx": "{ store }"
     },
     "limit": "330 B"
   },
   {
-    "name": "ref",
+    "name": "all core utils",
     "import": {
-      "./packages/xoid/src/index.tsx": "{ ref }"
+      "./packages/xoid/src/core/index.tsx": "{ store }"
+    },
+    "limit": "330 B"
+  },
+  {
+    "name": "atom",
+    "import": {
+      "./packages/xoid/src/index.tsx": "{ Atom }"
     },
     "limit": "732 B"
   },
   {
     "name": "reactive",
     "import": {
-      "./packages/xoid/src/index.tsx": "{ ref, reactive, toRef, toReactive, computed, watchEffect }"
+      "./packages/xoid/src/index.tsx": "{ ref, reactive, toRef, toReactive, computed, watch }"
     },
     "limit": "1100 B"
   },

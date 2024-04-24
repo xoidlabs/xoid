@@ -1,4 +1,4 @@
-import { atom, type Atom } from '../atom/atom'
+import { atom, type Atom } from '../atom'
 import { INTERNAL } from '../core/shared'
 
 declare const reactivity: unique symbol

@@ -1,4 +1,4 @@
-import { Ref, effect } from 'xoid'
+import { Atom, effect } from 'xoid'
 
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace WindowEvent {

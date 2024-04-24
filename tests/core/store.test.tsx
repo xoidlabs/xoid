@@ -1,4 +1,4 @@
-import { store } from 'xoid/core/store'
+import { store } from 'xoid/core'
 
 describe('store', () => {
   test('Avoids subscribing the original atom more than once', () => {
@@ -6,8 +6,8 @@ describe('store', () => {
     const fn2 = jest.fn()
     const fn3 = jest.fn()
 
-    const alpha = store({} as any, 5)
-    const beta = store({
+    const alpha = store(5)
+    const beta = store.call({
       get: alpha.get,
       subscribe: alpha.subscribe,
     })
@@ -40,8 +40,8 @@ describe('store', () => {
   test('Is able to read the value of the original atom', () => {
     const fn = jest.fn()
 
-    const alpha = store({} as any, 5)
-    const beta = store({
+    const alpha = store(5)
+    const beta = store.call({
       get: alpha.get,
       subscribe: alpha.subscribe,
     })
@@ -59,8 +59,8 @@ describe('store', () => {
   test('Is able to read the value of a stream', () => {
     const fn = jest.fn()
 
-    const alpha = store({} as any, 5)
-    const beta = store({
+    const alpha = store(5)
+    const beta = store.call({
       subscribe: alpha.subscribe,
     })
 

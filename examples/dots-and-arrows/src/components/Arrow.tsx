@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAtom } from "@xoid/react"
-import { Ref } from 'xoid'
+import { Atom } from 'xoid'
 import { ArrowType, BaseArrowType, DotType } from '../models'
 
 export const ArrowBase = (props: BaseArrowType) => {

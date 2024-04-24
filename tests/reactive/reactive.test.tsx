@@ -1,6 +1,6 @@
-import { reactive, watch, computed } from '@xoid/reactive'
+import { reactive, watch, computed } from 'xoid'
 import create from 'xoid'
-import { debug } from './testHelpers'
+import { debug } from '../testHelpers'
 
 it('creates a derived atom using the same atom using selectors', () => {
   const proxy = reactive({ alpha: 3, beta: 5 })
@@ -26,18 +26,25 @@ it('creates a derived atom using the same atom using selectors (keeps in sync)',
 
   proxy.alpha++
   expect(atom.value).toBe(9)
+
+  proxy.alpha++
+  expect(atom.value).toBe(10)
 })
 
-it('watches a proxy using the same atom using selectors (keeps in sync)', () => {
+it.only('watches a proxy using the same atom using selectors (keeps in sync)', () => {
   const proxy = reactive({ alpha: 3, beta: 5 })
   const fn = jest.fn()
-  const unsub = watch(() => fn(proxy.alpha + proxy.beta))
+  const unsub = watch(() => {
+    fn(proxy.alpha + proxy.beta)
+  })
+
+  expect(fn).toBeCalledTimes(1)
   expect(fn).toBeCalledWith(8)
 
   proxy.alpha++
+  expect(fn).toBeCalledTimes(2)
   expect(fn).toBeCalledWith(9)
 
-  expect(fn).toBeCalledTimes(2)
   unsub()
 
   proxy.alpha++
@@ -48,7 +55,9 @@ it('is able to watch atoms', () => {
   const fn = jest.fn()
   const $count = create(0)
 
-  watch(() => fn($count.value))
+  watch(() => {
+    fn($count.value)
+  })
   expect(fn).toBeCalledTimes(1)
   $count.value++
   expect(fn).toBeCalledTimes(2)

@@ -4,28 +4,28 @@ import type { GetState } from './types'
 
 export function selector<T>(fn: (get: GetState) => T) {
   // @ts-expect-error
-  const mw = store<T>()
+  const piece = store<T>()
 
   let isPending = true
   const event = new Set<() => void>()
-  const { get, listeners } = mw
-  mw.get = () => {
+  const { get, listeners } = piece
+  piece.get = () => {
     if (isPending) {
       fire(event)
       isPending = false
-      mw.set(fn(getter))
+      piece.set(fn(getter))
     }
     return get()
   }
-  const getter = (ref) => {
+  const getter = (pieceLike) => {
     event.add(
-      ref.subscribe(() => {
-        if (listeners.size) mw.get()
+      pieceLike.subscribe(() => {
+        if (listeners.size) piece.get()
         else isPending = true
       })
     )
-    return ref.get()
+    return pieceLike.get()
   }
 
-  return mw
+  return piece
 }

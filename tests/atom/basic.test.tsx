@@ -1,6 +1,6 @@
 import { cleanup } from '@testing-library/react'
 import { create } from 'xoid'
-import { debug } from './testHelpers'
+import { debug } from '../testHelpers'
 
 const consoleError = console.error
 afterEach(() => {

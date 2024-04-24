@@ -44,18 +44,16 @@ export function compose<P extends Feature<any, any>, T>(
     // Create a symbol right here, if one is not supplied. This is especially useful when the
     // callback in the second argument is not used.
     const contextSymbol = this || Symbol()
-    const mount = setup.call(contextSymbol, () => {
+    const [ans, mount] = setup.call(contextSymbol, () => {
       // Use the function references as injection keys, and supply them to the current setup context.
       plugins.map((fn) => provide(fn, fn(options)))
-      // Grab the mount/unmount controller.
-    })[1] as () => () => void
-    // Finally return
-    return setup.call(contextSymbol, () =>
-      callback({
+      return callback({
         symbol: contextSymbol,
         mount,
         types: {} as UnionToIntersection<ReturnType<P>>,
       })
-    )
+    })
+
+    return ans
   }
 }

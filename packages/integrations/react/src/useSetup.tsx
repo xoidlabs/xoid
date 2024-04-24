@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useDebugValue } from 'react'
-import { create, Ref } from 'xoid'
+import { create, Atom } from 'xoid'
 import { useConstant } from './useConstant'
 import { useAdapter } from './useAdapter'
 
@@ -10,7 +10,7 @@ import { useAdapter } from './useAdapter'
  */
 
 export function useSetup<T>(fn: () => T): T
-export function useSetup<T, P>(fn: ($props: Ref<P>) => T, props: P): T
+export function useSetup<T, P>(fn: ($props: Atom<P>) => T, props: P): T
 export function useSetup(fn: ($props?: any) => any, props?: any): any {
   // Calling hooks conditionally wouldn't be an issue here, because we rely on just
   // the Function.length, which will remain static.
@@ -18,7 +18,7 @@ export function useSetup(fn: ($props?: any) => any, props?: any): any {
   let result
   if (arguments.length > 1) {
     const $props = useConstant(() => create(() => props))
-    useIsoLayoutEffect(() => ($props as Ref<any>).set(props), [props])
+    useIsoLayoutEffect(() => ($props as Atom<any>).set(props), [props])
     result = useAdapter(() => fn($props))
   } else {
     result = useAdapter(fn)

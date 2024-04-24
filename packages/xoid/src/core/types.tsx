@@ -17,8 +17,6 @@ export type ConfigObject<T> = StandardConfig<T> | LazyConfig<T> | EnhancedConfig
 
 export type Config<T> = ConfigObject<T> | LazyConfig<T>['subscribe']
 
-export type Plugins<P> = { plugins: P[] }
-
 export type Store<T> = {
   listeners: Set<() => void>
   get: () => T
@@ -33,4 +31,4 @@ export type LazyStore<T> = {
   subscribe(fn: (state: T) => void): () => void
 }
 
-export type GetState = <T>(ref: Store<T>) => T
+export type GetState = <T>(ref: StandardConfig<T>) => T

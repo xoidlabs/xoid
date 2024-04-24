@@ -1,6 +1,6 @@
-import { Ref } from 'xoid'
+import { Atom } from 'xoid'
 
-export const debug = <T,>(atom: Ref<T>) => {
+export const debug = <T,>(atom: Atom<T>) => {
   return {
     self: atom,
     selfSerialized: JSON.stringify(atom),

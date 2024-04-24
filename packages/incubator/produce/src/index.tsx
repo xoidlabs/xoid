@@ -1,4 +1,4 @@
-import { Ref } from 'xoid'
+import { Atom } from 'xoid'
 
 export * from 'xoid'
 
@@ -15,7 +15,7 @@ const map = new WeakMap()
 const isPrimitive = (obj: any) =>
   !(typeof obj === 'function' || typeof obj === 'object') || obj === null
 
-export const toReactive = <T,>(atom: Ref<T>): Reactive<T> => {
+export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
   const { value } = atom
   if (isPrimitive(value)) return value as Reactive<T>
   if (map.has(atom)) return map.get(atom)

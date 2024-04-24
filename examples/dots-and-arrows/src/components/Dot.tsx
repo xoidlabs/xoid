@@ -1,5 +1,5 @@
 import { useAtom } from '@xoid/react'
-import { Ref } from 'xoid'
+import { Atom } from 'xoid'
 import React from 'react'
 import { DotType } from '../models'
 

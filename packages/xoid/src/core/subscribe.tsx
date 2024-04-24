@@ -34,11 +34,3 @@ export const subscribe = <T,>(
 
   return dispose
 }
-
-const withUnmount = (fn: <T>(a: T) => void | Destructor): (<T>(a: T) => void) => {
-  const unmount = new Set<() => void>()
-  return (a) => {
-    fire(unmount)
-    add(unmount, fn(a))
-  }
-}

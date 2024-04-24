@@ -1,4 +1,4 @@
-import { create, computed, toReactive, reactive } from '@xoid/reactive'
+import { create, computed, reactive } from 'xoid'
 
 const $count = create(0)
 const $derived = computed(() => {

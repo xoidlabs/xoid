@@ -1,5 +1,5 @@
 import { create } from 'xoid'
-import { debug } from './testHelpers'
+import { debug } from '../testHelpers'
 
 it('creates a derived atom from multiple atoms', () => {
   const a = create(3)
@@ -61,7 +61,7 @@ test('can derive state from external sources', () => {
     subscribe: (item: any) => fakeReduxBase.subscribe(item),
   }
 
-  const reduxAtom = create((get) => get(fakeRedux.getState, fakeRedux.subscribe))
+  const reduxAtom = create.call({ get: fakeRedux.getState, subscribe: fakeRedux.subscribe })
   const listener = jest.fn()
 
   expect(reduxAtom.value).toBe(8)

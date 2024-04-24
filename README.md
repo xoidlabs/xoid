@@ -45,14 +45,27 @@
 
 **xoid** is a framework-agnostic state management library. 
 **X** in its name is an ode to great projects such as Redu**X**, Mob**X** and **X**state. 
-It's the result of careful analyses of different state management tools and paradigms. 
-It was designed to be tiny (~1kB gzipped) and easy-to-learn.
+It was designed to be simple and powerful.
 
-The biggest aim of **xoid** is to unify global state, local component state, finite state machines, and observable streams in the same API. This is especially a big deal for React users where switching between local and global state requires thinking in two different APIs.
-It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) that's able to run across multiple frameworks. 
+It's a robust library based on explicit subscriptions, immutable updates, and a first-class TypeScript support. The main building block of **xoid** is the `atom` function. It can be learned under 5 minutes, yet it has the potential to be the one and only state management utility in your project. With it, you can create global state, local component state, finite state machines, and even observable streams.
+
+The rest of the API is opt-in, and tree-shakes well. `atom` is just 0.8kB, and the whole library is 1.2kB (gzipped). If you enjoy **MobX**, or a **VueJS**-like state management experience, you can use helpers like `reactive`, `computed`, `watch`, `toReactive`, `toAtom`.
+
+- Awesome middleware system
+  - Feels natural with `.call` and `.bind`.
+- Actions
+- `.focus` function for nested state.
+- There are multiple ways of adopting xoid. It favors your favourite coding style.
+
+d
+
+- Devtools
+- Isomorphic component logic
+
+It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) across different frameworks. These are additional helpers: `effect`, `inject`.
 With **xoid**, you can move business logic out of components in a **truly** framework-agnostic manner.
 
-**xoid** (*zoid* is easier to say multiple times) is a robust library based on explicit subscriptions, immutable updates, and a first-class TypeScript support. This makes it ideal for teams. If you prefer implicit subscriptions and mutable updates similar to MobX or Vue 3, you can use **@xoid/reactive**, a tiny proxy-state layer over ***xoid**. More features are explained below, and the [documentation website](https://xoid.dev).
+More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
 
@@ -330,12 +343,13 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 
 ## Packages
 
-- `xoid` - Core package
+- `xoid` - The main package
 - `@xoid/react` - **React** integration
 - `@xoid/vue` - **Vue** integration
 - `@xoid/svelte` - **Svelte** integration
 - `@xoid/devtools` - **Redux Devtools** integration
-- `@xoid/reactive` - MobX-like proxy state library over **xoid**
+- `@xoid/compose` - A helper for composing `feature`s
+
 
 
 ## Thanks

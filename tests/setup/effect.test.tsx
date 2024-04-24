@@ -1,6 +1,6 @@
 /* eslint-disable no-sequences */
 import { store, subscribe } from 'xoid/core'
-import { effect } from 'xoid/setup/effect'
+import { effect } from 'xoid'
 
 const generator = <T,>(fn: () => T) =>
   (function* () {
@@ -80,17 +80,17 @@ describe('effect', () => {
     expect(c).toBeCalled()
   })
 
-  test.skip('component-like', () => {
-    const [A, a, B, b, C] = generator(() => jest.fn())
-    const subscribe = useConstant(() =>
-      effect(() => {
-        effect(() => (A(), a))
-        effect(() => (B(), b))
-        C()
-      })
-    )
-    useEffect(subscribe, [])
-  })
+  // test.skip('component-like', () => {
+  //   const [A, a, B, b, C] = generator(() => jest.fn())
+  //   const subscribe = useConstant(() =>
+  //     effect(() => {
+  //       effect(() => (A(), a))
+  //       effect(() => (B(), b))
+  //       C()
+  //     })
+  //   )
+  //   useEffect(subscribe, [])
+  // })
 
   test('collects unsub functions from `subscribe`', () => {
     const [A, a, B] = generator(() => jest.fn())

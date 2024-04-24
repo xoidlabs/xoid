@@ -30,4 +30,5 @@ export const provide = <T,>(symbol: InjectionKey<T> | Feature<any, T>, value: T)
 
 export const inject = <T,>(symbol: InjectionKey<T> | Feature<any, T>) => SHARED.ctx.get(symbol) as T
 
+// Undocumented export, only used by `feature` currently.
 export const has = <T,>(symbol: InjectionKey<T> | Feature<any, T>) => SHARED.ctx.has(symbol)
