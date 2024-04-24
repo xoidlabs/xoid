@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { watch, onUnmounted } from 'vue'
-import { create, Ref } from 'xoid'
+import { atom, Atom } from 'xoid'
 import { useAdapter } from './useAdapter'
 
 /**
@@ -8,10 +8,10 @@ import { useAdapter } from './useAdapter'
  */
 
 export function useSetup<T>(fn: () => T): T
-export function useSetup<T, P>(fn: ($props: Ref<P>) => T, props: P): T
+export function useSetup<T, P>(fn: ($props: Atom<P>) => T, props: P): T
 export function useSetup(fn: ($props?: any) => any, props?: any): any {
   if (arguments.length > 1) {
-    const $props = create(() => props)
+    const $props = atom(() => props)
     onUnmounted(watch(props, () => $props.set({ ...props })))
     return useAdapter(() => fn($props))
   }

@@ -6,6 +6,7 @@ describe('feature', () => {
       initialValue: options.value,
     }))
 
+    // setup shouldnt simply give an  start/stop
     const [result] = setup(() => {
       const alpha = AlphaFeature({ value: 5 })
       return { alpha }

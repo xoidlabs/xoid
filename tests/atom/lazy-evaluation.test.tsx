@@ -55,12 +55,12 @@ it('lazily evaluate when a mapped atom is read', () => {
 
   expect(fn).not.toBeCalled()
 
-  console.log(derivedAatom.value)
+  console.log('val', derivedAatom.value)
 
   expect(fn).toBeCalledTimes(1)
 })
 
-it('latest', () => {
+it('When the indirect atoms are watched and then unwatched, stop evaluating the middle atom', () => {
   const fn = jest.fn()
 
   const $normal = create(0)
@@ -71,6 +71,7 @@ it('latest', () => {
   const $derived2 = create((get) => 2 * get($derived))
 
   // we're gonna cause listeners set of $derived to be populated.
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const dispose = $derived2.subscribe(() => {})
   // we're gonna dispose, however we're continuing to secretly follow it.
   dispose()
@@ -78,5 +79,5 @@ it('latest', () => {
   expect(fn).toBeCalledTimes(1)
   $normal.value++
   // TODO: passively listen an atom
-  expect(fn).toBeCalledTimes(2)
+  expect(fn).toBeCalledTimes(1)
 })

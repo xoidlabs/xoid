@@ -59,7 +59,7 @@ it('enhanced atoms work with update function', () => {
   expect(listener).toBeCalledTimes(1)
 })
 
-it.only('enhanced atoms also work when updates are nested', () => {
+it('enhanced atoms also work when updates are nested', () => {
   const fn = jest.fn()
   const $source = create({ deep: { value: 24 } })
 

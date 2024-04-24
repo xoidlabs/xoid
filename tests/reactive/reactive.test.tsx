@@ -31,7 +31,7 @@ it('creates a derived atom using the same atom using selectors (keeps in sync)',
   expect(atom.value).toBe(10)
 })
 
-it.only('watches a proxy using the same atom using selectors (keeps in sync)', () => {
+it('watches a proxy using the same atom using selectors (keeps in sync)', () => {
   const proxy = reactive({ alpha: 3, beta: 5 })
   const fn = jest.fn()
   const unsub = watch(() => {

@@ -19,6 +19,8 @@ export type Config<T> = ConfigObject<T> | LazyConfig<T>['subscribe']
 
 export type Store<T> = {
   listeners: Set<() => void>
+  isStream?: boolean
+  $isDirty?: Store<boolean>
   get: () => T
   set: (state: T) => void
   subscribe(fn: (state: T) => void): () => void

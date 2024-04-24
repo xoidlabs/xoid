@@ -1,35 +1,41 @@
 import React, { useEffect, createContext } from 'react'
-import { setup, InjectionKey, createAdapter } from 'xoid'
+import { setup, provide } from 'xoid'
 import { useConstant } from './useConstant'
 
-const contextMap = new Map<InjectionKey<any>, React.Context<any>>()
-// TODO: Consider this in the future
-// Instead of multiple kinds of context providers, we may use single provider wrapped, so that it manually
-// merges the overrides onto its parents context. so we keep consistency.
-// everytime a `context(() => {` opens up, we would run injectMeta maybe
-export const createProvider = <T,>(key: InjectionKey<T>, defaultValue: T) => {
-  const context = createContext(defaultValue)
-  contextMap.set(key, context)
-  return context.Provider
-}
-
-// The only experimental feature of this package is the `read` method in the following React adapter.
-// It relies on the fiber internal: `reactInternals.ReactCurrentDispatcher.current.readContext`.
-// This may change in the future, but luckily popular projects like `react-relay`, `preact/compat` also assume it.
+// `inject` function, when used with React integration's `useSetup`, relies on the fiber internal:
+// `reactInternals.ReactCurrentDispatcher.current.readContext` to obtain the scope symbol. Popular projects
+// such as `react-relay`, `preact/compat` also makes use of this fiber internal.
 // https://github.com/preactjs/preact/blob/cef315a681aaaef67200564d9a33bd007422665b/compat/src/render.js#L230
 const reactInternals = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
 
-const inject = <T,>(symbol: InjectionKey<T>): T => {
-  if (typeof symbol !== 'symbol') throw new TypeError('An injection key should be a symbol.')
-  return reactInternals.ReactCurrentDispatcher.current.readContext(contextMap.get(symbol))
+const SharedScope = Symbol() as symbol
+
+// When in providerless-mode, use the "level one symbol"
+const XoidContext = createContext(SharedScope)
+
+const getCurrentSymbol = () =>
+  reactInternals.ReactCurrentDispatcher.current.readContext(XoidContext)
+
+export const ScopeProvider = (props: { children: React.ReactChild }) => {
+  const symbol = useConstant(() => {
+    const currentSymbol = getCurrentSymbol()
+    const nextSymbol = Symbol()
+    setup.call(nextSymbol, () => {
+      // TODO: Inject everything from currentSymbol to nextSymbol
+      // provide(currentSymbol)
+    })
+    return nextSymbol
+  })
+  return <XoidContext.Provider value={symbol}>{props.children}</XoidContext.Provider>
 }
 
 export const useAdapter = <T,>(fn: () => T): T => {
-  const adapter = useConstant(() => createAdapter({ inject }))
-  useEffect(() => {
-    adapter.mount()
-    return () => adapter.unmount()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  return useConstant(() => setup.call(adapter, fn))
+  // We're getting the current symbol in the React context
+  const currentSymbol = getCurrentSymbol()
+  // We're using that symbol to set to setup as thisArg. This way, when we use xoidReact.Provider,
+  // we'll be using the context defined by it.
+  const [result, controller] = useConstant(() => setup.call(currentSymbol, fn))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(controller.effect, [])
+  return result
 }

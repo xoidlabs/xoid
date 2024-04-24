@@ -1,17 +1,17 @@
-import { create } from 'xoid'
+import { atom } from 'xoid'
 
 it("don't lazily evaluate when a mapped stream is read", () => {
   const fn = jest.fn()
 
-  const sourceAtom = create<{ deep: { value: 5 } }>()
-  const derivedAatom = sourceAtom.map((state) => {
+  const sourceAtom = atom<{ deep: { value: 5 } }>()
+  const derivedAtom = sourceAtom.map((state) => {
     fn()
     return state.deep.value
   })
 
   expect(fn).not.toBeCalled()
 
-  console.log(derivedAatom.value)
+  console.log(derivedAtom.value)
 
   expect(fn).not.toBeCalled()
 })
@@ -19,15 +19,15 @@ it("don't lazily evaluate when a mapped stream is read", () => {
 it("don't lazily evaluate when a mapped (twice) stream is read", () => {
   const fn = jest.fn()
 
-  const sourceAtom = create<{ deep: { value: 5 } }>().map((s) => s)
-  const derivedAatom = sourceAtom.map((state) => {
+  const sourceAtom = atom<{ deep: { value: 5 } }>().map((s) => s)
+  const derivedAtom = sourceAtom.map((state) => {
     fn()
     return state.deep.value
   })
 
   expect(fn).not.toBeCalled()
 
-  console.log(derivedAatom.value)
+  console.log(derivedAtom.value)
 
   expect(fn).not.toBeCalled()
 })
@@ -35,15 +35,15 @@ it("don't lazily evaluate when a mapped (twice) stream is read", () => {
 it("don't lazily evaluate when a focused stream is read", () => {
   const fn = jest.fn()
 
-  const sourceAtom = create<{ deep: { value: 5 } }>().focus('deep')
-  const derivedAatom = sourceAtom.map((state) => {
+  const sourceAtom = atom<{ deep: { value: 5 } }>().focus('deep')
+  const derivedAtom = sourceAtom.map((state) => {
     fn()
     return state.value
   })
 
   expect(fn).not.toBeCalled()
 
-  console.log(derivedAatom.value)
+  console.log(derivedAtom.value)
 
   expect(fn).not.toBeCalled()
 })
@@ -52,7 +52,7 @@ it('Lazily evaluate only when one of the dependents are read', () => {
   const fn = jest.fn()
   const fn1 = jest.fn()
 
-  const $alpha = create(() => {
+  const $alpha = atom(() => {
     fn()
     return { deep: { value: 5 } }
   })
@@ -75,7 +75,7 @@ it('Lazily evaluate only when one of the dependents are read', () => {
 it('Never evaluate dependents of streams unless the stream value is satisfied', () => {
   const fn = jest.fn()
 
-  const $alpha = create<{ deep: { value: number } }>()
+  const $alpha = atom<{ deep: { value: number } }>()
 
   const $deep = $alpha.map((s) => {
     fn()
@@ -108,11 +108,30 @@ it('Never evaluate dependents of streams unless the stream value is satisfied', 
   expect(fn).toBeCalledTimes(1)
 })
 
+it('Continue notifying dependent subscriber', () => {
+  const fn = jest.fn()
+
+  const sourceAtom = atom<{ deep: { value: number } }>()
+  const derivedAtom = sourceAtom.map((state) => state.deep.value)
+
+  derivedAtom.subscribe(fn)
+
+  expect(fn).toBeCalledTimes(0)
+
+  sourceAtom.set({ deep: { value: 5 } })
+
+  expect(fn).toBeCalledTimes(1)
+
+  sourceAtom.set({ deep: { value: 6 } })
+
+  expect(fn).toBeCalledTimes(2)
+})
+
 it('Continue notifying dependent subscriber after another one is unsubscribed', () => {
   const fn = jest.fn()
   const fn1 = jest.fn()
 
-  const sourceAtom = create<{ deep: { value: number } }>()
+  const sourceAtom = atom<{ deep: { value: number } }>()
   const derivedAtom = sourceAtom.map((state) => state.deep.value)
 
   derivedAtom.subscribe(fn)

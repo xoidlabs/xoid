@@ -6,7 +6,9 @@ export function store<T>(this: EnhancedConfig<T>, value: T): Store<T>
 export function store<T>(this: LazyConfig<T>, value?: T): LazyStore<T>
 export function store<T>(this: LazyConfig<T>['subscribe'], value?: T): LazyStore<T>
 export function store<T>(this: Config<T> | void, value?: T): Store<T> {
-  const config = typeof this === 'function' ? { subscribe: this } : this
+  const config = ((typeof this === 'function' ? { subscribe: this } : this) || {}) as Partial<
+    Store<T>
+  >
   const listeners = new Set<() => void>()
   const {
     get = () => value as T,
@@ -16,10 +18,11 @@ export function store<T>(this: Config<T> | void, value?: T): Store<T> {
       listeners.forEach((fn) => fn())
     },
     subscribe,
-  } = (config || {}) as Partial<Store<T>>
+  } = config as Partial<Store<T>>
 
-  let dispose
+  let dispose: (() => void) | undefined
   return {
+    isStream: !config.get,
     listeners,
     get,
     set,
@@ -28,7 +31,7 @@ export function store<T>(this: Config<T> | void, value?: T): Store<T> {
       const listener = () => fn(get())
       // If the base middleware has `get`, prefer that to obtain the state
       if (!listeners.size && subscribe)
-        dispose = subscribe((val: T) => set((config as Partial<Store<T>>).get ? get() : val))
+        dispose = subscribe((val: T) => set(config.get ? get() : val))
       listeners.add(listener)
       return () => {
         listeners.delete(listener)

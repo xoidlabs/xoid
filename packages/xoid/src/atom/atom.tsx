@@ -64,8 +64,14 @@ const createAtom = <T, U>(baseStore: Store<T>, getActions?: (atom: Atom<T>) => U
       },
       subscribe: (fn) => subscribe(baseStore, fn),
       watch: (fn) => subscribe(baseStore, fn, true),
-      map: (fn) => createAtom(store(() => baseStore.subscribe(fn))),
-      focus: (fn) => createAtom(focus(baseStore, fn)),
+      map: (getPath) =>
+        createAtom(
+          store.call({
+            get: baseStore.isStream ? undefined : () => getPath(baseStore.get()),
+            subscribe: (listener) => baseStore.subscribe((s) => listener(getPath(s))),
+          })
+        ),
+      focus: (getPath) => createAtom(focus(baseStore, getPath)),
     })
   )
 }
@@ -75,8 +81,10 @@ export const atom = function <T, V>(
   init: Init<T>,
   actions?: (atom: Atom<T>) => V
 ) {
-  // Pass {this} directly as a base store config.
+  // Pass `this` directly as a base store config.
   const baseStore = (typeof init === 'function' ? selector : store).call(this, init)
+  // Mark isStream: true when `atom` is called with zero arguments
+  baseStore.isStream = !arguments.length
   return createAtom(baseStore, actions)
 } as unknown as AtomCreator
 
