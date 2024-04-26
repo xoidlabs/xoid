@@ -12,11 +12,11 @@ title: useSetup
 ## Basic usage
 
 ```js
-import { create } from 'xoid'
+import { atom } from 'xoid'
 import { useSetup } from '@xoid/react'
 
 // inside a component
-const $num = useSetup(() => create(5))
+const $num = useSetup(() => atom(5))
 ```
 When a second argument is provided, it'll be available in the callback argument **as a reactive atom**.
 

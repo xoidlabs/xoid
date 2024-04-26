@@ -51,8 +51,7 @@ This might be the most unique feature of **xoid**. With **xoid**, you can write 
 The following is called a "setup" function:
 
 ```js
-import create, { Atom } from 'xoid'
-import { effect, inject } from 'xoid'
+import { atom, Atom, effect, inject } from 'xoid'
 import { ThemeSymbol } from './theme'
 
 export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
@@ -82,7 +81,7 @@ With this feature, you can effectively replace the following framework-specific 
 
 |  | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
-| State | `create` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
-| Derived state | `create` | `useMemo` | `computed` | `derived` |
+| State | `atom` | `useState` / `useReducer` | `reactive` / `ref` | `readable` / `writable` |
+| Derived state | `atom` | `useMemo` | `computed` | `derived` |
 | Lifecycle | `effect` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
 | Dependency injection | `inject` | `useContext` | `inject` | `getContext` |

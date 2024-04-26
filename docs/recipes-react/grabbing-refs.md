@@ -6,7 +6,7 @@ title: Grabbing refs
 A **xoid** atom can be used to grab element refs (as in React's terminology) in a typesafe manner. 
 
 ```js
-const $ref = create<HTMLElement>() // Stream<HTMLElement>
+const $ref = atom<HTMLElement>() // Stream<HTMLElement>
 
 $ref.set(document.body)
 ```
@@ -14,11 +14,11 @@ $ref.set(document.body)
 It's completely safe to feed `atom.set` calls as refs to React components as `ref` prop.
 
 ```js
-import create from 'xoid'
+import { atom } from 'xoid'
 import { useSetup } from '@xoid/react'
 // inside React
 const { $ref } = useSetup(() => {
-  const $ref = create<HTMLDivElement>()
+  const $ref = atom<HTMLDivElement>()
   $ref.subscribe((element) => console.log(element))
   return { $ref }
 })

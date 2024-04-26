@@ -5,12 +5,12 @@ title: Advanced concepts
 
 ## Deriving state from external sources
 
-With an additional overload of the `read` function, you can consume external (non-**xoid**) sources. This can be a Redux store, an RxJS observable, or anything that implements getState & subscribe pair. Here is an atom that derives its state from a Redux store:
+With an additional overload of the `get` function, you can consume external (non-**xoid**) sources. This can be a Redux store, an RxJS observable, or anything that implements getState & subscribe pair. Here is an atom that derives its state from a Redux store:
 
 ```js
 import store from './reduxStore'
 
-const derivedAtom = create((read) => read(store.getState, store.subscribe))
+const $derivedAtom = atom((get) => get(store.getState, store.subscribe))
 ```
 As long as the external source implements a getState & subscribe, pair, it can be consumed by **xoid**.
 
@@ -22,7 +22,7 @@ This naming is inspired by Redux's concept of enhancers. For a real-life scenari
 ```js
 import store from './reduxStore'
 
-const $mediator = create((read) => read(store.getState, store.subscribe))
+const $mediator = atom((get) => get(store.getState, store.subscribe))
 
 // we swap the default`.set` method
 $mediator.set = (value: number) => store.dispatch({ type: 'ACTION', payload: value })

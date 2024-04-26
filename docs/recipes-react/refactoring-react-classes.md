@@ -24,7 +24,7 @@ class App extends React.Component {
 Here's a basic React-like class component runtime prepared with **xoid**.
 
 ```js
-import { create, Atom } from 'xoid'
+import { atom, Atom } from 'xoid'
 
 class Runtime<Props, State> {
   $props: Atom<Props>;
@@ -46,7 +46,7 @@ class Runtime<Props, State> {
 We can then easily evolve into the following, working structure without too much refactor:
 ```js
 class AppRuntime extends Runtime<{}, { alpha: number }> {
-  $state = create({ alpha: 5 });
+  $state = atom({ alpha: 5 });
   incrementAlpha = () => {
     this.setState({ alpha: this.state.alpha + 1 });
   };
@@ -64,7 +64,7 @@ Observe that the only big differece is replacing `this` in the render function w
 After getting rid of `this.setState` usages, we can get rid of the `Runtime` class too.
 ```js
 const AppSetup = ($props: Atom<Props>) => {
-  const $state = create({ alpha: 5 })
+  const $state = atom({ alpha: 5 })
   const incrementAlpha = () => $state.focus('alpha').update((s) => s + 1)
   return { $state, incrementAlpha }
 }

@@ -44,8 +44,8 @@ dispatch({ type: types.increase, by: 1 })
 Connecting existing reducers to **xoid** can be beneficial, especially if you're planning to gradually refactor your reducers. The above reducer can be simplified into to the following:
 
 ```js
-const CounterModel = (state) => create(state, (atom) => {
-  const $count = atom.focus('count')
+const CounterModel = (state) => create(state, (a) => {
+  const $count = a.focus('count')
   return {
     increment: (by) => $count.update(s => s + by),
     decrement: (by) => $count.update(s => s - by),

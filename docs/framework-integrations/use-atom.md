@@ -13,11 +13,11 @@ title: useAtom
 Used for subscribing a component to an atom. 
 
 ```js
-import { create } from 'xoid';
+import { atom } from 'xoid';
 import { useAtom } from '@xoid/react'; // or '@xoid/vue' or '@xoid/svelte'
 
-const $number = create(5);
-const $person = create({ name: 'John', surname: 'Doe' });
+const $number = atom(5);
+const $person = atom({ name: 'John', surname: 'Doe' });
 
 // inside a component
 const number = useAtom($number);

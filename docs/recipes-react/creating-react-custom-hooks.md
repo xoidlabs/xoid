@@ -5,9 +5,9 @@ title: Creating React custom hooks
 
 ```js
 const CounterModel = (value: number) =>
-  create(value, (atom) => ({
-    increment: () => atom.update((s) => s + 1),
-    decrement: () => atom.update((s) => s - 1),
+  create(value, (a) => ({
+    increment: () => a.update((s) => s + 1),
+    decrement: () => a.update((s) => s - 1),
   }))
 
 const useCounter = (value: number) => useAtom(() => CounterModel(value), true)

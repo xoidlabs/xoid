@@ -23,7 +23,7 @@ This will forward subscriptions and state modifications directly to the Redux st
 ```js
 import { store } from './store'
 
-const $mediatorAtom = create((read) => read(store.getState, store.subscribe))
+const $mediatorAtom = atom((read) => read(store.getState, store.subscribe))
 $mediatorAtom.set = (payload) => store.dispatch({ type: 'EXTERNAL_XOID_UPDATE', payload })
 ```
 

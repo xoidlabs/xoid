@@ -14,13 +14,13 @@ There's [an article by Michel Weststrate](https://medium.com/@mweststrate/how-to
 Let our state to be shared via context be `{alpha: number, beta: number}`. Instead of feeding it directly as a context value, we can wrap it inside an atom. We can create that atom only once, inside a `useSetup` hook.
 
 ```js title="./App.tsx"
-import { create } from 'xoid'
+import { atom } from 'xoid'
 import { useSetup } from '@xoid/react'
 import { MyContext } from './MyContext'
 import { ConsumerComponent } from './ConsumerComponent'
 
 export const App = () => {
-  const contextValue = useSetup(() => create({ alpha: 3, beta: 5 }))
+  const contextValue = useSetup(() => atom({ alpha: 3, beta: 5 }))
 
   return (
     <MyContext.Provider value={contextValue}>
@@ -29,7 +29,7 @@ export const App = () => {
   )
 }
 ```
-> useSetup's callback function will run exactly once, and the context's value reference will remain static, however the atom's internal state is dynamic.
+> useSetup's callback function will run exactly once, and the context's value reference will remain static, however an atom's internal state is dynamic.
 
 ```js title="./MyComponent.tsx"
 import { useContext } from 'react'
@@ -38,13 +38,13 @@ import { useAtom } from '@xoid/react'
 import { MyContext } from './MyContext'
 
 export const MyComponent = () => {
-  const atom = useContext(MyContext)
-  const { alpha, beta } = useAtom(atom)
+  const a = useContext(MyContext)
+  const { alpha, beta } = useAtom(a)
 
   return (
     <div>
       alpha: {state.alpha}, beta: {state.beta}
-      <button onClick={() => atom.focus('alpha').update(s => s + 1)}>increment alpha</button>
+      <button onClick={() => a.focus('alpha').update(s => s + 1)}>increment alpha</button>
     </div>
   )
 }
