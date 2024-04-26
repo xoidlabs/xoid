@@ -57,7 +57,7 @@ import { ThemeSymbol } from './theme'
 export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   const { initialValue } = $props.value
 
-  const $counter = create(initialValue)
+  const $counter = atom(initialValue)
   const increment = () => $counter.update((s) => s + 1)
   const decrement = () => $counter.update((s) => s - 1)
 

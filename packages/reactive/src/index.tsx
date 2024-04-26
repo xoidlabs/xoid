@@ -1,7 +1,7 @@
-import { create, Atom, Destructor } from 'xoid'
+import { atom, Atom, Destructor } from 'xoid'
 
 // @ts-ignore
-const tools = create.internal
+const tools = atom.internal
 
 export * from 'xoid'
 
@@ -18,16 +18,16 @@ const map = new WeakMap()
 const isPrimitive = (obj: any) =>
   !(typeof obj === 'function' || typeof obj === 'object') || obj === null
 
-export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
-  const { value } = atom
+export const toReactive = <T,>(a: Atom<T>): Reactive<T> => {
+  const { value } = a
   if (isPrimitive(value)) return value as Reactive<T>
-  if (map.has(atom)) return map.get(atom)
+  if (map.has(a)) return map.get(a)
 
-  const target = (Array.isArray(atom.value) ? [] : {}) as Extract<T, object>
+  const target = (Array.isArray(a.value) ? [] : {}) as Extract<T, object>
   const proxy = new Proxy(target, {
     get(t, key) {
-      const nextTarget = atom.value[key]
-      if (key === IS_PROXY) return atom
+      const nextTarget = a.value[key]
+      if (key === IS_PROXY) return a
       if (isPrimitive(nextTarget)) return nextTarget
       if (typeof nextTarget === 'function') {
         // if (Object.prototype.hasOwnProperty.call(atom.value, key)) {
@@ -37,24 +37,24 @@ export const toReactive = <T,>(atom: Atom<T>): Reactive<T> => {
         // }
         return nextTarget
       }
-      return t[key] || (t[key] = toReactive(atom.focus(key as keyof T)))
+      return t[key] || (t[key] = toReactive(a.focus(key as keyof T)))
     },
     set(t, key, nextValue) {
-      atom.focus(key as keyof T).set(nextValue)
+      a.focus(key as keyof T).set(nextValue)
       return true
     },
     deleteProperty(t, key) {
-      const nextValue = { ...atom.value }
+      const nextValue = { ...a.value }
       delete nextValue[key]
-      atom.set(nextValue)
+      a.set(nextValue)
       return true
     },
   })
-  map.set(atom, proxy)
+  map.set(a, proxy)
   return proxy as Reactive<T>
 }
 
-export const reactive = <T,>(initialValue: T): Reactive<T> => toReactive(create(initialValue))
+export const reactive = <T,>(initialValue: T): Reactive<T> => toReactive(atom(initialValue))
 
 export const toAtom = <T,>(proxy: T): Atom<T> => proxy[IS_PROXY]
 
@@ -80,7 +80,7 @@ export const watch = (fn: () => void | Destructor) => {
 // @ts-ignore
 const INTERNAL = tools.symbol
 export const computed = <T,>(fn: () => T): Atom<T> => {
-  const atom = create(fn)
-  atom[INTERNAL].track = true
-  return atom
+  const a = atom(fn)
+  a[INTERNAL].track = true
+  return a
 }

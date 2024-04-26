@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useDebugValue } from 'react'
-import { create, Atom } from 'xoid'
+import { atom, Atom } from 'xoid'
 import { useConstant } from './useConstant'
 import { useAdapter } from './useAdapter'
 
@@ -23,7 +23,7 @@ export function useSetup(fn: ($props?: any) => any, props?: any): any {
   /* eslint-disable react-hooks/rules-of-hooks */
   let result
   if (arguments.length > 1) {
-    const $props = useConstant(() => create(() => props))
+    const $props = useConstant(() => atom(() => props))
     useIsoLayoutEffect(() => ($props as Atom<any>).set(props), [props])
     result = useAdapter(() => fn($props))
   } else {

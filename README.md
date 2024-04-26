@@ -112,9 +112,9 @@ console.log($count.value) // 6
 Atoms can have actions.
 
 ```js
-import create from 'xoid'
+import { atom } from 'xoid'
 
-const $count = create(5, (a) => ({
+const $count = atom(5, (a) => ({
   increment: () => a.update(s => s + 1),
   decrement: () => a.value-- // `.value` setter is supported too
 }))
@@ -225,14 +225,14 @@ This might be the most unique feature of **xoid**. With **xoid**, you can write 
 The following is called a "setup" function:
 
 ```js
-import create, { Atom } from 'xoid'
+import { atom, Atom } from 'xoid'
 import { effect, inject } from 'xoid'
 import { ThemeSymbol } from './theme'
 
 export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   const { initialValue } = $props.value
 
-  const $counter = create(initialValue)
+  const $counter = atom(initialValue)
   const increment = () => $counter.update((s) => s + 1)
   const decrement = () => $counter.update((s) => s - 1)
 
@@ -271,10 +271,10 @@ import devtools from '@xoid/devtools'
 import create from 'xoid'
 devtools() // run once
 
-const atom = create(
+const $atom = atom(
   { alpha: 5 }, 
-  (atom) => {
-    const $alpha = atom.focus(s => s.alpha)
+  ($atom) => {
+    const $alpha = $atom.focus(s => s.alpha)
     return {
       inc: () => $alpha.update(s => s + 1),
       deeply: { nested: { action: () => $alpha.update((s) => s + 1) } }
@@ -295,14 +295,13 @@ atom.focus(s => s.alpha).set(25)  // "(myAtom) Update ([timestamp])
 No additional syntax is required for state machines. Just use the `create` function.
 
 ```js
-import create from 'xoid'
+import { atom } from 'xoid'
 import { useAtom } from '@xoid/react'
 
 const createMachine = () => {
   const red = { color: '#f00', onClick: () => atom.set(green) }
   const green = { color: '#0f0', onClick: () => atom.set(red) }
-  const atom = create(red)
-  return atom
+  return atom(red)
 }
 
 // in a React component

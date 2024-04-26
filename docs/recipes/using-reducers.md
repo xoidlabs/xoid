@@ -41,7 +41,7 @@ countAtom.actions.dispatch({ type: types.increase, by: 1 })
 Connecting existing reducers to **xoid** can be beneficial, especially if you're planning to gradually refactor your reducers. The above reducer can be simplified into to the following:
 
 ```js
-const CounterModel = (s) => create(s, (a) => {
+const CounterModel = (s) => atom(s, (a) => {
   const $count = a.focus('count')
   return {
     increment: (by) => $count.update(s => s + by),

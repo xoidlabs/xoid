@@ -10,7 +10,7 @@ import { devtools } from '@xoid/devtools'
 import { atom, use } from 'xoid'
 devtools() // run once
 
-const $atom = create(
+const $atom = atom(
   { alpha: 5 }, 
   (a) => {
     const $alpha = a.focus(s => s.alpha)

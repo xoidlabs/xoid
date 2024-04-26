@@ -22,9 +22,9 @@ console.log($count.value) // 6
 Atoms can have actions.
 
 ```js
-import create from 'xoid'
+import { atom } from 'xoid'
 
-const $count = create(5, (a) => ({
+const $count = atom(5, (a) => ({
   increment: () => a.update(s => s + 1),
   decrement: () => a.value-- // `.value` setter is supported too
 }))

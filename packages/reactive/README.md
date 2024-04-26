@@ -54,10 +54,10 @@ data.count++
 **xoid** and **@xoid/reactive** libraries are interoperable. They export the same `create` function. The `.value` getter of an atom created by **xoid** package would also auto-subscribe when using `watch`, or `computed`
 
 ```js
-import { create } from 'xoid'
+import { atom } from 'xoid'
 import { computed } from '@xoid/reactive'
 
-const $count = create(0)
+const $count = atom(0)
 
 const $doubleCount = computed(() => data.count * 2)
 ```

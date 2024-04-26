@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { provide, watch, onUnmounted, renderSlot, defineComponent } from 'vue'
-import { create, Atom } from 'xoid'
+import { atom, Atom } from 'xoid'
 import { useAdapter } from './useAdapter'
 import { InjectionKey } from 'xoid'
 export { useAtom } from './useAtom'
@@ -22,7 +22,7 @@ export function useSetup<T>(fn: () => T): T
 export function useSetup<T, P>(fn: ($props: Atom<P>) => T, props: P): T
 export function useSetup(fn: ($props?: any) => any, props?: any): any {
   if (arguments.length > 1) {
-    const $props = create(() => props)
+    const $props = atom(() => props)
     onUnmounted(watch(props, () => $props.set({ ...props })))
     return useAdapter(() => fn($props))
   }
