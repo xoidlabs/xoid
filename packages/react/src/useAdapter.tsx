@@ -1,5 +1,5 @@
 import React, { useEffect, createContext } from 'react'
-import { setup, InjectionKey, createAdapter } from 'xoid/setup'
+import { setup, InjectionKey, createAdapter } from 'xoid'
 import { useConstant } from './useConstant'
 
 const contextMap = new Map<InjectionKey<any>, React.Context<any>>()
