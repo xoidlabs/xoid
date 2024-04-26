@@ -38,8 +38,8 @@ import { useAtom } from '@xoid/react'
 import { MyContext } from './MyContext'
 
 export const MyComponent = () => {
-  const a = useContext(MyContext)
-  const { alpha, beta } = useAtom(a)
+  const $atom = useContext(MyContext)
+  const { alpha, beta } = useAtom($atom)
 
   return (
     <div>
@@ -50,4 +50,4 @@ export const MyComponent = () => {
 }
 ```
 
-Only the components that subscribe to the content of `MyContext` explicitly via `useAtom` will rerender. Also note that, any component now has the chance to subscribe to a subtree/leaf of the same context such that: `useAtom(atom.focus('alpha'))`. Context selectors are achieved in a single, expressive API! Voilà!
+Only the components that subscribe to the content of `MyContext` explicitly via `useAtom` will rerender. Also note that, any component now has the chance to subscribe to a subtree/leaf of the same context such that: `useAtom($atom.focus('alpha'))`. Context selectors are achieved in a single, expressive API! Voilà!

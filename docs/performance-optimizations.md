@@ -8,7 +8,7 @@ title: Performance optimizations
 Atoms are lazily evaluated. If an atom is created using a *state initializer function*, this function won't run until the `.value` getter is read, or the atom is subscribed for the first time.
 
 ```js
-const $atom = create(() => {
+const $atom = atom(() => {
   console.log('I am lazily evaluated!')
   return expensiveComputation(25)
 })
@@ -28,10 +28,10 @@ You can make use of this feature to avoid expensive computations where possible.
 A derived atom is not much different than a classical atom. Still, its state initializer function will wait for the atom's value to be requested in order to run. 
 
 ```js
-const $alpha = create(3)
-const $beta = create(5)
+const $alpha = atom(3)
+const $beta = atom(5)
 
-const $sum = create((read) => {
+const $sum = atom((read) => {
   console.log('Evaluation occured')
   return read($alpha) + read($beta)
 })
@@ -76,7 +76,7 @@ Observe that `$sum` knew that it needs to rerun its state initializer when it's 
 Same kind of performance optimizations apply to the atoms that are created using the `.map` method.
 
 ```js
-const $count = create(() => {
+const $count = atom(() => {
   console.log('Ancestor atom evaluated')
   return 100
 })

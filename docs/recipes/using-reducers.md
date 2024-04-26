@@ -3,16 +3,13 @@ id: using-reducers
 title: Using reducers
 ---
 
-**xoid** doesn't need reducers, but if you prefer to use them, or if you're moving away from Redux, but want to reuse your existing reducers, you can easily do that with **xoid**. 
-
-The following function can be used to create a Redux-like atom.
+You can easily use your existing reducers with **xoid**. The following function can be used to create an atom with reducer.
 
 ```js
-const createStore = (reducer, state) => {
-  const atom = create(state)
-  const dispatch = (action) => atom.update((s) => reducer(s, action))
-  return { atom, dispatch }
-}
+const atomWithReducer = (reducer, initialState) => atom(
+  initialState, 
+  (a) => ({ dispatch: (action) => a.update((s) => reducer(s, action)) })
+)
 ```
 Let's take this simple reducer:
 
@@ -36,15 +33,15 @@ const counterReducer = (state, { type, by }) => {
 Usage:
 
 ```js
-const { atom, dispatch } = createStore({ count: 0 }, counterReducer)
+const countAtom = atomWithReducer({ count: 0 }, counterReducer)
 
-dispatch({ type: types.increase, by: 1 })
+countAtom.actions.dispatch({ type: types.increase, by: 1 })
 ```
 
 Connecting existing reducers to **xoid** can be beneficial, especially if you're planning to gradually refactor your reducers. The above reducer can be simplified into to the following:
 
 ```js
-const CounterModel = (state) => create(state, (a) => {
+const CounterModel = (s) => create(s, (a) => {
   const $count = a.focus('count')
   return {
     increment: (by) => $count.update(s => s + by),
