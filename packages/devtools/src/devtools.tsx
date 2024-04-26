@@ -1,4 +1,4 @@
-import { INTERNAL, TOOLS } from 'xoid/debug'
+import { SHARED } from 'xoid/core/shared'
 import { register, atomMap, $registry, createPathMembrane, current, plugins } from './utils'
 import { AtomImpl } from 'xoid/atom/atom'
 
@@ -28,7 +28,7 @@ const devtools = (instanceName = 'xoid') => {
   })
 
   // @ts-ignore: TODO
-  TOOLS.send = (atom: AtomImpl) => {
+  SHARED.send = (atom: AtomImpl) => {
     const internal = atom[INTERNAL]
     const debugValue = internal.debugValue
     if (debugValue) {
@@ -38,7 +38,7 @@ const devtools = (instanceName = 'xoid') => {
     }
   }
 
-  TOOLS.wrap = (item, atom) => {
+  SHARED.wrap = (item, atom) => {
     const { debugValue } = atom[INTERNAL]
     return debugValue ? createPathMembrane(item, [], atom as any) : item
   }

@@ -87,3 +87,26 @@ const newCreate = middleware({
   plugins: (value) => [pluginProduce<typeof value>, pluginReducer],
 })
 //
+
+// TODO: This is nice, but doesn't tell anything in terms of options in the second argument.
+// To truly build a plugin system, we need that too.
+const extend = <T, P>(object: T, plugins: P[]) => {
+  for (const item of plugins) {
+    const descriptors = Object.getOwnPropertyDescriptors(item)
+    Object.defineProperties(object, descriptors)
+  }
+  return object as T & P
+}
+
+// Attempt to have options
+// It cannot be purely merge/assign based!
+const extend2 =
+  <T, O, P extends (options: any) => any>(plugins: P[], createObject: (options: O) => T) =>
+  (options: Parameters<O>[0]) => {
+    const object = createObject(options)
+    for (const item of plugins) {
+      const descriptors = Object.getOwnPropertyDescriptors(item(options))
+      Object.defineProperties(object, descriptors)
+    }
+    return object as T & ReturnType<P>
+  }
