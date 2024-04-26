@@ -1,9 +1,9 @@
 import React from 'react'
-import { create } from 'xoid'
+import { atom } from 'xoid'
 import { useAtom } from '@xoid/react'
 
-const $celcius = create(20)
-const $fahrenheit = create(68)
+const $celcius = atom(20)
+const $fahrenheit = atom(68)
 
 const setC = (num: number) => {
   if (!num) num = 0

@@ -1,5 +1,5 @@
 import React from 'react'
-import { create } from 'xoid'
+import { atom } from 'xoid'
 import devtools from '@xoid/devtools'
 import { useAtom } from '@xoid/react'
 import './styles.css'
@@ -7,9 +7,9 @@ import './styles.css'
 devtools('my-app')
 
 const NumberModel = (payload: number) =>
-  create(payload, (atom) => ({
-    increment: () => atom.update((state) => state + 1),
-    decrement: () => atom.update((state) => state - 1),
+  atom(payload, (a) => ({
+    increment: () => a.update((state) => state + 1),
+    decrement: () => a.update((state) => state - 1),
   }))
 type NumberType = ReturnType<typeof NumberModel>
 
@@ -18,7 +18,7 @@ $alpha.debugValue = 'a'
 const $beta = NumberModel(16)
 $beta.debugValue = 'b'
 
-const $sum = create((get) => get($alpha) + get($beta))
+const $sum = atom((get) => get($alpha) + get($beta))
 
 const NumberCounter = (props: { atom: NumberType; color: string }) => {
   const [value, { increment, decrement }] = useAtom(props.atom, true)
