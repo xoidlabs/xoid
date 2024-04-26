@@ -225,8 +225,7 @@ This might be the most unique feature of **xoid**. With **xoid**, you can write 
 The following is called a "setup" function:
 
 ```js
-import { atom, Atom } from 'xoid'
-import { effect, inject } from 'xoid'
+import { atom, Atom, effect, inject } from 'xoid'
 import { ThemeSymbol } from './theme'
 
 export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
