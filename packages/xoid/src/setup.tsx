@@ -18,8 +18,24 @@ let adapter = {
   inject: () => error('inject'),
 }
 
+/**
+ * @deprecated since version 1.0.0beta-12
+ *
+ * In the future versions, {@link inject} and {@link effect} will be exported from the root instead of the `xoid/setup` route.
+ * @example
+ * // Recommended
+ * import { inject } from 'xoid'
+ */
 export const inject = <T,>(symbol: InjectionKey<T>): T => (adapter.inject as any)(symbol)
 
+/**
+ * @deprecated since version 1.0.0beta-12
+ *
+ * In the future versions, {@link inject} and {@link effect} will be exported from the root instead of the `xoid/setup` route.
+ * @example
+ * // Recommended
+ * import { effect } from 'xoid'
+ */
 export const effect = (callback: EffectCallback): void => (adapter.effect as any)(callback)
 
 export function setup<T>(

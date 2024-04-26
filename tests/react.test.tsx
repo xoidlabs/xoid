@@ -1,10 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create } from 'xoid'
-import { effect } from 'xoid/setup'
-import { useSetup } from '@xoid/react'
-import { useAtom } from '@xoid/react'
+import { create, effect } from 'xoid'
+import { useAtom, useSetup } from '@xoid/react'
 import { debug } from './testHelpers'
 
 const consoleError = console.error
