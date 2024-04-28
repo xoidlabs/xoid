@@ -40,11 +40,10 @@ const devtools = (instanceName = 'xoid') => {
     })
   })
 
-  internal.send = (atom: Atom) => {
-    const internal = atom[INTERNAL]
+  internal.send = (internal: any) => {
     const debugValue = internal.debugValue
     if (debugValue) {
-      const id = atomMap[debugValue].map.get(atom)
+      const id = atomMap[debugValue].map.get(internal)
       const regKey = id ? `${debugValue}-${id}` : debugValue
       $registry.focus((s) => s[regKey]).set(internal.get())
     }
