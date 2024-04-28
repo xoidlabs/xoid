@@ -1,6 +1,6 @@
 {
   "name": "@xoid/vue",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "main": "./index.js",
   "module": "./index.esm.js",
   "types": "./index.d.ts",

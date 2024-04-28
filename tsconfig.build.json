@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "declarationDir": "dist",
+    "skipLibCheck": true
+  },
+  "include": ["packages"],
+  "exclude": ["packages/deprecated", "packages/incubator"]
+}
