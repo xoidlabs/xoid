@@ -125,7 +125,7 @@ $count.actions.increment()
 There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
 ```js
-import create from 'xoid'
+import { atom } from 'xoid'
 
 const $atom = atom({ deeply: { nested: { alpha: 5 } } })
 const previousValue = $atom.value
