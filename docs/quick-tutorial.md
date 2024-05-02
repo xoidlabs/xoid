@@ -10,23 +10,23 @@ title: Quick Tutorial
 Atoms are holders of state.
 
 ```js
-import create from 'xoid' // or: import { create } from 'xoid'
+import { atom } from 'xoid'
 
-const $count = create(3)
+const $count = atom(3)
 console.log($count.value) // 3
 $count.set(5)
 $count.update((state) => state + 1)
 console.log($count.value) // 6
 ```
 
-Atoms may have actions.
+Atoms can have actions.
 
 ```js
-import create from 'xoid'
+import { atom } from 'xoid'
 
-const $count = create(5, (atom) => ({
-  increment: () => atom.update(s => s + 1),
-  decrement: () => atom.value-- // `.value` setter is supported too
+const $count = atom(5, (a) => ({
+  increment: () => a.update(s => s + 1),
+  decrement: () => a.value-- // `.value` setter is supported too
 }))
 
 $count.actions.increment()
@@ -37,7 +37,7 @@ There's the `.focus` method, which can be used as a selector/lens. **xoid** is b
 ```js
 import create from 'xoid'
 
-const $atom = create({ deeply: { nested: { alpha: 5 } } })
+const $atom = atom({ deeply: { nested: { alpha: 5 } } })
 const previousValue = $atom.value
 
 // select `.deeply.nested.alpha`
@@ -55,16 +55,16 @@ assert($atom.value.deeply.nested.alpha === 6) // ✅
 State can be derived from other atoms. This API was heavily inspired by **Recoil**.
 
 ```js
-const $alpha = create(3)
-const $beta = create(5)
+const $alpha = atom(3)
+const $beta = atom(5)
 // derived atom
-const $sum = create((read) => read($alpha) + read($beta))
+const $sum = atom((read) => read($alpha) + read($beta))
 ```
 
 Alternatively, `.map` method can be used to quickly derive the state from a single atom.
 
 ```js
-const $alpha = create(3)
+const $alpha = atom(3)
 // derived atom
 const $doubleAlpha = $alpha.map((s) => s * 2)
 ```
@@ -82,4 +82,4 @@ const unsub = $atom.subscribe((state, previousState) => {
 // later
 unsub()
 ```
-> All methods of a **xoid** atom are covered up to this point. This concludes the basic usage! 🎉
+> This concludes the basic usage! 🎉

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { create, Atom } from 'xoid'
+import { atom, Atom } from 'xoid'
 import { onDestroy } from 'svelte'
 import type { Readable } from 'svelte/store'
 import { useAdapter } from './useAdapter'
@@ -13,7 +13,7 @@ export function useSetup<T>(fn: () => T): T
 export function useSetup<T, P>(fn: ($props: Atom<P>) => T, props: Readable<P>): T
 export function useSetup(fn: ($props?: any) => any, props?: Readable<any>): any {
   if (arguments.length > 1) {
-    const $props = create(() => props)
+    const $props = atom(() => props)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     onDestroy(props!.subscribe((value) => $props.set(value)))
     return useAdapter(() => fn($props))

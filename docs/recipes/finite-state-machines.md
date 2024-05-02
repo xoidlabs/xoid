@@ -31,7 +31,7 @@ const createMachine = () => {
   const liquid = { name: "water", actions: { freeze, vaporize } };
   const gas = { name: "vapor", actions: { condense } };
 
-  const machine = create(solid)
+  const machine = atom(solid)
   return machine;
 }
 

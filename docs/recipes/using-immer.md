@@ -3,15 +3,15 @@ id: using-immer
 title: Using immer
 ---
 
-While **xoid**'s API surface is kept small intentionally, there's a way for extensions. 
+`atom` has a `.plugins` array that you can use to enable plugins globally.
 If you'd like to add a `.produce` method that uses **immer** internally, you can do it like the following.
 
 ```js
-import { create } from 'xoid'
+import { atom } from 'xoid'
 import { produce } from 'immer'
 
-create.plugins.push((atom) => {
-  atom.produce = (fn) => atom.update((s) => produce(s, fn))
+atom.plugins.push((a) => {
+  a.produce = (fn) => a.update((s) => produce(s, fn))
 })
 ```
 

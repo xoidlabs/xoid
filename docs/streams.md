@@ -14,14 +14,14 @@ Streams differ from atoms not only by types, but also in terms of the runtime be
 
 There are two ways to produce a stream in **xoid**:
 - Using the `.map` method with `true` as the second argument 
-- Using `create` with no arguments
+- Using `atom` with no arguments
 
 ### Using the `.map` method with `true` as the second argument 
 
 Imagine we're setting up a basic counter, and we're deriving another counter that takes only the odd values from the first.
 We can set this up in the following way:
 ```js
-const $counter = create(0)
+const $counter = atom(0)
 const $odd = $counter.map((s) => s % 2 ? s : undefined, true) 
 // Type of `$odd` would be `Stream<number>`
 ```
@@ -34,15 +34,15 @@ const $doubleOdd = $odd.map((value) => value * 2)
 ```
 Here, the type of `value` is always a `number`. If we were working with a `Atom<number | undefined>` instead of a `Stream<number>`, `value` would also be `number | undefined` and our code would be slightly more verbose to cover those cases.
 
-### Using `create` with no arguments
+### Using `atom` with no arguments
 
-When no arguments are used, `create` function produces a `Stream` instead of an `Atom`. Let's assume we're creating a `$clickStream` and a `$clickAtom` like the following:
+When no arguments are used, `atom` function produces a `Stream` instead of an `Atom`. Let's assume we're creating a `$clickStream` and a `$clickAtom` like the following:
 
 ```js
-import create from 'xoid'
+import { atom } from 'xoid'
 
-const $clickStream = create<MouseEvent>() // Stream<MouseEvent>
-const $clickAtom = create<MouseEvent | undefined>(undefined) // Atom<MouseEvent | undefined>
+const $clickStream = atom<MouseEvent>() // Stream<MouseEvent>
+const $clickAtom = atom<MouseEvent | undefined>(undefined) // Atom<MouseEvent | undefined>
 
 // Imagine we're going to satisfy the internal value of these atoms later as:
 window.addEventListener('click', $clickStream.set)

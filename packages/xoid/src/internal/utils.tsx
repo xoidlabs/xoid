@@ -54,15 +54,16 @@ export const subscribeInternal =
     }
   }
 
-export const createInternal = <T,>(value: T, send?: () => void): Internal<T> => {
+export const createInternal = <T,>(value?: T): Internal<T> => {
   const listeners = new Set<() => void>()
-  return {
+  const self = {
     listeners,
     get: () => value as T,
     set: (nextValue: T) => {
       if (value === nextValue) return
       value = nextValue
-      send && send()
+      // Used by devtools
+      tools.send(self)
       listeners.forEach((listener) => listener())
     },
     subscribe: (listener: () => void) => {
@@ -70,6 +71,7 @@ export const createInternal = <T,>(value: T, send?: () => void): Internal<T> => 
       return () => void listeners.delete(listener)
     },
   }
+  return self
 }
 
 export function createAtom<T>(internal: Internal<T>, getActions?: any) {

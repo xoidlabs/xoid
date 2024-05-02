@@ -38,7 +38,7 @@ yarn add xoid
   <TabItem value="deno">
 
 ```js
-import { create } from 'https://unpkg.com/xoid/index.js'
+import { atom } from 'https://unpkg.com/xoid/index.js'
 ```
 
   </TabItem>

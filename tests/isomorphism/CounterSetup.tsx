@@ -1,5 +1,5 @@
 import { Atom } from 'xoid'
-import { effect } from 'xoid/setup'
+import { effect } from 'xoid'
 
 export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   const $counter = $props.map((s) => s.initialValue)

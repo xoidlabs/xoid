@@ -100,35 +100,34 @@ Visit <a href="https://xoid.dev">xoid.dev</a> for detailed docs and recipes.
 Atoms are holders of state.
 
 ```js
-import create from 'xoid'
-// or: import { create } from 'xoid'
+import { atom } from 'xoid'
 
-const $count = create(3)
+const $count = atom(3)
 console.log($count.value) // 3
 $count.set(5)
 $count.update((state) => state + 1)
 console.log($count.value) // 6
 ```
 
-Atoms may have actions.
+Atoms can have actions.
 
 ```js
-import create from 'xoid'
+import { atom } from 'xoid'
 
-const $count = create(5, (atom) => ({
-  increment: () => atom.update(s => s + 1),
-  decrement: () => atom.value-- // `.value` setter is also supported
+const $count = atom(5, (a) => ({
+  increment: () => a.update(s => s + 1),
+  decrement: () => a.value-- // `.value` setter is supported too
 }))
 
 $count.actions.increment()
 ```
 
-Perhaps, the best feature of **xoid** is the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
+There's the `.focus` method, which can be used as a selector/lens. **xoid** is based on immutable updates, so if you "surgically" set state of a focused branch, changes will propagate to the root.
 
 ```js
 import create from 'xoid'
 
-const $atom = create({ deeply: { nested: { alpha: 5 } } })
+const $atom = atom({ deeply: { nested: { alpha: 5 } } })
 const previousValue = $atom.value
 
 // select `.deeply.nested.alpha`
@@ -146,16 +145,16 @@ assert($atom.value.deeply.nested.alpha === 6) // ✅
 State can be derived from other atoms. This API was heavily inspired by **Recoil**.
 
 ```js
-const $alpha = create(3)
-const $beta = create(5)
+const $alpha = atom(3)
+const $beta = atom(5)
 // derived atom
-const $sum = create((read) => read($alpha) + read($beta))
+const $sum = atom((read) => read($alpha) + read($beta))
 ```
 
 Alternatively, `.map` method can be used to quickly derive the state from a single atom.
 
 ```js
-const $alpha = create(3)
+const $alpha = atom(3)
 // derived atom
 const $doubleAlpha = $alpha.map((s) => s * 2)
 ```
@@ -173,7 +172,7 @@ const unsub = $atom.subscribe((state, previousState) => {
 // later
 unsub()
 ```
-> All methods of a **xoid** atom are covered up to this point. This concludes the basic usage! 🎉
+> This concludes the basic usage! 🎉
 
 ## Framework Integrations
 
@@ -226,14 +225,13 @@ This might be the most unique feature of **xoid**. With **xoid**, you can write 
 The following is called a "setup" function:
 
 ```js
-import create, { Atom } from 'xoid'
-import { effect, inject } from 'xoid/setup'
+import { atom, Atom, effect, inject } from 'xoid'
 import { ThemeSymbol } from './theme'
 
 export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   const { initialValue } = $props.value
 
-  const $counter = create(initialValue)
+  const $counter = atom(initialValue)
   const increment = () => $counter.update((s) => s + 1)
   const decrement = () => $counter.update((s) => s - 1)
 
@@ -272,10 +270,10 @@ import devtools from '@xoid/devtools'
 import create from 'xoid'
 devtools() // run once
 
-const atom = create(
+const $atom = atom(
   { alpha: 5 }, 
-  (atom) => {
-    const $alpha = atom.focus(s => s.alpha)
+  ($atom) => {
+    const $alpha = $atom.focus(s => s.alpha)
     return {
       inc: () => $alpha.update(s => s + 1),
       deeply: { nested: { action: () => $alpha.update((s) => s + 1) } }
@@ -296,14 +294,13 @@ atom.focus(s => s.alpha).set(25)  // "(myAtom) Update ([timestamp])
 No additional syntax is required for state machines. Just use the `create` function.
 
 ```js
-import create from 'xoid'
+import { atom } from 'xoid'
 import { useAtom } from '@xoid/react'
 
 const createMachine = () => {
   const red = { color: '#f00', onClick: () => atom.set(green) }
   const green = { color: '#0f0', onClick: () => atom.set(red) }
-  const atom = create(red)
-  return atom
+  return atom(red)
 }
 
 // in a React component

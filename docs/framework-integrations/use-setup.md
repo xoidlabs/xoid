@@ -12,11 +12,11 @@ title: useSetup
 ## Basic usage
 
 ```js
-import { create } from 'xoid'
+import { atom } from 'xoid'
 import { useSetup } from '@xoid/react'
 
 // inside a component
-const $num = useSetup(() => create(5))
+const $num = useSetup(() => atom(5))
 ```
 When a second argument is provided, it'll be available in the callback argument **as a reactive atom**.
 
@@ -44,7 +44,7 @@ Vue, Svelte, and more other frameworks on the other hand, use a real closure ins
 
 ```js
 import { useSetup } from '@xoid/react'
-import { effect } from 'xoid/setup'
+import { effect } from 'xoid'
 
 const App = (props: Props) => {
   useSetup(() => {
@@ -67,7 +67,7 @@ const App = (props: Props) => {
 You can call `effect` multiple times, or conditionally. It'll connect to the same `useEffect` call. 
 ```js
 import { useSetup } from '@xoid/react'
-import { effect } from 'xoid/setup'
+import { effect } from 'xoid'
 
 const App = (props: Props) => {
   useSetup(() => {
@@ -91,7 +91,7 @@ Same applies for `inject`.
 
 ```js
 import { useSetup } from '@xoid/react'
-import { inject } from 'xoid/setup'
+import { inject } from 'xoid'
 import { ThemeSymbol } from './some-module'
 
 const App = (props: Props) => {

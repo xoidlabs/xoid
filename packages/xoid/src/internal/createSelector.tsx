@@ -1,4 +1,4 @@
-import { Internal, tools } from './utils'
+import { createInternal, tools } from './utils'
 import { GetState } from './types'
 import { createEvent } from './createEvent'
 import { INTERNAL } from './createFocus'
@@ -16,7 +16,8 @@ export const createGetState =
     return read[INTERNAL].get()
   }
 
-export const createSelector = <T,>(internal: Internal<T>, init: (get: GetState) => T) => {
+export const createSelector = <T,>(init: (get: GetState) => T) => {
+  const internal = createInternal()
   const { get, set, listeners } = internal
   const e = createEvent()
 
@@ -41,4 +42,5 @@ export const createSelector = <T,>(internal: Internal<T>, init: (get: GetState) 
     if (isPending) evaluate()
     return get()
   }
+  return internal
 }

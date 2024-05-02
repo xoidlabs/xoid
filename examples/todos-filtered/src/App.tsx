@@ -1,19 +1,19 @@
 import React from 'react'
-import { create } from 'xoid'
+import { atom } from 'xoid'
 import { useAtom } from '@xoid/react'
 
 type TodoType = { title: string; checked: boolean }
 type TodoActions = { toggle: () => void; rename: (name: string) => void }
 
-const $todos = create(
+const $todos = atom(
   [
     { title: 'groceries', checked: true },
     { title: 'world invasion', checked: false },
   ],
-  (atom) => ({
-    add: (todo: TodoType) => atom.update((s) => [...s, todo]),
+  (a) => ({
+    add: (todo: TodoType) => a.update((s) => [...s, todo]),
     getItem: (index: number) => {
-      const $todo = atom.focus(index)
+      const $todo = a.focus(index)
       return {
         toggle: () => $todo.focus('checked').update((s) => !s),
         rename: $todo.focus('title').set,
@@ -22,9 +22,9 @@ const $todos = create(
   })
 )
 
-const $hideChecked = create(false)
+const $hideChecked = atom(false)
 
-const $filteredTodos = create((get) => {
+const $filteredTodos = atom((get) => {
   const hideChecked = get($hideChecked)
   const todos = get($todos)
   if (hideChecked) return todos.filter((item) => !item.checked)
