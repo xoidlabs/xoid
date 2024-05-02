@@ -1,5 +1,5 @@
 import { inject, onMounted, onUnmounted } from 'vue'
-import { setup, createAdapter } from 'xoid'
+import { setup, createAdapter } from 'xoid/setup'
 
 export const useAdapter = <T,>(fn: () => T): T => {
   const adapter = createAdapter({ inject })

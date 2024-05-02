@@ -1,10 +1,5 @@
 import { atom } from './atom'
-import {
-  inject as injectDeprecated,
-  effect as effectDeprecated,
-  createAdapter,
-  setup,
-} from './setup'
+import { inject as injectDeprecated, effect as effectDeprecated } from './setup'
 
 /**
  * @deprecated since version 1.0.0beta-12
@@ -29,7 +24,6 @@ export default create
 export { atom }
 export const inject = injectDeprecated
 export const effect = effectDeprecated
-export { createAdapter, setup }
 
 export type { InjectionKey, EffectCallback } from './setup'
 export * from './internal/types'
