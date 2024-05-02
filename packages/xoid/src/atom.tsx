@@ -1,6 +1,8 @@
 import type { Atom, Stream, Init, Actions } from './internal/types'
-import { createAtom, createInternal, tools } from './internal/utils'
+import { createAtom } from './internal/utils'
+import { store } from './core/store'
 import { createSelector } from './internal/createSelector'
+import { SHARED } from './core/shared'
 
 /**
  * Creates an atom with the first argument as the initial state.
@@ -12,7 +14,7 @@ export function atom<T, U>(init: Init<T>, getActions?: (a: Atom<T>) => U): Atom<
 export function atom<T>(): Stream<T>
 export function atom<T, U = undefined>(init?: Init<T>, getActions?: (a: Atom<T>) => U) {
   // @ts-ignore
-  const internal = (typeof init === 'function' ? createSelector : createInternal)(init)
+  const internal = (typeof init === 'function' ? createSelector : store)(init)
   // @ts-ignore
   internal.isStream = !arguments.length
 
@@ -23,4 +25,4 @@ export function atom<T, U = undefined>(init?: Init<T>, getActions?: (a: Atom<T>)
 atom.plugins = [] as ((a: Atom<any>) => void)[]
 
 // intentionally untyped
-;(atom as any).internal = tools
+;(atom as any).internal = SHARED

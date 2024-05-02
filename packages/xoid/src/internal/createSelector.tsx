@@ -1,46 +1,39 @@
-import { createInternal, tools } from './utils'
 import { GetState } from './types'
 import { createEvent } from './createEvent'
 import { INTERNAL } from './createFocus'
+import { store } from '../core/store'
 
-export const createGetState =
-  (updateState: () => void, add: (fn: Function) => void): GetState =>
-  // @ts-ignore
-  (read, sub) => {
-    if (sub) {
-      add(sub(updateState))
-      return read()
-    }
-    // @ts-ignore
-    add(read.subscribe(updateState))
-    return read[INTERNAL].get()
-  }
-
-export const createSelector = <T,>(init: (get: GetState) => T) => {
-  const internal = createInternal()
-  const { get, set, listeners } = internal
-  const e = createEvent()
-
+export function createSelector <T,>(init: (get: GetState) => T) {
+  // @ts-expect-error:
+  const baseStore = store<T>()
+  const { get, set, listeners } = baseStore
+  const cleanupSet = createEvent()
   let isPending = true
-  const getter = createGetState(() => {
+
+  const updateState = () => {
     if (listeners.size) evaluate()
     else isPending = true
-  }, e.add)
-
-  const evaluate = () => {
-    // cleanup previous subscriptions
-    e.fire()
-    isPending = false
-    const prevTracker = tools.get
-    // @ts-ignore
-    tools.get = internal.track ? getter : null
-    set(init(getter))
-    tools.get = prevTracker
   }
 
-  internal.get = () => {
+  const getter = (otherStore) => {
+    cleanupSet.add(otherStore.subscribe(updateState))
+    // TODO: remove INTERNAL when get() is added
+    return otherStore[INTERNAL].get()
+  }
+
+  // Evaluation occurs if .get is called, also occurs when listeners are non-empty
+  const evaluate = () => {
+    // cleanup previous subscriptions
+    cleanupSet.fire()
+    isPending = false
+    set(init(getter as any))
+  }
+
+  baseStore.get = () => {
     if (isPending) evaluate()
     return get()
   }
-  return internal
+  return baseStore
 }
+
+

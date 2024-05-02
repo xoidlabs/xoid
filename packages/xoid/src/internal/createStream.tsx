@@ -1,45 +1,33 @@
-import { createInternal, Internal } from './utils'
+import { Internal } from './utils'
 import { Atom } from './types'
 import { createAtom } from './utils'
+import { store } from '../core/store'
 
 export const createStream =
   <T,>(internal: Internal<T>): Atom<T>['map'] =>
   // @ts-ignore
   (selector: any, isFilter: any) => {
-    let prevValue: any
-    // @ts-ignore
-    const nextInternal = createInternal()
+    const nextInternal = store.call(() => internal.subscribe(() => {
+      if (listeners.size) evaluate()
+      // this case means, when we have no listeners, we can still mark ourselves dirty.
+      else isDirty = true
+    }))
+    const { get, set, listeners } = nextInternal
 
-    let isPending = true
-    const listener = () => {
-      if (nextInternal.listeners.size) evaluate()
-      else isPending = true
-    }
+    let isDirty = true
 
     const evaluate = () => {
-      const v = internal.get()
-      const result = selector(v, prevValue)
-      isPending = false
-      if (!(isFilter && !result)) {
-        nextInternal.set(result)
-        prevValue = result
-      }
+      const result = selector(internal.get())
+      isDirty = false
+      if (!isFilter || result != null) set(result)
     }
 
-    return createAtom({
-      ...nextInternal,
-      get: () => {
-        if (!internal.isStream && isPending) evaluate()
-        return nextInternal.get()
-      },
-      isStream: isFilter || internal.isStream,
-      subscribe: (fn) => {
-        const unsub = internal.subscribe(listener)
-        const unsub2 = nextInternal.subscribe(fn)
-        return () => {
-          unsub2()
-          if (!nextInternal.listeners.size) unsub()
-        }
-      },
-    })
+    // If the
+    nextInternal.get = () => {
+      if (!internal.isStream && isDirty) evaluate()
+      return get()
+    }
+    nextInternal.isStream = isFilter || internal.isStream
+
+    return createAtom(nextInternal)
   }

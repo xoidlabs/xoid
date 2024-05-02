@@ -7,7 +7,7 @@ export type Atom<T> = {
   focus<U>(fn: (state: T) => U): Atom<U>
   focus<U extends keyof T>(key: U): Atom<T[U]>
   map<U>(fn: (state: T, prevState: T) => U): Atom<U>
-  map<U>(fn: (state: T, prevState: T) => U, filterOutFalsyValues: true): Stream<Truthy<U>>
+  map<U>(fn: (state: T, prevState: T) => U, nonNullable: true): Stream<NonNullable<U>>
 }
 
 export type Stream<T> = {
@@ -19,16 +19,10 @@ export type Stream<T> = {
   focus<U>(fn: (state: T) => U): Stream<U>
   focus<U extends keyof T>(key: U): Stream<T[U]>
   map<U>(fn: (state: T, prevState: T | undefined) => U): Stream<U>
-  map<U>(
-    fn: (state: T, prevState: T | undefined) => U,
-    filterOutFalsyValues: true
-  ): Stream<Truthy<U>>
+  map<U>(fn: (state: T, prevState: T | undefined) => U, nonNullable: true): Stream<NonNullable<U>>
 }
 
-export type GetState = {
-  <T>(atom: Atom<T>): T
-  <T>(getState: () => T, subscribe: (fn: () => void) => () => void): T
-}
+export type GetState = <T>(atom: Atom<T>) => T
 
 export type Init<T> = T | ((get: GetState) => T)
 
