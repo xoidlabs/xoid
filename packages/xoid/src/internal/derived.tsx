@@ -1,24 +1,24 @@
-import { createInternal, tools } from './utils'
+import { tools } from './utils'
 import { GetState } from './types'
 import { createEvent } from './createEvent'
-import { INTERNAL } from './createFocus'
+import { store } from './store'
 
 export const createGetState =
   (updateState: () => void, add: (fn: Function) => void): GetState =>
   // @ts-ignore
-  (read, sub) => {
+  (source: any, sub) => {
     if (sub) {
       add(sub(updateState))
-      return read()
+      return source()
     }
     // @ts-ignore
-    add(read.subscribe(updateState))
-    return read[INTERNAL].get()
+    add(source.subscribe(updateState))
+    return source.get()
   }
 
-export const createSelector = <T,>(init: (get: GetState) => T) => {
-  const internal = createInternal()
-  const { get, set, listeners } = internal
+export const derived = <T,>(init: (get: GetState) => T) => {
+  const baseStore = store()
+  const { get, set, listeners } = baseStore
   const e = createEvent()
 
   let isPending = true
@@ -33,14 +33,14 @@ export const createSelector = <T,>(init: (get: GetState) => T) => {
     isPending = false
     const prevTracker = tools.get
     // @ts-ignore
-    tools.get = internal.track ? getter : null
+    tools.get = baseStore.track ? getter : null
     set(init(getter))
     tools.get = prevTracker
   }
 
-  internal.get = () => {
+  baseStore.get = () => {
     if (isPending) evaluate()
     return get()
   }
-  return internal
+  return baseStore
 }
