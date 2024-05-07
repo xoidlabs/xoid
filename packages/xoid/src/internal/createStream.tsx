@@ -1,44 +1,44 @@
-import { createInternal, Internal } from './utils'
+import { Store, store } from './store'
 import { Atom } from './types'
 import { createAtom } from './utils'
 
 export const createStream =
-  <T,>(internal: Internal<T>): Atom<T>['map'] =>
+  <T,>(source: Store<T>): Atom<T>['map'] =>
   // @ts-ignore
   (selector: any, isFilter: any) => {
     let prevValue: any
     // @ts-ignore
-    const nextInternal = createInternal()
+    const target = store()
 
     let isPending = true
     const listener = () => {
-      if (nextInternal.listeners.size) evaluate()
+      if (target.listeners.size) evaluate()
       else isPending = true
     }
 
     const evaluate = () => {
-      const v = internal.get()
+      const v = source.get()
       const result = selector(v, prevValue)
       isPending = false
       if (!(isFilter && !result)) {
-        nextInternal.set(result)
+        target.set(result)
         prevValue = result
       }
     }
 
     return createAtom({
-      ...nextInternal,
+      ...target,
       get: () => {
-        if (!internal.isStream && isPending) evaluate()
-        return nextInternal.get()
+        if (!source.isStream && isPending) evaluate()
+        return target.get()
       },
-      isStream: isFilter || internal.isStream,
+      isStream: isFilter || source.isStream,
       subscribe: (fn) => {
-        const unsub = internal.subscribe(listener)
-        const unsub2 = nextInternal.subscribe(fn)
+        const unsub = source.subscribe(listener)
+        const unsub2 = target.subscribe(fn)
         return () => {
           unsub2()
-          if (!nextInternal.listeners.size) unsub()
+          if (!target.listeners.size) unsub()
         }
       },
     })

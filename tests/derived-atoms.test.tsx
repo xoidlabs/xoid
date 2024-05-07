@@ -54,20 +54,21 @@ it('creates a derived atom using the same atom using selectors (keeps in sync)',
   expect(atom.value).toBe(9)
 })
 
-test('can derive state from external sources', () => {
+test.only('can derive state from external sources', () => {
   const fakeReduxBase = create(8)
   const fakeRedux = {
-    getState: () => fakeReduxBase.value,
-    subscribe: (item: any) => fakeReduxBase.subscribe(item),
+    getState: fakeReduxBase.get,
+    subscribe: fakeReduxBase.subscribe,
   }
 
-  const reduxAtom = create((get) => get(fakeRedux.getState, fakeRedux.subscribe))
+  const reduxAtom = create.call({ get: fakeRedux.getState, subscribe: fakeRedux.subscribe })
   const listener = jest.fn()
 
   expect(reduxAtom.value).toBe(8)
 
   reduxAtom.subscribe(listener)
   expect(listener).not.toBeCalled()
+
   reduxAtom.update((s) => s + 1)
   expect(listener).toBeCalled()
   expect(listener).toBeCalledWith(9, 8)

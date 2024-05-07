@@ -8,6 +8,7 @@ Object {
   "self": Object {
     "actions": undefined,
     "focus": [Function],
+    "get": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
@@ -38,6 +39,7 @@ Object {
   "self": Object {
     "actions": undefined,
     "focus": [Function],
+    "get": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
@@ -67,6 +69,7 @@ Object {
     "alpha": Object {
       "actions": undefined,
       "focus": [Function],
+      "get": [Function],
       "map": [Function],
       "set": [Function],
       "subscribe": [Function],
@@ -85,6 +88,7 @@ Object {
     "beta": Object {
       "actions": undefined,
       "focus": [Function],
+      "get": [Function],
       "map": [Function],
       "set": [Function],
       "subscribe": [Function],
@@ -105,6 +109,7 @@ Object {
   "self": Object {
     "actions": undefined,
     "focus": [Function],
+    "get": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
@@ -113,6 +118,7 @@ Object {
       "alpha": Object {
         "actions": undefined,
         "focus": [Function],
+        "get": [Function],
         "map": [Function],
         "set": [Function],
         "subscribe": [Function],
@@ -131,6 +137,7 @@ Object {
       "beta": Object {
         "actions": undefined,
         "focus": [Function],
+        "get": [Function],
         "map": [Function],
         "set": [Function],
         "subscribe": [Function],

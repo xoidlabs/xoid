@@ -1,5 +1,6 @@
 export type Atom<T> = {
   value: T
+  get(): T
   set(state: T): void
   update(fn: (state: T) => T): void
   subscribe(fn: (state: T, prevState: T) => void | Destructor): () => void
@@ -12,6 +13,7 @@ export type Atom<T> = {
 
 export type Stream<T> = {
   value: T | undefined
+  get(): T | undefined
   set(state: T): void
   update(fn: (state: T | undefined) => T): void
   subscribe(fn: (state: T, prevState: T | undefined) => void | Destructor): () => void
@@ -21,12 +23,18 @@ export type Stream<T> = {
   map<U>(fn: (state: T, prevState: T | undefined) => U): Stream<U>
   map<U>(
     fn: (state: T, prevState: T | undefined) => U,
-    filterOutFalsyValues: true
+    filtwerOutFalsyValues: true
   ): Stream<Truthy<U>>
 }
 
 export type GetState = {
   <T>(atom: Atom<T>): T
+  /**
+   * @deprecated since v1.0.0-beta.13
+   * Please instead use the new middleware API for consuming external sources.
+   * @example
+   * const $derived = atom.call({ get: externalSource.get, subscribe: externalSource.subscribe })
+   */
   <T>(getState: () => T, subscribe: (fn: () => void) => () => void): T
 }
 

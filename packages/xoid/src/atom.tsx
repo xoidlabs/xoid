@@ -1,6 +1,7 @@
 import type { Atom, Stream, Init, Actions } from './internal/types'
-import { createAtom, createInternal, tools } from './internal/utils'
-import { createSelector } from './internal/createSelector'
+import { createAtom, tools } from './internal/utils'
+import { derived } from './internal/derived'
+import { store } from './internal/store'
 
 /**
  * Creates an atom with the first argument as the initial state.
@@ -10,14 +11,14 @@ import { createSelector } from './internal/createSelector'
 export function atom<T>(init: Init<T>): Atom<T>
 export function atom<T, U>(init: Init<T>, getActions?: (a: Atom<T>) => U): Atom<T> & Actions<U>
 export function atom<T>(): Stream<T>
-export function atom<T, U = undefined>(init?: Init<T>, getActions?: (a: Atom<T>) => U) {
+export function atom<T, U = undefined>(this, init?: Init<T>, getActions?: (a: Atom<T>) => U) {
   // @ts-ignore
-  const internal = (typeof init === 'function' ? createSelector : createInternal)(init)
+  const baseStore = (typeof init === 'function' ? derived : store).call(this, init)
   // @ts-ignore
-  internal.isStream = !arguments.length
+  baseStore.isStream = !arguments.length
 
   // @ts-ignore
-  return createAtom(internal, getActions)
+  return createAtom(baseStore, getActions)
 }
 
 atom.plugins = [] as ((a: Atom<any>) => void)[]
