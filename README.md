@@ -339,6 +339,9 @@ If you've read until here, you have enough knowledge to start using **xoid**. Yo
 
 
 ## Thanks
+
+This repo initially started as a fork of [zustand](https://github.com/pmndrs/zustand). Due to this, GitHub's "Contributors" section can be misleading. Majority of the people on that list are actually Zustand's contributors until September 2020.
+
 Following awesome projects inspired **xoid** a lot.
 - [Recoil](https://github.com/facebookexperimental/Recoil)
 - [zustand](https://github.com/pmndrs/zustand)
