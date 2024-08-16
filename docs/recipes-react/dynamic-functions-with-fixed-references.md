@@ -38,7 +38,10 @@ useEffect(() => {
 With **xoid**, the equivalent optimization is simply the following:
 
 ```js
-useSetup(($props, { effect }) => {
+import { effect } from 'xoid'
+import { useSetup } from '@xoid/react'
+
+useSetup(($props) => {
   effect(() => {
     const callback = () => console.log($props.value.number)
     window.addEventListener('click', callback)
