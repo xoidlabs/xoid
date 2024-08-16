@@ -1,19 +1,9 @@
-import create from '..'
+import { atom } from '../atom'
 import { createEvent } from './createEvent'
 import { createFocus, INTERNAL } from './createFocus'
 import { createStream } from './createStream'
+import { Store } from './store'
 import { Atom } from './types'
-
-export type Internal<T> = {
-  get: () => T
-  set: (value: T) => void
-  listeners: Set<() => void>
-  subscribe: (listener: () => void) => () => void
-  isStream?: boolean
-  atom?: Atom<unknown>
-  path?: string[]
-  cache?: any
-}
 
 export const tools = {
   symbol: INTERNAL,
@@ -54,31 +44,12 @@ export const subscribeInternal =
     }
   }
 
-export const createInternal = <T,>(value?: T): Internal<T> => {
-  const listeners = new Set<() => void>()
-  const self = {
-    listeners,
-    get: () => value as T,
-    set: (nextValue: T) => {
-      if (value === nextValue) return
-      value = nextValue
-      // Used by devtools
-      tools.send(self)
-      listeners.forEach((listener) => listener())
-    },
-    subscribe: (listener: () => void) => {
-      listeners.add(listener)
-      return () => void listeners.delete(listener)
-    },
-  }
-  return self
-}
-
-export function createAtom<T>(internal: Internal<T>, getActions?: any) {
-  const { get, subscribe, atom } = internal
+export function createAtom<T>(internal: Store<T>, getActions?: any) {
+  const { get, subscribe, atom: a } = internal
   // Don't delete recurring `api.set` calls from the following code.
   // It lets enhanced atoms work.
   const nextAtom = {
+    get,
     get value() {
       // @ts-ignore
       tools.get && tools.get(nextAtom)
@@ -94,13 +65,13 @@ export function createAtom<T>(internal: Internal<T>, getActions?: any) {
     update: (fn: any) => nextAtom.set(fn(get())),
     subscribe: subscribeInternal(subscribe, get),
     watch: subscribeInternal(subscribe, get, true),
-    focus: createFocus(atom ? atom[INTERNAL] : internal, internal.path || []),
+    focus: createFocus(a ? a[INTERNAL] : internal, internal.path || []),
     map: createStream(internal),
     [INTERNAL]: internal,
   } as Atom<T>
   // @ts-ignore
   internal.atom = nextAtom
-  create.plugins.forEach((fn) => fn(nextAtom))
+  atom.plugins.forEach((fn) => fn(nextAtom))
   const actions = getActions && getActions(nextAtom)
 
   return nextAtom

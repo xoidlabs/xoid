@@ -1,5 +1,6 @@
+import { Store } from './store'
 import { Atom } from './types'
-import { createAtom, Internal } from './utils'
+import { createAtom } from './utils'
 
 export const INTERNAL = Symbol()
 
@@ -43,7 +44,7 @@ const handler = {
 const pathProxy = new Proxy([], handler)
 
 export const createFocus =
-  <T,>(internal: Internal<T>, basePath: string[]): Atom<T>['focus'] =>
+  <T,>(internal: Store<T>, basePath: string[]): Atom<T>['focus'] =>
   (key: any) => {
     const relativePath = typeof key === 'function' ? key(pathProxy)[INTERNAL] : [key]
     if (!internal.cache) internal.cache = {}

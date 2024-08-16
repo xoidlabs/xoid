@@ -8,6 +8,7 @@ Object {
   "self": Object {
     "actions": undefined,
     "focus": [Function],
+    "get": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
