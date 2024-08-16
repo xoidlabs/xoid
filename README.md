@@ -52,7 +52,7 @@ The biggest aim of **xoid** is to unify global state, local component state, fin
 It might be the very first library to introduce the notion of [isomorphic component logic](#-isomorphic-component-logic) that's able to run across multiple frameworks. 
 With **xoid**, you can move business logic out of components in a **truly** framework-agnostic manner.
 
-**xoid** (*zoid* is easier to say multiple times) is a robust library based on explicit subscriptions, immutable updates, and a first-class TypeScript support. This makes it ideal for teams. If you prefer implicit subscriptions and mutable updates similar to MobX or Vue 3, you can use **@xoid/reactive**, a tiny proxy-state layer over ***xoid**. More features are explained below, and the [documentation website](https://xoid.dev).
+**xoid** (*zoid* is easier to say multiple times) is a robust library based on explicit subscriptions, immutable updates, and a first-class TypeScript support. This makes it ideal for teams. If you prefer implicit subscriptions and mutable updates similar to MobX or Vue 3, you can use **@xoid/reactive**, a tiny proxy-state layer over **xoid**. More features are explained below, and the [documentation website](https://xoid.dev).
 
 To install, run the following command:
 
