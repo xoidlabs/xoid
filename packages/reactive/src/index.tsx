@@ -50,10 +50,10 @@ export const toReactive = <T,>(a: Atom<T>): Reactive<T> => {
       return true
     },
     ownKeys() {
-      return Reflect.ownKeys(a.value)
+      return Reflect.ownKeys(a.value as any)
     },
     getOwnPropertyDescriptor(t, key) {
-      const descriptor = Reflect.getOwnPropertyDescriptor(a.value, key)
+      const descriptor = Reflect.getOwnPropertyDescriptor(a.value as any, key)
       if (descriptor && key !== 'length') {
         descriptor.configurable = true
       }
