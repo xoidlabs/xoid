@@ -1,4 +1,4 @@
-import { create } from 'xoid'
+import { atom } from 'xoid'
 import devtools, { $registry } from '@xoid/devtools'
 
 const dt = {
@@ -10,13 +10,13 @@ const extension = {
 }
 
 const NumberModel = (payload: number) =>
-  create(payload, (atom) => ({
-    increment: () => atom.update((state) => state + 1),
+  atom(payload, ($atom) => ({
+    increment: () => $atom.update((state) => state + 1),
     incrementAsync: async () => {
       await new Promise((resolve) => setTimeout(resolve))
-      atom.update((state) => state + 1)
+      $atom.update((state) => state + 1)
     },
-    decrement: () => atom.update((state) => state - 1),
+    decrement: () => $atom.update((state) => state - 1),
   }))
 
 beforeAll(() => {

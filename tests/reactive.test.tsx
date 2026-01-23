@@ -1,31 +1,31 @@
 import { reactive, watch, computed } from '@xoid/reactive'
-import create from 'xoid'
+import { atom } from 'xoid'
 import { debug } from './testHelpers'
 
 it('creates a derived atom using the same atom using selectors', () => {
   const proxy = reactive({ alpha: 3, beta: 5 })
-  const atom = computed(() => proxy.alpha + proxy.beta)
-  expect(debug(atom)).toMatchSnapshot()
+  const $atom = computed(() => proxy.alpha + proxy.beta)
+  expect(debug($atom)).toMatchSnapshot()
 })
 
 it('creates a derived atom using the same atom (keeps in sync)', () => {
   const proxy = reactive({ alpha: 3, beta: 5 })
-  const atom = computed(() => {
+  const $atom = computed(() => {
     return proxy.alpha + proxy.beta
   })
-  expect(atom.value).toBe(8)
+  expect($atom.value).toBe(8)
 
   proxy.alpha++
-  expect(atom.value).toBe(9)
+  expect($atom.value).toBe(9)
 })
 
 it('creates a derived atom using the same atom using selectors (keeps in sync)', () => {
   const proxy = reactive({ alpha: 3, beta: 5 })
-  const atom = computed(() => proxy.alpha + proxy.beta)
-  expect(atom.value).toBe(8)
+  const $atom = computed(() => proxy.alpha + proxy.beta)
+  expect($atom.value).toBe(8)
 
   proxy.alpha++
-  expect(atom.value).toBe(9)
+  expect($atom.value).toBe(9)
 })
 
 it('watches a proxy using the same atom using selectors (keeps in sync)', () => {
@@ -46,7 +46,7 @@ it('watches a proxy using the same atom using selectors (keeps in sync)', () => 
 
 it('is able to watch atoms', () => {
   const fn = jest.fn()
-  const $count = create(0)
+  const $count = atom(0)
 
   watch(() => fn($count.value))
   expect(fn).toBeCalledTimes(1)
@@ -56,7 +56,7 @@ it('is able to watch atoms', () => {
 })
 
 it('is able to create derived state from atoms', () => {
-  const $count = create(0)
+  const $count = atom(0)
   const fn = jest.fn()
 
   const $doubleCount = computed(() => {
@@ -70,8 +70,8 @@ it('is able to create derived state from atoms', () => {
 })
 
 it("Doesn't accidentally subscribe to dependencies of dependencies", () => {
-  const $alpha = create(0)
-  const $beta = create(() => $alpha.value)
+  const $alpha = atom(0)
+  const $beta = atom(() => $alpha.value)
   const fn = jest.fn()
 
   const $doubleCount = computed(() => {
@@ -87,7 +87,7 @@ it("Doesn't accidentally subscribe to dependencies of dependencies", () => {
 })
 
 it("Doesn't accidentally subscribe to dependencies of dependencies (both)", () => {
-  const $alpha = create(0)
+  const $alpha = atom(0)
   const $beta = computed(() => $alpha.value)
   const $gamma = computed(() => $beta.value)
 

@@ -1,4 +1,4 @@
-import { create } from 'xoid'
+import { atom } from 'xoid'
 
 const consoleError = console.error
 afterEach(() => {
@@ -7,14 +7,14 @@ afterEach(() => {
 
 it('enhanced atoms work', () => {
   const listener = jest.fn()
-  const $source = create(3)
+  const $source = atom(3)
 
   const fakeRedux = {
     getValue: () => $source.value,
     subscribe: $source.subscribe,
   }
 
-  const $enhanced = create((get) => get(fakeRedux.getValue, fakeRedux.subscribe))
+  const $enhanced = atom((get) => get(fakeRedux.getValue, fakeRedux.subscribe))
   $enhanced.set = $source.set
 
   const unsub = $enhanced.subscribe(listener)
@@ -34,14 +34,14 @@ it('enhanced atoms work', () => {
 
 it('enhanced atoms work with update function', () => {
   const listener = jest.fn()
-  const $source = create(3)
+  const $source = atom(3)
 
   const fakeRedux = {
     getValue: () => $source.value,
     subscribe: $source.subscribe,
   }
 
-  const $enhanced = create((get) => get(fakeRedux.getValue, fakeRedux.subscribe))
+  const $enhanced = atom((get) => get(fakeRedux.getValue, fakeRedux.subscribe))
   $enhanced.set = $source.set
 
   const unsub = $enhanced.subscribe(listener)
@@ -61,9 +61,9 @@ it('enhanced atoms work with update function', () => {
 
 it('enhanced atoms also work when updates are nested', () => {
   const fn = jest.fn()
-  const $source = create({ deep: { value: 24 } })
+  const $source = atom({ deep: { value: 24 } })
 
-  const $enhanced = create((get) => get($source))
+  const $enhanced = atom((get) => get($source))
   $enhanced.set = (value: typeof $enhanced.value) => {
     fn()
     $source.set(value)
@@ -80,9 +80,9 @@ it('enhanced atoms also work when updates are nested', () => {
 
 it('enhanced atoms should not accidentally override internal set', () => {
   const fn = jest.fn()
-  const $source = create({ deep: { value: 24 } })
+  const $source = atom({ deep: { value: 24 } })
 
-  const $enhanced = create((get) => get($source))
+  const $enhanced = atom((get) => get($source))
   $enhanced.set = (value: typeof $enhanced.value) => {
     fn()
     $source.set(value)

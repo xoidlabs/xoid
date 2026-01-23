@@ -1,5 +1,5 @@
 import { toReactive, toAtom } from '@xoid/reactive'
-import { create } from 'xoid'
+import { atom } from 'xoid'
 
 const consoleError = console.error
 afterEach(() => {
@@ -8,7 +8,7 @@ afterEach(() => {
 const fn = jest.fn()
 
 const initialState = { deep: { alpha: 5 } }
-const $state = create(() => {
+const $state = atom(() => {
   fn()
   return initialState
 })
@@ -40,7 +40,7 @@ it('`toReactive` is able to make immutable updates in classes', () => {
     }
   }
   const initialInstance = new System()
-  const $instance = create(initialInstance)
+  const $instance = atom(initialInstance)
   const rootFn = jest.fn()
   const fn = jest.fn()
   $instance.subscribe(rootFn)

@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { create, effect } from 'xoid'
+import { atom, effect } from 'xoid'
 import { useAtom, useSetup } from '@xoid/react'
 import { debug } from './testHelpers'
 
@@ -12,30 +12,30 @@ afterEach(() => {
 })
 
 it('creates a atom with a primitive value', () => {
-  const atom = create(5)
-  expect(debug(atom)).toMatchSnapshot()
+  const $atom = atom(5)
+  expect(debug($atom)).toMatchSnapshot()
 })
 
 it('creates a atom with a record', () => {
-  const atom = create({ alpha: 3, beta: 5 })
-  expect(debug(atom)).toMatchSnapshot()
+  const $atom = atom({ alpha: 3, beta: 5 })
+  expect(debug($atom)).toMatchSnapshot()
 })
 
 it('normalizes nested atoms in a record', () => {
-  const atom = create({ alpha: create(3), beta: create(5) })
-  expect(debug(atom)).toMatchSnapshot()
+  const $atom = atom({ alpha: atom(3), beta: atom(5) })
+  expect(debug($atom)).toMatchSnapshot()
 })
 
 it('only runs when partial state changes in React', async () => {
-  const atom = create({ count: 0, count2: 'constant' }, (atom) => ({
-    inc: () => atom.update((state) => ({ ...state, count: state.count + 1 })),
+  const $atom = atom({ count: 0, count2: 'constant' }, ($atom) => ({
+    inc: () => $atom.update((state) => ({ ...state, count: state.count + 1 })),
   }))
 
   let renderCount = 0
 
   function Counter() {
-    const c2 = useAtom(atom.focus((s) => s.count2))
-    React.useEffect(atom.actions.inc, [])
+    const c2 = useAtom($atom.focus((s) => s.count2))
+    React.useEffect($atom.actions.inc, [])
     renderCount++
     return <div>count: {c2}</div>
   }
@@ -47,19 +47,19 @@ it('only runs when partial state changes in React', async () => {
 })
 
 it('can batch updates', async () => {
-  const atom = create(
+  const $atom = atom(
     {
       count: 0,
     },
-    (atom) => ({
-      inc: () => atom.update((state) => ({ count: state.count + 1 })),
+    ($atom) => ({
+      inc: () => $atom.update((state) => ({ count: state.count + 1 })),
     })
   )
 
   function Counter() {
-    const { count } = useAtom(atom)
+    const { count } = useAtom($atom)
     React.useEffect(() => {
-      const { inc } = atom.actions
+      const { inc } = $atom.actions
       ReactDOM.unstable_batchedUpdates(() => {
         inc()
         inc()
@@ -74,15 +74,15 @@ it('can batch updates', async () => {
 })
 
 it('can update the selector', async () => {
-  const atom = create(() => ({
+  const $atom = atom(() => ({
     one: 'one',
     two: 'two',
   }))
 
-  type State = (typeof atom)['value']
+  type State = (typeof $atom)['value']
 
   function Component({ selector }: any) {
-    const value = useAtom(atom.focus(selector))
+    const value = useAtom($atom.focus(selector))
     return <div>{value}</div>
   }
 
@@ -98,7 +98,7 @@ it('ensures parent components subscribe before children', async () => {
     children: { [key: string]: { text: string } }
   }
   type Props = { id: string }
-  const atom = create<State>(() => ({
+  const $atom = atom<State>(() => ({
     children: {
       '1': { text: 'child 1' },
       '2': { text: 'child 2' },
@@ -106,7 +106,7 @@ it('ensures parent components subscribe before children', async () => {
   }))
 
   function changeState() {
-    atom.set({
+    $atom.set({
       children: {
         '3': { text: 'child 3' },
       },
@@ -116,12 +116,12 @@ it('ensures parent components subscribe before children', async () => {
   function Child({ id }: Props) {
     // In zustand's tests, the selector in the following line uses optional chaining.
     // In xoid, focus function cannot use optional chaining, so the test is modified.
-    const { text } = useAtom(atom.focus((s) => s.children[id]))
+    const { text } = useAtom($atom.focus((s) => s.children[id]))
     return <div>{text}</div>
   }
 
   function Parent() {
-    const childStates = useAtom(atom.focus((s) => s.children))
+    const childStates = useAtom($atom.focus((s) => s.children))
     return (
       <>
         <button onClick={changeState}>change state</button>
@@ -146,14 +146,14 @@ it('ensures parent components subscribe before children', async () => {
 
 // https://github.com/pmndrs/zustand/issues/84
 it('ensures the correct subscriber is removed on unmount', async () => {
-  const atom = create({ count: 0 })
+  const $atom = atom({ count: 0 })
 
   function increment() {
-    atom.update(({ count }) => ({ count: count + 1 }))
+    $atom.update(({ count }) => ({ count: count + 1 }))
   }
 
   function Count() {
-    const c = useAtom(atom.focus((s) => s.count))
+    const c = useAtom($atom.focus((s) => s.count))
     return <div>count: {c}</div>
   }
 
@@ -186,15 +186,15 @@ it('ensures the correct subscriber is removed on unmount', async () => {
 
 // https://github.com/pmndrs/zustand/issues/86
 it('ensures a subscriber is not mistakenly overwritten', async () => {
-  const atom = create({ count: 0 })
+  const $atom = atom({ count: 0 })
 
   function Count1() {
-    const c = useAtom(atom.focus((s) => s.count))
+    const c = useAtom($atom.focus((s) => s.count))
     return <div>count1: {c}</div>
   }
 
   function Count2() {
-    const c = useAtom(atom.focus((s) => s.count))
+    const c = useAtom($atom.focus((s) => s.count))
     return <div>count2: {c}</div>
   }
 
@@ -214,7 +214,7 @@ it('ensures a subscriber is not mistakenly overwritten', async () => {
   )
 
   // Call all subscribers
-  act(() => atom.set({ count: 1 }))
+  act(() => $atom.set({ count: 1 }))
 
   expect((await findAllByText('count1: 1')).length).toBe(2)
   expect((await findAllByText('count2: 1')).length).toBe(1)
@@ -245,13 +245,13 @@ it('effect function of the React adapter works', () => {
 })
 
 it('uses the actions in React', async () => {
-  const atom = create({ count: 0 }, (atom) => ({
-    inc: () => atom.update((state) => ({ count: state.count + 1 })),
+  const $atom = atom({ count: 0 }, ($atom) => ({
+    inc: () => $atom.update((state) => ({ count: state.count + 1 })),
   }))
 
   function Counter() {
-    const { count } = useAtom(atom)
-    const { inc } = atom.actions
+    const { count } = useAtom($atom)
+    const { inc } = $atom.actions
     React.useEffect(inc, [inc])
     return <div>count: {count}</div>
   }

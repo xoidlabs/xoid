@@ -1,4 +1,4 @@
-import { create } from 'xoid'
+import { atom } from 'xoid'
 
 const consoleError = console.error
 afterEach(() => {
@@ -8,21 +8,21 @@ afterEach(() => {
 it('`subscribe` works', () => {
   const cleanup = jest.fn()
   const listener = jest.fn(() => cleanup)
-  const atom = create(3)
+  const $atom = atom(3)
 
-  const unsub = atom.subscribe(listener)
+  const unsub = $atom.subscribe(listener)
   expect(listener).not.toBeCalled()
 
-  atom.set(3)
+  $atom.set(3)
   expect(listener).not.toBeCalled()
   expect(cleanup).not.toBeCalled()
 
-  atom.set(4)
+  $atom.set(4)
   expect(listener).toBeCalledTimes(1)
   expect(listener).toBeCalledWith(4, 3)
   expect(cleanup).not.toBeCalled()
 
-  atom.set(5)
+  $atom.set(5)
   expect(listener).toBeCalledTimes(2)
   expect(listener).toBeCalledWith(5, 4)
   expect(cleanup).toBeCalledTimes(1)
@@ -35,21 +35,21 @@ it('`subscribe` works', () => {
 it('`subscribe` works for lazily evaluated atoms', () => {
   const cleanup = jest.fn()
   const listener = jest.fn(() => cleanup)
-  const atom = create(() => 3)
+  const $atom = atom(() => 3)
 
-  const unsub = atom.subscribe(listener)
+  const unsub = $atom.subscribe(listener)
   expect(listener).not.toBeCalled()
 
-  atom.set(3)
+  $atom.set(3)
   expect(listener).not.toBeCalled()
   expect(cleanup).not.toBeCalled()
 
-  atom.set(4)
+  $atom.set(4)
   expect(listener).toBeCalledTimes(1)
   expect(listener).toBeCalledWith(4, 3)
   expect(cleanup).not.toBeCalled()
 
-  atom.set(5)
+  $atom.set(5)
   expect(listener).toBeCalledTimes(2)
   expect(listener).toBeCalledWith(5, 4)
   expect(cleanup).toBeCalledTimes(1)
@@ -62,18 +62,18 @@ it('`subscribe` works for lazily evaluated atoms', () => {
 it('`watch` works', () => {
   const cleanup = jest.fn()
   const listener = jest.fn(() => cleanup)
-  const atom = create(3)
+  const $atom = atom(3)
 
-  const unsub = atom.watch(listener)
+  const unsub = $atom.watch(listener)
   expect(listener).toBeCalledTimes(1)
   expect(listener).toBeCalledWith(3, 3)
   expect(cleanup).not.toBeCalled()
 
-  atom.set(3)
+  $atom.set(3)
   expect(listener).toBeCalledTimes(1)
   expect(cleanup).not.toBeCalled()
 
-  atom.set(4)
+  $atom.set(4)
   expect(listener).toBeCalledTimes(2)
   expect(listener).toBeCalledWith(4, 3)
   expect(cleanup).toBeCalledTimes(1)
@@ -86,18 +86,18 @@ it('`watch` works', () => {
 it('`watch` works for lazily evaluated atoms', () => {
   const cleanup = jest.fn()
   const listener = jest.fn(() => cleanup)
-  const atom = create(() => 3)
+  const $atom = atom(() => 3)
 
-  const unsub = atom.watch(listener)
+  const unsub = $atom.watch(listener)
   expect(listener).toBeCalledTimes(1)
   expect(listener).toBeCalledWith(3, 3)
   expect(cleanup).not.toBeCalled()
 
-  atom.set(3)
+  $atom.set(3)
   expect(listener).toBeCalledTimes(1)
   expect(cleanup).not.toBeCalled()
 
-  atom.set(4)
+  $atom.set(4)
   expect(listener).toBeCalledTimes(2)
   expect(listener).toBeCalledWith(4, 3)
   expect(cleanup).toBeCalledTimes(1)
@@ -114,7 +114,7 @@ it('`watch` works for mapped atoms', () => {
   const listener = jest.fn()
   const listener2 = jest.fn()
 
-  const atom = create(() => {
+  const $atom = atom(() => {
     evaluationFn()
     return 3
   }).map((s) => {
@@ -125,22 +125,22 @@ it('`watch` works for mapped atoms', () => {
   expect(evaluationFn).not.toBeCalled()
   expect(evaluationFn2).not.toBeCalled()
 
-  const unsub = atom.watch(listener)
+  const unsub = $atom.watch(listener)
   expect(evaluationFn).toBeCalledTimes(1)
   expect(evaluationFn2).toBeCalledTimes(1)
 
   expect(listener).toBeCalledTimes(1)
   expect(listener).toBeCalledWith(3, 3)
 
-  atom.set(3)
+  $atom.set(3)
   expect(listener).toBeCalledTimes(1)
 
-  const unsub2 = atom.watch(listener2)
+  const unsub2 = $atom.watch(listener2)
 
   expect(evaluationFn).toBeCalledTimes(1)
   expect(evaluationFn2).toBeCalledTimes(1)
 
-  atom.set(4)
+  $atom.set(4)
   expect(listener).toBeCalledTimes(2)
   expect(listener).toBeCalledWith(4, 3)
 
