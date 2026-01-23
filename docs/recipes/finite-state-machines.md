@@ -14,7 +14,7 @@ const createMachine = () => {
 
   function freeze() {
     machine.set(solid)
-    console.log('I freezed')
+    console.log('I froze')
   }
 
   function condense() {

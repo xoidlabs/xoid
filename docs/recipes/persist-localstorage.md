@@ -13,6 +13,6 @@ const setLocalStorage = (key) => (state) =>
   localStorage.setItem(key, JSON.stringify(state))
 
 // usage
-const atom = atom(getLocalStorage('foo') || initialState)
-atom.subscribe(setLocalStorage('foo'))
+const $foo = atom(getLocalStorage('foo') || initialState)
+$foo.subscribe(setLocalStorage('foo'))
 ```

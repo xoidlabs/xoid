@@ -26,10 +26,10 @@ const $atom = atom(
   }
 )
 
-$atom.debugValue = '$atom' // enable watching it by the devtools
+$atom.debugValue = '$atom' // enable watching it with devtools
 
-const { deeply, incrementAlpha } = $atom.actions // destructuring is no problem
-incrementAlpha() // logs "($atom).incrementAlpha"
+const { deeply, inc } = $atom.actions // destructuring is no problem
+inc() // logs "($atom).inc"
 deeply.nested.action() // logs "($atom).deeply.nested.action"
 $atom.focus(s => s.alpha).set(25)  // logs "($atom) Update ([timestamp])
 ```

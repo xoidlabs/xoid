@@ -3,7 +3,7 @@ id: refactoring-react-classes
 title: Refactoring React classes
 ---
 
-**xoid** can provide a scaffolding system for refactoring React class components into function components. During refactoring, intermediate version of the component keeps working. 
+**xoid** can provide a scaffolding system for refactoring React class components into function components. During refactoring, the intermediate version of the component keeps working. 
 
 Let's imagine that the following class component is going to be refactored:
 ```js
@@ -43,7 +43,7 @@ class Runtime<Props, State> {
   }
 }
 ```
-We can then easily evolve into the following, working structure without too much refactor:
+We can then easily evolve into the following, working structure without too much refactoring:
 ```js
 class AppRuntime extends Runtime<{}, { alpha: number }> {
   $state = atom({ alpha: 5 });
@@ -59,7 +59,7 @@ const App = (props: Props) => {
   return <div onClick={self.incrementAlpha}>{self.state.alpha}</div>
 }
 ```
-Observe that the only big differece is replacing `this` in the render function with `self`.
+Observe that the only big difference is replacing `this` in the render function with `self`.
 
 After getting rid of `this.setState` usages, we can get rid of the `Runtime` class too.
 ```js
@@ -71,8 +71,8 @@ const AppSetup = ($props: Atom<Props>) => {
 
 const App = (props: Props) => {
   const { $state, incrementAlpha } = useSetup(AppSetup, props)
-  const { alpha } = useAtom(self.$state)
+  const { alpha } = useAtom($state)
 
-  return <div onClick={self.incrementAlpha}>{alpha}</div>
+  return <div onClick={incrementAlpha}>{alpha}</div>
 }
 ```

@@ -3,14 +3,14 @@ id: streams
 title: Streams
 --- 
 
-**xoid** offers basic support for **streams**. Streams are generally treated as a whole different concept than atoms. They're actually very close, and there's no need for a completely different library for them. **xoid** thinks that streams can easily be a a "bonus feature" of an atomic state management library. 
+**xoid** offers basic support for **streams**. Streams are generally treated as a different concept from atoms. They're actually very close, and there's no need for a completely different library for them. **xoid** thinks that streams can easily be a "bonus feature" of an atomic state management library. 
 
 Our definition of a stream is the following:
 
 > A **stream** is an **atom** that **may not** have an immediate value.
 
-**xoid** have a separate `Stream` type along with the `Atom`.
-Streams differ from atoms not only by types, but also in terms of the runtime behaviour. 
+**xoid** has a separate `Stream` type along with the `Atom`.
+Streams differ from atoms not only by types, but also in terms of the runtime behavior. 
 
 There are two ways to produce a stream in **xoid**:
 - Using the `.map` method with `true` as the second argument 
@@ -23,20 +23,20 @@ We can set this up in the following way:
 ```js
 const $counter = atom(0)
 const $odd = $counter.map((s) => s % 2 ? s : undefined, true) 
-// Type of `$odd` would be `Stream<number>`
+// The type of `$odd` would be `Stream<number>`
 ```
 `true` in the second argument means "filter out falsy values" here. 
-If we didn't use this overload of `.map`, we would end up with a `Atom<number | undefined>`.
+If we didn't use this overload of `.map`, we would end up with an `Atom<number | undefined>`.
 However, we would lose the following benefits:
 
 ```js
 const $doubleOdd = $odd.map((value) => value * 2)
 ```
-Here, the type of `value` is always a `number`. If we were working with a `Atom<number | undefined>` instead of a `Stream<number>`, `value` would also be `number | undefined` and our code would be slightly more verbose to cover those cases.
+Here, the type of `value` is always a `number`. If we were working with an `Atom<number | undefined>` instead of a `Stream<number>`, `value` would also be `number | undefined` and our code would be slightly more verbose to cover those cases.
 
 ### Using `atom` with no arguments
 
-When no arguments are used, `atom` function produces a `Stream` instead of an `Atom`. Let's assume we're creating a `$clickStream` and a `$clickAtom` like the following:
+When no arguments are used, the `atom` function produces a `Stream` instead of an `Atom`. Let's assume we're creating a `$clickStream` and a `$clickAtom` like the following:
 
 ```js
 import { atom } from 'xoid'
@@ -84,7 +84,7 @@ const $doubleX = clickStream
 
 ---
 
-Lastly, here's the difference of the two, from the `index.d.ts` file of **xoid**. 
+Lastly, here's the difference between the two, from the `index.d.ts` file of **xoid**. 
 
 ```js
 export type Atom<T> = {
@@ -114,4 +114,4 @@ export type Stream<T> = {
   ): Stream<Truthy<U>>
 }
 ```
-> Observe that the few major differences are the `.value` getter and bunch of `prevState`s.
+> Observe that the few major differences are the `.value` getter and a bunch of `prevState`s.

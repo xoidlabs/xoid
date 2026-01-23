@@ -39,12 +39,12 @@ npm install @xoid/svelte
 </Tabs>
 
 
-> All these framework integration packages have `useAtom` and `useSetup` functions that have the same interface.
+> All these framework integration packages have `useAtom` and `useSetup` functions with the same interface.
 
 ## Isomorphic component logic
 
 This might be the most unique feature of **xoid**. With **xoid**, you can write component logic (including lifecycle) ONCE, and run it across multiple frameworks. This feature is for you especially if:
-- You're a design system, or a headless UI library maintainer
+- You're a maintainer of a design system or a headless UI library
 - You're using multiple frameworks in your project, or refactoring your code from one framework to another
 - You dislike React's render cycle and want a simpler, real closure for managing complex state
 
@@ -72,7 +72,7 @@ export const CounterSetup = ($props: Atom<{ initialValue: number }>) => {
   return { $counter, increment, decrement }
 }
 ```
-All `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules have an isomorphic `useSetup` function that can consume functions like this. 
+The `@xoid/react`, `@xoid/vue`, and `@xoid/svelte` modules all have an isomorphic `useSetup` function that can consume functions like this. 
 
 > We're aware that not all users need this feature, so we've built it tree-shakable. If `useAtom` is all you need, you may choose to import it from `'@xoid/[FRAMEWORK]/useAtom'`. 
 

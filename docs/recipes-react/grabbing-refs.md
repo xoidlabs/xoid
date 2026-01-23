@@ -11,7 +11,7 @@ const $ref = atom<HTMLElement>() // Stream<HTMLElement>
 $ref.set(document.body)
 ```
 
-It's completely safe to feed `atom.set` calls as refs to React components as `ref` prop.
+It's completely safe to feed `atom.set` calls as refs to React components as the `ref` prop.
 
 ```js
 import { atom } from 'xoid'
@@ -24,4 +24,4 @@ const { $ref } = useSetup(() => {
 })
 return <div ref={$ref.set} />
 ```
-> This usage won't result in Typescript complaints. **xoid**'s `set` method in this example, would be compatible with `React.RefCallback`.
+> This usage won't result in TypeScript complaints. **xoid**'s `set` method in this example, would be compatible with `React.RefCallback`.

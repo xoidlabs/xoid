@@ -9,7 +9,7 @@ Inside a React function component, in some cases **a function with a fixed refer
 
 ### Quick Example
 
-Let's imagine, we have the following `React.useEffect`. Inside it, an event listener is attached and removed everytime when `props.number` changes.
+Let's imagine, we have the following `React.useEffect`. Inside it, an event listener is attached and removed every time `props.number` changes.
 
 ```js
 useEffect(() => {
@@ -19,7 +19,7 @@ useEffect(() => {
 }, [props.number])
 ```
 
-Let's assume that, due to changed app requirements, we want to attach the listener only once, and remove it once the component is unmounted. This can be achieved in React way as the following:
+Let's assume that, due to changed app requirements, we want to attach the listener only once, and remove it once the component is unmounted. This can be achieved in the React way as the following:
 
 ```js
 // a ref to keep the value
@@ -27,7 +27,7 @@ const numberRef = useRef(props.number)
 // an effect to update ref's current value when the `props.number` is changed
 useEffect(() => (numberRef.current = props.number), [props.number])
 
-// This time useEffect is with an empty dependency array, and it references the ref.
+// This time the `useEffect` hook has an empty dependency array, and it references the ref.
 useEffect(() => {
   const callback = () => console.log(numberRef.current)
   window.addEventListener('click', callback)
@@ -50,11 +50,11 @@ useSetup(($props) => {
 }, props)
 ```
 
-After getting used to, **xoid** can feel more intuitive than React hooks in a lot of cases.
+After you get used to it, **xoid** can feel more intuitive than React hooks in a lot of cases.
 
 ### Another Example
 
-Let's propose another problem, this time let's examine it in a more concrete scenario.
+Let's propose another problem; this time, let's examine it in a more concrete scenario.
 
 Let's imagine, inside a React component, we're supposed to initialize a class called `DragDropLibrary` **only once** as `new DragDropLibrary({ onDrop })`. Let's assume we have only one chance to supply `onDrop` to the class instance, and this function cannot be replaced afterwards.
 
@@ -68,7 +68,7 @@ useSetup(($props) => {
 }, props)
 ```
 
-> Think of `useSetup` as not a hook, but as something unchanging, some closure that does not ever rerender. **@xoid/react**, in some sense, is a React without hooks.
+> Think of `useSetup` not as a hook, but as something unchanging, some closure that does not ever rerender. **@xoid/react**, in some sense, is a React without hooks.
 
 Without **xoid**: 
 ```js

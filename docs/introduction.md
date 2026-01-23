@@ -9,7 +9,7 @@ title: Getting Started
 
 ## Installation
 
-The **xoid** package lives in <a href="https://www.npmjs.com/get-npm" target="_blank">npm</a>. To install, you can run one of the the following commands:
+The **xoid** package lives in <a href="https://www.npmjs.com/get-npm" target="_blank">npm</a>. To install, you can run one of the following commands:
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -81,5 +81,5 @@ yarn add @xoid/svelte
 ## Resources
 
 - If you're new to **xoid**, we recommend starting with the [quick tutorial in the next section](quick-tutorial).
-- In [Examples](examples) section, you'll find examples to run on Codesandbox.
-- You can refer to [Recipes](./recipes-react/using-context-correctly) section for more.
+- In the [Examples](examples) section, you'll find examples to run on Codesandbox.
+- You can refer to the [Recipes](./recipes-react/using-context-correctly) section for more.

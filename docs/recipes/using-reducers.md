@@ -3,7 +3,7 @@ id: using-reducers
 title: Using reducers
 ---
 
-You can easily use your existing reducers with **xoid**. The following function can be used to create an atom with reducer.
+You can easily use your existing reducers with **xoid**. The following function can be used to create an atom with a reducer.
 
 ```js
 const atomWithReducer = (reducer, initialState) => atom(
@@ -38,7 +38,7 @@ const countAtom = atomWithReducer({ count: 0 }, counterReducer)
 countAtom.actions.dispatch({ type: types.increase, by: 1 })
 ```
 
-Connecting existing reducers to **xoid** can be beneficial, especially if you're planning to gradually refactor your reducers. The above reducer can be simplified into to the following:
+Connecting existing reducers to **xoid** can be beneficial, especially if you're planning to gradually refactor your reducers. The above reducer can be simplified into the following:
 
 ```js
 const CounterModel = (s) => atom(s, (a) => {

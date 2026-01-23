@@ -8,7 +8,7 @@ title: Examples
 
 - [Todos (Filtered)](https://github.com/xoidlabs/xoid/blob/master/examples/todos-filtered) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/todos-filtered)
 
-- [Celcius-Fahrenheit conversion](https://github.com/xoidlabs/xoid/blob/master/examples/celcius-fahrenheit) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/celcius-fahrenheit)
+- [Celsius-Fahrenheit conversion](https://github.com/xoidlabs/xoid/blob/master/examples/celcius-fahrenheit) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/celcius-fahrenheit)
 
 - [Finite state stopwatch](https://github.com/xoidlabs/xoid/blob/master/examples/finite-state-stopwatch) [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=flat&colorA=4f2eb3&colorB=4f2eb3&logo=codesandbox)](https://githubbox.com/xoidlabs/xoid/tree/master/examples/finite-state-stopwatch)
 

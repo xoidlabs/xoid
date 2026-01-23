@@ -27,8 +27,8 @@ const $mediatorAtom = atom((read) => read(store.getState, store.subscribe))
 $mediatorAtom.set = (payload) => store.dispatch({ type: 'EXTERNAL_XOID_UPDATE', payload })
 ```
 
-> Usually, atoms are derived from other **atoms** (as `atom((read) => get($someAtom))`). Observe how `read` is used with two arguments in this example. This is an additional overload that is used to consume an external (non-**xoid**) source. As long as the external source implements some getState & subscribe pair, it can be consumed by **xoid** like this. (See [Deriving state from external sources](../advanced-concepts#deriving-state-from-external-sources))
+> Usually, atoms are derived from other **atoms** (as `atom((read) => get($someAtom))`). Observe how `read` is used with two arguments in this example. This is an additional overload that is used to consume an external (non-**xoid**) source. As long as the external source implements a `getState` & `subscribe` pair, it can be consumed by **xoid** like this. (See [Deriving state from external sources](../advanced-concepts#deriving-state-from-external-sources))
 >
-> Also, in the second line, you may see that the default `set` method is overriden. In **xoid**'s terminology, atoms like these are called [enhanced atoms](../advanced-concepts#enhanced-atoms). Overriding the default `set` method also will modify the `update` method's behavior.
+> Also, in the second line, you may see that the default `set` method is overridden. In **xoid**'s terminology, atoms like these are called [enhanced atoms](../advanced-concepts#enhanced-atoms). Overriding the default `set` method also will modify the `update` method's behavior.
 
-> Note: If a partial Redux state is desired, A selector instead of the `store.getState` can be used. Second argument remains same as `store.subscribe`.
+> Note: If a partial Redux state is desired, a selector instead of the `store.getState` can be used. Second argument remains the same as `store.subscribe`.
