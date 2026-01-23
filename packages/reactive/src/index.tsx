@@ -49,6 +49,16 @@ export const toReactive = <T,>(a: Atom<T>): Reactive<T> => {
       a.set(nextValue)
       return true
     },
+    ownKeys() {
+      return Reflect.ownKeys(a.value)
+    },
+    getOwnPropertyDescriptor(t, key) {
+      const descriptor = Reflect.getOwnPropertyDescriptor(a.value, key)
+      if (descriptor && key !== 'length') {
+        descriptor.configurable = true
+      }
+      return descriptor
+    },
   })
   map.set(a, proxy)
   return proxy as Reactive<T>
