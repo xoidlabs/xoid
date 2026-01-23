@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`creates a atom with a primitive value 1`] = `
-Object {
+{
   "actions": undefined,
   "get": 5,
   "getSerialized": "5",
-  "self": Object {
+  "self": {
     "actions": undefined,
     "focus": [Function],
     "map": [Function],
@@ -14,7 +14,7 @@ Object {
     "update": [Function],
     "value": 5,
     "watch": [Function],
-    Symbol(): Object {
+    Symbol(): {
       "atom": [Circular],
       "get": [Function],
       "isStream": false,
@@ -23,31 +23,31 @@ Object {
       "subscribe": [Function],
     },
   },
-  "selfSerialized": "{\\"value\\":5}",
+  "selfSerialized": "{"value":5}",
 }
 `;
 
 exports[`creates a atom with a record 1`] = `
-Object {
+{
   "actions": undefined,
-  "get": Object {
+  "get": {
     "alpha": 3,
     "beta": 5,
   },
-  "getSerialized": "{\\"alpha\\":3,\\"beta\\":5}",
-  "self": Object {
+  "getSerialized": "{"alpha":3,"beta":5}",
+  "self": {
     "actions": undefined,
     "focus": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
     "update": [Function],
-    "value": Object {
+    "value": {
       "alpha": 3,
       "beta": 5,
     },
     "watch": [Function],
-    Symbol(): Object {
+    Symbol(): {
       "atom": [Circular],
       "get": [Function],
       "isStream": false,
@@ -56,15 +56,15 @@ Object {
       "subscribe": [Function],
     },
   },
-  "selfSerialized": "{\\"value\\":{\\"alpha\\":3,\\"beta\\":5}}",
+  "selfSerialized": "{"value":{"alpha":3,"beta":5}}",
 }
 `;
 
 exports[`normalizes nested atoms in a record 1`] = `
-Object {
+{
   "actions": undefined,
-  "get": Object {
-    "alpha": Object {
+  "get": {
+    "alpha": {
       "actions": undefined,
       "focus": [Function],
       "map": [Function],
@@ -73,7 +73,7 @@ Object {
       "update": [Function],
       "value": 3,
       "watch": [Function],
-      Symbol(): Object {
+      Symbol(): {
         "atom": [Circular],
         "get": [Function],
         "isStream": false,
@@ -82,7 +82,7 @@ Object {
         "subscribe": [Function],
       },
     },
-    "beta": Object {
+    "beta": {
       "actions": undefined,
       "focus": [Function],
       "map": [Function],
@@ -91,7 +91,7 @@ Object {
       "update": [Function],
       "value": 5,
       "watch": [Function],
-      Symbol(): Object {
+      Symbol(): {
         "atom": [Circular],
         "get": [Function],
         "isStream": false,
@@ -101,16 +101,16 @@ Object {
       },
     },
   },
-  "getSerialized": "{\\"alpha\\":{\\"value\\":3},\\"beta\\":{\\"value\\":5}}",
-  "self": Object {
+  "getSerialized": "{"alpha":{"value":3},"beta":{"value":5}}",
+  "self": {
     "actions": undefined,
     "focus": [Function],
     "map": [Function],
     "set": [Function],
     "subscribe": [Function],
     "update": [Function],
-    "value": Object {
-      "alpha": Object {
+    "value": {
+      "alpha": {
         "actions": undefined,
         "focus": [Function],
         "map": [Function],
@@ -119,7 +119,7 @@ Object {
         "update": [Function],
         "value": 3,
         "watch": [Function],
-        Symbol(): Object {
+        Symbol(): {
           "atom": [Circular],
           "get": [Function],
           "isStream": false,
@@ -128,7 +128,7 @@ Object {
           "subscribe": [Function],
         },
       },
-      "beta": Object {
+      "beta": {
         "actions": undefined,
         "focus": [Function],
         "map": [Function],
@@ -137,7 +137,7 @@ Object {
         "update": [Function],
         "value": 5,
         "watch": [Function],
-        Symbol(): Object {
+        Symbol(): {
           "atom": [Circular],
           "get": [Function],
           "isStream": false,
@@ -148,7 +148,7 @@ Object {
       },
     },
     "watch": [Function],
-    Symbol(): Object {
+    Symbol(): {
       "atom": [Circular],
       "get": [Function],
       "isStream": false,
@@ -157,6 +157,6 @@ Object {
       "subscribe": [Function],
     },
   },
-  "selfSerialized": "{\\"value\\":{\\"alpha\\":{\\"value\\":3},\\"beta\\":{\\"value\\":5}}}",
+  "selfSerialized": "{"value":{"alpha":{"value":3},"beta":{"value":5}}}",
 }
 `;

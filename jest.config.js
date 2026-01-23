@@ -1,10 +1,13 @@
-const { pathsToModuleNameMapper } = require('ts-jest/utils')
+const { pathsToModuleNameMapper } = require('ts-jest')
 const { compilerOptions } = require(`${process.cwd()}/tsconfig.json`);
 
 module.exports = {
   "rootDir": ".",
   "transform": {"\\.tsx?$": ['ts-jest']}, 
   "testEnvironment": "jsdom",
+  "testEnvironmentOptions": {
+    "customExportConditions": ["node", "node-addons"]
+  },
   "modulePathIgnorePatterns": [
     "dist",
     "tree",

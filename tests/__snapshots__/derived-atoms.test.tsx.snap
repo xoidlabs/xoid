@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`creates a derived atom from multiple atoms 1`] = `
-Object {
+{
   "actions": undefined,
   "get": 8,
   "getSerialized": "8",
-  "self": Object {
+  "self": {
     "actions": undefined,
     "focus": [Function],
     "map": [Function],
@@ -14,7 +14,7 @@ Object {
     "update": [Function],
     "value": 8,
     "watch": [Function],
-    Symbol(): Object {
+    Symbol(): {
       "atom": [Circular],
       "get": [Function],
       "isStream": false,
@@ -23,16 +23,16 @@ Object {
       "subscribe": [Function],
     },
   },
-  "selfSerialized": "{\\"value\\":8}",
+  "selfSerialized": "{"value":8}",
 }
 `;
 
 exports[`creates a derived atom using the same atom 1`] = `
-Object {
+{
   "actions": undefined,
   "get": 8,
   "getSerialized": "8",
-  "self": Object {
+  "self": {
     "actions": undefined,
     "focus": [Function],
     "map": [Function],
@@ -41,7 +41,7 @@ Object {
     "update": [Function],
     "value": 8,
     "watch": [Function],
-    Symbol(): Object {
+    Symbol(): {
       "atom": [Circular],
       "get": [Function],
       "isStream": false,
@@ -50,16 +50,16 @@ Object {
       "subscribe": [Function],
     },
   },
-  "selfSerialized": "{\\"value\\":8}",
+  "selfSerialized": "{"value":8}",
 }
 `;
 
 exports[`creates a derived atom using the same atom using selectors 1`] = `
-Object {
+{
   "actions": undefined,
   "get": 8,
   "getSerialized": "8",
-  "self": Object {
+  "self": {
     "actions": undefined,
     "focus": [Function],
     "map": [Function],
@@ -68,7 +68,7 @@ Object {
     "update": [Function],
     "value": 8,
     "watch": [Function],
-    Symbol(): Object {
+    Symbol(): {
       "atom": [Circular],
       "get": [Function],
       "isStream": false,
@@ -77,6 +77,6 @@ Object {
       "subscribe": [Function],
     },
   },
-  "selfSerialized": "{\\"value\\":8}",
+  "selfSerialized": "{"value":8}",
 }
 `;

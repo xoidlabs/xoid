@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`uses the actions in vanilla (interop) 1`] = `
-Object {
-  "actions": Object {
+{
+  "actions": {
     "inc": [Function],
   },
-  "get": Object {
+  "get": {
     "count": 1,
   },
-  "getSerialized": "{\\"count\\":1}",
-  "self": Object {
-    "actions": Object {
+  "getSerialized": "{"count":1}",
+  "self": {
+    "actions": {
       "inc": [Function],
     },
     "focus": [Function],
@@ -18,11 +18,11 @@ Object {
     "set": [Function],
     "subscribe": [Function],
     "update": [Function],
-    "value": Object {
+    "value": {
       "count": 1,
     },
     "watch": [Function],
-    Symbol(): Object {
+    Symbol(): {
       "atom": [Circular],
       "get": [Function],
       "isStream": false,
@@ -31,21 +31,21 @@ Object {
       "subscribe": [Function],
     },
   },
-  "selfSerialized": "{\\"value\\":{\\"count\\":1},\\"actions\\":{}}",
+  "selfSerialized": "{"value":{"count":1},"actions":{}}",
 }
 `;
 
 exports[`uses the actions in vanilla 1`] = `
-Object {
-  "actions": Object {
+{
+  "actions": {
     "inc": [Function],
   },
-  "get": Object {
+  "get": {
     "count": 1,
   },
-  "getSerialized": "{\\"count\\":1}",
-  "self": Object {
-    "actions": Object {
+  "getSerialized": "{"count":1}",
+  "self": {
+    "actions": {
       "inc": [Function],
     },
     "focus": [Function],
@@ -53,11 +53,11 @@ Object {
     "set": [Function],
     "subscribe": [Function],
     "update": [Function],
-    "value": Object {
+    "value": {
       "count": 1,
     },
     "watch": [Function],
-    Symbol(): Object {
+    Symbol(): {
       "atom": [Circular],
       "get": [Function],
       "isStream": false,
@@ -66,6 +66,6 @@ Object {
       "subscribe": [Function],
     },
   },
-  "selfSerialized": "{\\"value\\":{\\"count\\":1},\\"actions\\":{}}",
+  "selfSerialized": "{"value":{"count":1},"actions":{}}",
 }
 `;
