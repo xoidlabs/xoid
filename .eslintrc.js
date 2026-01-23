@@ -16,7 +16,13 @@ module.exports = {
     '@typescript-eslint/ban-types': ['off'],
     "prettier/prettier": [
       "warn", 
-      { singleQuote: true, semi: false, printWidth: 100, endOfLine: 'auto' }
+      { 
+        singleQuote: true, 
+        semi: false, 
+        printWidth: 100, 
+        endOfLine: 'auto',
+        arrowParens: 'avoid'
+      }
     ],
     '@typescript-eslint/no-extra-semi': ['off'],
     "spaced-comment": ["error", "always", { "markers": ["/"] }]

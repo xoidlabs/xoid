@@ -17,12 +17,14 @@ async function main() {
   const results = [];
   let packages = [];
 
+  // Find all non-private packages in the workspace, ordered by dependencies
   await workspacesRun({ cwd: __dirname, orderByDeps: true }, async (pkg) => {
     if (!pkg.config.private) {
       packages.push(pkg);
     }
   });
 
+  // Filter by TARGET environment variable if provided, otherwise list all packages
   if (!process.env.TARGET) {
     console.log('Found the following packages:')
     packages.forEach((pkg) => console.log('- ', pkg.name))
@@ -31,14 +33,18 @@ async function main() {
     if (!packages.length) throw new Error(`No package with name "${process.env.TARGET}". `)
   }
 
+  // Generate Rollup configurations for each package
   packages.forEach((pkg) => {
     const basePath = path.relative(__dirname, pkg.dir)
     const outputPath = basePath.replace('packages/', 'dist/');
     let copyPath = path.join(basePath, 'copy');
 
+    // Add "copy" directory contents to copy targets if it exists
     if(fs.existsSync(copyPath)) {
       copyTargets.push({ src: `${copyPath}/*`, dest: outputPath })
     }
+
+    // Copy package.json and README.md (or root README if package-specific one is missing)
     ['package.json', 'README.md'].forEach((fileName) => {
       const file = path.join(basePath, fileName)
       if(fs.existsSync(file)) {
@@ -47,6 +53,8 @@ async function main() {
         copyTargets.push({ src: 'README.md', dest: outputPath })
       }
     })
+
+    // Resolve exports from package.json or fallback to legacy main/module fields
     const configExports = pkg.config.exports || {'.': {
       types: pkg.config.types,
       module: pkg.config.module,
@@ -56,6 +64,7 @@ async function main() {
     const entries = Object.keys(configExports)
 
     entries.forEach((entry) => {
+      // Define external dependencies to avoid bundling them
       const externalLookup = [
         ...Object.keys(pkg.config.dependencies || []),
         ...Object.keys(pkg.config.peerDependencies || []),
@@ -68,7 +77,6 @@ async function main() {
 
       const input = path.join(basePath, 'src', entry + '.tsx');
       const output = []
-
 
       if(entryOutputs.default) {
         output.push({
