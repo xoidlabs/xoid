@@ -33,6 +33,6 @@
     "use-sync-external-store": "^1.1.0"
   },
   "peerDependencies": {
-    "react": "*"
+    "react": ">=18.0.0"
   }
 }

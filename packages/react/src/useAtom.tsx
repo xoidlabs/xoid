@@ -1,5 +1,4 @@
-import { useSyncExternalStore } from 'use-sync-external-store/shim'
-import { useDebugValue } from 'react'
+import { useSyncExternalStore, useDebugValue } from 'react'
 import { Atom, Actions } from 'xoid'
 import { useConstant } from './useConstant'
 

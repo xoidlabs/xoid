@@ -50,11 +50,8 @@
     "stream",
     "observable"
   ],
-  "dependencies": {
-    "use-sync-external-store": "^1.1.0"
-  },
   "peerDependencies": {
     "xoid": ">=1.0.0-beta.12",
-    "react": "*"
+    "react": ">=18.0.0"
   }
 }
