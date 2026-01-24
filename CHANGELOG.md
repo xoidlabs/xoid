@@ -10,8 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - `create` (both as a named export and the default export) is removed. Instead use `atom`.
 
+## [1.0.0] - 2026-01-24
 
-## [1.0.0beta-12] - 2015-02-16
+### Changed
+
+- **xoid** finally reached the stable v1 version, and is no longer marked as beta software.
+- In the main package, no changes were made. In the React integration (@xoid/react), we no longer rely to the shim, and we only support the recent versions of React starting from 18.
+
+
+## [1.0.0-beta.12] - 2024-05-02
 
 This version, compared to the previous one only adds deprecation notices that can be fixed by slight modifications. Underlying implementations are not changed.
 
