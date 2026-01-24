@@ -356,3 +356,9 @@ If you'd like to support the project, consider sponsoring on OpenCollective:
 <a href="https://opencollective.com/xoid">
   <img src="https://opencollective.com/xoid/tiers/fan.svg" />
 </a>
+
+Another way to support it is the $XOID token:
+
+https://bags.fm/FqfCVLLAQ8CB5556GYAHpgL7TNraQkoE9pyKBHmEBAGS
+
+
