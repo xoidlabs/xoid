@@ -23,8 +23,8 @@ export function useSetup(fn: ($props?: any) => any, props?: any): any {
   /* eslint-disable react-hooks/rules-of-hooks */
   let result
   if (arguments.length > 1) {
-    const $props = useConstant(() => atom(() => props))
-    useIsoLayoutEffect(() => ($props as Atom<any>).set(props), [props])
+    const $props = useConstant(() => atom(props))
+    $props.set(props)
     result = useAdapter(() => fn($props))
   } else {
     result = useAdapter(fn)
