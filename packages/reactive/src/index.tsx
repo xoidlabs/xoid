@@ -18,6 +18,9 @@ const map = new WeakMap()
 const isPrimitive = (obj: any) =>
   !(typeof obj === 'function' || typeof obj === 'object') || obj === null
 
+/**
+ * Converts an atom to a reactive proxy.
+ */
 export const toReactive = <T,>(a: Atom<T>): Reactive<T> => {
   const { value } = a
   if (isPrimitive(value)) return value as Reactive<T>
@@ -64,10 +67,19 @@ export const toReactive = <T,>(a: Atom<T>): Reactive<T> => {
   return proxy as Reactive<T>
 }
 
+/**
+ * Creates a reactive proxy.
+ */
 export const reactive = <T,>(initialValue: T): Reactive<T> => toReactive(atom(initialValue))
 
+/**
+ * Converts a reactive proxy to an atom.
+ */
 export const toAtom = <T,>(proxy: T): Atom<T> => proxy[IS_PROXY]
 
+/**
+ * Watches a function that uses reactive proxies.
+ */
 export const watch = (fn: () => void | Destructor) => {
   let cleanup
   const clean = () => {
@@ -89,6 +101,9 @@ export const watch = (fn: () => void | Destructor) => {
 
 // @ts-ignore
 const INTERNAL = tools.symbol
+/**
+ * Creates a computed atom from a function that uses reactive proxies.
+ */
 export const computed = <T,>(fn: () => T): Atom<T> => {
   const a = atom(fn)
   a[INTERNAL].track = true

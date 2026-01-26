@@ -4,11 +4,21 @@ import { createSelector } from './internal/createSelector'
 
 /**
  * Creates an atom with the first argument as the initial state.
+ * If the first argument is a function, it creates a computed atom (selector).
  * Second argument can be used to attach actions to the atom.
  * @see [xoid.dev/docs/quick-tutorial](https://xoid.dev/docs/quick-tutorial)
  */
 export function atom<T>(init: Init<T>): Atom<T>
+/**
+ * Creates an atom with the first argument as the initial state.
+ * If the first argument is a function, it creates a computed atom (selector).
+ * Second argument can be used to attach actions to the atom.
+ * @see [xoid.dev/docs/quick-tutorial](https://xoid.dev/docs/quick-tutorial)
+ */
 export function atom<T, U>(init: Init<T>, getActions?: (a: Atom<T>) => U): Atom<T> & Actions<U>
+/**
+ * Creates an empty stream.
+ */
 export function atom<T>(): Stream<T>
 export function atom<T, U = undefined>(init?: Init<T>, getActions?: (a: Atom<T>) => U) {
   // @ts-ignore
