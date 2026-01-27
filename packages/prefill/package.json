@@ -1,0 +1,20 @@
+{
+  "name": "@xoid/prefill",
+  "version": "0.0.1",
+  "main": "./index.js",
+  "module": "./index.esm.js",
+  "types": "./index.d.ts",
+  "sideEffects": false,
+  "description": "A tiny utility for preconfiguring React components by prefilling props",
+  "author": "onurkerimov",
+  "homepage": "https://xoid.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xoidlabs/xoid",
+    "directory": "./packages/prefill"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  }
+}
