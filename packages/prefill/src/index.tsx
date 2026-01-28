@@ -51,11 +51,22 @@ const classNamePlugin = (left: { className?: string }, right: { className?: stri
   if (cx1 && cx2) right.className = `${cx1} ${cx2}`
 }
 
+const stylePlugin = (left: { style?: any }, right: { style?: any }) => {
+  const { style: s1 } = left
+  const { style: s2 } = right
+  if (s1 && s2) right.style = { ...s1, ...s2 }
+}
+
+const defaultPlugin = (left: any, right: any) => {
+  classNamePlugin(left, right)
+  stylePlugin(left, right)
+}
+
 export const prefill = function (this: any, as: any, options: any) {
   return React.forwardRef((props, ref) => {
     const [nextOptions, nextProps] = getPassdownProps(options, props)
     if (ref) nextProps.ref = ref
-    ;(this || classNamePlugin)(nextOptions, nextProps)
+    ;(this || defaultPlugin)(nextOptions, nextProps)
     const finalProps = Object.assign(nextOptions, nextProps)
     // Avoid extra `React.createElement` call if it's a non-intrinsic element
     // This is also good for React Devtools
