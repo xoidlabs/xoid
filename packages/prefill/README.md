@@ -7,6 +7,8 @@ A tiny utility for **preconfiguring React components** by “prefilling” (part
 - **Merges `className`** (default behavior)
 - Advanced mode: When the second argument is a function instead of an object, it can be used to compose props *before* they reach a component, to rename or filter them.
 
+See the release article [here](https://xoid.dev/blog/introducing-prefill).
+
 ---
 
 ## Install
