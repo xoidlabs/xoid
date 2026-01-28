@@ -255,8 +255,8 @@ With this feature, you can effectively replace the following framework-specific 
 
 |  | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/logo-plain.svg" width="16"/> xoid | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/react.ico" width="16"/> React | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/vue.png" width="16"/> Vue | <img src="https://raw.githubusercontent.com/xoidlabs/xoid/master/assets/integrations/svelte.png" width="16"/> Svelte |
 |---|---|---|---|---|
-| State | `create` | `useState` / `useReducer` | `reactive` / `shallowRef` | `readable` / `writable` |
-| Derived state | `create` | `useMemo` | `computed` | `derived` |
+| State | `atom` | `useState` / `useReducer` | `reactive` / `shallowRef` | `readable` / `writable` |
+| Derived state | `atom` | `useMemo` | `computed` | `derived` |
 | Lifecycle | `effect` | `useEffect` | `onMounted`, `onUnmounted` | `onMount`, `onDestroy` |
 | Dependency injection | `inject` | `useContext` | `inject` | `getContext` |
 
@@ -267,7 +267,7 @@ Import `@xoid/devtools` and set a `debugValue` to your atom. It will send values
 
 ```js
 import devtools from '@xoid/devtools'
-import create from 'xoid'
+import { atom } from 'xoid'
 devtools() // run once
 
 const $atom = atom(
@@ -291,7 +291,7 @@ atom.focus(s => s.alpha).set(25)  // "(myAtom) Update ([timestamp])
 
 ## Finite state machines
 
-No additional syntax is required for state machines. Just use the `create` function.
+No additional syntax is required for state machines. Just use the `atom` function.
 
 ```js
 import { atom } from 'xoid'
