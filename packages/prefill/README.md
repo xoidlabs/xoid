@@ -5,15 +5,13 @@ A tiny utility for **preconfiguring React components** by “prefilling” (part
 - Works with **intrinsic elements** (`'div'`, `'button'`, …) and **function components**
 - **Forwards refs** automatically
 - **Merges `className`** (default behavior)
-- Optional advanced mode: When the second argument is a function, and it can be used to compose props *before* they reach a component, to rename or filter props.
+- Advanced mode: When the second argument is a function instead of an object, it can be used to compose props *before* they reach a component, to rename or filter them.
 
 ---
 
 ## Install
 
 ```bash
-yarn add @xoid/prefill
-# or
 npm i @xoid/prefill
 ```
 
@@ -145,15 +143,3 @@ Your plugin is called as:
 ```
 
 and may mutate `nextProps` (e.g. to merge `className`, `style`, event handlers, etc.).
-
----
-
-## Notes / limitations
-
-- The implementation optimizes non-intrinsic components by calling them directly (instead of `React.createElement`). This is great for **function components**, but **class components are not supported** (calling a class component as a function will throw).
-
----
-
-## More
-
-There’s a longer write-up with motivation and patterns in `packages/prefill/ARTICLE.md`.
