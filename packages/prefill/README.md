@@ -1,4 +1,4 @@
-# `@xoid/prefill`
+# `prefill`: Partial Application for React Components
 
 A tiny utility for **preconfiguring React components** by “prefilling” (partially applying) props.
 
