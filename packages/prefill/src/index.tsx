@@ -63,7 +63,7 @@ const defaultPlugin = (left: any, right: any) => {
 }
 
 export const prefill = function (this: any, as: any, options: any) {
-  return React.forwardRef((props, ref) => {
+  const Component = React.forwardRef((props, ref) => {
     const [nextOptions, nextProps] = getPassdownProps(options, props)
     if (ref) nextProps.ref = ref
     ;(this || defaultPlugin)(nextOptions, nextProps)
@@ -72,6 +72,10 @@ export const prefill = function (this: any, as: any, options: any) {
     // This is also good for React Devtools
     return typeof as === 'function' ? as(finalProps) : React.createElement(as, finalProps)
   })
+
+  Component.displayName = `Prefill(${as.displayName || as.name || 'Component'})`
+
+  return Component
 } as Box
 
 export default prefill
